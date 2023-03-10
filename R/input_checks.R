@@ -69,8 +69,13 @@ check_trim_flanks_flank_size <- function(trim_flanks,
 
 }
 
-check_global_pairs <- function(global_pairs) {
-
+check_global_pairs <- function(global_pairs, data_sample) {
+    # global_pairs must be integer matrix with two columns and u rows.
+    # In each entry global_pairs will store an index (integer) i = 1, ..., n,
+    # pointing to a specific CDR3 sequence from data_sample which is a
+    # data.frame with nrow = n.
+    # row in global pairs gives us the indices of two CDR3s that are globally
+    # similar (e.g. Hamming dist < 1 or distance computed using external tool)
 }
 
 
