@@ -6,14 +6,7 @@ parameter_check <- function(data_sample,
                             version,
                             ks,
                             cores,
-                            B,
-                            global_max_dist,
-                            local_min_p,
-                            local_min_ove,
-                            local_min_o,
-                            trim_flanks,
-                            flank_size,
-                            global_pairs) {
+                            control) {
 
     # add individual tests from below here
 

@@ -34,16 +34,18 @@ gliph <- function(data_sample,
                       flank_size = 3,
                       global_pairs = NULL)) {
 
-    # 1. parameter check
-
 
     # a. control check
     control <- get_control(control_in = control)
 
-
-    # check inputs
-
-
+    # 1. parameter check
+    parameter_check(data_sample = data_sample,
+                    data_ref = data_ref,
+                    version = version,
+                    ks = ks,
+                    cores = cores,
+                    B = B,
+                    control = control)
 
     # get chains to be analyzed
     chains <- get_chains(colnames(data_sample))
