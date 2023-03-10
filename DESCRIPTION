@@ -7,7 +7,6 @@ Maintainer: The package maintainer <yourself@somewhere.net>
 Description: More about what it does (maybe more than one line)
     Use four spaces when indenting paragraphs within the Description.
 License: GPL-3 + file LICENSE
-Encoding: UTF-8
 LazyData: true
 Depends: 
     R (>= 4.2.0)
@@ -28,9 +27,8 @@ Encoding: UTF-8
 NeedsCompilation: no
 biocViews: FunctionalPrediction, MotifDiscovery, GeneticVariability, 
     FunctionalGenomics, ImmunoOncology, Clustering
-BugReports: https://github.com/snaketron/scBubbletree/issues
-URL: https://github.com/snaketron/scBubbletree
 SystemRequirements: Python (>= 3.6), leidenalg (>= 0.8.2)
-RoxygenNote: 6.1.1
+RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 URL: https://github.com/snaketron/gliphR
+BugReports: https://github.com/snaketron/gliphR/issues
