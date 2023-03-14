@@ -36,7 +36,12 @@ check_data_ref <- function(data_ref) {
 #'
 #' @param version, integer: version = 1, 2 or 3, gliph version to use
 check_version <- function(version) {
-
+    if(!base::is.numeric(version))
+        base::stop("version has to be numeric")
+    if(base::length(version) > 1)
+        base::stop("version has to be a single number")
+    if(!(version %in% base::c(1, 2, 3) ))
+        base::stop("version has to be 1, 2 or 3")
 }
 
 #' Input checks for motif lengths and local minimum ove
