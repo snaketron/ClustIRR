@@ -1,5 +1,3 @@
-
-
 # Description:
 # This is rewritten code for GLIPH v1 and v2
 # Details are missing, TODO
@@ -18,7 +16,7 @@
 #' @return list(clust = clust, edges = edges, data_sample = data_sample)
 #' @export
 #'
-#' @examples TODO
+#' @examples
 gliph <- function(data_sample,
                   data_ref,
                   version = 2,
