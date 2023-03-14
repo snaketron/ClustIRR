@@ -10,9 +10,8 @@ gliph(
   version = 2,
   ks = c(2, 3, 4),
   cores = 1,
-  control = list(B = 1000, global_max_dist = 1, local_min_p = 0.05, local_min_ove =
-    c(10^3, 10^2, 10^1), local_min_o = 3, trim_flanks = FALSE, flank_size = 3,
-    global_pairs = NULL)
+  control = list(B = 1000, global_max_dist = 1, local_min_p = 0.05, local_min_ove = 2,
+    local_min_o = 3, trim_flanks = FALSE, flank_size = 3, global_pairs = NULL)
 )
 }
 \arguments{
