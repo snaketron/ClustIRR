@@ -4,33 +4,32 @@
 \alias{gliph}
 \title{Find groups of TCRs with locally or globally similar CDR3s}
 \usage{
-gliph(data_sample,
-      data_ref,
-      version = 2,
-      ks = c(2, 3, 4),
-      cores = 1,
-      control = list(B = 1000,
-                     global_max_dist = 1,
-                     local_min_p = 0.05,
-                     local_min_ove = c(10^3, 10^2, 10^1),
-                     local_min_o = 3,
-                     trim_flanks = FALSE,
-                     flank_size = 3,
-                     global_pairs = NULL))
+gliph(
+  data_sample,
+  data_ref,
+  version = 2,
+  ks = c(2, 3, 4),
+  cores = 1,
+  control = list(B = 1000, global_max_dist = 1, local_min_p = 0.05, local_min_ove =
+    c(10^3, 10^2, 10^1), local_min_o = 3, trim_flanks = FALSE, flank_size = 3,
+    global_pairs = NULL)
+)
 }
 \arguments{
-\item{data_sample, }{data.frame, TCR sample}
+\item{data_sample, }{data.frame: TCR sample}
 
-\item{data_ref, }{data.frame, reference database}
+\item{data_ref, }{data.frame: reference database}
 
-\item{version, }{integer 1, 2 or 3, gliph version to use}
+\item{version, }{integer: version = 1, 2 or 3, gliph version to use}
 
-\item{ks, }{vector of integers (default ks = [2, 3, 4]), motif lengths to
-evaluate}
+\item{ks, }{vector of integers: motif lengths to use (default ks=(2,3,4)),}
 
-\item{cores, }{integer, number of CPU cores to use}
+\item{cores, }{integer: number of CPU cores to use}
 
-\item{control, }{list of auxiliarry input parameters}
+\item{control, }{list: auxiliarry input parameters (described below)}
+}
+\value{
+list(clust = clust, edges = edges, data_sample = data_sample)
 }
 \description{
 Find groups of TCRs with locally or globally similar CDR3s

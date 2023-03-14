@@ -1,6 +1,13 @@
-
 # Description:
 # Now exported to user, but used within function gliph.R
+#' Input checks for gliphR parameters
+#'
+#' @param data_sample, data.frame: TCR sample
+#' @param data_ref, data.frame: reference database
+#' @param version, integer: version = 1, 2 or 3, gliph version to use
+#' @param ks, vector of integers: motif lengths to use (default ks=(2,3,4)),
+#' @param cores, integer: number of CPU cores to use
+#' @param control, list: auxiliary input parameters
 parameter_check <- function(data_sample,
                             data_ref,
                             version,
@@ -12,56 +19,101 @@ parameter_check <- function(data_sample,
 
 }
 
-
+#' Input checks for TCR sample
+#'
+#' @param data_sample, data.frame: TCR sample
 check_data_sample <- function(data_sample) {
 
 }
 
+#' Input checks for reference database
+#'
+#' @param data_ref, data.frame: reference database
 check_data_ref <- function(data_ref) {
 
 }
-
+#' Input checks for gliph version
+#'
+#' @param version, integer: version = 1, 2 or 3, gliph version to use
 check_version <- function(version) {
-
+    if(!base::is.numeric(version))
+        base::stop("version has to be numeric")
+    if(base::length(version) > 1)
+        base::stop("version has to be a single number")
+    if(!(version %in% base::c(1, 2, 3) ))
+        base::stop("version has to be 1, 2 or 3")
 }
 
+#' Input checks for motif lengths and local minimum ove
+#'
+#' @param ks, vector of integers: motif lengths to use (default ks=(2,3,4))
+#' @param local_min_ove, local minimum ove
 check_ks_local_min_ove <- function(ks, local_min_ove) {
 
 }
 
+#' Input checks for cores
+#'
+#' @param cores, integer: number of CPU cores to use
 check_cores <- function(cores) {
 
 }
 
+#' Input checks for B
+#'
+#' @param B, check B
 check_B <- function(B) {
 
 }
 
+#' Input checks for maximal global distance
+#'
+#' @param global_max_dist, maximal global distance
 check_global_max_dist <- function(global_max_dist) {
 
 }
 
+#' Input checks for minimal local p-value
+#'
+#' @param local_min_p, minimal local p-value
 check_local_min_p <- function(local_min_p) {
 
 }
 
+#' Input checks for minimal local o
+#'
+#' @param local_min_o, minimal local o
 check_local_min_o <- function(local_min_o) {
 
 }
 
+#' Input checks for trim flanks
+#'
+#' @param trim_flanks, trim flanks
 check_trim_flanks <- function(trim_flanks) {
 
 }
 
+#' Input checks for flank size
+#'
+#' @param flank_size, flank size
 check_flank_size <- function(flank_size) {
 
 }
 
+#' Input checks for trim flanks and flank size
+#'
+#' @param trim_flanks, trim flanks
+#' @param flank_size, flank size
 check_trim_flanks_flank_size <- function(trim_flanks,
                                          flank_size) {
 
 }
 
+#' Input checks for global pairs and sample data
+#'
+#' @param global_pairs, global pairs
+#' @param data_sample, sample data
 check_global_pairs <- function(global_pairs, data_sample) {
     # global_pairs must be integer matrix with two columns and u rows.
     # In each entry global_pairs will store an index (integer) i = 1, ..., n,

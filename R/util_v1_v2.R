@@ -180,7 +180,7 @@ get_global_pairs <- function(cdr3,
         hd <- lapply(X = 1:(length(is)-1),
                      FUN = get_pairdist,
                      a = cdr3[is],
-                     len_a <- length(is),
+                     len_a = length(is),
                      global_max_dist = global_max_dist)
         hd <- do.call(rbind, hd)
         if(is.null(hd)) {
