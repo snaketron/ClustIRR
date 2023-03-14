@@ -28,7 +28,7 @@ gliph <- function(data_sample,
                       B = 1000,
                       global_max_dist = 1,
                       local_min_p = 0.05,
-                      local_min_ove = c(10^3, 10^2, 10^1),
+                      local_min_ove = 2,
                       local_min_o = 3,
                       trim_flanks = FALSE,
                       flank_size = 3,
@@ -93,7 +93,6 @@ gliph <- function(data_sample,
                 cdr3_ref = cdr3_ref, # unique -> critical
                 ks = ks,
                 cores = cores,
-                B = B,
                 control = control)
         }
         if(version==2) {
