@@ -1,12 +1,126 @@
+# Description:
+# Create an igraph object from the gliph_output and export strongly connected
+# components and/or modules. Return a map between cell IDs and component and/or
+# module IDs.
+get_graph <- function(gliph_output,
+                      edge_type = "local+global",
+                      chain_type = "CDR3a+CDR3b") {
+
+    # Description
+    # extracts required edges from gliph output object
+    get_graph_edges <- function(gliph_output,
+                                edge_type,
+                                chain_type) {
+
+        chains <- unlist(strsplit(x = chain_type, split = "\\+"))
+        edges <- unlist(strsplit(x = edge_type, split = "\\+"))
+
+        # gliph_output$edges = list over chains, rbind chain-spec. data.frames
+        edge_data <- do.call(rbind, gliph_output$edges)
+
+        # make selection
+        j <- which(edge_data$chain %in% chains&edge_data$edge_type %in% edges)
+        if(length(j)==0) {
+            return(NULL)
+        }
+        return(edge_data[j,])
+    }
+
+    # Description:
+    # Get the strongly connected components in a graph
+    get_components <- function(graph) {
+
+        c <- igraph::components(graph = graph,
+                                mode = "strong")
+
+        # cell ID to cluster ID map
+        c <- data.frame(ID = names(c$membership),
+                        component_ID = as.numeric(c$membership))
+
+        return(c)
+    }
+
+
+
+
+    # Description:
+    # Use graph clustering to find densely connected subgraphs
+    get_modules <- function(graph) {
+
+    }
+
+
+    # edge_type = "local+global" == "global+local"
+    # edge_type = "local"
+    # edge_type = "global"
+
+    # chain_type = "CDR3a+CDR3b"
+    # chain_type = "CDR3a"
+    # chain_type = "CDR3b"
+
+    # check if chains are part of gliph output
+    # check if edge_type is part of gliph ouput -> warn
+    # check if elements of edge_type and chain_type are allowed values
+
+    edges <- get_graph_edges(
+        gliph_output = gliph_output,
+        edge_type = edge_type,
+        chain_type = chain_type)
+
+    # no edges -> no graph
+    if(is.null(edges)==TRUE) {
+        return(list(graph=NA,
+                    components=NA,
+                    modules=NA))
+    }
+
+
+    # if edges are available: create igraph from data.frame
+    n <- data.frame(name = gliph_output$data_sample$ID)
+
+    # remove self-edges (loops)
+    edges <- edges[edges$from!=edges$to, ]
+
+    # create graph
+    g <- igraph::graph_from_data_frame(d = edges,
+                                       directed = FALSE,
+                                       vertices = n)
+
+    # extract components
+    c <- get_components(graph = g)
+
+    # extract modules
+    # m <- get_modules(graph = g)
+    m <- NA
+
+    return(list(graph=g,
+                components=c,
+                modules=m))
+}
+
+
+# Description:
+# This function will perform the scoring of the components (graph
+# clusters/modules) based on e.g. HLA, V, J, clone size TODO
+score_by_cellvar <- function(graph_data,
+                          data_sample,
+                          labels) {
+
+
+
+
+}
+
 
 # Description:
 # This function will perform the scoring of the clusters based on
 # e.g. HLA, V, J, clone size TODO
-score <- function(gliph,
-                  data_sample,
-                  data_meta) {
+score_by_subjectvar <- function(graph_data,
+                                data_sample,
+                                data_meta) {
 
     # enrichment of cluster sizes (definition of cluster: local vs. global)
+
 
     # enrichment of categorical features (such as HLAs, samples, biological
     # condition, TRV, TRJ, cdr3 length, SHM, etc.)
@@ -14,6 +128,10 @@ score <- function(gliph,
     # probabilistic evaluation vs.
 
 }
+
+
+
+
 
 # Jan's code
 #

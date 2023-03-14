@@ -231,7 +231,6 @@ get_trimmed_flanks <- function(x,
 # Given two sets of input:
 # 1) from clustering: local_pairs and global_pairs
 # 2) from data_sample: data.frame + chain (TCRa==CDR3a or TCRb==CDR3b)
-#
 get_edges_todo <- function(local_pairs,
                       global_pairs,
                       data_sample,
@@ -266,7 +265,7 @@ get_edges_todo <- function(local_pairs,
                                                 colnames(info_to)))
 
         info_from <- cbind(info_from, info_to)
-        edges$chain <- "TCRb"
+        edges$chain <- "CDR3b"
         edges <- cbind(edges, info_from)
     }
     if(chain == "CDR3a") {
@@ -280,11 +279,12 @@ get_edges_todo <- function(local_pairs,
                                                 colnames(info_to)))
 
         info_from <- cbind(info_from, info_to)
-        edges$chain <- "TCRa"
+        edges$chain <- "CDR3a"
         edges <- cbind(edges, info_from)
     }
     return(edges)
 }
+
 
 get_edges <- function(local_pairs,
                       global_pairs,
@@ -298,8 +298,8 @@ get_edges <- function(local_pairs,
     }
     if(nrow(global_pairs)!=0) {
         global_pairs <- data.frame(
-            from = global_pairs[, 1],
-            to = global_pairs[, 2],
+            from = global_pairs[,1],
+            to = global_pairs[,2],
             motif = NA,
             edge_type = "global")
         edges <- rbind(edges, global_pairs)
@@ -312,12 +312,12 @@ get_edges <- function(local_pairs,
     if(chain == "CDR3b") {
         edges$from_cdr3 <- cdr3[edges$from]
         edges$to_cdr3 <- cdr3[edges$to]
-        edges$chain <- "TCRb"
+        edges$chain <- "CDR3b"
     }
     if(chain == "CDR3a") {
         edges$from_cdr3 <- cdr3[edges$from]
         edges$to_cdr3 <- cdr3[edges$to]
-        edges$chain <- "TCRa"
+        edges$chain <- "CDR3a"
     }
     return(edges)
 }

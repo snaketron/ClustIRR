@@ -39,26 +39,32 @@ gliph <- function(data_sample,
     control <- get_control(control_in = control)
 
     # 1. parameter check
-    parameter_check(data_sample = data_sample,
-                    data_ref = data_ref,
-                    version = version,
-                    ks = ks,
-                    cores = cores,
-                    B = B,
-                    control = control)
+    # parameter_check(data_sample = data_sample,
+    #                 data_ref = data_ref,
+    #                 version = version,
+    #                 ks = ks,
+    #                 cores = cores,
+    #                 B = B,
+    #                 control = control)
 
     # get chains to be analyzed
     chains <- get_chains(colnames(data_sample))
 
+
+    # add ID to gliph
+    data_sample$ID <- 1:nrow(data_sample)
+
+
     # run analysis for each chain (if available)
+    # clust and edges will store *all* clustering results and *significant*
+    # cell-cell edges (connections in graph) based on the specified filtering
+    # criteria
     clust <- vector(mode = "list", length = length(chains))
     names(clust) <- chains
-
     edges <- vector(mode = "list", length = length(chains))
     names(edges) <- chains
 
     for(chain in chains) {
-
         if(control$trim_flanks) {
             # NAs ignored by qqgram, how about global dist? TODO
             data_sample[, chain] <- get_trimmed_flanks(
@@ -69,11 +75,22 @@ gliph <- function(data_sample,
                 flank_size = control$flank_size)
         }
 
+        # create edges of a graph
+        if(version==3) {
+            cdr3 <- data_sample[, chain]
+            cdr3_ref <- data_ref[, chain]
+        }
+        else {
+            cdr3 <- unique(data_sample[, chain])
+            cdr3_ref <- unique(data_ref[, chain])
+        }
+
+
         # run local + global clustering
         if(version==1) {
             clust[[chain]] <- get_chain_run_v1(
-                cdr3 = unique(data_sample[, chain]), # unique -> critical
-                cdr3_ref = unique(data_ref[, chain]), # unique -> critical
+                cdr3 = cdr3,
+                cdr3_ref = cdr3_ref, # unique -> critical
                 ks = ks,
                 cores = cores,
                 B = B,
@@ -81,8 +98,8 @@ gliph <- function(data_sample,
         }
         if(version==2) {
             clust[[chain]] <- get_chain_run_v2(
-                cdr3 = unique(data_sample[, chain]), # unique -> critical
-                cdr3_ref = unique(data_ref[, chain]), # unique -> critical
+                cdr3 = cdr3, # unique -> critical
+                cdr3_ref = cdr3_ref, # unique -> critical
                 ks = ks,
                 cores = cores,
                 control = control)
@@ -90,22 +107,24 @@ gliph <- function(data_sample,
         if(version==3) {
             # v3 = v2 but we do not use non-redundant set of CDR3s
             clust[[chain]] <- get_chain_run_v2(
-                cdr3 = data_sample[, chain], # no-unique
-                cdr3_ref = data_ref[, chain], # no-unique
+                cdr3 = cdr3, # no-unique
+                cdr3_ref = cdr3_ref, # no-unique
                 ks = ks,
                 cores = cores,
                 control = control)
         }
 
-        # create edges of a graph
-        edges[[chain]] <- get_edges(
-            local_pairs = clust[[chain]]$local_pairs,
-            global_pairs = clust[[chain]]$global_pairs,
-            cdr3 = ifelse(test = version==3,
-                          yes = data_sample[, chain],
-                          no = unique(data_sample[, chain])),
-            chain = chain)
+        edges[[chain]] <- get_edges(local_pairs=clust[[chain]]$local_pairs,
+                                    global_pairs=clust[[chain]]$global_pairs,
+                                    cdr3 = cdr3,
+                                    chain = chain)
+
     }
+
+
+
+
+
 
     return(list(clust = clust,
                 edges = edges,
