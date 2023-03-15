@@ -25,6 +25,11 @@ parameter_check <- function(data_sample,
 #' @param data_sample, data.frame: TCR sample
 #' @noRd
 check_data_sample <- function(data_sample) {
+    # data_sample has to be a data.frame that has:
+    # * one column named CDR3b or CDR3a
+    # * or two columns named CDR3a + CDR3b (in any order)
+    # * the columns should be characters
+    # * small check: warn (no error) user if any row has content NA or ""
 
 }
 
@@ -33,8 +38,20 @@ check_data_sample <- function(data_sample) {
 #' @param data_ref, data.frame: reference database
 #' @noRd
 check_data_ref <- function(data_ref) {
+    # same format and should also match in columns as data_sample
 
 }
+
+#' Input checks for consistency between sample and reference data
+#'
+#' @param data_sample, data.frame: TCR sample
+#' @param data_ref, data.frame: reference database
+#' @noRd
+check_data_sample_and_ref <- function(data_sample, data_ref) {
+    # same format and should also match in columns as data_sample
+    # colnames(data_sample) should be contained in colnames(data_ref)
+}
+
 #' Input checks for gliph version
 #'
 #' @param version, integer: version = 1, 2 or 3, gliph version to use
@@ -54,12 +71,19 @@ check_version <- function(version) {
     }
 }
 
-#' Input checks for motif lengths and local minimum ove
+#' Input checks for motif lengths
 #'
 #' @param ks, vector of integers: motif lengths to use (default ks=(2,3,4))
+#' @noRd
+check_ks <- function(ks, local_min_ove) {
+
+}
+
+#' Input checks for OvE motif frequency threshold
+#'
 #' @param local_min_ove, local minimum ove
 #' @noRd
-check_ks_local_min_ove <- function(ks, local_min_ove) {
+check_local_min_ove <- function(local_min_ove) {
 
 }
 
