@@ -88,24 +88,15 @@ gliph <- function(data_sample,
         if(version==1) {
             clust[[chain]] <- get_chain_run_v1(
                 cdr3 = cdr3,
-                cdr3_ref = cdr3_ref, # unique -> critical
+                cdr3_ref = cdr3_ref,
                 ks = ks,
                 cores = cores,
                 control = control)
         }
-        if(version==2) {
+        if(version==2|version==3) {
             clust[[chain]] <- get_chain_run_v2(
-                cdr3 = cdr3, # unique -> critical
-                cdr3_ref = cdr3_ref, # unique -> critical
-                ks = ks,
-                cores = cores,
-                control = control)
-        }
-        if(version==3) {
-            # v3 = v2 but we do not use non-redundant set of CDR3s
-            clust[[chain]] <- get_chain_run_v2(
-                cdr3 = cdr3, # no-unique
-                cdr3_ref = cdr3_ref, # no-unique
+                cdr3 = cdr3,
+                cdr3_ref = cdr3_ref,
                 ks = ks,
                 cores = cores,
                 control = control)
