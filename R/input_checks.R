@@ -153,9 +153,11 @@ check_local_min_ove <- function(local_min_ove) {
     if(!is_wholenumber(local_min_ove)){
         base::stop("local_min_ove has to be a whole number")
     }
-    if(local_min_ove < 1){
-        base::stop("local_min_ove must be at least 1")
-    }
+    # while I agree with the next line, I would still give the user full
+    # autonomy on filtering thresholds.
+    # if(local_min_ove < 1){
+    #     base::stop("local_min_ove must be at least 1")
+    # }
     if(base::is.infinite(local_min_ove)){
         base::stop("local_min_ove must be an integer")
     }
@@ -184,7 +186,7 @@ check_cores <- function(cores) {
     }
 }
 
-check_B <- function(B) { # is B == simulation_depth?
+check_B <- function(B) { # is B == simulation_depth? yes
     if(!base::is.numeric(B)){
         base::stop("B has to be numeric")
     }
@@ -194,7 +196,7 @@ check_B <- function(B) { # is B == simulation_depth?
     if(base::any(B < 1)){
         base::stop("B must be at least 1")
     }
-    if(base::any(B > 10000)){ # to be tested
+    if(base::any(B > 10000)){ # to be tested. SK: I think this was an issue with Jan's code, this is fixed now.
         base::warning("B > 10000 can lead to unstable behaviour")
     }
 }
@@ -215,10 +217,10 @@ check_local_min_p <- function(local_min_p) {
     if(!base::is.numeric(local_min_p)){
         base::stop("local_min_p has to be numeric")
     }
-    if(base::any(global_max_dist <= 0)){
+    if(base::any(local_min_p <= 0)){
         base::stop("local_min_p must be > 0")
     }
-    if(base::any(global_max_dist > 1)){
+    if(base::any(local_min_p > 1)){
         base::stop("local_min_p must be <= 1")
     }
 }
