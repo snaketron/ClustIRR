@@ -38,16 +38,21 @@ get_chain_run_v2 <- function(cdr3,
         motif = motif_enrichment$motif[motif_enrichment$filter==TRUE])
 
 
-    # 2. global TODO SK
-    global_pairs <- get_global_pairs(
-        cdr3 = cdr3,
-        global_max_dist = control$global_max_dist)
+    # 2. global
+    # if global_pairs are provided as input use them, else compute them
+    if(!is.null(control$global_pairs)) {
+        global_pairs <- control$global_pairs
+    }
+    else {
+        global_pairs <- get_global_pairs(
+            cdr3 = cdr3,
+            global_max_dist = control$global_max_dist)
+    }
 
     # 3. return TODO: format properly
     return(list(local_pairs = local_pairs,
                 global_pairs = global_pairs,
-                motif_enrichment = motif_enrichment,
-                control = control))
+                motif_enrichment = motif_enrichment))
 }
 
 # Description:
@@ -149,10 +154,7 @@ get_motif_filter_v2 <- function(m,
                                 min_p,
                                 min_ove,
                                 min_o) {
-    m$filter <- FALSE
-    j <- which(m$p<=min_p&m$ove>=min_ove&m$f_sample >= min_o)
-    if(length(j)!=0) {
-        m$filter[j] <- TRUE
-    }
+
+    m$filter[m$p<=min_p&m$ove>=min_ove&m$obs>=min_o] <- TRUE
     return(m)
 }
