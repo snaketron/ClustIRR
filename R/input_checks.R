@@ -38,24 +38,32 @@ parameter_check <- function(data_sample,
 #' @param data_sample, data.frame: TCR sample
 #' @noRd
 check_data_sample <- function(data_sample) {
-    if(base::missing(data_sample))
+    if(base::missing(data_sample)){
         base::stop("missing input parameter data_sample")
-    if(!base::is.data.frame(data_sample))
+        }
+    if(!base::is.data.frame(data_sample)){
         base::stop("data_sample has to be of type data frame")
-    if(base::nrow(data_sample) == 0)
+        }
+    if(base::nrow(data_sample) == 0){
         base::stop("data_sample contains zero rows")
-    if(!base::any(base::colnames(data_sample) %in% base::c("CDR3a", "CDR3b")))
+        }
+    if(!base::any(base::colnames(data_sample) %in% base::c("CDR3a", "CDR3b"))){
         base::stop("data_sample is missing a 'CDR3a' or 'CDR3b' column")
+        }
     if(base::any(base::colnames(data_sample) %in% "CDR3a") &&
-       !base::is.character(data_sample$CDR3a))
+       !base::is.character(data_sample$CDR3a)){
         base::stop("CDR3a column has to of type character")
+        }
     if(base::any(base::colnames(data_sample) %in% "CDR3b") &&
-       !base::is.character(data_sample$CDR3b))
+       !base::is.character(data_sample$CDR3b)){
         base::stop("CDR3b column has to of type character")
-    if(base::any(base::is.na(data_sample)))
+        }
+    if(base::any(base::is.na(data_sample))){
         base::warning("data_sample contains NA values")
-    if(base::any(data_sample==""))
+        }
+    if(base::any(data_sample=="")){
         base::warning("data_sample contains empty values")
+        }
     # checks for optional v-gene / j-gene columns tba if necessary
 }
 
@@ -64,25 +72,33 @@ check_data_sample <- function(data_sample) {
 #' @param data_ref, data.frame: reference database
 #' @noRd
 check_data_ref <- function(data_ref) {
-    if(base::missing(data_ref))
+    if(base::missing(data_ref)){
         base::stop("missing input parameter data_ref")
+        }
     if(!base::is.data.frame(data_ref) &&
-       !(data_ref %in% base::c("gliph_reference")))
+       !(data_ref %in% base::c("gliph_reference"))){
         base::stop("data_ref has to be of type data frame or 'gliph_reference'")
-    if(base::nrow(data_ref) == 0)
+        }
+    if(base::nrow(data_ref) == 0){
         base::stop("data_ref contains zero rows")
-    if(!base::any(base::colnames(data_ref) %in% base::c("CDR3a", "CDR3b")))
+        }
+    if(!base::any(base::colnames(data_ref) %in% base::c("CDR3a", "CDR3b"))){
         base::stop("data_ref is missing a 'CDR3a' or 'CDR3b' column")
+        }
     if(base::any(base::colnames(data_ref) %in% "CDR3a") &&
-       !base::is.character(data_ref$CDR3a))
+       !base::is.character(data_ref$CDR3a)){
         base::stop("CDR3a column has to of type character")
+        }
     if(base::any(base::colnames(data_ref) %in% "CDR3b") &&
-       !base::is.character(data_ref$CDR3b))
+       !base::is.character(data_ref$CDR3b)){
         base::stop("CDR3b column has to of type character")
-    if(base::any(base::is.na(data_ref)))
+        }
+    if(base::any(base::is.na(data_ref))){
         base::warning("data_ref contains NA values")
-    if(base::any(data_ref==""))
+        }
+    if(base::any(data_ref=="")){
         base::warning("data_ref contains empty values")
+        }
     # checks for optional v-gene / j-gene columns tba if necessary
 }
 
@@ -93,17 +109,21 @@ check_data_ref <- function(data_ref) {
 #' @noRd
 check_data_sample_and_ref <- function(data_sample, data_ref) {
     if(base::any(base::colnames(data_sample) %in% base::c("CDR3a")) &&
-       !base::any(base::colnames(data_ref) %in% base::c("CDR3a")))
+       !base::any(base::colnames(data_ref) %in% base::c("CDR3a"))){
         base::stop("data_sample contains CDR3a column, but data_ref does not")
+        }
     if(base::any(base::colnames(data_ref) %in% base::c("CDR3a")) &&
-       !base::any(base::colnames(data_sample) %in% base::c("CDR3a")))
+       !base::any(base::colnames(data_sample) %in% base::c("CDR3a"))){
         base::stop("data_ref contains CDR3a column, but data_sample does not")
+        }
     if(base::any(base::colnames(data_sample) %in% base::c("CDR3b")) &&
-       !base::any(base::colnames(data_ref) %in% base::c("CDR3b")))
+       !base::any(base::colnames(data_ref) %in% base::c("CDR3b"))){
         base::stop("data_sample contains CDR3b column, but data_ref does not")
+        }
     if(base::any(base::colnames(data_ref) %in% base::c("CDR3b")) &&
-       !base::any(base::colnames(data_sample) %in% base::c("CDR3b")))
+       !base::any(base::colnames(data_sample) %in% base::c("CDR3b"))){
         base::stop("data_ref contains CDR3b column, but data_sample does not")
+        }
 }
 
 #' Input checks for gliph version
@@ -111,14 +131,18 @@ check_data_sample_and_ref <- function(data_sample, data_ref) {
 #' @param version, integer: version = 1, 2 or 3, gliph version to use
 #' @noRd
 check_version <- function(version) {
-    if(base::missing(version))
+    if(base::missing(version)){
         base::stop("missing input parameter version")
-    if(!base::is.numeric(version))
+        }
+    if(!base::is.numeric(version)){
         base::stop("version has to be numeric")
-    if(base::length(version)!=1)
+        }
+    if(base::length(version)!=1){
         base::stop("version has to be a single number")
-    if(!(version %in% base::c(1, 2, 3)))
+        }
+    if(!(version %in% base::c(1, 2, 3))){
         base::stop("version has to be 1, 2 or 3")
+        }
 }
 
 #' Input checks for motif lengths
@@ -126,22 +150,29 @@ check_version <- function(version) {
 #' @param ks, vector of integers: motif lengths to use (default ks=(2,3,4))
 #' @noRd
 check_ks <- function(ks, local_min_ove) {
-    if(!base::is.numeric(ks))
+    if(!base::is.numeric(ks)){
         base::stop("ks has to be numeric")
-    if(!is_wholenumber(ks))
+        }
+    if(!is_wholenumber(ks)){
         base::stop("ks has to be a whole number")
-    if(base::any(ks < 1))
+        }
+    if(base::any(ks < 1)){
         base::stop("ks must be at least 1")
-    if(!base::is.numeric(local_min_ove))
+        }
+    if(!base::is.numeric(local_min_ove)){
         base::stop("local_min_ove has to be numeric")
-    if(!is_wholenumber(local_min_ove))
+        }
+    if(!is_wholenumber(local_min_ove)){
         base::stop("local_min_ove has to be a whole number")
-    if(base::any(local_min_ove < 1))
+        }
+    if(base::any(local_min_ove < 1)){
         base::stop("local_min_ove must be at least 1")
+        }
     if(base::length(local_min_ove) > 1 &&
-       base::length(local_min_ove) != base::length(motif_length))
+       base::length(local_min_ove) != base::length(motif_length)){
         base::stop("local_min_ove has to be a single number
                     or the same length as motif_length")
+        }
 
 }
 
