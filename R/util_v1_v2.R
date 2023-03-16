@@ -292,11 +292,11 @@ get_edges <- function(local_pairs,
                       chain) {
 
     edges <- c()
-    if(nrow(local_pairs)!=0) {
+    if(is.null(local_pairs)==FALSE) {
         local_pairs$edge_type <- "local"
         edges <- rbind(edges, local_pairs)
     }
-    if(nrow(global_pairs)!=0) {
+    if(is.null(global_pairs)==FALSE) {
         global_pairs <- data.frame(
             from = global_pairs[,1],
             to = global_pairs[,2],
@@ -304,8 +304,7 @@ get_edges <- function(local_pairs,
             edge_type = "global")
         edges <- rbind(edges, global_pairs)
     }
-    if(nrow(local_pairs)==0 &
-       nrow(global_pairs)==0) {
+    if(is.null(local_pairs)&is.null(global_pairs)) {
         return(NULL)
     }
 
