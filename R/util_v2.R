@@ -154,7 +154,7 @@ get_motif_filter_v2 <- function(m,
                                 min_p,
                                 min_ove,
                                 min_o) {
-
+    m$filter <- FALSE
     m$filter[m$p<=min_p&m$ove>=min_ove&m$obs>=min_o] <- TRUE
     return(m)
 }
