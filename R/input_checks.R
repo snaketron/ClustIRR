@@ -21,7 +21,8 @@ parameter_check <- function(data_sample,
     check_version(version)
     check_ks(ks)
     check_local_min_ove(control$local_min_ove)
-    check_ks_and_local_min_ove(ks, control$local_min_ove)
+    # we do not need this anymore
+    # check_ks_and_local_min_ove(ks, control$local_min_ove)
     check_cores(cores)
     check_B(control$B)
     check_global_max_dist(control$global_max_dist)
@@ -133,13 +134,16 @@ check_version <- function(version) {
 check_ks <- function(ks) {
     if(!base::is.numeric(ks)){
         base::stop("ks has to be numeric")
-        }
+    }
     if(!is_wholenumber(ks)){
         base::stop("ks has to be a whole number")
-        }
+    }
     if(base::any(ks < 1)){
         base::stop("ks must be at least 1")
-        }
+    }
+    if(base::any(is.infinite(ks))) {
+        base::stop("ks must be an integer > 1")
+    }
 }
 
 check_local_min_ove <- function(local_min_ove) {
@@ -149,19 +153,24 @@ check_local_min_ove <- function(local_min_ove) {
     if(!is_wholenumber(local_min_ove)){
         base::stop("local_min_ove has to be a whole number")
     }
-    if(base::any(local_min_ove < 1)){
+    if(local_min_ove < 1){
         base::stop("local_min_ove must be at least 1")
     }
-}
-
-check_ks_and_local_min_ove <- function(ks, local_min_ove) {
-    if(base::length(local_min_ove) > 1 &&
-       base::length(local_min_ove) != base::length(ks)){
-        base::stop("local_min_ove has to be a single number
-                    or the same length as ks")
+    if(base::is.infinite(local_min_ove)){
+        base::stop("local_min_ove must be an integer")
     }
-
 }
+
+# I have changed local_min_ove to be a single number, and not a vector
+# associated with the different ks -> the check is thus not necessary
+# check_ks_and_local_min_ove <- function(ks, local_min_ove) {
+#     if(base::length(local_min_ove) > 1 &&
+#        base::length(local_min_ove) != base::length(ks)){
+#         base::stop("local_min_ove has to be a single number
+#                     or the same length as ks")
+#     }
+#
+# }
 
 check_cores <- function(cores) {
     if(!base::is.numeric(cores)){
@@ -216,14 +225,17 @@ check_local_min_p <- function(local_min_p) {
 
 check_local_min_o <- function(local_min_o) {
     # which parameter of turboGliph/gliph2 is this?
+    # kmer_mindepth
 }
 
 check_trim_flanks <- function(trim_flanks) {
     # which parameter of turboGliph/gliph2 is this?
+    # structboundaries
 }
 
 check_flank_size <- function(flank_size) {
     # which parameter of turboGliph/gliph2 is this?
+    # boundary_size
 }
 
 check_trim_flanks_flank_size <- function(trim_flanks,
