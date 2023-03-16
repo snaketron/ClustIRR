@@ -19,12 +19,13 @@ parameter_check <- function(data_sample,
     check_data_ref(dat_ref)
     check_data_sample_and_ref(data_sample, data_ref)
     check_version(version)
-    check_ks(ks, local_min_ove)
-    #check_local_min_ove(local_min_ove)
-    #check_cores(cores)
-    #check_B(B)
-    #check_global_max_dist(global_max_dist)
-    #check_local_min_p(local_min_p)
+    check_ks(ks)
+    check_local_min_ove(control$local_min_ove)
+    check_ks_and_local_min_ove(ks, control$local_min_ove)
+    check_cores(cores)
+    check_B(control$B)
+    check_global_max_dist(control$global_max_dist)
+    check_local_min_p(control$local_min_p)
     #check_local_min_o(local_min_o)
     #check_trim_flanks(trim_flanks)
     #check_flank_size(flank_size)
@@ -33,10 +34,6 @@ parameter_check <- function(data_sample,
 
 }
 
-#' Input checks for TCR sample
-#'
-#' @param data_sample, data.frame: TCR sample
-#' @noRd
 check_data_sample <- function(data_sample) {
     if(base::missing(data_sample)){
         base::stop("missing input parameter data_sample")
@@ -67,10 +64,6 @@ check_data_sample <- function(data_sample) {
     # checks for optional v-gene / j-gene columns tba if necessary
 }
 
-#' Input checks for reference database
-#'
-#' @param data_ref, data.frame: reference database
-#' @noRd
 check_data_ref <- function(data_ref) {
     if(base::missing(data_ref)){
         base::stop("missing input parameter data_ref")
@@ -102,11 +95,6 @@ check_data_ref <- function(data_ref) {
     # checks for optional v-gene / j-gene columns tba if necessary
 }
 
-#' Input checks for consistency between sample and reference data
-#'
-#' @param data_sample, data.frame: TCR sample
-#' @param data_ref, data.frame: reference database
-#' @noRd
 check_data_sample_and_ref <- function(data_sample, data_ref) {
     if(base::any(base::colnames(data_sample) %in% base::c("CDR3a")) &&
        !base::any(base::colnames(data_ref) %in% base::c("CDR3a"))){
@@ -126,14 +114,11 @@ check_data_sample_and_ref <- function(data_sample, data_ref) {
         }
 }
 
-#' Input checks for gliph version
-#'
-#' @param version, integer: version = 1, 2 or 3, gliph version to use
-#' @noRd
 check_version <- function(version) {
-    if(base::missing(version)){
-        base::stop("missing input parameter version")
-        }
+    # not necessary because of default value
+    # if(base::missing(version)){
+    #     base::stop("missing input parameter version")
+    #     }
     if(!base::is.numeric(version)){
         base::stop("version has to be numeric")
         }
@@ -145,11 +130,7 @@ check_version <- function(version) {
         }
 }
 
-#' Input checks for motif lengths
-#'
-#' @param ks, vector of integers: motif lengths to use (default ks=(2,3,4))
-#' @noRd
-check_ks <- function(ks, local_min_ove) {
+check_ks <- function(ks) {
     if(!base::is.numeric(ks)){
         base::stop("ks has to be numeric")
         }
@@ -159,102 +140,97 @@ check_ks <- function(ks, local_min_ove) {
     if(base::any(ks < 1)){
         base::stop("ks must be at least 1")
         }
+}
+
+check_local_min_ove <- function(local_min_ove) {
     if(!base::is.numeric(local_min_ove)){
         base::stop("local_min_ove has to be numeric")
-        }
+    }
     if(!is_wholenumber(local_min_ove)){
         base::stop("local_min_ove has to be a whole number")
-        }
+    }
     if(base::any(local_min_ove < 1)){
         base::stop("local_min_ove must be at least 1")
-        }
+    }
+}
+
+check_ks_and_local_min_ove <- function(ks, local_min_ove) {
     if(base::length(local_min_ove) > 1 &&
-       base::length(local_min_ove) != base::length(motif_length)){
+       base::length(local_min_ove) != base::length(ks)){
         base::stop("local_min_ove has to be a single number
-                    or the same length as motif_length")
-        }
+                    or the same length as ks")
+    }
 
 }
 
-#' Input checks for OvE motif frequency threshold
-#'
-#' @param local_min_ove, local minimum ove
-#' @noRd
-check_local_min_ove <- function(local_min_ove) {
-
-}
-
-#' Input checks for cores
-#'
-#' @param cores, integer: number of CPU cores to use
-#' @noRd
 check_cores <- function(cores) {
-
+    if(!base::is.numeric(cores)){
+        base::stop("cores has to be numeric")
+    }
+    if(!is_wholenumber(cores)){
+        base::stop("cores has to be a whole number")
+    }
+    if(base::any(cores < 1)){
+        base::stop("cores must be at least 1")
+    }
 }
 
-#' Input checks for B
-#'
-#' @param B, check B
-#' @noRd
-check_B <- function(B) {
-
+check_B <- function(B) { # is B == simulation_depth?
+    if(!base::is.numeric(B)){
+        base::stop("B has to be numeric")
+    }
+    if(!is_wholenumber(B)){
+        base::stop("B has to be a whole number")
+    }
+    if(base::any(B < 1)){
+        base::stop("B must be at least 1")
+    }
+    if(base::any(B > 10000)){ # to be tested
+        base::warning("B > 10000 can lead to unstable behaviour")
+    }
 }
 
-#' Input checks for maximal global distance
-#'
-#' @param global_max_dist, maximal global distance
-#' @noRd
 check_global_max_dist <- function(global_max_dist) {
-
+    if(!base::is.numeric(global_max_dist)){
+        base::stop("global_max_dist has to be numeric")
+    }
+    if(!is_wholenumber(global_max_dist)){
+        base::stop("global_max_dist has to be a whole number")
+    }
+    if(base::any(global_max_dist < 1)){
+        base::stop("global_max_dist must be at least 1")
+    }
 }
 
-#' Input checks for minimal local p-value
-#'
-#' @param local_min_p, minimal local p-value
-#' @noRd
 check_local_min_p <- function(local_min_p) {
-
+    if(!base::is.numeric(local_min_p)){
+        base::stop("local_min_p has to be numeric")
+    }
+    if(base::any(global_max_dist <= 0)){
+        base::stop("local_min_p must be > 0")
+    }
+    if(base::any(global_max_dist > 1)){
+        base::stop("local_min_p must be <= 1")
+    }
 }
 
-#' Input checks for minimal local o
-#'
-#' @param local_min_o, minimal local o
-#' @noRd
 check_local_min_o <- function(local_min_o) {
-
+    # which parameter of turboGliph/gliph2 is this?
 }
 
-#' Input checks for trim flanks
-#'
-#' @param trim_flanks, trim flanks
-#' @noRd
 check_trim_flanks <- function(trim_flanks) {
-
+    # which parameter of turboGliph/gliph2 is this?
 }
 
-#' Input checks for flank size
-#'
-#' @param flank_size, flank size
-#' @noRd
 check_flank_size <- function(flank_size) {
-
+    # which parameter of turboGliph/gliph2 is this?
 }
 
-#' Input checks for trim flanks and flank size
-#'
-#' @param trim_flanks, trim flanks
-#' @param flank_size, flank size
-#' @noRd
 check_trim_flanks_flank_size <- function(trim_flanks,
                                          flank_size) {
 
 }
 
-#' Input checks for global pairs and sample data
-#'
-#' @param global_pairs, global pairs
-#' @param data_sample, sample data
-#' @noRd
 check_global_pairs <- function(global_pairs, data_sample) {
     # global_pairs must be integer matrix with two columns and u rows.
     # In each entry global_pairs will store an index (integer) i = 1, ..., n,
@@ -264,11 +240,6 @@ check_global_pairs <- function(global_pairs, data_sample) {
     # similar (e.g. Hamming dist < 1 or distance computed using external tool)
 }
 
-#' Check for whole number
-#'
-#' @param x, number to check
-#' @return True if x is whole number
-#' @noRd
 is_wholenumber <- function(x) {
     return(abs(x - round(x)) < .Machine$double.eps^0.5)
 }

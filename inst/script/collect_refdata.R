@@ -30,7 +30,7 @@ CD8$TRAV <- NA
 CD8$TRAJ <- NA
 hs_CD8_ref <- CD8
 rm(CD8)
-save(hs_CD8_ref, file = "data/hs_CD8_ref.RData")
+save(hs_CD8_ref, file = "data/hs_CD8_ref.RData", compress = "xz")
 
 
 # human (hs) CD4
@@ -42,7 +42,7 @@ CD4$TRAV <- NA
 CD4$TRAJ <- NA
 hs_CD4_ref <- CD4
 rm(CD4)
-save(hs_CD4_ref, file = "data/hs_CD4_ref.RData")
+save(hs_CD4_ref, file = "data/hs_CD4_ref.RData", compress = "xz")
 
 
 
@@ -55,7 +55,7 @@ CD8$TRAV <- NA
 CD8$TRAJ <- NA
 mm_CD8_ref <- CD8
 rm(CD8)
-save(mm_CD8_ref, file = "data/mm_CD8_ref.RData")
+save(mm_CD8_ref, file = "data/mm_CD8_ref.RData", compress = "xz")
 
 
 # mouse (mm) CD4
@@ -67,4 +67,4 @@ CD4$TRAV <- NA
 CD4$TRAJ <- NA
 mm_CD4_ref <- CD4
 rm(CD4)
-save(mm_CD4_ref, file = "data/mm_CD4_ref.RData")
+save(mm_CD4_ref, file = "data/mm_CD4_ref.RData", compress = "xz")
