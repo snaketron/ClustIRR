@@ -115,15 +115,10 @@ gliph <- function(data_sample,
                                     global_pairs=clust[[chain]]$global_pairs,
                                     cdr3 = cdr3,
                                     chain = chain)
-
     }
-
-
-
-
-
 
     return(list(clust = clust,
                 edges = edges,
-                data_sample = data_sample))
+                data_sample = data_sample,
+                control = control))
 }
