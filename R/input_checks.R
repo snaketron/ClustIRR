@@ -268,6 +268,7 @@ check_global_pairs <- function(global_pairs, data_sample) {
 #'
 #' @param x, number to check
 #' @return True if x is whole number
+#' @noRd
 is_wholenumber <- function(x) {
     return(abs(x - round(x)) < .Machine$double.eps^0.5)
 }

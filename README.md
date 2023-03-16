@@ -1,3 +1,7 @@
+# ReadMe tba
+
+Placeholder for gliphR readme. turboGliph readme see below.
+
 # turboGliph
 
 GLIPH (Grouping of Lymphocyte Interactions by Paratope Hotspots) is an algorithm developed by Glanville&nbsp;*et&nbsp;al.* to identify specificity groups in the T cell receptor repertoire based on local (motif sharing) and global (hamming distance) similarities. [1,2]<br>
