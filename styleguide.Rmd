@@ -1,0 +1,35 @@
+## Project Style Guide
+
+Expandable guide to improve code readability <br>
+
+- naming conventions
+
+```{r eval=F}
+
+# good
+under_score
+
+# avoid
+
+camelCase
+
+point.between
+
+```
+
+
+
+- control structure brackets 
+
+```{r eval=F}
+
+# good
+if (condition){
+    do_something
+}
+
+# avoid
+if (condition)
+    do_something
+
+```
