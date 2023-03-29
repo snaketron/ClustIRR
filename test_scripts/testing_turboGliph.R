@@ -4,13 +4,30 @@
 
 #### Inputs ####
 require(turboGliph)
-data("hs_CD8_ref")
-ref <- base::grep(pattern = "^C.*F$",x = hs_CD8_ref$CDR3b,
-                  perl = TRUE,value = TRUE)
-ref <- data.frame(CDR3b = ref, TRBV = NA, TRBJ = NA)
 
-data_sample <- ref[sample(x = 1:nrow(ref), size = 2000, replace = F), 1:3]
-data_ref <- ref[, 1:3]
+# "old" input data
+# data("hs_CD8_ref")
+# ref <- base::grep(pattern = "^C.*F$",x = hs_CD8_ref$CDR3b,
+#                   perl = TRUE,value = TRUE)
+# ref <- data.frame(CDR3b = ref, TRBV = NA, TRBJ = NA)
+#
+# data_sample <- ref[sample(x = 1:nrow(ref), size = 2000, replace = F), 1:3]
+# data_ref <- ref[, 1:3]
+
+## idea: use the same input as jan did
+## this way maybe comparison with gliph2 version
+
+# input sequences and related information
+ex_path = "test_scripts/jans_tests/Input_demo_gliph2.csv"
+# reference database
+re_path = "test_scripts/jans_tests/ref_CD4_v1.0.txt"
+
+data_sample <- read.csv2(file = ex_path, sep = "\t")
+data_ref <- read.csv2(file = re_path, sep = "\t", header = FALSE)
+colnames(data_ref) <- c("CDR3b", "TRBV", "TRBJ")
+
+
+
 ks <- c(2, 3, 4)
 B <- 1000
 cores <- 1
@@ -33,6 +50,9 @@ source("R/score.R")
 
 
 #### Run ####
+## does not take sample input: (to be investigated tomorrow)
+#     Fehler in `[.data.frame`(data_ref, , chain) :
+#         nicht definierte Spalten gewählt
 out_v1 <- gliph(data_sample = data_sample,
                 data_ref = data_ref,
                 ks = ks,
@@ -74,22 +94,30 @@ ge$components
 
 
 
-
+# this results in an error at scoring stage: (when using "old" input data)
+# "Fehler in { : task 1 failed - "ungültiges erstes Argument""
 jan_v1 <- turboGliph::turbo_gliph(
     cdr3_sequences = data_sample,
-    result_folder = "/home/sktron/Desktop/tmp/",
+    #result_folder = "test_scripts/test_results/",
     refdb_beta = data_ref,
     lcminp = 0.05,
     gccutoff = 1,
-    structboundaries = F,
+    #structboundaries = F, # this breaks if left in with new example data
     boundary_size = 0,
     cluster_min_size = 1,
     accept_sequences_with_C_F_start_end = T)
 
+## this also does not work with "old" input data, this time stopping at part 2:
+# Fehler in base::seq_len(base::min(base::max(reference_seqs$nchar),
+# base::max(sample_seqs$nchar))) :
+#    Argument muss sich in eine nicht-negative ganze Zahl umwandeln lassen
+# Zusätzlich: Warnmeldung:
+#    In base::max(sample_seqs$nchar) :
+#    kein nicht-fehlendes Argument für max; gebe -Inf zurück
 
 jan_v2 <- turboGliph::gliph2(
     cdr3_sequences = data_sample,
-    result_folder = "/home/sktron/Desktop/tmp/",
+    #result_folder = "test_scripts/test_results/",
     refdb_beta = data_ref,
     lcminp = 0.05,
     v_usage_freq = NULL,
@@ -98,9 +126,8 @@ jan_v2 <- turboGliph::gliph2(
     #sim_depth = 1000,
     #motif_distance_cutoff = 0,
     accept_sequences_with_C_F_start_end = T,
-    structboundaries = F,
+    #structboundaries = F,  # this breaks if left in with new example data
     min_seq_length = 1)
-
 
 
 e_v2

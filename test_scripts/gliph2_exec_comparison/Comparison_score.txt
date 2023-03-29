@@ -1,0 +1,4444 @@
+Evaluating lSVAL (16 members: 16)
+	10 subjects and 17 clones
+Motifs: SVAL(5.8e-14)
+motif-SVAL,CASSVALASGANVLTF,TRBV9,TRBJ2-6,CAGAGGGGFKTIF,02/0152:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALSNYGYTF,TRBV9,TRBJ1-2,CAVVASGGSYIPTF,01/1013:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALYGQSVTF,TRBV9,TRBJ1-2,CAAFSGTYKYIF,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALLAGTQYF,TRBV9,TRBJ2-3,CAGPGGTSYGKLTF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALGAGGGYTF,TRBV9,TRBJ1-2,CAGPSGGSYIPTF,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALLGETQYF,TRBV9,TRBJ2-5,CAGAPTGNQFYF,09/0772:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALLGETQYF,TRBV9,TRBJ2-5,CAGTGGTSYGKLTF,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALMGGELFF,TRBV9,TRBJ2-2,CASLSGTYKYIF,09/0018:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALAGANGYTF,TRBV9,TRBJ1-2,CAGPVQGGNKLVF,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALSGTGTQYF,TRBV9,TRBJ2-3,CAGPGGTSYGKLTF,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALAGNTIYF,TRBV9,TRBJ1-3,CAGDLSQGGKLIF,09/0328:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALAGAEYF,TRBV9,TRBJ2-3,CAVGGLSGANSKLTF,01/0873:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALYANEQFF,TRBV9,TRBJ2-1,CAGPTTGYALNF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALLGGTQYF,TRBV9,TRBJ2-3,CAGGGIGTSYGKLTF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALFGEGYTF,TRBV9,TRBJ1-2,CAGPSGTSYGKLTF,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALGGGNIQYF,TRBV9,TRBJ2-4,CAGVGGTSYGKLTF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL,CASSVALATGEQYF,TRBV9,TRBJ2-7,CAGPTGGSYIPTF,03/0492:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	5.8e-14
+	Vsegment_p	1.0e-03
+	cdr3len_p	3.7e-02
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	4.3e-01
+	cluster_size_p	8.6e-05
+	FINAL SCORE=1.3e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lSVAL	16	10	17	1.3e-09	1.0e-03	3.7e-02	1.0e+00	4.3e-01	8.6e-05	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-SVAL
+
+Evaluating lGLVL (8 members: 8)
+	7 subjects and 8 clones
+Motifs: GLVL(2.9e-10)
+motif-GLVL,CASGLVLVTNTGELFF,TRBV12-5,TRBJ2-2,CIPFYSGSARQLTF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GLVL,CASGLVLAGGPLEQFF,TRBV12-5,TRBJ2-1,CAQAEDTGRRALTF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GLVL,CASGLVLRPWRDLNNEQFF,TRBV12-5,TRBJ2-1,CAARGETSGSRLTF,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GLVL,CASGLVLGEAVATNEKLFF,TRBV12-5,TRBJ1-4,CAVRDLDTGRRALTF,09/0263:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GLVL,CASGLVLGREGNQPQHF,TRBV12-5,TRBJ1-5,CAVEDPTDKLIF,01/0385:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GLVL,CASGLVLGAQTEAFF,TRBV12-5,TRBJ1-1,CIPYMDTGRRALTF,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GLVL,CASGLVLGQGPTPQHF,TRBV12-5,TRBJ1-5,CAENPFTGRRALTF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GLVL,CASGLVLTGGYNTEAFF,TRBV12-5,TRBJ1-1,CATDWDTGRRALTF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	8.6e-08
+	Vsegment_p	1.0e-03
+	cdr3len_p	9.7e-02
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	8.3e-04
+	FINAL SCORE=8.1e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lGLVL	8	7	8	8.1e-08	1.0e-03	9.7e-02	1.0e+00	1.0e+00	8.3e-04		motif-GLVL
+
+Evaluating lTESN (7 members: 7)
+	4 subjects and 8 clones
+Motifs: TESN(1.3e-07)
+motif-TESN,CASSRGTESNTEAFF,TRBV5-1,TRBJ1-1,CALRGDTGRRALTF,01/0882:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN,CASSLGTESNQPQHF,TRBV7-2,TRBJ1-5,NA,03/0480:MtbLys,5.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN,CASSSGTESNQPQHF,TRBV7-2,TRBJ1-5,NA,01/0873:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN,CASSPGTESNSPLHF,TRBV7-2,TRBJ1-6,NA,03/0480:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN,CASTGGTESNQPQHF,TRBV6-1,TRBJ1-5,CALVYSGGYQKVTF,03/0480:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN,CASSPGTESNQPQHF,TRBV7-2,TRBJ1-5,CALMNSGGYQKVTF,03/0480:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN,CASSPGTESNQPQHF,TRBV7-2,TRBJ1-5,NA,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN,CASSFGTESNQPQHF,TRBV7-2,TRBJ1-5,CALILSGGYQKVTF,03/0480:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-07
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASRGQGGNQPQHF	TRBV19	TRBJ1-5	CIVRPSLYNTDKLIF	09/0410:MtbLys	1
+	expansion_p	2.7e-02
+	cluster_size_p	8.6e-04
+	FINAL SCORE=2.3e-11
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lTESN	7	4	8	2.3e-11	1.0e-03	1.0e-03	1.0e+00	2.7e-02	8.6e-04	CASRGQGGNQPQHF	TRBV19	TRBJ1-5	CIVRPSLYNTDKLIF	09/0410:MtbLys	1	motif-TESN
+
+Evaluating lSQFL (4 members: 4)
+	3 subjects and 4 clones
+Motifs: QFL(1.7e-05) SQFL(2.7e-07)
+motif-QFL motif-SQFL,CASSQFLDPLYTF,TRBV3-1,TRBJ1-2,CAVTSNTNAGKSTF,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFL motif-SQFL,CASSQFLGDEQFF,TRBV3-1,TRBJ2-1,CAALPGIQGGKLIF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFL motif-SQFL,CASSQFLAAQTQYF,TRBV3-1,TRBJ2-3,NA,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFL motif-SQFL,CASSQFLIAGTNTEAFF,TRBV14,TRBJ1-1,CIPLSYNTDKLIF,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.7e-07
+	Vsegment_p	1.8e-02
+	cdr3len_p	1.6e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.3e-03
+	FINAL SCORE=6.9e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lSQFL	4	3	4	6.9e-06	1.8e-02	1.6e-01	1.0e+00	1.0e+00	2.3e-03		motif-QFL motif-SQFL
+
+Evaluating lEEPR (5 members: 5)
+	2 subjects and 5 clones
+Motifs: EEPR(3.3e-07)
+motif-EEPR,CSVEEPRGQPQHF,TRBV29-1,TRBJ1-5,CAVIEAAGNKLTF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-EEPR,CSVEEPRHTEAFF,TRBV29-1,TRBJ1-1,CAVRPNYGQNFVF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-EEPR,CSVEEPRGTAFF,TRBV29-1,TRBJ1-1,NA,03/0493:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-EEPR,CSVEEPRNTIYF,TRBV29-1,TRBJ1-3,CAVRLTGNQFYF,03/0493:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-EEPR,CSVEEPRQTEQFF,TRBV29-1,TRBJ2-1,CEGGFNKFYF,03/0493:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.3e-07
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	4.3e-01
+	cluster_size_p	1.5e-03
+	FINAL SCORE=6.3e-10
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lEEPR	5	2	5	6.3e-10	1.0e-03	1.0e-03	1.0e+00	4.3e-01	1.5e-03		motif-EEPR
+
+Evaluating lQFIG (3 members: 3)
+	3 subjects and 4 clones
+Motifs: QFI(1.3e-04) SQFI(9.8e-06) QFIG(5.0e-07)
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGDTDQSDTQYF,TRBV4-3,TRBJ2-3,NA,01/0873:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGDTDQSDTQYF,TRBV4-3,TRBJ2-3,CVVNDWAGRRALTF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGGEYEQYF,TRBV3-1,TRBJ2-7,CAVSGNRGSTLGRLYF,09/0334:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGSYEQYF,TRBV3-1,TRBJ2-7,CAVSEGRGSTLGRLYF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	5.0e-07
+	Vsegment_p	2.0e-03
+	cdr3len_p	2.0e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.8e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=4.6e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lQFIG	3	3	4	4.6e-07	2.0e-03	2.0e-01	1.0e+00	1.8e-01	6.2e-03		motif-QFI motif-SQFI motif-QFIG
+
+Evaluating gGGKG%QP (3 members: 3)
+	3 subjects and 3 clones
+Motifs:
+global-GGKG%QP,CSVGGKGNQPQHF,TRBV20-1,TRBJ1-5,CAASKGITGGGNKLTF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-GGKG%QP,CSAGGKGGQPQHF,TRBV20-1,TRBJ1-5,CAASKGVTGGGNKLTF,02/0207:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-GGKG%QP,CSAGGKGNQPQHF,TRBV20-1,TRBJ1-5,CAASKGLTGGGNKLTF,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.0e-06
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=6.2e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gGGKG%QP	3	3	3	6.2e-09	1.0e-03	1.0e-03	1.0e+00	1.0e+00	6.2e-03		global-GGKG%QP
+
+Evaluating gR%QGNE (4 members: 4)
+	5 subjects and 5 clones
+Motifs:
+global-R%QGNE,CSARSQGNEQFF,TRBV20-1,TRBJ2-1,CAASINSGNTPLVF,03/0492:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-R%QGNE,CSARGQGNEQFF,TRBV20-1,TRBJ2-1,CAASINSGNTPLVF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-R%QGNE,CSARGQGNEQYF,TRBV20-1,TRBJ2-7,CATDAGDSNYQLIW,03/0163:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-R%QGNE,CSARGQGNEQYF,TRBV20-1,TRBJ2-7,CAASINSGNTPLVF,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-R%QGNE,CSARKQGNEQFF,TRBV20-1,TRBJ2-1,CAASINSGNTPLVF,03/0480:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.7e-06
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	4.5e-01
+	cluster_size_p	2.3e-03
+	FINAL SCORE=1.1e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gR%QGNE	4	5	5	1.1e-09	1.0e-03	1.0e-03	1.0e+00	4.5e-01	2.3e-03		global-R%QGNE
+
+Evaluating gS%QGPGE (3 members: 3)
+	2 subjects and 3 clones
+Motifs:
+global-S%QGPGE,CASSHQGPGELFF,TRBV3-1,TRBJ2-2,CAVPYSGGGADGLTF,03/0492:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%QGPGE,CASSQQGPGELFF,TRBV3-1,TRBJ2-2,NA,03/0492:MtbLys,6.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%QGPGE,CASSSQGPGELFF,TRBV3-1,TRBJ2-2,CAVPDSGGGADGLTF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	4.9e-06
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	9.0e-03
+	cluster_size_p	6.2e-03
+	FINAL SCORE=5.6e-11
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%QGPGE	3	2	3	5.6e-11	1.0e-03	1.0e-03	1.0e+00	9.0e-03	6.2e-03		global-S%QGPGE
+
+Evaluating gQN%E (3 members: 3)
+	3 subjects and 3 clones
+Motifs:
+global-QN%E,CSGQNNEQFF,TRBV29-1,TRBJ2-1,NA,01/0960:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-QN%E,CSVQNGEAFF,TRBV29-1,TRBJ1-1,CALSASAGRRALTF,09/0772:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-QN%E,CSVQNTEAFF,TRBV29-1,TRBJ1-1,CAGPIQGAQKLVF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	4.9e-06
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	3.2e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=2.0e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gQN%E	3	3	3	2.0e-09	1.0e-03	1.0e-03	1.0e+00	3.2e-01	6.2e-03	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-QN%E
+
+Evaluating lYSVP (3 members: 3)
+	2 subjects and 3 clones
+Motifs: YSVP(4.9e-06)
+motif-YSVP,CASSYSVPGAEQYF,TRBV6-5,TRBJ2-7,CAPDRYNQGGKLIF,09/0647:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-YSVP,CASSYSVPGGGPDTQYF,TRBV6-5,TRBJ2-3,CAVANFGNEKLTF,09/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-YSVP,CASSYSVPKSEQFF,TRBV6-5,TRBJ2-1,CALRVGYSGAGSYQLTF,09/0647:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	4.9e-06
+	Vsegment_p	1.0e-03
+	cdr3len_p	2.5e-01
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=1.5e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lYSVP	3	2	3	1.5e-06	1.0e-03	2.5e-01	1.0e+00	1.0e+00	6.2e-03	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	motif-YSVP
+
+Evaluating lVALL (3 members: 3)
+	3 subjects and 4 clones
+Motifs: SVAL(5.8e-14) VALL(9.8e-06)
+motif-SVAL motif-VALL,CASSVALLAGTQYF,TRBV9,TRBJ2-3,CAGPGGTSYGKLTF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL motif-VALL,CASSVALLGETQYF,TRBV9,TRBJ2-5,CAGAPTGNQFYF,09/0772:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL motif-VALL,CASSVALLGETQYF,TRBV9,TRBJ2-5,CAGTGGTSYGKLTF,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL motif-VALL,CASSVALLGGTQYF,TRBV9,TRBJ2-3,CAGGGIGTSYGKLTF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	9.8e-06
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=6.2e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lVALL	3	3	4	6.2e-09	1.0e-03	1.0e-03	1.0e+00	1.0e+00	6.2e-03	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	motif-SVAL motif-VALL
+
+Evaluating lSQFI (3 members: 3)
+	3 subjects and 4 clones
+Motifs: QFI(1.3e-04) SQFI(9.8e-06) QFIG(5.0e-07)
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGDTDQSDTQYF,TRBV4-3,TRBJ2-3,NA,01/0873:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGDTDQSDTQYF,TRBV4-3,TRBJ2-3,CVVNDWAGRRALTF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGGEYEQYF,TRBV3-1,TRBJ2-7,CAVSGNRGSTLGRLYF,09/0334:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGSYEQYF,TRBV3-1,TRBJ2-7,CAVSEGRGSTLGRLYF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	9.8e-06
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.7e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.9e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lSQFI	3	3	4	2.1e-07	1.0e-03	1.7e-01	1.0e+00	1.9e-01	6.2e-03		motif-QFI motif-SQFI motif-QFIG
+
+Evaluating lLGLY (5 members: 5)
+	4 subjects and 5 clones
+Motifs: LGLY(1.3e-05)
+motif-LGLY,CASSQVDLGLYGYTF,TRBV4-1,TRBJ1-2,CAVVRAGTYKYIF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LGLY,CASSLQLGLYEQYF,TRBV27,TRBJ2-7,CAYRRTGSARQLTF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LGLY,CASTPLGLYGYTF,TRBV7-2,TRBJ1-2,CAGSAGSARQLTF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LGLY,CASSELGLYGYTF,TRBV2,TRBJ1-2,CAVSGRNNNARLMF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LGLY,CASSLPTGLGLYGYTF,TRBV28,TRBJ1-2,CAVRDGLTGGGNKLTF,09/0523:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-05
+	Vsegment_p	5.1e-01
+	cdr3len_p	4.6e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	1.5e-03
+	FINAL SCORE=3.4e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lLGLY	5	4	5	3.4e-04	5.1e-01	4.6e-01	1.0e+00	1.0e+00	1.5e-03		motif-LGLY
+
+Evaluating lQFL (4 members: 4)
+	3 subjects and 4 clones
+Motifs: QFL(1.7e-05) SQFL(2.7e-07)
+motif-QFL motif-SQFL,CASSQFLDPLYTF,TRBV3-1,TRBJ1-2,CAVTSNTNAGKSTF,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFL motif-SQFL,CASSQFLGDEQFF,TRBV3-1,TRBJ2-1,CAALPGIQGGKLIF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFL motif-SQFL,CASSQFLAAQTQYF,TRBV3-1,TRBJ2-3,NA,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFL motif-SQFL,CASSQFLIAGTNTEAFF,TRBV14,TRBJ1-1,CIPLSYNTDKLIF,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.7e-05
+	Vsegment_p	1.3e-02
+	cdr3len_p	2.1e-01
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.3e-03
+	FINAL SCORE=6.4e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lQFL	4	3	4	6.4e-06	1.3e-02	2.1e-01	1.0e+00	1.0e+00	2.3e-03	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-QFL motif-SQFL
+
+Evaluating lTLTD (5 members: 5)
+	5 subjects and 6 clones
+Motifs: TLTD(8.6e-05)
+motif-TLTD,CASSTLTDTQYF,TRBV11-2,TRBJ2-3,CAEKPQGNDMRF,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TLTD,CASSTLTDTQYF,TRBV11-2,TRBJ2-3,CAEKPQGNDMRF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TLTD,CASTTGTLTDTQYF,TRBV5-1,TRBJ2-3,NA,03/0492:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TLTD,CASSYSTLTDTQYF,TRBV6-2,TRBJ2-3,CALSDRGSSNTGKLIF,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TLTD,CASSPTRTGTLTDTQYF,TRBV27,TRBJ2-3,CAPPNTGGFKTIF,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TLTD,CASSYPGRTLTDTQYF,TRBV5-6,TRBJ2-3,NA,09/0647:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	5.5e-05
+	Vsegment_p	2.2e-01
+	cdr3len_p	2.9e-01
+	lowest_hla	1.0e+00	
+	expansion_p	5.3e-01
+	cluster_size_p	1.5e-03
+	FINAL SCORE=5.1e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lTLTD	5	5	6	5.1e-05	2.2e-01	2.9e-01	1.0e+00	5.3e-01	1.5e-03		motif-TLTD
+
+Evaluating lYSIS (3 members: 3)
+	4 subjects and 4 clones
+Motifs: YSIS(5.8e-05)
+motif-YSIS,CASSYSISENTEAFF,TRBV6-6,TRBJ1-1,CAVGYYNQGGKLIF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-YSIS,CASSYSISENTEAFF,TRBV6-6,TRBJ1-1,CAVGFYNQGGKLIF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-YSIS,CASSYSISDNTEAFF,TRBV6-6,TRBJ1-1,CAVGYYNQGGKLIF,01/1013:MtbLys,4.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-YSIS,CASSYSISSDTEAFF,TRBV6-6,TRBJ1-1,CAVGLYNQGGKLIF,03/0492:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	5.8e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=6.3e-10
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lYSIS	3	4	4	6.3e-10	1.0e-03	1.0e-03	1.0e+00	1.0e-01	6.2e-03		motif-YSIS
+
+Evaluating g%EGTGSSYE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-%EGTGSSYE,CAYGEGTGSSYEQYF,TRBV6-1,TRBJ2-7,NA,01/0817:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-%EGTGSSYE,CASSEGTGSSYEQYF,TRBV5-1,TRBJ2-7,CAVRSLNQAGTALIF,01/0906:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	5.4e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.6e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+g%EGTGSSYE	2	2	2	1.6e-06	5.4e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-%EGTGSSYE
+
+Evaluating gSL%GGQGSNQP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SL%GGQGSNQP,CASSLAGGQGSNQPQHF,TRBV27,TRBJ1-5,CAVNTDKLIF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%GGQGSNQP,CASSLSGGQGSNQPQHF,TRBV27,TRBJ1-5,NA,03/0163:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSL%GGQGSNQP	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SL%GGQGSNQP
+
+Evaluating gRA%GGEAKNI (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-RA%GGEAKNI,CSARAGGGEAKNIQYF,TRBV20-1,TRBJ2-4,CAVSRAGAGSYQLTF,03/0492:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RA%GGEAKNI,CSARASGGEAKNIQYF,TRBV20-1,TRBJ2-4,CAVRDPGNTDKLIF,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	9.9e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gRA%GGEAKNI	2	2	2	2.9e-09	1.0e-03	1.0e-03	1.0e+00	9.9e-02	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-RA%GGEAKNI
+
+Evaluating gSQAGTGG%SP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SQAGTGG%SP,CASSQAGTGGGSPLHF,TRBV4-1,TRBJ1-6,CVVSPMGTGFQKLVF,03/0345:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQAGTGG%SP,CASSQAGTGGNSPLHF,TRBV4-3,TRBJ1-6,CAVPQSGGSYIPTF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	6.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.9e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSQAGTGG%SP	2	2	2	1.9e-06	6.6e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SQAGTGG%SP
+
+Evaluating gSEVE%TE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SEVE%TE,CASSEVEGTEAFF,TRBV2,TRBJ1-1,NA,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SEVE%TE,CASSEVENTEAFF,TRBV2,TRBJ1-1,NA,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSEVE%TE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SEVE%TE
+
+Evaluating gEGGR%NEK (2 members: 2)
+	1 subjects and 3 clones
+Motifs:
+global-EGGR%NEK,CSVEGGRFNEKLFF,TRBV29-1,TRBJ1-4,CAVKNSGTYKYIF,09/0263:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-EGGR%NEK,CSVEGGRFNEKLFF,TRBV29-1,TRBJ1-4,NA,09/0263:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-EGGR%NEK,CSVEGGRYNEKLFF,TRBV29-1,TRBJ1-4,NA,09/0263:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.8e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.1e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gEGGR%NEK	2	1	3	1.1e-09	1.0e-03	1.0e-03	1.0e+00	3.8e-02	2.9e-02		global-EGGR%NEK
+
+Evaluating gS%RSRAYE (2 members: 2)
+	3 subjects and 3 clones
+Motifs:
+global-S%RSRAYE,CASSFRSRAYEQYF,TRBV5-6,TRBJ2-7,CAVCSNDYKLSF,09/0762:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%RSRAYE,CASSLRSRAYEQYF,TRBV5-6,TRBJ2-7,NA,09/0263:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%RSRAYE,CASSLRSRAYEQYF,TRBV5-6,TRBJ2-7,CAVTSNDYKLSF,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%RSRAYE	2	3	3	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%RSRAYE
+
+Evaluating gRDV%VSYNE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-RDV%VSYNE,CSARDVGVSYNEQFF,TRBV20-1,TRBJ2-1,CIVRALNYGGSQGNLIF,03/0492:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RDV%VSYNE,CSARDVAVSYNEQFF,TRBV20-1,TRBJ2-1,CIVRALNYGGSQGNLIF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gRDV%VSYNE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-RDV%VSYNE
+
+Evaluating gSEVG%TGE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SEVG%TGE,CATSEVGNTGELFF,TRBV24-1,TRBJ2-2,CAVEDPGTYKYIF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SEVG%TGE,CASSEVGDTGELFF,TRBV2,TRBJ2-2,CALTRNQAGTALIF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	6.3e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.8e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSEVG%TGE	2	2	2	1.8e-06	6.3e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SEVG%TGE
+
+Evaluating gSPGTESN%P (2 members: 2)
+	2 subjects and 3 clones
+Motifs: TESN(1.3e-07)
+motif-TESN global-SPGTESN%P,CASSPGTESNSPLHF,TRBV7-2,TRBJ1-6,NA,03/0480:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN global-SPGTESN%P,CASSPGTESNQPQHF,TRBV7-2,TRBJ1-5,CALMNSGGYQKVTF,03/0480:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN global-SPGTESN%P,CASSPGTESNQPQHF,TRBV7-2,TRBJ1-5,NA,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.1e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=9.0e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSPGTESN%P	2	2	3	9.0e-09	1.0e-03	1.0e-03	1.0e+00	3.1e-01	2.9e-02		motif-TESN global-SPGTESN%P
+
+Evaluating gSIA%NNE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SIA%NNE,CASSIAANNEQFF,TRBV19,TRBJ2-1,CAASKGNNARLMF,03/0493:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SIA%NNE,CASSIAGNNEQFF,TRBV19,TRBJ2-1,CAASKGSARQLTF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSIA%NNE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SIA%NNE
+
+Evaluating gSVGTV%TGE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SVGTV%TGE,CASSVGTVNTGELFF,TRBV9,TRBJ2-2,CAYRGYGGATNKLIF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SVGTV%TGE,CASSVGTVGTGELFF,TRBV9,TRBJ2-2,CAYRIYNAGNMLTF,09/0523:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSVGTV%TGE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SVGTV%TGE
+
+Evaluating gS%GEGAGET (2 members: 2)
+	2 subjects and 3 clones
+Motifs:
+global-S%GEGAGET,CASSKGEGAGETQYF,TRBV11-3,TRBJ2-5,CAGPSGTYKYIF,01/0873:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%GEGAGET,CASSKGEGAGETQYF,TRBV11-3,TRBJ2-5,CAAPFLTGGFKTIF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%GEGAGET,CASSRGEGAGETQYF,TRBV11-3,TRBJ2-5,CAGPSGTYKYIF,01/1013:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	8.7e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.5e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%GEGAGET	2	2	3	2.5e-09	1.0e-03	1.0e-03	1.0e+00	8.7e-02	2.9e-02	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-S%GEGAGET
+
+Evaluating gSQDRA%GNT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SQDRA%GNT,CASSQDRATGNTIYF,TRBV4-3,TRBJ1-3,CAMRGKAGNMLTF,03/0492:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQDRA%GNT,CASSQDRAAGNTIYF,TRBV4-1,TRBJ1-3,NA,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	6.9e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	1 4843 1 single CASSERQFNIQYF
+
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSQDRA%GNT	2	2	2	2.0e-06	6.9e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	1 4843 1 single CASSERQFNIQYF
+	global-SQDRA%GNT
+
+Evaluating gSLS%GQGSNQP (2 members: 2)
+	3 subjects and 3 clones
+Motifs:
+global-SLS%GQGSNQP,CASSLSGGQGSNQPQHF,TRBV27,TRBJ1-5,NA,03/0163:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLS%GQGSNQP,CASSLSSGQGSNQPQHF,TRBV27,TRBJ1-5,CAVSVNKFYF,01/0882:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLS%GQGSNQP,CASSLSSGQGSNQPQHF,TRBV27,TRBJ1-5,CAVQYYKLSF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLS%GQGSNQP	2	3	3	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SLS%GQGSNQP
+
+Evaluating gSLA%GQGSNQP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SLA%GQGSNQP,CASSLAGGQGSNQPQHF,TRBV27,TRBJ1-5,CAVNTDKLIF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLA%GQGSNQP,CASSLASGQGSNQPQHF,TRBV27,TRBJ1-5,NA,03/0163:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLA%GQGSNQP	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SLA%GQGSNQP
+
+Evaluating gR%SGGEAKNI (2 members: 2)
+	1 subjects and 2 clones
+Motifs:
+global-R%SGGEAKNI,CSARASGGEAKNIQYF,TRBV20-1,TRBJ2-4,CAVRDPGNTDKLIF,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-R%SGGEAKNI,CSARSSGGEAKNIQYF,TRBV20-1,TRBJ2-4,NA,01/0906:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gR%SGGEAKNI	2	1	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-R%SGGEAKNI
+
+Evaluating gS%LAAGQET (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%LAAGQET,CASSQLAAGQETQYF,TRBV7-3,TRBJ2-5,NA,03/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%LAAGQET,CASSSLAAGQETQYF,TRBV7-2,TRBJ2-5,NA,01/0385:MtbLys,4.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	8.0e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	5.1e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.2e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%LAAGQET	2	2	2	1.2e-07	8.0e-02	1.0e-03	1.0e+00	5.1e-02	2.9e-02		global-S%LAAGQET
+
+Evaluating gEGGQG%DT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-EGGQG%DT,CSVEGGQGADTQYF,TRBV29-1,TRBJ2-3,NA,09/0647:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-EGGQG%DT,CSVEGGQGVDTQYF,TRBV29-1,TRBJ2-3,CAVSGSARQLTF,09/0684:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	1 4843 1 single CASSERQFNIQYF
+
+	expansion_p	2.2e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=6.3e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gEGGQG%DT	2	2	2	6.3e-09	1.0e-03	1.0e-03	1.0e+00	2.2e-01	2.9e-02	1 4843 1 single CASSERQFNIQYF
+	global-EGGQG%DT
+
+Evaluating gSQDLG%TSTDT (2 members: 2)
+	1 subjects and 2 clones
+Motifs:
+global-SQDLG%TSTDT,CASSQDLGGTSTDTQYF,TRBV14,TRBJ2-3,CLVGPFNQAGTALIF,02/0207:MegaIL2,4.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQDLG%TSTDT,CASSQDLGATSTDTQYF,TRBV14,TRBJ2-3,CLVGEFNQAGTALIF,02/0207:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	4.5e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.3e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSQDLG%TSTDT	2	1	2	1.3e-09	1.0e-03	1.0e-03	1.0e+00	4.5e-02	2.9e-02		global-SQDLG%TSTDT
+
+Evaluating gSEED%GRTE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SEED%GRTE,CAISEEDRGRTEAFF,TRBV10-3,TRBJ1-1,NA,09/0671:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SEED%GRTE,CAISEEDKGRTEAFF,TRBV10-3,TRBJ1-1,NA,09/0647:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	4.0e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.2e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSEED%GRTE	2	2	2	1.2e-09	1.0e-03	1.0e-03	1.0e+00	4.0e-02	2.9e-02		global-SEED%GRTE
+
+Evaluating gEEPR%TE (2 members: 2)
+	2 subjects and 2 clones
+Motifs: EEPR(3.3e-07)
+motif-EEPR global-EEPR%TE,CSVEEPRHTEAFF,TRBV29-1,TRBJ1-1,CAVRPNYGQNFVF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-EEPR global-EEPR%TE,CSVEEPRQTEQFF,TRBV29-1,TRBJ2-1,CEGGFNKFYF,03/0493:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASRGQGGNQPQHF	TRBV19	TRBJ1-5	CIVRPSLYNTDKLIF	09/0410:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gEEPR%TE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASRGQGGNQPQHF	TRBV19	TRBJ1-5	CIVRPSLYNTDKLIF	09/0410:MtbLys	1	motif-EEPR global-EEPR%TE
+
+Evaluating gSVALL%GT (2 members: 2)
+	1 subjects and 2 clones
+Motifs: SVAL(5.8e-14) VALL(9.8e-06)
+motif-SVAL motif-VALL global-SVALL%GT,CASSVALLAGTQYF,TRBV9,TRBJ2-3,CAGPGGTSYGKLTF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL motif-VALL global-SVALL%GT,CASSVALLGGTQYF,TRBV9,TRBJ2-3,CAGGGIGTSYGKLTF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSVALL%GT	2	1	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		motif-SVAL motif-VALL global-SVALL%GT
+
+Evaluating gS%DTYSNQP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%DTYSNQP,CASSKDTYSNQPQHF,TRBV6-1,TRBJ1-5,CAASPRYSGAGSYQLTF,03/0163:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%DTYSNQP,CASSRDTYSNQPQHF,TRBV6-1,TRBJ1-5,NA,01/0882:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	9.0e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.6e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%DTYSNQP	2	2	2	2.6e-09	1.0e-03	1.0e-03	1.0e+00	9.0e-02	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-S%DTYSNQP
+
+Evaluating gS%RDRVHNE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%RDRVHNE,CASSARDRVHNEQFF,TRBV9,TRBJ2-1,CVVRGGDAGNMLTF,01/0882:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%RDRVHNE,CASSTRDRVHNEQFF,TRBV9,TRBJ2-1,CVVRVNSGGGADGLTF,09/0018:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%RDRVHNE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%RDRVHNE
+
+Evaluating lVALA (5 members: 5)
+	5 subjects and 5 clones
+Motifs: SVAL(5.8e-14) VALA(7.2e-05)
+motif-SVAL motif-VALA,CASSVALASGANVLTF,TRBV9,TRBJ2-6,CAGAGGGGFKTIF,02/0152:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL motif-VALA,CASSVALAGANGYTF,TRBV9,TRBJ1-2,CAGPVQGGNKLVF,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL motif-VALA,CASSVALAGNTIYF,TRBV9,TRBJ1-3,CAGDLSQGGKLIF,09/0328:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL motif-VALA,CASSVALAGAEYF,TRBV9,TRBJ2-3,CAVGGLSGANSKLTF,01/0873:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SVAL motif-VALA,CASSVALATGEQYF,TRBV9,TRBJ2-7,CAGPTGGSYIPTF,03/0492:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	7.2e-05
+	Vsegment_p	1.0e-03
+	cdr3len_p	4.4e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.6e-01
+	cluster_size_p	1.5e-03
+	FINAL SCORE=1.0e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lVALA	5	5	5	1.0e-07	1.0e-03	4.4e-01	1.0e+00	1.6e-01	1.5e-03		motif-SVAL motif-VALA
+
+Evaluating lPQSP (3 members: 3)
+	3 subjects and 3 clones
+Motifs: PQSP(7.9e-05)
+motif-PQSP,CASSEGPQSPGANVLTF,TRBV25-1,TRBJ2-6,CALRGGSTLGRLYF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-PQSP,CASSLLQGPQSPLHF,TRBV6-6,TRBJ1-6,CATDNNDMRF,09/0217:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-PQSP,CASSPQSPVQHF,TRBV6-6,TRBJ1-5,NA,03/0345:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	7.9e-05
+	Vsegment_p	1.0e-01
+	cdr3len_p	4.6e-01
+	lowest_hla	1.0e+00	
+	expansion_p	3.3e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=9.4e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lPQSP	3	3	3	9.4e-05	1.0e-01	4.6e-01	1.0e+00	3.3e-01	6.2e-03		motif-PQSP
+
+Evaluating lEMGL (3 members: 3)
+	3 subjects and 3 clones
+Motifs: EMGL(7.9e-05)
+motif-EMGL,CSAREMGLGYGYTF,TRBV20-1,TRBJ1-2,CAGDNGGNNRKLIW,09/0629:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-EMGL,CASSEMGLAGVNEQFF,TRBV27,TRBJ2-1,CAVNAREYGNKLVF,03/0163:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-EMGL,CASSQEMGLANYEQYF,TRBV4-1,TRBJ2-7,CALSDRGDSNYQLIW,09/0772:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	7.9e-05
+	Vsegment_p	1.8e-01
+	cdr3len_p	3.8e-02
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=4.3e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lEMGL	3	3	3	4.3e-05	1.8e-01	3.8e-02	1.0e+00	1.0e+00	6.2e-03		motif-EMGL
+
+Evaluating lPFRD (4 members: 4)
+	4 subjects and 4 clones
+Motifs: PFRD(1.2e-04)
+motif-PFRD,CSARPFRDREEQYF,TRBV20-1,TRBJ2-7,CAVSDLRGNTPLVF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-PFRD,CSARPFRDTDTQYF,TRBV20-1,TRBJ2-3,NA,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-PFRD,CASSSPFRDTQYF,TRBV11-2,TRBJ2-3,CAGVPGSSASKIIF,09/0217:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-PFRD,CASSPFRDAANTIYF,TRBV18,TRBJ1-3,CILRDRQGAQKLVF,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.2e-04
+	Vsegment_p	3.5e-02
+	cdr3len_p	1.8e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.3e-03
+	FINAL SCORE=1.5e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lPFRD	4	4	4	1.5e-05	3.5e-02	1.8e-01	1.0e+00	1.0e+00	2.3e-03		motif-PFRD
+
+Evaluating lQFI (3 members: 3)
+	3 subjects and 4 clones
+Motifs: QFI(1.3e-04) SQFI(9.8e-06) QFIG(5.0e-07)
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGDTDQSDTQYF,TRBV4-3,TRBJ2-3,NA,01/0873:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGDTDQSDTQYF,TRBV4-3,TRBJ2-3,CVVNDWAGRRALTF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGGEYEQYF,TRBV3-1,TRBJ2-7,CAVSGNRGSTLGRLYF,09/0334:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QFI motif-SQFI motif-QFIG,CASSQFIGSYEQYF,TRBV3-1,TRBJ2-7,CAVSEGRGSTLGRLYF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	2.0e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.9e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=2.4e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lQFI	3	3	4	2.4e-07	1.0e-03	2.0e-01	1.0e+00	1.9e-01	6.2e-03		motif-QFI motif-SQFI motif-QFIG
+
+Evaluating lLEPS (5 members: 5)
+	3 subjects and 5 clones
+Motifs: LEPS(1.8e-04)
+motif-LEPS,CASSLEPSGYIQYF,TRBV11-2,TRBJ2-4,CAVSEGLAGGTSYGKLTF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LEPS,CASSLEPSTGEQYV,TRBV5-6,TRBJ2-7,CALSGSGGGTSYGKLTF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LEPS,CASSLEPSGREQYV,TRBV11-2,TRBJ2-7,CAVSGLEAGGTSYGKLTF,01/0873:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LEPS,CASSLEPSSYEQYF,TRBV11-2,TRBJ2-7,CAVSDQTAGGTSYGKLTF,09/0523:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LEPS,CASSLEPSGFYGYTF,TRBV11-2,TRBJ1-2,CGADSGGTDSWGKLQF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.8e-04
+	Vsegment_p	6.0e-03
+	cdr3len_p	5.9e-02
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	1.5e-03
+	FINAL SCORE=5.2e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lLEPS	5	3	5	5.2e-07	6.0e-03	5.9e-02	1.0e+00	1.0e+00	1.5e-03		motif-LEPS
+
+Evaluating gSPGTE%NSP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SPGTE%NSP,CASSPGTENNSPLHF,TRBV6-1,TRBJ1-6,CAVFSGNTGKLIF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPGTE%NSP,CASSPGTESNSPLHF,TRBV7-2,TRBJ1-6,NA,03/0480:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-04
+	Vsegment_p	5.5e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.6e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSPGTE%NSP	2	2	2	1.6e-06	5.5e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-SPGTE%NSP
+
+Evaluating gR%RTGDEK (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-R%RTGDEK,CSARDRTGDEKLFF,TRBV20-1,TRBJ1-4,CALSAAGNTPLVF,09/0647:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-R%RTGDEK,CSARSRTGDEKLFF,TRBV20-1,TRBJ1-4,CALSASGNTPLVF,03/0480:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	2.0e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=5.8e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gR%RTGDEK	2	2	2	5.8e-09	1.0e-03	1.0e-03	1.0e+00	2.0e-01	2.9e-02	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-R%RTGDEK
+
+Evaluating gRDLG%G (2 members: 2)
+	1 subjects and 2 clones
+Motifs:
+global-RDLG%G,CSARDLGDGYTF,TRBV20-1,TRBJ1-2,NA,09/0762:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RDLG%G,CSARDLGSGYTF,TRBV20-1,TRBJ1-2,CAASRQTGANNLFF,09/0762:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gRDLG%G	2	1	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-RDLG%G
+
+Evaluating gS%GTESNQP (2 members: 2)
+	1 subjects and 2 clones
+Motifs: TESN(1.3e-07)
+motif-TESN global-S%GTESNQP,CASSLGTESNQPQHF,TRBV7-2,TRBJ1-5,NA,03/0480:MtbLys,5.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TESN global-S%GTESNQP,CASSFGTESNQPQHF,TRBV7-2,TRBJ1-5,CALILSGGYQKVTF,03/0480:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	8.0e-03
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.3e-10
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%GTESNQP	2	1	2	2.3e-10	1.0e-03	1.0e-03	1.0e+00	8.0e-03	2.9e-02		motif-TESN global-S%GTESNQP
+
+Evaluating gEEPR%T (2 members: 2)
+	1 subjects and 2 clones
+Motifs: EEPR(3.3e-07)
+motif-EEPR global-EEPR%T,CSVEEPRNTIYF,TRBV29-1,TRBJ1-3,CAVRLTGNQFYF,03/0493:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-EEPR global-EEPR%T,CSVEEPRGTAFF,TRBV29-1,TRBJ1-1,NA,03/0493:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=6.4e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gEEPR%T	2	1	2	6.4e-09	1.0e-03	1.0e-03	1.0e+00	2.2e-01	2.9e-02		motif-EEPR global-EEPR%T
+
+Evaluating gSPR%ASG (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SPR%ASG,CASSPRVASGYTF,TRBV18,TRBJ1-2,CATVLANAGGTSYGKLTF,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPR%ASG,CASSPRTASGYTF,TRBV18,TRBJ1-2,CATGPSNAGGTSYGKLTF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSPR%ASG	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-SPR%ASG
+
+Evaluating g%GEVNTGE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-%GEVNTGE,CAISGEVNTGELFF,TRBV10-3,TRBJ2-2,NA,09/0255:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-%GEVNTGE,CASTGEVNTGELFF,TRBV10-3,TRBJ2-2,NA,09/0018:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	8.4e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.4e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+g%GEVNTGE	2	2	2	2.4e-09	1.0e-03	1.0e-03	1.0e+00	8.4e-02	2.9e-02		global-%GEVNTGE
+
+Evaluating gSL%SGQGSNQP (2 members: 2)
+	3 subjects and 3 clones
+Motifs:
+global-SL%SGQGSNQP,CASSLASGQGSNQPQHF,TRBV27,TRBJ1-5,NA,03/0163:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%SGQGSNQP,CASSLSSGQGSNQPQHF,TRBV27,TRBJ1-5,CAVSVNKFYF,01/0882:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%SGQGSNQP,CASSLSSGQGSNQPQHF,TRBV27,TRBJ1-5,CAVQYYKLSF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSL%SGQGSNQP	2	3	3	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SL%SGQGSNQP
+
+Evaluating lSQVI (4 members: 4)
+	4 subjects and 4 clones
+Motifs: SQVI(2.9e-04)
+motif-SQVI,CASSQVIGHYGYTF,TRBV7-9,TRBJ1-2,NA,03/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SQVI,CASSQVIGRGGQETQYF,TRBV4-1,TRBJ2-5,CLVGGYTGGFKTIF,09/0018:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SQVI,CASSQVIQETQYF,TRBV4-1,TRBJ2-5,CAVGLRGNTPLVF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SQVI,CASSQVIPSGANVLTF,TRBV3-1,TRBJ2-6,CAVSDLTGGFKTIF,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.9e-04
+	Vsegment_p	4.5e-02
+	cdr3len_p	7.3e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.3e-03
+	FINAL SCORE=7.7e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lSQVI	4	4	4	7.7e-05	4.5e-02	7.3e-01	1.0e+00	1.0e+00	2.3e-03		motif-SQVI
+
+Evaluating gSSGS%E (2 members: 2)
+	2 subjects and 3 clones
+Motifs:
+global-SSGS%E,CATSSGSNEQFF,TRBV24-1,TRBJ2-1,CAVTTSGGSYIPTF,01/0430:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SSGS%E,CATSSGSNEQFF,TRBV24-1,TRBJ2-1,CAVTTSGGSYIPTF,01/0430:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SSGS%E,CATSSGSGELFF,TRBV24-1,TRBJ2-2,CAVTLSGGSYIPTF,03/0345:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.7e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.4e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=4.0e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSSGS%E	2	2	3	4.0e-09	1.0e-03	1.0e-03	1.0e+00	1.4e-01	2.9e-02		global-SSGS%E
+
+Evaluating gSRS%QP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SRS%QP,CASSRSGQPQHF,TRBV7-2,TRBJ1-5,NA,02/0207:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRS%QP,CASSRSNQPQHF,TRBV3-1,TRBJ1-5,CAVSYASGGSYIPTF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.7e-04
+	Vsegment_p	6.8e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSRS%QP	2	2	2	2.0e-06	6.8e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SRS%QP
+
+Evaluating gS%ADSNQP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%ADSNQP,CASSFADSNQPQHF,TRBV11-2,TRBJ1-5,CAGSGSARQLTF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%ADSNQP,CASSLADSNQPQHF,TRBV7-2,TRBJ1-5,CAGLYYKLSF,09/0263:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.7e-04
+	Vsegment_p	5.5e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.6e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%ADSNQP	2	2	2	1.6e-06	5.5e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%ADSNQP
+
+Evaluating gS%LENTE (2 members: 2)
+	3 subjects and 3 clones
+Motifs:
+global-S%LENTE,CASSELENTEAFF,TRBV2,TRBJ1-1,CAVGAGTGGYNKLIF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%LENTE,CASSELENTEAFF,TRBV2,TRBJ1-1,CAVGVREGANNLFF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%LENTE,CASSQLENTEAFF,TRBV12-3,TRBJ1-1,NA,09/0018:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.7e-04
+	Vsegment_p	7.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.2e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=6.6e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%LENTE	2	3	3	6.6e-08	7.0e-03	1.0e-03	1.0e+00	3.2e-01	2.9e-02		global-S%LENTE
+
+Evaluating gSLGQGA%YG (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SLGQGA%YG,CASSLGQGAGYGYTF,TRBV2,TRBJ1-2,CIVSSGNTGKLIF,09/0629:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLGQGA%YG,CASSLGQGANYGYTF,TRBV12-3,TRBJ1-2,CAVRGVSGNTGKLIF,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.7e-04
+	Vsegment_p	6.9e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLGQGA%YG	2	2	2	2.0e-06	6.9e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SLGQGA%YG
+
+Evaluating gSYSIS%NTE (2 members: 2)
+	3 subjects and 3 clones
+Motifs: YSIS(5.8e-05)
+motif-YSIS global-SYSIS%NTE,CASSYSISENTEAFF,TRBV6-6,TRBJ1-1,CAVGYYNQGGKLIF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-YSIS global-SYSIS%NTE,CASSYSISENTEAFF,TRBV6-6,TRBJ1-1,CAVGFYNQGGKLIF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-YSIS global-SYSIS%NTE,CASSYSISDNTEAFF,TRBV6-6,TRBJ1-1,CAVGYYNQGGKLIF,01/1013:MtbLys,4.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.7e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	7.0e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSYSIS%NTE	2	3	3	2.0e-09	1.0e-03	1.0e-03	1.0e+00	7.0e-02	2.9e-02		motif-YSIS global-SYSIS%NTE
+
+Evaluating gSTSG%STDT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-STSG%STDT,CASSTSGSSTDTQYF,TRBV5-1,TRBJ2-3,CVVNSDRGSTLGRLYF,03/0493:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-STSG%STDT,CASSTSGGSTDTQYF,TRBV6-4,TRBJ2-3,CAVRDGDYQLIW,09/0684:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.7e-04
+	Vsegment_p	7.5e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.2e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSTSG%STDT	2	2	2	2.2e-06	7.5e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-STSG%STDT
+
+Evaluating gSS%SGTYNE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SS%SGTYNE,CASSSKSGTYNEQFF,TRBV7-2,TRBJ2-1,CAQAGGAGSYQLTF,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SS%SGTYNE,CASSSSSGTYNEQFF,TRBV7-2,TRBJ2-1,CALSDQAGTALIF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.7e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSS%SGTYNE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SS%SGTYNE
+
+Evaluating lWGMN (4 members: 4)
+	5 subjects and 5 clones
+Motifs: GWGM(4.6e-04) WGMN(3.8e-04)
+motif-GWGM motif-WGMN,CSVRPGWGMNTEAFF,TRBV29-1,TRBJ1-1,NA,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GWGM motif-WGMN,CASSLGWGMNTEAFF,TRBV7-2,TRBJ1-1,CAVSVDKIIF,09/0720:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GWGM motif-WGMN,CSVAGGWGMNTEAFF,TRBV29-1,TRBJ1-1,CAYRDDKIIF,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GWGM motif-WGMN,CSAAPGWGMNTEAFF,TRBV29-1,TRBJ1-1,NA,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GWGM motif-WGMN,CSAAPGWGMNTEAFF,TRBV29-1,TRBJ1-1,CATDGNARLMF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.8e-04
+	Vsegment_p	6.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.3e-03
+	FINAL SCORE=1.4e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lWGMN	4	5	5	1.4e-08	6.0e-03	1.0e-03	1.0e+00	1.0e+00	2.3e-03		motif-GWGM motif-WGMN
+
+Evaluating lFGLT (3 members: 3)
+	3 subjects and 3 clones
+Motifs: FGLT(5.2e-04)
+motif-FGLT,CASSFGLTGFNYGYTF,TRBV12-3,TRBJ1-2,CAGAGSGGSNYKLTF,09/0762:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-FGLT,CASGAFGLTDTQYF,TRBV27,TRBJ2-3,CLVGVRSDRGSTLGRLYF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-FGLT,CASSEIFFGLTYEQYF,TRBV6-1,TRBJ2-7,CAARITGNQFYF,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	4.4e-04
+	Vsegment_p	1.8e-01
+	cdr3len_p	3.8e-02
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=4.1e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lFGLT	3	3	3	4.1e-05	1.8e-01	3.8e-02	1.0e+00	1.0e+00	6.2e-03		motif-FGLT
+
+Evaluating gSPGR%E (3 members: 3)
+	2 subjects and 3 clones
+Motifs:
+global-SPGR%E,CASSPGRSEQYF,TRBV6-6,TRBJ2-7,CAASGNQGAQKLVF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPGR%E,CASSPGRGEQYF,TRBV6-6,TRBJ2-7,NA,01/0430:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPGR%E,CASSPGRQEQYF,TRBV6-6,TRBJ2-7,NA,01/0430:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	4.4e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=6.2e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSPGR%E	3	2	3	6.2e-09	1.0e-03	1.0e-03	1.0e+00	1.0e+00	6.2e-03		global-SPGR%E
+
+Evaluating lGWGM (4 members: 4)
+	5 subjects and 5 clones
+Motifs: GWGM(4.6e-04) WGMN(3.8e-04)
+motif-GWGM motif-WGMN,CSVRPGWGMNTEAFF,TRBV29-1,TRBJ1-1,NA,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GWGM motif-WGMN,CASSLGWGMNTEAFF,TRBV7-2,TRBJ1-1,CAVSVDKIIF,09/0720:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GWGM motif-WGMN,CSVAGGWGMNTEAFF,TRBV29-1,TRBJ1-1,CAYRDDKIIF,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GWGM motif-WGMN,CSAAPGWGMNTEAFF,TRBV29-1,TRBJ1-1,NA,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GWGM motif-WGMN,CSAAPGWGMNTEAFF,TRBV29-1,TRBJ1-1,CATDGNARLMF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	4.6e-04
+	Vsegment_p	5.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.3e-03
+	FINAL SCORE=1.2e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lGWGM	4	5	5	1.2e-08	5.0e-03	1.0e-03	1.0e+00	1.0e+00	2.3e-03	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-GWGM motif-WGMN
+
+Evaluating lRVPL (3 members: 3)
+	3 subjects and 3 clones
+Motifs: RVPL(2.1e-03)
+motif-RVPL,CSARVPLAGALLQETQYF,TRBV20-1,TRBJ2-5,NA,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-RVPL,CSARVPLHPGNTEAFF,TRBV20-1,TRBJ1-1,NA,09/0018:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-RVPL,CSARVPLTSTDTQYF,TRBV20-1,TRBJ2-3,CAASRRNSGNTPLVF,09/0217:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	5.2e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	4.2e-01
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=2.6e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lRVPL	3	3	3	2.6e-06	1.0e-03	4.2e-01	1.0e+00	1.0e+00	6.2e-03	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-RVPL
+
+Evaluating lHLGQ (3 members: 3)
+	3 subjects and 3 clones
+Motifs: HLGQ(5.2e-04)
+motif-HLGQ,CASSGRHLGQETQYF,TRBV25-1,TRBJ2-5,CVVSDRGSTLGRLYF,09/0410:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-HLGQ,CASSRHLGQANTEAFF,TRBV6-5,TRBJ1-1,CILSTSANAGGTSYGKLTF,09/0647:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-HLGQ,CASSHLGQTEKLFF,TRBV4-1,TRBJ1-4,CATDAAGSTLGRLYF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	5.2e-04
+	Vsegment_p	2.1e-01
+	cdr3len_p	4.4e-01
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.6e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=9.0e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lHLGQ	3	3	3	9.0e-05	2.1e-01	4.4e-01	1.0e+00	1.6e-01	6.2e-03	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	motif-HLGQ
+
+Evaluating lSPWL (3 members: 3)
+	3 subjects and 3 clones
+Motifs: SPWL(6.0e-04)
+motif-SPWL,CASSPWLSSYNEQFF,TRBV5-6,TRBJ2-1,NA,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SPWL,CASSPWLTTKADNEQFF,TRBV11-2,TRBJ2-1,CAAIPYGGSQGNLIF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SPWL,CASSPWLAKNIQYF,TRBV6-2,TRBJ2-4,CAFMKDAGNMLTF,09/0212:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.0e-04
+	Vsegment_p	1.9e-01
+	cdr3len_p	4.5e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=5.1e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lSPWL	3	3	3	5.1e-04	1.9e-01	4.5e-01	1.0e+00	1.0e+00	6.2e-03		motif-SPWL
+
+Evaluating gS%GVWET (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%GVWET,CASSFGVWETQYF,TRBV11-2,TRBJ2-5,CAVLGSSNTGKLIF,01/0329:MtbLys,4.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%GVWET,CASSLGVWETQYF,TRBV12-3,TRBJ2-5,CAVRALSGGYQKVTF,09/0523:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-04
+	Vsegment_p	5.4e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	4.2e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=6.6e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%GVWET	2	2	2	6.6e-08	5.4e-02	1.0e-03	1.0e+00	4.2e-02	2.9e-02		global-S%GVWET
+
+Evaluating gSPT%GGYE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SPT%GGYE,CASSPTTGGYEQFF,TRBV5-1,TRBJ2-1,CAERGASGTYKYIF,03/0387:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPT%GGYE,CSASPTSGGYEQYF,TRBV20-1,TRBJ2-7,CALLNNAGNMLTF,09/0629:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-04
+	Vsegment_p	6.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.9e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSPT%GGYE	2	2	2	1.9e-06	6.6e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SPT%GGYE
+
+Evaluating gSF%GGADT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SF%GGADT,CASSFAGGADTQYF,TRBV27,TRBJ2-3,CAVIGFGNVLHC,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SF%GGADT,CASSFSGGADTQYF,TRBV7-2,TRBJ2-3,CAVNVRHAGKSTF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-04
+	Vsegment_p	8.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.5e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSF%GGADT	2	2	2	2.5e-06	8.6e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SF%GGADT
+
+Evaluating gSD%VNSP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SD%VNSP,CASSDEVNSPLHF,TRBV9,TRBJ1-6,NA,02/0152:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SD%VNSP,CASSDRVNSPLHF,TRBV6-2,TRBJ1-6,NA,09/0065:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-04
+	Vsegment_p	8.7e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.5e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSD%VNSP	2	2	2	2.5e-06	8.7e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SD%VNSP
+
+Evaluating gSLG%AGGQET (2 members: 2)
+	1 subjects and 2 clones
+Motifs:
+global-SLG%AGGQET,CASSLGLAGGQETQYF,TRBV5-1,TRBJ2-5,NA,09/0125:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLG%AGGQET,CASSLGVAGGQETQYF,TRBV5-1,TRBJ2-5,CAVGNSGGYQKVTF,09/0125:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLG%AGGQET	2	1	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLG%AGGQET
+
+Evaluating gRRTG%NYG (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-RRTG%NYG,CASRRTGSNYGYTF,TRBV19,TRBJ1-2,NA,01/0817:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RRTG%NYG,CASRRTGANYGYTF,TRBV19,TRBJ1-2,NA,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gRRTG%NYG	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-RRTG%NYG
+
+Evaluating gS%QGANTGE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%QGANTGE,CASSEQGANTGELFF,TRBV18,TRBJ2-2,CAPQAAGNKLTF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%QGANTGE,CASSQQGANTGELFF,TRBV19,TRBJ2-2,CAVRAGTALIF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-04
+	Vsegment_p	6.0e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%QGANTGE	2	2	2	1.7e-06	6.0e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-S%QGANTGE
+
+Evaluating gSSR%QET (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SSR%QET,CASSSRVQETQYF,TRBV7-2,TRBJ2-5,CAVSIYNQGGKLIF,09/0212:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SSR%QET,CASSSRTQETQYF,TRBV11-3,TRBJ2-5,CALSPYNFNKFYF,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-04
+	Vsegment_p	6.1e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	2.1e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=3.7e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSSR%QET	2	2	2	3.7e-07	6.1e-02	1.0e-03	1.0e+00	2.1e-01	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SSR%QET
+
+Evaluating lSELT (4 members: 4)
+	4 subjects and 4 clones
+Motifs: SELT(6.3e-04)
+motif-SELT,CASSELTVGGLDGELFF,TRBV25-1,TRBJ2-2,CAFEVAGKSTF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SELT,CASSELTREGSTDTQYF,TRBV25-1,TRBJ2-3,CVVSDRGSTLGRLYF,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SELT,CASSELTGDTEAFF,TRBV10-2,TRBJ1-1,NA,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SELT,CASSELTGVTGANVLTF,TRBV25-1,TRBJ2-6,CVVIDRGSTLGRLYF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.3e-04
+	Vsegment_p	4.0e-03
+	cdr3len_p	7.1e-02
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.3e-03
+	FINAL SCORE=6.7e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lSELT	4	4	4	6.7e-07	4.0e-03	7.1e-02	1.0e+00	1.0e+00	2.3e-03	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-SELT
+
+Evaluating lSQRW (3 members: 3)
+	3 subjects and 3 clones
+Motifs: SQRW(6.9e-04)
+motif-SQRW,CASSQRWSTEAFF,TRBV3-1,TRBJ1-1,CAVGNTGTASKLTF,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SQRW,CASSSQRWYESTEAFF,TRBV7-2,TRBJ1-1,CAGVEDMRF,11/0154:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SQRW,CASSQRWDTGELFF,TRBV19,TRBJ2-2,CAVLRSGGSWGKLQF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.9e-04
+	Vsegment_p	2.2e-01
+	cdr3len_p	4.4e-01
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=6.0e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lSQRW	3	3	3	6.0e-04	2.2e-01	4.4e-01	1.0e+00	1.0e+00	6.2e-03	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-SQRW
+
+Evaluating gSR%NQP (3 members: 3)
+	3 subjects and 3 clones
+Motifs:
+global-SR%NQP,CSASRGNQPQHF,TRBV20-1,TRBJ1-5,NA,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SR%NQP,CASSRSNQPQHF,TRBV3-1,TRBJ1-5,CAVSYASGGSYIPTF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SR%NQP,CATSRDNQPQHF,TRBV15,TRBJ1-5,CAVGANEYGNKLVF,09/0334:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.9e-04
+	Vsegment_p	2.0e-01
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.0e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=3.7e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSR%NQP	3	3	3	3.7e-07	2.0e-01	1.0e-03	1.0e+00	3.0e-01	6.2e-03		global-SR%NQP
+
+Evaluating lQTRL (3 members: 3)
+	3 subjects and 3 clones
+Motifs: QTRL(8.9e-04)
+motif-QTRL,CSARAQTRLAGWDTQYF,TRBV20-1,TRBJ2-3,CLVVDSGNTGKLIF,09/0647:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QTRL,CASSQTRLSGRSPYEQYF,TRBV18,TRBJ2-7,CAGPSGNTPLVF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QTRL,CASSLGQTRLADNEQFF,TRBV5-6,TRBJ2-1,NA,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	8.9e-04
+	Vsegment_p	2.0e-01
+	cdr3len_p	3.5e-02
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=4.3e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lQTRL	3	3	3	4.3e-05	2.0e-01	3.5e-02	1.0e+00	1.0e+00	6.2e-03		motif-QTRL
+
+Evaluating gS%DRGSP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%DRGSP,CASSDDRGSPLHF,TRBV2,TRBJ1-6,CAAIIIGNRDDKIIF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%DRGSP,CASSEDRGSPLHF,TRBV27,TRBJ1-6,CAGQGNTNAGKSTF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	9.3e-04
+	Vsegment_p	7.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.2e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%DRGSP	2	2	2	2.2e-06	7.6e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%DRGSP
+
+Evaluating g%QADT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-%QADT,CASSQADTQYF,TRBV5-1,TRBJ2-3,CAENPNNAGNMLTF,09/0684:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-%QADT,CAWGQADTQYF,TRBV30,TRBJ2-3,CAASITSGTYKYIF,09/0217:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	9.3e-04
+	Vsegment_p	6.9e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+g%QADT	2	2	2	2.0e-06	6.9e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-%QADT
+
+Evaluating gSLD%QP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SLD%QP,CASSLDNQPQHF,TRBV18,TRBJ1-5,CAASKVWGAASKLTF,09/0018:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLD%QP,CASSLDGQPQHF,TRBV5-1,TRBJ1-5,CAVSDQSARQLTF,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	9.3e-04
+	Vsegment_p	6.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.9e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLD%QP	2	2	2	1.9e-06	6.6e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLD%QP
+
+Evaluating gSE%ENTE (2 members: 2)
+	2 subjects and 3 clones
+Motifs:
+global-SE%ENTE,CASSELENTEAFF,TRBV2,TRBJ1-1,CAVGAGTGGYNKLIF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SE%ENTE,CASSELENTEAFF,TRBV2,TRBJ1-1,CAVGVREGANNLFF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SE%ENTE,CASSEVENTEAFF,TRBV2,TRBJ1-1,NA,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	9.3e-04
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSE%ENTE	2	2	3	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SE%ENTE
+
+Evaluating gSLAGT%T (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SLAGT%T,CASSLAGTETQYF,TRBV12-3,TRBJ2-5,CATDASGTYKYIF,09/0772:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLAGT%T,CASSLAGTDTQYF,TRBV5-6,TRBJ2-3,CAVNVEGAQKLVF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	9.3e-04
+	Vsegment_p	6.4e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.9e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLAGT%T	2	2	2	1.9e-06	6.4e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SLAGT%T
+
+Evaluating lDQNT (3 members: 3)
+	4 subjects and 4 clones
+Motifs: DQNT(1.3e-03)
+motif-DQNT,CSGKGTDQNTEAFF,TRBV29-1,TRBJ1-1,CIAWGAGGTSYGKLTF,09/0018:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-DQNT,CASSDQNTEAFF,TRBV19,TRBJ1-1,NA,03/0492:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-DQNT,CSCPTDQNTIYF,TRBV20-1,TRBJ1-3,CAMITGGGNKLTF,09/0255:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-DQNT,CSCPTDQNTIYF,TRBV20-1,TRBJ1-3,NA,09/0523:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e-03
+	Vsegment_p	4.4e-02
+	cdr3len_p	7.6e-02
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	2.3e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=4.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lDQNT	3	4	4	4.7e-06	4.4e-02	7.6e-02	1.0e+00	2.3e-01	6.2e-03	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-DQNT
+
+Evaluating gRTGG%YG (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-RTGG%YG,CASRTGGNYGYTF,TRBV28,TRBJ1-2,NA,01/0873:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RTGG%YG,CSARTGGDYGYTF,TRBV20-1,TRBJ1-2,CAIVNNARLMF,03/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-03
+	Vsegment_p	7.0e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gRTGG%YG	2	2	2	2.0e-06	7.0e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-RTGG%YG
+
+Evaluating gSPSTG%YG (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SPSTG%YG,CASSPSTGNYGYTF,TRBV7-2,TRBJ1-2,CAGHTGANSKLTF,02/0285:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPSTG%YG,CASSPSTGGYGYTF,TRBV27,TRBJ1-2,CAVRVGGSYIPTF,01/0873:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-03
+	Vsegment_p	7.1e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.1e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSPSTG%YG	2	2	2	2.1e-06	7.1e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SPSTG%YG
+
+Evaluating gRDD%YE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-RDD%YE,CSARDDGYEQYF,TRBV20-1,TRBJ2-7,NA,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RDD%YE,CSARDDSYEQYF,TRBV20-1,TRBJ2-7,NA,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-03
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gRDD%YE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-RDD%YE
+
+Evaluating gSLSG%SYNE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SLSG%SYNE,CASSLSGSSYNEQFF,TRBV27,TRBJ2-1,CALGGSGGSNYKLTF,11/0154:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLSG%SYNE,CASSLSGQSYNEQFF,TRBV5-1,TRBJ2-1,CATATISGSARQLTF,09/0212:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-03
+	Vsegment_p	7.3e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.1e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLSG%SYNE	2	2	2	2.1e-06	7.3e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLSG%SYNE
+
+Evaluating gS%RQGGTGE (2 members: 2)
+	1 subjects and 2 clones
+Motifs:
+global-S%RQGGTGE,CASSLRQGGTGELFF,TRBV19,TRBJ2-2,CAAMGNYGQNFVF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%RQGGTGE,CASSIRQGGTGELFF,TRBV19,TRBJ2-2,CAALNNYGQNFVF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-03
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%RQGGTGE	2	1	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-S%RQGGTGE
+
+Evaluating lESLL (2 members: 2)
+	2 subjects and 2 clones
+Motifs: ESLL(2.7e-05)
+motif-ESLL,CSARESLLANYGYTF,TRBV20-1,TRBJ1-2,CIVTGETSGSRLTF,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-ESLL,CASSRAESLLYGYTF,TRBV9,TRBJ1-2,CILRGNLQGGSEKLVF,09/0772:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-03
+	Vsegment_p	8.7e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.5e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lESLL	2	2	2	2.5e-06	8.7e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	motif-ESLL
+
+Evaluating gSLD%DYG (2 members: 2)
+	1 subjects and 2 clones
+Motifs:
+global-SLD%DYG,CASSLDVDYGYTF,TRBV12-3,TRBJ1-2,CATDGSGGYQKVTF,09/0018:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLD%DYG,CASSLDMDYGYTF,TRBV7-9,TRBJ1-2,CAGNGGFKTIF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.7e-03
+	Vsegment_p	6.0e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLD%DYG	2	1	2	1.7e-06	6.0e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SLD%DYG
+
+Evaluating gSQGY% (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SQGY%,CSASQGYEQYV,TRBV29-1,TRBJ2-7,CAVTDFQKLVF,09/0684:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQGY%,CASSQGYQAFF,TRBV4-1,TRBJ1-1,NA,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.7e-03
+	Vsegment_p	6.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	8.1e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.6e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSQGY%	2	2	2	1.6e-07	6.6e-02	1.0e-03	1.0e+00	8.1e-02	2.9e-02		global-SQGY%
+
+Evaluating lLSPL (3 members: 3)
+	3 subjects and 3 clones
+Motifs: LSPL(2.9e-03)
+motif-LSPL,CASSLSPLVGAGYNEQFF,TRBV27,TRBJ2-1,CAMREGGTSYDKVIF,09/0629:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LSPL,CASSLSPLGVGGYTF,TRBV27,TRBJ1-2,CAGAGGNARLMF,01/0430:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-LSPL,CASSLSPLGSALQSSTDTQYF,TRBV12-3,TRBJ2-3,CAVRDKSTDKLIF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.1e-03
+	Vsegment_p	1.0e-01
+	cdr3len_p	4.6e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=3.0e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lLSPL	3	3	3	3.0e-04	1.0e-01	4.6e-01	1.0e+00	1.0e+00	6.2e-03		motif-LSPL
+
+Evaluating gSR%GQP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SR%GQP,CASSRSGQPQHF,TRBV7-2,TRBJ1-5,NA,02/0207:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SR%GQP,CASSRGGQPQHF,TRBV19,TRBJ1-5,CVVNEYSGGGADGLTF,03/0480:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.2e-03
+	Vsegment_p	5.9e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSR%GQP	2	2	2	1.7e-06	5.9e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SR%GQP
+
+Evaluating lNPDR (3 members: 3)
+	3 subjects and 4 clones
+Motifs: NPDR(2.3e-03)
+motif-NPDR,CASNPDRQSNYEQYF,TRBV5-1,TRBJ2-7,CIVRDGNSGGYQKVTF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-NPDR,CASSPNPDRDQFF,TRBV9,TRBJ2-1,CATDAGGTSYGKLTF,01/0430:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-NPDR,CASSVSPNPDRSYTF,TRBV9,TRBJ1-2,NA,09/0217:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-NPDR,CASSVSPNPDRSYTF,TRBV9,TRBJ1-2,NA,09/0217:PepLib,5.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.3e-03
+	Vsegment_p	1.5e-02
+	cdr3len_p	9.1e-02
+	lowest_hla	1.0e+00	
+	expansion_p	5.9e-02
+	cluster_size_p	6.2e-03
+	FINAL SCORE=5.0e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lNPDR	3	3	4	5.0e-07	1.5e-02	9.1e-02	1.0e+00	5.9e-02	6.2e-03		motif-NPDR
+
+Evaluating lSQDN (3 members: 3)
+	3 subjects and 3 clones
+Motifs: SQDN(2.5e-03)
+motif-SQDN,CASSQDNTGSYEQYF,TRBV4-2,TRBJ2-7,NA,03/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SQDN,CASSQDNSKNIQYF,TRBV18,TRBJ2-4,CAVEEGRGGKLIF,09/0217:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-SQDN,CASSQDNQGANIQYF,TRBV4-1,TRBJ2-4,CAVQSSGNTGKLIF,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.5e-03
+	Vsegment_p	1.8e-01
+	cdr3len_p	2.6e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=2.9e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lSQDN	3	3	3	2.9e-04	1.8e-01	2.6e-01	1.0e+00	1.0e+00	6.2e-03		motif-SQDN
+
+Evaluating lPTNY (3 members: 3)
+	3 subjects and 3 clones
+Motifs: PTNY(3.2e-03)
+motif-PTNY,CASTKAGPTNYGYTF,TRBV28,TRBJ1-2,NA,03/0492:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-PTNY,CSALGPTNYGYTF,TRBV20-1,TRBJ1-2,CAVERGQAGTALIF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-PTNY,CASSPKGGPTNYGYTF,TRBV4-1,TRBJ1-2,CALSEARAGGFKTIF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.7e-03
+	Vsegment_p	2.1e-01
+	cdr3len_p	4.2e-01
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	3.3e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=1.8e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lPTNY	3	3	3	1.8e-04	2.1e-01	4.2e-01	1.0e+00	3.3e-01	6.2e-03	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-PTNY
+
+Evaluating gSLGGL% (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SLGGL%,CASSLGGLNWYF,TRBV5-6,TRBJ2-7,CALTGGTSYGKLTF,09/0328:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLGGL%,CASSLGGLEYYF,TRBV28,TRBJ2-3,CAATPSGNMLTF,09/0523:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.7e-03
+	Vsegment_p	8.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.5e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLGGL%	2	2	2	2.5e-06	8.6e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLGGL%
+
+Evaluating gRD%SYE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-RD%SYE,CSARDNSYEQYF,TRBV20-1,TRBJ2-7,CALMGGATNKLIF,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RD%SYE,CSARDDSYEQYF,TRBV20-1,TRBJ2-7,NA,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.7e-03
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gRD%SYE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-RD%SYE
+
+Evaluating lQGPQ (3 members: 3)
+	3 subjects and 3 clones
+Motifs: QGPQ(2.9e-03)
+motif-QGPQ,CASSLLQGPQSPLHF,TRBV6-6,TRBJ1-6,CATDNNDMRF,09/0217:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QGPQ,CAARQGPQPQHF,TRBV9,TRBJ1-5,CAETPGGYNKLIF,09/0255:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QGPQ,CASSPQGPQGSPQHF,TRBV4-1,TRBJ1-5,NA,01/0882:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.9e-03
+	Vsegment_p	1.7e-01
+	cdr3len_p	2.4e-01
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	3.3e-01
+	cluster_size_p	6.2e-03
+	FINAL SCORE=8.3e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lQGPQ	3	3	3	8.3e-05	1.7e-01	2.4e-01	1.0e+00	3.3e-01	6.2e-03	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-QGPQ
+
+Evaluating lQLPG (3 members: 3)
+	3 subjects and 3 clones
+Motifs: QLPG(3.2e-03)
+motif-QLPG,CASSQLPGPFGGNQPQHF,TRBV4-1,TRBJ1-5,CAVPQGAQKLVF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QLPG,CASSVQLPGLYEGGDTQYF,TRBV9,TRBJ2-3,CAVGLNQGGKLIF,03/0163:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QLPG,CASSQLPGTSGGNEQFF,TRBV4-2,TRBJ2-1,CAASAGNSGYALNF,09/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.2e-03
+	Vsegment_p	2.1e-01
+	cdr3len_p	4.4e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=5.8e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lQLPG	3	3	3	5.8e-04	2.1e-01	4.4e-01	1.0e+00	1.0e+00	6.2e-03		motif-QLPG
+
+Evaluating gSLTG%QP (2 members: 2)
+	2 subjects and 3 clones
+Motifs:
+global-SLTG%QP,CASSLTGSQPQHF,TRBV5-6,TRBJ1-5,CALRRREGAQKLVF,09/0523:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLTG%QP,CASSLTGAQPQHF,TRBV4-1,TRBJ1-5,CIVRPRGNTDKLIF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLTG%QP,CASSLTGAQPQHF,TRBV4-1,TRBJ1-5,CVVSDDSGTYKYIF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.3e-03
+	Vsegment_p	1.0e-01
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=3.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLTG%QP	2	2	3	3.0e-06	1.0e-01	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SLTG%QP
+
+Evaluating gSEGG%YE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SEGG%YE,CASSEGGGYEQYF,TRBV25-1,TRBJ2-7,CVVSDRGSTLGRLYF,11/0154:MtbLys,5.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SEGG%YE,CASSEGGSYEQYF,TRBV10-2,TRBJ2-7,CAMSRNNNARLMF,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.3e-03
+	Vsegment_p	7.5e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.5e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=7.6e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSEGG%YE	2	2	2	7.6e-08	7.5e-02	1.0e-03	1.0e+00	3.5e-02	2.9e-02		global-SEGG%YE
+
+Evaluating lFSST (3 members: 3)
+	3 subjects and 3 clones
+Motifs: FSST(3.4e-03)
+motif-FSST,CAWRLQFSSTDTQYF,TRBV30,TRBJ2-3,NA,09/0125:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-FSST,CASSRAFSSTEAFF,TRBV4-3,TRBJ1-1,CAVDPGGATNKLIF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-FSST,CASSFSSTGSPQHF,TRBV5-6,TRBJ1-5,CAVNPGNQFYF,09/0720:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.4e-03
+	Vsegment_p	1.9e-01
+	cdr3len_p	2.5e-02
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=2.9e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lFSST	3	3	3	2.9e-05	1.9e-01	2.5e-02	1.0e+00	1.0e+00	6.2e-03		motif-FSST
+
+Evaluating lQDGL (3 members: 3)
+	3 subjects and 3 clones
+Motifs: QDGL(3.4e-03)
+motif-QDGL,CASSQDGLAGGLEQFF,TRBV4-2,TRBJ2-1,NA,09/0018:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QDGL,CASSQDGLAGETQYF,TRBV4-3,TRBJ2-5,NA,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QDGL,CASSQDGLTTDTQYF,TRBV5-1,TRBJ2-3,CALSEAPTGGFKTIF,09/0629:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.4e-03
+	Vsegment_p	1.9e-01
+	cdr3len_p	2.7e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	6.2e-03
+	FINAL SCORE=3.2e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lQDGL	3	3	3	3.2e-04	1.9e-01	2.7e-01	1.0e+00	1.0e+00	6.2e-03		motif-QDGL
+
+Evaluating g%RQGAGE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-%RQGAGE,CASSRQGAGEQYF,TRBV3-1,TRBJ2-7,CAVPSGGANSKLTF,09/0018:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-%RQGAGE,CSAGRQGAGEQYF,TRBV20-1,TRBJ2-7,RGSQGNLIF,09/0629:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-03
+	Vsegment_p	6.2e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	2.2e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=4.0e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+g%RQGAGE	2	2	2	4.0e-07	6.2e-02	1.0e-03	1.0e+00	2.2e-01	2.9e-02	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-%RQGAGE
+
+Evaluating gSQG%G (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SQG%G,CASSQGSGADF,TRBV4-1,TRBJ1-1,CVVSGRTGGFKTIF,09/0217:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQG%G,CASSQGGGYTF,TRBV4-1,TRBJ1-2,NA,09/0684:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	6.2e-03
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSQG%G	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SQG%G
+
+Evaluating gS%SGGSYNE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%SGGSYNE,CASSRSGGSYNEQFF,TRBV7-3,TRBJ2-1,CAVSDLTTGNQFYF,09/0255:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%SGGSYNE,CASSHSGGSYNEQFF,TRBV4-1,TRBJ2-1,NA,PBMC:PMA,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	7.9e-03
+	Vsegment_p	7.0e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%SGGSYNE	2	2	2	2.0e-06	7.0e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%SGGSYNE
+
+Evaluating gSF%TDT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SF%TDT,CASSFSTDTQYF,TRBV5-1,TRBJ2-3,CAVTPGTYKYIF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SF%TDT,CAISFTTDTQYF,TRBV10-3,TRBJ2-3,CAFPRSNNLFF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	7.9e-03
+	Vsegment_p	5.8e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSF%TDT	2	2	2	1.7e-06	5.8e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SF%TDT
+
+Evaluating gSLGQG%G (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SLGQG%G,CASSLGQGWGYTF,TRBV5-1,TRBJ1-2,CAGLPGRGSQGNLIF,01/0882:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLGQG%G,CASSLGQGYGYTF,TRBV27,TRBJ1-2,CAQPEDGGTSYGKLTF,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	7.9e-03
+	Vsegment_p	6.8e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLGQG%G	2	2	2	2.0e-06	6.8e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SLGQG%G
+
+Evaluating lFVNE (2 members: 2)
+	2 subjects and 2 clones
+Motifs: FVNE(6.9e-04)
+motif-FVNE,CASSLTSGGFVNEQFF,TRBV3-1,TRBJ2-1,CGTEKLNRDDKIIF,09/0629:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-FVNE,CASRGSRWDFVNEQFF,TRBV6-1,TRBJ2-1,CVVSDPVGYQKVTF,01/0817:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	7.9e-03
+	Vsegment_p	7.5e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.2e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lFVNE	2	2	2	2.2e-06	7.5e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		motif-FVNE
+
+Evaluating gS%DSSGANV (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%DSSGANV,CASSHDSSGANVLTF,TRBV4-1,TRBJ2-6,CAFMKLFTGTASKLTF,09/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%DSSGANV,CASSQDSSGANVLTF,TRBV4-1,TRBJ2-6,CAAMVSGSARQLTF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	8.9e-03
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%DSSGANV	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%DSSGANV
+
+Evaluating gSRD%QP (2 members: 2)
+	3 subjects and 3 clones
+Motifs:
+global-SRD%QP,CATSRDNQPQHF,TRBV15,TRBJ1-5,CAVGANEYGNKLVF,09/0334:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRD%QP,CATSRDDQPQHF,TRBV15,TRBJ1-5,CAPSRGNQGGKLIF,09/0217:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRD%QP,CATSRDDQPQHF,TRBV15,TRBJ1-5,NA,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.1e-02
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.9e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=8.5e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSRD%QP	2	3	3	8.5e-09	1.0e-03	1.0e-03	1.0e+00	2.9e-01	2.9e-02		global-SRD%QP
+
+Evaluating gS%TGNYG (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%TGNYG,CASSSTGNYGYTF,TRBV6-6,TRBJ1-2,CAASMTGGGADGLTF,09/0255:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%TGNYG,CASSGTGNYGYTF,TRBV2,TRBJ1-2,CAVTDGSGNTGKLIF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-02
+	Vsegment_p	8.4e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.4e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%TGNYG	2	2	2	2.4e-06	8.4e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%TGNYG
+
+Evaluating g%GDTE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-%GDTE,CAWKGDTEAFF,TRBV30,TRBJ1-1,NA,01/0882:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-%GDTE,CSYRGDTEAFF,TRBV20-1,TRBJ1-1,CAEKGNYGQNFVF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-02
+	Vsegment_p	6.7e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+g%GDTE	2	2	2	2.0e-06	6.7e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-%GDTE
+
+Evaluating gSPG%GE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SPG%GE,CASSPGRGEQYF,TRBV6-6,TRBJ2-7,NA,01/0430:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPG%GE,CASSPGQGEQYV,TRBV6-6,TRBJ2-7,NA,03/0345:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.3e-02
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSPG%GE	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SPG%GE
+
+Evaluating gSL%GGTDT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SL%GGTDT,CASSLQGGTDTQYF,TRBV27,TRBJ2-3,CAILVGLSLYGNNRLAF,09/0720:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%GGTDT,CASSLKGGTDTQYF,TRBV2,TRBJ2-3,QETSGSRLTF,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.4e-02
+	Vsegment_p	7.2e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.1e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSL%GGTDT	2	2	2	2.1e-06	7.2e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SL%GGTDT
+
+Evaluating gS%GRNTE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%GRNTE,CAWSTGRNTEAFF,TRBV30,TRBJ1-1,NA,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%GRNTE,CASSVGRNTEAFF,TRBV9,TRBJ1-1,CILRDSFSSGSARQLTF,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.6e-02
+	Vsegment_p	6.8e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%GRNTE	2	2	2	2.0e-06	6.8e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%GRNTE
+
+Evaluating gSRG%QP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SRG%QP,CSASRGNQPQHF,TRBV20-1,TRBJ1-5,NA,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRG%QP,CASSRGGQPQHF,TRBV19,TRBJ1-5,CVVNEYSGGGADGLTF,03/0480:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.6e-02
+	Vsegment_p	7.0e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.0e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSRG%QP	2	2	2	2.0e-06	7.0e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SRG%QP
+
+Evaluating gS%GNYG (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%GNYG,CSVSGGNYGYTF,TRBV29-1,TRBJ1-2,CAFLSGNTPLVF,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%GNYG,CASSSGNYGYTF,TRBV7-9,TRBJ1-2,CAVDRSNFGNEKLTF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.6e-02
+	Vsegment_p	5.8e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%GNYG	2	2	2	1.7e-06	5.8e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%GNYG
+
+Evaluating lKGTV (2 members: 2)
+	2 subjects and 2 clones
+Motifs: KGTV(1.0e-03)
+motif-KGTV,CASSKGTVTDTQYF,TRBV12-3,TRBJ2-3,CAMREFGGYNQGGKLIF,09/0772:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-KGTV,CALKGTVNTGELFF,TRBV6-1,TRBJ2-2,NA,03/0345:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.6e-02
+	Vsegment_p	7.8e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.0e-01
+	cluster_size_p	2.9e-02
+	FINAL SCORE=4.6e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lKGTV	2	2	2	4.6e-07	7.8e-02	1.0e-03	1.0e+00	2.0e-01	2.9e-02		motif-KGTV
+
+Evaluating lIFQ (2 members: 2)
+	2 subjects and 2 clones
+Motifs: IFQ(1.7e-03)
+motif-IFQ,CASIFQPTGENTEAFF,TRBV12-3,TRBJ1-1,CAVLNNAGNMLTF,09/0212:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-IFQ,CASSIFQGTGETQYF,TRBV19,TRBJ2-5,CAVSENNAGNMLTF,03/0302:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.9e-02
+	Vsegment_p	7.1e-02
+	cdr3len_p	2.0e-01
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=4.1e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lIFQ	2	2	2	4.1e-04	7.1e-02	2.0e-01	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-IFQ
+
+Evaluating lTSPN (2 members: 2)
+	2 subjects and 2 clones
+Motifs: TSPN(1.7e-03)
+motif-TSPN,CASRPRGTSPNEQYF,TRBV28,TRBJ2-7,NA,09/0772:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-TSPN,CASSSPSRTSPNLIEQYF,TRBV27,TRBJ2-7,CAVKPGYTGGFKTIF,01/0817:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.2e-02
+	Vsegment_p	6.2e-02
+	cdr3len_p	1.9e-01
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=3.5e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lTSPN	2	2	2	3.5e-04	6.2e-02	1.9e-01	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	motif-TSPN
+
+Evaluating gSLAG%ET (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SLAG%ET,CASSLAGVETQYF,TRBV12-3,TRBJ2-5,CATGASGTYKYIF,09/0720:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLAG%ET,CASSLAGTETQYF,TRBV12-3,TRBJ2-5,CATDASGTYKYIF,09/0772:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.4e-02
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSLAG%ET	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLAG%ET
+
+Evaluating gSP%TDT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SP%TDT,CASSPHTDTQYF,TRBV3-1,TRBJ2-3,CALRGGKGTYKYIF,09/0717:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SP%TDT,CASSPRTDTQYF,TRBV18,TRBJ2-3,NA,09/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.4e-02
+	Vsegment_p	7.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.2e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSP%TDT	2	2	2	2.2e-06	7.6e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SP%TDT
+
+Evaluating gSL%GGTE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SL%GGTE,CASSLEGGTEAFF,TRBV5-1,TRBJ1-1,CATGREYGGATNKLIF,03/0493:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%GGTE,CASSLKGGTEAFF,TRBV7-2,TRBJ1-1,CAVRGYNNNDMRF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.5e-02
+	Vsegment_p	7.2e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.1e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSL%GGTE	2	2	2	2.1e-06	7.2e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-SL%GGTE
+
+Evaluating gSS%ET (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SS%ET,CASSSEETQYF,TRBV7-6,TRBJ2-5,CVVSAGLADKLIF,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SS%ET,CASSSQETQYF,TRBV27,TRBJ2-5,CAASWRTGFQKLVF,01/0639:MtbLys,6.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.5e-02
+	Vsegment_p	8.2e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.6e-02
+	cluster_size_p	2.9e-02
+	FINAL SCORE=3.8e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSS%ET	2	2	2	3.8e-08	8.2e-02	1.0e-03	1.0e+00	1.6e-02	2.9e-02		global-SS%ET
+
+Evaluating gS%SNQP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%SNQP,CASSRSNQPQHF,TRBV3-1,TRBJ1-5,CAVSYASGGSYIPTF,01/0329:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%SNQP,CAISNSNQPQHF,TRBV10-3,TRBJ1-5,CAAPLYNQGGKLIF,09/0772:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	2.8e-02
+	Vsegment_p	7.3e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.1e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%SNQP	2	2	2	2.1e-06	7.3e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%SNQP
+
+Evaluating gSL%RGE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-SL%RGE,CASSLNRGEQFF,TRBV7-3,TRBJ2-1,CALSPLNTDKLIF,09/0629:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%RGE,CASSLHRGEQFF,TRBV6-5,TRBJ2-1,CALSDLTSGSRLTF,01/0430:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.2e-02
+	Vsegment_p	5.7e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSL%RGE	2	2	2	1.7e-06	5.7e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-SL%RGE
+
+Evaluating lRQTE (2 members: 2)
+	2 subjects and 2 clones
+Motifs: RQTE(3.2e-03)
+motif-RQTE,CASSIARQTEAFF,TRBV19,TRBJ1-1,CAAPLSGNQFYF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-RQTE,CSVEEPRQTEQFF,TRBV29-1,TRBJ2-1,CEGGFNKFYF,03/0493:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.2e-02
+	Vsegment_p	7.4e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.2e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lRQTE	2	2	2	2.2e-06	7.4e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		motif-RQTE
+
+Evaluating lQTGY (2 members: 2)
+	2 subjects and 2 clones
+Motifs: QTGY(3.4e-03)
+motif-QTGY,CSVQTGYTEAFF,TRBV29-1,TRBJ1-1,NA,01/0430:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-QTGY,CASSQTGYTEAFF,TRBV5-1,TRBJ1-1,CAVFAGGTSYGKLTF,09/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.5e-02
+	Vsegment_p	7.5e-02
+	cdr3len_p	1.6e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=3.6e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lQTGY	2	2	2	3.6e-04	7.5e-02	1.6e-01	1.0e+00	1.0e+00	2.9e-02		motif-QTGY
+
+Evaluating gS%GNQP (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%GNQP,CAISKGNQPQHF,TRBV24-1,TRBJ1-5,CAASTSGSARQLTF,09/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%GNQP,CSASRGNQPQHF,TRBV20-1,TRBJ1-5,NA,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	3.8e-02
+	Vsegment_p	6.6e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.9e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%GNQP	2	2	2	1.9e-06	6.6e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%GNQP
+
+Evaluating gS%STDT (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%STDT,CAISDSTDTQYF,TRBV10-3,TRBJ2-3,CAIGGATNKLIF,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%STDT,CASSSSTDTQYF,TRBV27,TRBJ2-3,CIVRFRWGGATNKLIF,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	4.8e-02
+	Vsegment_p	6.0e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%STDT	2	2	2	1.7e-06	6.0e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%STDT
+
+Evaluating lGLVL (2 members: 2)
+	2 subjects and 2 clones
+Motifs: GLVL(2.9e-10)
+motif-GLVL,CASSLLGRGLVLNTEAFF,TRBV12-3,TRBJ1-1,CALKRGSSNTGKLIF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+motif-GLVL,CASSLVGDRGLVLGNTIYF,TRBV5-1,TRBJ1-3,NA,01/0943:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	9.0e-02
+	Vsegment_p	7.3e-02
+	cdr3len_p	1.6e-01
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=3.4e-04
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+lGLVL	2	2	2	3.4e-04	7.3e-02	1.6e-01	1.0e+00	1.0e+00	2.9e-02		motif-GLVL
+
+Evaluating gS%QET (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%QET,CASSLQETQYF,TRBV12-3,TRBJ2-5,CAVNPIYNTDKLIF,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%QET,CASSIQETQYF,TRBV12-3,TRBJ2-5,CALRATSGSRLTF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.4e-01
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%QET	2	2	2	2.9e-08	1.0e-03	1.0e-03	1.0e+00	1.0e+00	2.9e-02	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-S%QET
+
+Evaluating gS%GGE (2 members: 2)
+	2 subjects and 2 clones
+Motifs:
+global-S%GGE,CASSAGGELFF,TRBV11-2,TRBJ2-2,CAMSAFLGSARQLTF,09/0334:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-S%GGE,CSASSGGEAFF,TRBV20-1,TRBJ1-1,CAVSDLDSSASKIIF,01/0385:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.5e-01
+	Vsegment_p	7.7e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	2.9e-02
+	FINAL SCORE=2.2e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gS%GGE	2	2	2	2.2e-06	7.7e-02	1.0e-03	1.0e+00	1.0e+00	2.9e-02		global-S%GGE
+
+Evaluating gSL%ET (2 members: 2)
+	3 subjects and 5 clones
+Motifs:
+global-SL%ET,CASSLEETQYF,TRBV7-2,TRBJ2-5,CIEHTNSGGSNYKLTF,01/0873:MegaIL2,7.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%ET,CASSLEETQYF,TRBV7-2,TRBJ2-5,CIEHTNSGGSNYKLTF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%ET,CASSLEETQYF,TRBV7-2,TRBJ2-5,NA,09/0018:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%ET,CASSLEETQYF,TRBV7-2,TRBJ2-5,CIEHTNSGGSNYKLTF,01/0873:PepLib,21.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SL%ET,CASSLQETQYF,TRBV12-3,TRBJ2-5,CAVNPIYNTDKLIF,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.8e-01
+	Vsegment_p	6.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e-03
+	cluster_size_p	2.9e-02
+	FINAL SCORE=1.7e-10
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+gSL%ET	2	3	5	1.7e-10	6.0e-03	1.0e-03	1.0e+00	1.0e-03	2.9e-02		global-SL%ET
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SPGQGHYNE,CASSPGQGHYNEQFF,TRBV6-2,TRBJ2-1,NA,09/0125:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPGQGHYNE,CASSPGQGHYNEQFF,TRBV6-2,TRBJ2-1,CAVNSGGSNYKLTF,09/0125:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	9.9e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-08	1.0e-03	1.0e-03	1.0e+00	9.9e-02	9.5e-01		global-SPGQGHYNE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SPGLNSYE,CASSPGLNSYEQYF,TRBV11-2,TRBJ2-7,CASTSQGAQKLVF,02/0259:MegaIFNg,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPGLNSYE,CASSPGLNSYEQYF,TRBV11-2,TRBJ2-7,CASTSQGAQKLVF,02/0259:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.8e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=3.6e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	3.6e-08	1.0e-03	1.0e-03	1.0e+00	3.8e-02	9.5e-01		global-SPGLNSYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-TGTGDSP,CASTGTGDSPLHF,TRBV2,TRBJ1-6,CALIRNQAGTALIF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-TGTGDSP,CASTGTGDSPLHF,TRBV2,TRBJ1-6,CALIRNQAGTALIF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-TGTGDSP
+
+Evaluating single (1 members: 1)
+	2 subjects and 3 clones
+Motifs:
+global-SQDMRTGTNEK,CASSQDMRTGTNEKLFF,TRBV4-2,TRBJ1-4,NA,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQDMRTGTNEK,CASSQDMRTGTNEKLFF,TRBV4-2,TRBJ1-4,NA,01/0873:PepLib,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQDMRTGTNEK,CASSQDMRTGTNEKLFF,TRBV4-2,TRBJ1-4,NA,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.4e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.4e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	3	1.4e-07	1.0e-03	1.0e-03	1.0e+00	1.4e-01	9.5e-01		global-SQDMRTGTNEK
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SQGANE,CAASQGANEQFF,TRBV24-1,TRBJ2-1,CAVTISGGSYIPTF,03/0345:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQGANE,CAASQGANEQFF,TRBV24-1,TRBJ2-1,NA,03/0345:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SQGANE
+
+Evaluating single (1 members: 1)
+	3 subjects and 3 clones
+Motifs:
+global-RLGLSGE,CASRLGLSGELFF,TRBV6-5,TRBJ2-2,NA,09/0065:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RLGLSGE,CASRLGLSGELFF,TRBV6-5,TRBJ2-2,NA,09/0328:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RLGLSGE,CASRLGLSGELFF,TRBV6-5,TRBJ2-2,NA,02/0152:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	4.5e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=4.3e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	3	3	4.3e-08	1.0e-03	1.0e-03	1.0e+00	4.5e-02	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-RLGLSGE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-PGQVYSSYE,CSVPGQVYSSYEQYF,TRBV20-1,TRBJ2-7,CLVGDRVGSSNTGKLIF,02/0259:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-PGQVYSSYE,CSVPGQVYSSYEQYF,TRBV20-1,TRBJ2-7,CLVGDRVGSSNTGKLIF,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.1e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.0e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.0e-07	1.0e-03	1.0e-03	1.0e+00	2.1e-01	9.5e-01		global-PGQVYSSYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SISTSSTDT,CSASISTSSTDTQYF,TRBV20-1,TRBJ2-3,CAVGTGFQKLVF,03/0387:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SISTSSTDT,CSASISTSSTDTQYF,TRBV20-1,TRBJ2-3,CAVGTGFQKLVF,03/0387:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01		global-SISTSSTDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 3 clones
+Motifs:
+global-RPGQSEGHG,CASRPGQSEGHGYTF,TRBV19,TRBJ1-2,CVVSEKTGGFKTIF,01/0873:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RPGQSEGHG,CASRPGQSEGHGYTF,TRBV19,TRBJ1-2,CVVSEKTGGFKTIF,01/0873:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RPGQSEGHG,CASRPGQSEGHGYTF,TRBV19,TRBJ1-2,CVVSEKTGGFKTIF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	4.4e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=4.2e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	3	4.2e-08	1.0e-03	1.0e-03	1.0e+00	4.4e-02	9.5e-01		global-RPGQSEGHG
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-FKEGLEG,CASFKEGLEGYTF,TRBV5-1,TRBJ1-2,NA,09/0217:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-FKEGLEG,CASFKEGLEGYTF,TRBV5-1,TRBJ1-2,CLVGFAGNNRKLIW,09/0217:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-FKEGLEG
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SGGGVPGSP,CASSGGGVPGSPLHF,TRBV9,TRBJ1-6,CAATRDSFYGGSQGNLIF,03/0345:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SGGGVPGSP,CASSGGGVPGSPLHF,TRBV9,TRBJ1-6,CAATRDSFYGGSQGNLIF,03/0345:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SGGGVPGSP
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SLNSP,CASSLNSPLHF,TRBV7-2,TRBJ1-6,NA,01/0960:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLNSP,CASSLNSPLHF,TRBV7-2,TRBJ1-6,NA,03/0492:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	2.0e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.0e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.0e-07	1.0e-03	1.0e-03	1.0e+00	2.0e-01	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLNSP
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-STPGTQGIITGE,CASSTPGTQGIITGELFF,TRBV11-2,TRBJ2-2,NA,01/0873:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-STPGTQGIITGE,CASSTPGTQGIITGELFF,TRBV11-2,TRBJ2-2,NA,01/0873:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-STPGTQGIITGE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SFVFTGARET,CASSFVFTGARETQYF,TRBV12-3,TRBJ2-5,CIVSSVQGAQKLVF,09/0328:MegaIL2,4.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SFVFTGARET,CASSFVFTGARETQYF,TRBV12-3,TRBJ2-5,CIVSSVQGAQKLVF,03/0492:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.8e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=3.6e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	3.6e-08	1.0e-03	1.0e-03	1.0e+00	3.8e-02	9.5e-01		global-SFVFTGARET
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-TRGGGFSGNT,CASTRGGGFSGNTIYF,TRBV7-2,TRBJ1-3,CAMREVVRTGANSKLTF,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-TRGGGFSGNT,CASTRGGGFSGNTIYF,TRBV7-2,TRBJ1-3,CAMREVVRTGANSKLTF,02/0259:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-TRGGGFSGNT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SENWQRSYE,CASSENWQRSYEQYV,TRBV6-1,TRBJ2-7,CAVVLSGNTGKLIF,03/0345:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SENWQRSYE,CASSENWQRSYEQYV,TRBV6-1,TRBJ2-7,CAVVLSGNTGKLIF,03/0345:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01		global-SENWQRSYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-RERTGDSP,CSARERTGDSPLHF,TRBV20-1,TRBJ1-6,CALDITGGGNKLTF,01/0385:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RERTGDSP,CSARERTGDSPLHF,TRBV20-1,TRBJ1-6,CALDITGGGNKLTF,01/0385:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	5.2e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=5.0e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	5.0e-08	1.0e-03	1.0e-03	1.0e+00	5.2e-02	9.5e-01		global-RERTGDSP
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-PGQGAFGT,CSAPGQGAFGTQYF,TRBV20-1,TRBJ2-3,CAVGASSGTYKYIF,01/0882:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-PGQGAFGT,CSAPGQGAFGTQYF,TRBV20-1,TRBJ2-3,CAVGASSGTYKYIF,01/0882:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	4.2e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=4.0e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	4.0e-08	1.0e-03	1.0e-03	1.0e+00	4.2e-02	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-PGQGAFGT
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-PPDTYG,CSAPPDTYGYTF,TRBV20-1,TRBJ1-2,NA,09/0772:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-PPDTYG,CSAPPDTYGYTF,TRBV20-1,TRBJ1-2,NA,01/0873:MegaIFNg,4.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	5.3e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=5.1e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	5.1e-08	1.0e-03	1.0e-03	1.0e+00	5.3e-02	9.5e-01		global-PPDTYG
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-RAGGGAKNI,CASRAGGGAKNIQYF,TRBV2,TRBJ2-4,NA,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RAGGGAKNI,CASRAGGGAKNIQYF,TRBV2,TRBJ2-4,CADPINNNNDMRF,03/0345:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASRGQGGNQPQHF	TRBV19	TRBJ1-5	CIVRPSLYNTDKLIF	09/0410:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASRGQGGNQPQHF	TRBV19	TRBJ1-5	CIVRPSLYNTDKLIF	09/0410:MtbLys	1	global-RAGGGAKNI
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-RPRVLNYG,CASRPRVLNYGYTF,TRBV28,TRBJ1-2,NA,09/0018:MegaIL2,4.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RPRVLNYG,CASRPRVLNYGYTF,TRBV28,TRBJ1-2,CAYRRGDNYGQNFVF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	5.8e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=5.5e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	5.5e-08	1.0e-03	1.0e-03	1.0e+00	5.8e-02	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-RPRVLNYG
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-QSGGANGE,CSAQSGGANGELFF,TRBV20-1,TRBJ2-2,NA,01/0430:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-QSGGANGE,CSAQSGGANGELFF,TRBV20-1,TRBJ2-2,NA,01/0430:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-QSGGANGE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SLSSNNE,CASSLSSNNEQFF,TRBV7-3,TRBJ2-1,NA,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLSSNNE,CASSLSSNNEQFF,TRBV7-3,TRBJ2-1,NA,09/0125:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLSSNNE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-GGEAET,CSAGGEAETQYF,TRBV20-1,TRBJ2-5,CATDEFKDDYKLSF,03/0492:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-GGEAET,CSAGGEAETQYF,TRBV20-1,TRBJ2-5,CATDEFKDDYKLSF,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	9.4e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.0e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.0e-08	1.0e-03	1.0e-03	1.0e+00	9.4e-02	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-GGEAET
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLVWAGNTE,CASSLVWAGNTEAFF,TRBV7-9,TRBJ1-1,CAFVGTASKLTF,09/0018:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLVWAGNTE,CASSLVWAGNTEAFF,TRBV7-9,TRBJ1-1,CAFVGTASKLTF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SLVWAGNTE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SDFATGSADT,CASSDFATGSADTQYF,TRBV10-1,TRBJ2-3,CAVEYGQNFVF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SDFATGSADT,CASSDFATGSADTQYF,TRBV10-1,TRBJ2-3,CAGGKSGYSTLTF,09/0018:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.6e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.5e-07	1.0e-03	1.0e-03	1.0e+00	2.6e-01	9.5e-01		global-SDFATGSADT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SGTGGMNTE,CASSGTGGMNTEAFF,TRBV6-6,TRBJ1-1,CAVGASNQGGKLIF,01/0873:PepLib,5.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SGTGGMNTE,CASSGTGGMNTEAFF,TRBV6-6,TRBJ1-1,NA,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.3e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.2e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.2e-08	1.0e-03	1.0e-03	1.0e+00	2.3e-02	9.5e-01		global-SGTGGMNTE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SPLGWDT,CASSPLGWDTQYF,TRBV18,TRBJ2-3,NA,09/0772:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPLGWDT,CASSPLGWDTQYF,TRBV18,TRBJ2-3,NA,09/0772:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SPLGWDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SEDANE,CASSEDANEQFF,TRBV2,TRBJ2-1,NA,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SEDANE,CASSEDANEQFF,TRBV2,TRBJ2-1,NA,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SEDANE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SGLGDRESE,CAISGLGDRESEQYF,TRBV10-3,TRBJ2-7,CAASMYNTDKLIF,02/0259:MegaIL2,4.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SGLGDRESE,CAISGLGDRESEQYF,TRBV10-3,TRBJ2-7,CAASMYNTDKLIF,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	5.0e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=4.8e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	4.8e-08	1.0e-03	1.0e-03	1.0e+00	5.0e-02	9.5e-01		global-SGLGDRESE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SHHGPLGNYG,CASSHHGPLGNYGYTF,TRBV6-4,TRBJ1-2,CAVNGNDYKLSF,02/0259:MegaIFNg,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SHHGPLGNYG,CASSHHGPLGNYGYTF,TRBV6-4,TRBJ1-2,CAVNGNDYKLSF,02/0259:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.3e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.2e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.2e-07	1.0e-03	1.0e-03	1.0e+00	2.3e-01	9.5e-01		global-SHHGPLGNYG
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-RSTGGTE,CASRSTGGTEAFF,TRBV7-3,TRBJ1-1,NA,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RSTGGTE,CASRSTGGTEAFF,TRBV7-3,TRBJ1-1,NA,03/0387:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-RSTGGTE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-RAGTLYNE,CASRAGTLYNEQFF,TRBV6-1,TRBJ2-1,CALKLAHQAGTALIF,01/0385:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RAGTLYNE,CASRAGTLYNEQFF,TRBV6-1,TRBJ2-1,NA,02/0207:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01		global-RAGTLYNE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SRGQGGNTE,CASSRGQGGNTEAFF,TRBV12-3,TRBJ1-1,CIVRVISSGSARQLTF,03/0387:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRGQGGNTE,CASSRGQGGNTEAFF,TRBV12-3,TRBJ1-1,CIVRVISSGSARQLTF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SRGQGGNTE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SSTTANTE,CASSSTTANTEAFF,TRBV11-2,TRBJ1-1,NA,01/1013:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SSTTANTE,CASSSTTANTEAFF,TRBV11-2,TRBJ1-1,CAVRDNTGGFKTIF,09/0671:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01		global-SSTTANTE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLFSGGLAKNI,CASSLFSGGLAKNIQYF,TRBV5-6,TRBJ2-4,CAVNRGGATNKLIF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLFSGGLAKNI,CASSLFSGGLAKNIQYF,TRBV5-6,TRBJ2-4,NA,01/0873:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SLFSGGLAKNI
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-FRPGINE,CSAFRPGINEQYV,TRBV20-1,TRBJ2-7,CAVSVTIQGAQKLVF,01/0873:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-FRPGINE,CSAFRPGINEQYV,TRBV20-1,TRBJ2-7,CAMRPRRIQGAQKLVF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.3e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.2e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.2e-07	1.0e-03	1.0e-03	1.0e+00	2.3e-01	9.5e-01		global-FRPGINE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-EPGQGAYE,CASEPGQGAYEQYF,TRBV2,TRBJ2-7,NA,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-EPGQGAYE,CASEPGQGAYEQYF,TRBV2,TRBJ2-7,CAMSGGTGFQKLVF,02/0259:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01		global-EPGQGAYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SQGDVAGGGET,CASSQGDVAGGGETQYF,TRBV4-2,TRBJ2-5,CATEPRSGNTPLVF,01/0873:MtbLys,4.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQGDVAGGGET,CASSQGDVAGGGETQYF,TRBV4-2,TRBJ2-5,CATEPRSGNTPLVF,01/0873:PepLib,10.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e-03
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-10
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-10	1.0e-03	1.0e-03	1.0e+00	1.0e-03	9.5e-01		global-SQGDVAGGGET
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SQNSP,CASSQNSPLHF,TRBV7-2,TRBJ1-6,NA,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQNSP,CASSQNSPLHF,TRBV7-2,TRBJ1-6,CAGGPGGSGNTGKLIF,01/0960:MegaIL2,4.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	4.8e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=4.6e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	4.6e-08	1.0e-03	1.0e-03	1.0e+00	4.8e-02	9.5e-01		global-SQNSP
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-VGRNE,CSVVGRNEQYF,TRBV29-1,TRBJ2-7,NA,09/0772:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-VGRNE,CSVVGRNEQYF,TRBV29-1,TRBJ2-7,NA,02/0259:MegaIFNg,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.3e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.2e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.2e-07	1.0e-03	1.0e-03	1.0e+00	2.3e-01	9.5e-01		global-VGRNE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SDHNSP,CASSDHNSPLHF,TRBV6-1,TRBJ1-6,CAMSEGNDYKLSF,01/0873:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SDHNSP,CASSDHNSPLHF,TRBV6-1,TRBJ1-6,NA,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SDHNSP
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLAWQIHYE,CASSLAWQIHYEQYF,TRBV5-1,TRBJ2-7,CVVSAGNTNAGKSTF,09/0018:MegaIL2,4.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLAWQIHYE,CASSLAWQIHYEQYF,TRBV5-1,TRBJ2-7,NA,09/0018:MegaIFNg,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.0e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	1.9e-08	1.0e-03	1.0e-03	1.0e+00	2.0e-02	9.5e-01		global-SLAWQIHYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SSSISSGNT,CASSSSISSGNTIYF,TRBV5-1,TRBJ1-3,CAVRDGGATNKLIF,01/0873:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SSSISSGNT,CASSSSISSGNTIYF,TRBV5-1,TRBJ1-3,CAVRDGGATNKLIF,01/0873:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.1e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.0e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.0e-07	1.0e-03	1.0e-03	1.0e+00	2.1e-01	9.5e-01		global-SSSISSGNT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SHRGGTSYG,CASSHRGGTSYGYTF,TRBV7-2,TRBJ1-2,NA,01/0906:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SHRGGTSYG,CASSHRGGTSYGYTF,TRBV7-2,TRBJ1-2,NA,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SHRGGTSYG
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-RDRRGNQP,CSARDRRGNQPQHF,TRBV20-1,TRBJ1-5,CAARRTGGFKTIF,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RDRRGNQP,CSARDRRGNQPQHF,TRBV20-1,TRBJ1-5,CALSGSQGAQKLVF,01/0385:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-RDRRGNQP
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SHGQGQGYG,CASSHGQGQGYGYTF,TRBV4-1,TRBJ1-2,NA,09/0334:MtbLys,9.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SHGQGQGYG,CASSHGQGQGYGYTF,TRBV4-1,TRBJ1-2,NA,09/0762:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-09	1.0e-03	1.0e-03	1.0e+00	1.0e-02	9.5e-01		global-SHGQGQGYG
+
+Evaluating single (1 members: 1)
+	2 subjects and 3 clones
+Motifs:
+global-STGGSGANV,CSVSTGGSGANVLTF,TRBV29-1,TRBJ2-6,NA,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-STGGSGANV,CSVSTGGSGANVLTF,TRBV29-1,TRBJ2-6,NA,09/0730:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-STGGSGANV,CSVSTGGSGANVLTF,TRBV29-1,TRBJ2-6,CALGYGGATNKLIF,01/0906:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.3e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.2e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	3	1.2e-07	1.0e-03	1.0e-03	1.0e+00	1.3e-01	9.5e-01		global-STGGSGANV
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-STTSGGARDT,CASSTTSGGARDTQYF,TRBV7-8,TRBJ2-3,CAFRNTGTASKLTF,01/0873:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-STTSGGARDT,CASSTTSGGARDTQYF,TRBV7-8,TRBJ2-3,CAFRNTGTASKLTF,01/0873:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.7e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.7e-08	1.0e-03	1.0e-03	1.0e+00	1.0e-01	9.5e-01		global-STTSGGARDT
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-EGGQGANE,CSVEGGQGANEQFF,TRBV29-1,TRBJ2-1,CAGPGGSARQLTF,09/0720:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-EGGQGANE,CSVEGGQGANEQFF,TRBV29-1,TRBJ2-1,NA,09/0671:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01		global-EGGQGANE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLAALYG,CASSLAALYGYTF,TRBV7-2,TRBJ1-2,NA,09/0018:MtbLys,12.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLAALYG,CASSLAALYGYTF,TRBV7-2,TRBJ1-2,CGATTSGAQKLVF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	4.0e-03
+	cluster_size_p	9.5e-01
+	FINAL SCORE=3.8e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	3.8e-09	1.0e-03	1.0e-03	1.0e+00	4.0e-03	9.5e-01		global-SLAALYG
+
+Evaluating single (1 members: 1)
+	2 subjects and 3 clones
+Motifs:
+global-STEGNYG,CASSTEGNYGYTF,TRBV5-1,TRBJ1-2,CAYRSTGTYKYIF,09/0410:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-STEGNYG,CASSTEGNYGYTF,TRBV27,TRBJ1-2,CVVVRDARLMF,01/0906:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-STEGNYG,CASSTEGNYGYTF,TRBV27,TRBJ1-2,NA,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	9.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.1e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.7e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	3	2.7e-06	9.0e-03	1.0e-03	1.0e+00	3.1e-01	9.5e-01		global-STEGNYG
+
+Evaluating single (1 members: 1)
+	3 subjects and 3 clones
+Motifs:
+global-SPEET,CASSPEETQYF,TRBV7-2,TRBJ2-5,NA,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPEET,CASSPEETQYF,TRBV7-2,TRBJ2-5,NA,09/0018:MtbLys,31.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPEET,CASSPEETQYF,TRBV7-2,TRBJ2-5,CIVHTNSGGSNYKLTF,09/0217:PepLib,49.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e-03
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-10
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	3	3	9.5e-10	1.0e-03	1.0e-03	1.0e+00	1.0e-03	9.5e-01		global-SPEET
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SSQGDFGTGE,CASSSQGDFGTGEQFF,TRBV7-2,TRBJ2-1,CAVNAQGTGRRALTF,09/0126:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SSQGDFGTGE,CASSSQGDFGTGEQFF,TRBV7-2,TRBJ2-1,CAVNAQGTGRRALTF,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SSQGDFGTGE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SRDQQT,CATSRDQQTLHF,TRBV15,TRBJ1-6,NA,02/0259:PepLib,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRDQQT,CATSRDQQTLHF,TRBV15,TRBJ1-6,NA,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01		global-SRDQQT
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SGGGDT,CASSGGGDTQYF,TRBV6-1,TRBJ2-4,CAVSDMRNQGGKLIF,09/0217:MegaIL2,5.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SGGGDT,CASSGGGDTQYF,TRBV12-5,TRBJ2-3,NA,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	7.7e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	3.3e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.4e-06
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.4e-06	7.7e-02	1.0e-03	1.0e+00	3.3e-02	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SGGGDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SIRLAANNE,CASSIRLAANNEQFF,TRBV9,TRBJ2-1,CAYRSALRGGADGLTF,09/0217:PepLib,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SIRLAANNE,CASSIRLAANNEQFF,TRBV9,TRBJ2-1,CAYRSALRGGADGLTF,09/0217:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	8.9e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=8.5e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	8.5e-08	1.0e-03	1.0e-03	1.0e+00	8.9e-02	9.5e-01		global-SIRLAANNE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLSGGGE,CASSLSGGGEQYF,TRBV7-2,TRBJ2-7,CAVSDQGNNNDMRF,02/0259:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLSGGGE,CASSLSGGGEQYF,TRBV7-2,TRBJ2-7,NA,02/0259:MegaIFNg,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.3e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.2e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.2e-07	1.0e-03	1.0e-03	1.0e+00	2.3e-01	9.5e-01		global-SLSGGGE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SLGLTNEK,CASSLGLTNEKLFF,TRBV28,TRBJ1-4,NA,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLGLTNEK,CASSLGLTNEKLFF,TRBV5-6,TRBJ1-4,CAASKDTGFQKLVF,09/0531:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	8.9e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=8.5e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	8.5e-05	8.9e-02	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SLGLTNEK
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SPGSRGPGANV,CSASPGSRGPGANVLTF,TRBV20-1,TRBJ2-6,NA,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPGSRGPGANV,CSASPGSRGPGANVLTF,TRBV20-1,TRBJ2-6,CIVRVNNNNDMRF,01/0906:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SPGSRGPGANV
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SQSRNI,CASSQSRNIQYF,TRBV6-6,TRBJ2-4,CALSYNTNAGKSTF,03/0345:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQSRNI,CASSQSRNIQYF,TRBV6-6,TRBJ2-4,CALSYNTNAGKSTF,03/0345:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	6.2e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=5.9e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	5.9e-08	1.0e-03	1.0e-03	1.0e+00	6.2e-02	9.5e-01		global-SQSRNI
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-RWSSRGEK,LTFRWSSRGEKLFF,TRBV29-1,TRBJ1-4,CLVGADNTNAGKSTF,02/0207:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RWSSRGEK,LTFRWSSRGEKLFF,TRBV29-1,TRBJ1-4,CLVGADNTNAGKSTF,02/0207:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	2.7e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.6e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.6e-08	1.0e-03	1.0e-03	1.0e+00	2.7e-02	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-RWSSRGEK
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SQGGGAG,CASSQGGGAGFNF,TRBV4-1,TRBJ2-4,CALSVYETGGFKTIF,09/0263:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQGGGAG,CASSQGGGAGFNF,TRBV4-1,TRBJ2-4,NA,03/0345:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SQGGGAG
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SPTSGSTDT,CASSPTSGSTDTQYF,TRBV3-1,TRBJ2-3,NA,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPTSGSTDT,CASSPTSGSTDTQYF,TRBV3-1,TRBJ2-3,CAVRGAQKLVF,09/0212:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SPTSGSTDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-QRAEPYE,CAIQRAEPYEQYV,TRBV6-1,TRBJ2-7,CVVSVKTGNTPLVF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-QRAEPYE,CAIQRAEPYEQYV,TRBV6-1,TRBJ2-7,CVVSVKTGNTPLVF,01/0873:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.8e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.7e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	1.7e-07	1.0e-03	1.0e-03	1.0e+00	1.8e-01	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-QRAEPYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLRQALNEK,CASSLRQALNEKLFF,TRBV7-6,TRBJ1-4,CALRGPLDQGGKLIF,01/0960:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLRQALNEK,CASSLRQALNEKLFF,TRBV7-6,TRBJ1-4,NA,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.0e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.9e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	1.9e-07	1.0e-03	1.0e-03	1.0e+00	2.0e-01	9.5e-01		global-SLRQALNEK
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SFSEVNE,CASSFSEVNEQFF,TRBV12-3,TRBJ2-1,CVVSDTGRRALTF,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SFSEVNE,CASSFSEVNEQFF,TRBV12-3,TRBJ2-1,CVVSDTGRRALTF,01/0960:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SFSEVNE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SQMGDT,CASSQMGDTQYF,TRBV18,TRBJ2-3,CADYYNAGNMLTF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQMGDT,CASSQMGDTQYF,TRBV18,TRBJ2-3,CADYYNAGNMLTF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SQMGDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-PRDRGFGE,CSAPRDRGFGEQFF,TRBV20-1,TRBJ2-1,CAVGGTGFQKLVF,09/0018:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-PRDRGFGE,CSAPRDRGFGEQFF,TRBV20-1,TRBJ2-1,CAVGGTGFQKLVF,09/0018:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-PRDRGFGE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-RPDVPNTGE,CASRPDVPNTGELFF,TRBV6-6,TRBJ2-2,NA,01/0960:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RPDVPNTGE,CASRPDVPNTGELFF,TRBV6-6,TRBJ2-2,NA,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-RPDVPNTGE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLVTGGGYG,CASSLVTGGGYGYTF,TRBV7-2,TRBJ1-2,NA,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLVTGGGYG,CASSLVTGGGYGYTF,TRBV7-2,TRBJ1-2,NA,02/0259:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SLVTGGGYG
+
+Evaluating single (1 members: 1)
+	3 subjects and 3 clones
+Motifs:
+global-SFVDSSYE,CASSFVDSSYEQYF,TRBV11-2,TRBJ2-7,CAASGSARQLTF,09/0126:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SFVDSSYE,CASSFVDSSYEQYF,TRBV11-2,TRBJ2-7,NA,01/0906:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SFVDSSYE,CASSFVDSSYEQYF,TRBV11-2,TRBJ2-7,CAASGSARQLTF,09/0531:MtbLys,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	2.1e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.0e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	3	3	2.0e-08	1.0e-03	1.0e-03	1.0e+00	2.1e-02	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SFVDSSYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLAGTSDP,CASSLAGTSDPQYF,TRBV5-1,TRBJ2-7,CAVTYDTGRRALTF,01/0430:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLAGTSDP,CASSLAGTSDPQYF,TRBV5-1,TRBJ2-7,CAVTYDTGRRALTF,01/0430:MegaIL2,6.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.4e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.3e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	1.3e-08	1.0e-03	1.0e-03	1.0e+00	1.4e-02	9.5e-01		global-SLAGTSDP
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SYGPDT,CASSYGPDTQYF,TRBV6-6,TRBJ2-3,NA,02/0259:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SYGPDT,CASSYGPDTQYF,TRBV6-6,TRBJ2-3,NA,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-SYGPDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-RPQGGTE,CASRPQGGTEAFF,TRBV9,TRBJ1-1,CAPSPIDAGNMLTF,02/0259:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RPQGGTE,CASRPQGGTEAFF,TRBV9,TRBJ1-1,CAPSPIDAGNMLTF,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	2.1e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.0e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.0e-07	1.0e-03	1.0e-03	1.0e+00	2.1e-01	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-RPQGGTE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-VVRANTGE,CSVVVRANTGELFF,TRBV29-1,TRBJ2-2,NA,09/0125:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-VVRANTGE,CSVVVRANTGELFF,TRBV29-1,TRBJ2-2,NA,03/0345:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-VVRANTGE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-RSGGAEAKNI,CSARSGGAEAKNIQYF,TRBV20-1,TRBJ2-4,CAVRDPYNTDKLIF,03/0492:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RSGGAEAKNI,CSARSGGAEAKNIQYF,TRBV20-1,TRBJ2-4,CAVRDPYNTDKLIF,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	2.1e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.0e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.0e-07	1.0e-03	1.0e-03	1.0e+00	2.1e-01	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-RSGGAEAKNI
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SPEDRTWTP,CASSPEDRTWTPLHF,TRBV18,TRBJ1-6,NA,02/0207:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPEDRTWTP,CASSPEDRTWTPLHF,TRBV18,TRBJ1-6,CALIRGGATNKLIF,02/0207:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	9.1e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=8.7e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	8.7e-08	1.0e-03	1.0e-03	1.0e+00	9.1e-02	9.5e-01		global-SPEDRTWTP
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-EGGSFNEK,CSVEGGSFNEKLFF,TRBV29-1,TRBJ1-4,CLVGAFNTNAGKSTF,09/0263:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-EGGSFNEK,CSVEGGSFNEKLFF,TRBV29-1,TRBJ1-4,CLVGAFNTNAGKSTF,09/0263:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-EGGSFNEK
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SLAGSSGNT,CASSLAGSSGNTIYF,TRBV5-1,TRBJ1-3,CAVSLRNNNARLMF,03/0492:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLAGSSGNT,CASSLAGSSGNTIYF,TRBV5-1,TRBJ1-3,CAVSLRNNNARLMF,09/0328:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-SLAGSSGNT
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SLSSGGRET,CASSLSSGGRETQYF,TRBV7-2,TRBJ2-5,CAVHASGGSYIPTF,09/0410:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLSSGGRET,CASSLSSGGRETQYF,TRBV7-2,TRBJ2-5,NA,01/0430:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SLSSGGRET
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SSTGVSGANV,CASSSTGVSGANVLTF,TRBV11-2,TRBJ2-6,CALXVRGSNYKLTF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SSTGVSGANV,CASSSTGVSGANVLTF,TRBV11-2,TRBJ2-6,NA,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SSTGVSGANV
+
+Evaluating single (1 members: 1)
+	2 subjects and 3 clones
+Motifs:
+global-PPIAAYNE,CSAPPIAAYNEQFF,TRBV20-1,TRBJ2-1,CAVSGSTGFQKLVF,02/0259:MegaIFNg,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-PPIAAYNE,CSAPPIAAYNEQFF,TRBV20-1,TRBJ2-1,NA,09/0018:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-PPIAAYNE,CSAPPIAAYNEQFF,TRBV20-1,TRBJ2-1,CAVSGSTGFQKLVF,02/0259:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	3.0e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.9e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	3	2.9e-07	1.0e-03	1.0e-03	1.0e+00	3.0e-01	9.5e-01		global-PPIAAYNE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SFFGGGTYNE,CASSFFGGGTYNEQFF,TRBV7-3,TRBJ2-1,NA,01/0873:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SFFGGGTYNE,CASSFFGGGTYNEQFF,TRBV7-3,TRBJ2-1,NA,02/0207:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SFFGGGTYNE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SVGGTGE,CASSVGGTGELFF,TRBV9,TRBJ2-2,CAGPRGTSYDKVIF,01/0906:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SVGGTGE,CASSVGGTGELFF,TRBV9,TRBJ2-2,NA,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SVGGTGE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SRGTT,CASSRGTTQYF,TRBV6-6,TRBJ2-3,NA,01/0430:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRGTT,CASSRGTTQYF,TRBV6-6,TRBJ2-3,CAASIGSGGGADGLTF,09/0018:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	8.5e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=8.1e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	8.1e-08	1.0e-03	1.0e-03	1.0e+00	8.5e-02	9.5e-01		global-SRGTT
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SRGLNTE,CASSRGLNTEAFF,TRBV4-1,TRBJ1-1,CAGVSGSRLTF,09/0684:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRGLNTE,CASSRGLNTEAFF,TRBV18,TRBJ1-1,CAVLSIDDKIIF,03/0480:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	7.2e-02
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=6.9e-05
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	6.9e-05	7.2e-02	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SRGLNTE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLGSISYE,CASSLGSISYEQYF,TRBV7-9,TRBJ2-7,CAAVYHYGGATNKLIF,09/0125:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLGSISYE,CASSLGSISYEQYF,TRBV7-9,TRBJ2-7,CAAVYHYGGATNKLIF,09/0125:MegaIL2,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	8.5e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=8.1e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	8.1e-08	1.0e-03	1.0e-03	1.0e+00	8.5e-02	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLGSISYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 3 clones
+Motifs:
+global-TQSGGTNEK,CASTQSGGTNEKLFF,TRBV28,TRBJ1-4,CAAKRAGGFKTIF,09/0018:MegaIL2,6.000000,-,-,-,-,-,-,-,-,-,-,-
+global-TQSGGTNEK,CASTQSGGTNEKLFF,TRBV28,TRBJ1-4,CAAKRAGGFKTIF,09/0018:PepLib,8.000000,-,-,-,-,-,-,-,-,-,-,-
+global-TQSGGTNEK,CASTQSGGTNEKLFF,TRBV28,TRBJ1-4,NA,09/0018:MegaIFNg,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	4.0e-03
+	cluster_size_p	9.5e-01
+	FINAL SCORE=3.8e-09
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	3	3.8e-09	1.0e-03	1.0e-03	1.0e+00	4.0e-03	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-TQSGGTNEK
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-AGLRNQP,CATAGLRNQPQHF,TRBV6-6,TRBJ1-5,CAETRFSSNTGKLIF,02/0259:MegaIFNg,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-AGLRNQP,CATAGLRNQPQHF,TRBV6-6,TRBJ1-5,NA,09/0328:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-AGLRNQP
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SRRGGLAGSDT,CASSRRGGLAGSDTQYF,TRBV4-2,TRBJ2-3,CAVGNAGNNRKLIW,02/0207:MegaIL2,4.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SRRGGLAGSDT,CASSRRGGLAGSDTQYF,TRBV4-2,TRBJ2-3,CAVGNAGNNRKLIW,02/0207:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.6e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.5e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.5e-08	1.0e-03	1.0e-03	1.0e+00	2.6e-02	9.5e-01		global-SRRGGLAGSDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-GGQGDSP,CASGGQGDSPLHF,TRBV2,TRBJ1-6,CAYHNAGNNRKLIW,02/0259:MegaIL2,7.000000,-,-,-,-,-,-,-,-,-,-,-
+global-GGQGDSP,CASGGQGDSPLHF,TRBV2,TRBJ1-6,CAASMGGTASKLTF,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.3e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.2e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	1.2e-08	1.0e-03	1.0e-03	1.0e+00	1.3e-02	9.5e-01		global-GGQGDSP
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-RKGFLNEK,CSARKGFLNEKLFF,TRBV20-1,TRBJ1-4,NA,03/0492:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RKGFLNEK,CSARKGFLNEKLFF,TRBV20-1,TRBJ1-4,CAVSLNTGGFKTIF,09/0065:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-RKGFLNEK
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SQYVDNE,CASSQYVDNEQFF,TRBV4-2,TRBJ2-1,NA,01/0960:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SQYVDNE,CASSQYVDNEQFF,TRBV4-2,TRBJ2-1,NA,01/0882:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.3e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.2e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	2.2e-07	1.0e-03	1.0e-03	1.0e+00	2.3e-01	9.5e-01		global-SQYVDNE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SVGRVARA,CASSVGRVARAQYF,TRBV9,TRBJ2-3,CLVGTESSNDYKLSF,01/0430:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SVGRVARA,CASSVGRVARAQYF,TRBV9,TRBJ2-3,CLVGTESSNDYKLSF,01/0430:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.2e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	2.1e-07	1.0e-03	1.0e-03	1.0e+00	2.2e-01	9.5e-01		global-SVGRVARA
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-RVQSFG,CSARVQSFGYTF,TRBV20-1,TRBJ1-2,CAFSPGNAGNMLTF,02/0259:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RVQSFG,CSARVQSFGYTF,TRBV20-1,TRBJ1-2,CAFSPGNAGNMLTF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-RVQSFG
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SGGQGAGET,CASSGGQGAGETQYF,TRBV11-3,TRBJ2-5,CAGPLGTYKYIF,01/0873:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SGGQGAGET,CASSGGQGAGETQYF,TRBV11-3,TRBJ2-5,CAGPLGTYKYIF,01/0873:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SGGQGAGET
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SHGQGGTE,CASSHGQGGTEAFF,TRBV3-1,TRBJ1-1,NA,03/0345:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SHGQGGTE,CASSHGQGGTEAFF,TRBV3-1,TRBJ1-1,NA,03/0492:MtbLys,2.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.1e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.1e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	1.1e-07	1.0e-03	1.0e-03	1.0e+00	1.1e-01	9.5e-01		global-SHGQGGTE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SYPGTGNEK,CASSYPGTGNEKLFF,TRBV6-6,TRBJ1-4,CATALYTDKLIF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SYPGTGNEK,CASSYPGTGNEKLFF,TRBV6-6,TRBJ1-4,CATALYTDKLIF,01/0873:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SYPGTGNEK
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SVGTSS,CAWSVGTSSPFF,TRBV30,TRBJ2-1,NA,03/0492:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SVGTSS,CAWSVGTSSPFF,TRBV30,TRBJ2-1,CALSEARDTGRRALTF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SVGTSS
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLALAGGGRLSGANV,CASSLALAGGGRLSGANVLTF,TRBV5-1,TRBJ2-6,CAMSGGRDDKIIF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLALAGGGRLSGANV,CASSLALAGGGRLSGANVLTF,TRBV5-1,TRBJ2-6,CAMSGGRDDKIIF,09/0018:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSRQGGITDTQYF	TRBV12-3	TRBJ2-3	CAVNARNGNNRLAF	09/0772:MegaIL2	1	global-SLALAGGGRLSGANV
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SARDRGE,CASSARDRGEQYF,TRBV7-2,TRBJ2-7,CVPRGEGFQKLVF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SARDRGE,CASSARDRGEQYF,TRBV7-2,TRBJ2-7,NA,01/0906:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SARDRGE
+
+Evaluating single (1 members: 1)
+	2 subjects and 2 clones
+Motifs:
+global-SPTGYYE,CASSPTGYYEQYF,TRBV12-3,TRBJ2-7,CAGARSGGSNYKLTF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SPTGYYE,CASSPTGYYEQYF,TRBV12-3,TRBJ2-7,CAGAKSGGSNYKLTF,03/0163:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	2	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SPTGYYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-TPGNDGGVVSP,CASTPGNDGGVVSPLHF,TRBV5-1,TRBJ1-6,CIVRFYNNNDMRF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-TPGNDGGVVSP,CASTPGNDGGVVSPLHF,TRBV5-1,TRBJ1-6,CIVRFYNNNDMRF,01/0873:PepLib,3.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-08	1.0e-03	1.0e-03	1.0e+00	1.0e-01	9.5e-01		global-TPGNDGGVVSP
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SFGLDPYTDT,CASSFGLDPYTDTQYF,TRBV5-6,TRBJ2-3,CATVPSSGSARQLTF,01/0873:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SFGLDPYTDT,CASSFGLDPYTDTQYF,TRBV5-6,TRBJ2-3,NA,01/0873:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SFGLDPYTDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-VHHTE,CSAVHHTEAFF,TRBV20-1,TRBJ1-1,CATYNNAGNMLTF,01/0873:PepLib,3.000000,-,-,-,-,-,-,-,-,-,-,-
+global-VHHTE,CSAVHHTEAFF,TRBV20-1,TRBJ1-1,CATYNNAGNMLTF,01/0873:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	9.2e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=8.8e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	8.8e-08	1.0e-03	1.0e-03	1.0e+00	9.2e-02	9.5e-01		global-VHHTE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-MIGGNT,CASMIGGNTIYF,TRBV6-1,TRBJ1-3,RTAGNNRKLIW,01/0430:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-MIGGNT,CASMIGGNTIYF,TRBV6-1,TRBJ1-3,RTAGNNRKLIW,01/0430:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01	CASSLGQTTETQYF	TRBV11-3	TRBJ2-5	CAESKGGGKLIF	09/0772:MtbLys	1	global-MIGGNT
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLRPSRGPDT,CASSLRPSRGPDTQYF,TRBV4-1,TRBJ2-3,NA,09/0018:MegaIL2,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLRPSRGPDT,CASSLRPSRGPDTQYF,TRBV4-1,TRBJ2-3,NA,09/0018:MtbLys,4.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	5.4e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=5.2e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	5.2e-08	1.0e-03	1.0e-03	1.0e+00	5.4e-02	9.5e-01		global-SLRPSRGPDT
+
+Evaluating single (1 members: 1)
+	1 subjects and 3 clones
+Motifs:
+global-RPRPSYE,CSVRPRPSYEQYF,TRBV20-1,TRBJ2-7,CAVTFTGGGNKLTF,02/0259:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RPRPSYE,CSVRPRPSYEQYF,TRBV20-1,TRBJ2-7,NA,02/0259:MegaIL2,2.000000,-,-,-,-,-,-,-,-,-,-,-
+global-RPRPSYE,CSVRPRPSYEQYF,TRBV20-1,TRBJ2-7,CAVTFTGGGNKLTF,02/0259:MegaIFNg,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	2.8e-01
+	cluster_size_p	9.5e-01
+	FINAL SCORE=2.7e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	3	2.7e-07	1.0e-03	1.0e-03	1.0e+00	2.8e-01	9.5e-01		global-RPRPSYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-SLTYRGGLYE,CASSLTYRGGLYEQYF,TRBV25-1,TRBJ2-7,CVVSDRGSTLGRLYF,09/0018:PepLib,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-SLTYRGGLYE,CASSLTYRGGLYEQYF,TRBV25-1,TRBJ2-7,CVVSDRGSTLGRLYF,09/0018:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.0e+00
+	cluster_size_p	9.5e-01
+	FINAL SCORE=9.5e-07
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	9.5e-07	1.0e-03	1.0e-03	1.0e+00	1.0e+00	9.5e-01		global-SLTYRGGLYE
+
+Evaluating single (1 members: 1)
+	1 subjects and 2 clones
+Motifs:
+global-DRDGDGE,CSVDRDGDGEAFF,TRBV29-1,TRBJ1-1,CAGAFGGATNKLIF,01/0873:MtbLys,1.000000,-,-,-,-,-,-,-,-,-,-,-
+global-DRDGDGE,CSVDRDGDGEAFF,TRBV29-1,TRBJ1-1,CAGAFGGATNKLIF,01/0873:PepLib,7.000000,-,-,-,-,-,-,-,-,-,-,-
+
+Final score:
+	Fisher_p	1.0e+00
+	Vsegment_p	1.0e-03
+	cdr3len_p	1.0e-03
+	lowest_hla	1.0e+00	
+	expansion_p	1.2e-02
+	cluster_size_p	9.5e-01
+	FINAL SCORE=1.1e-08
+Name	CDR3s	Subjects	Clones	CRG_Score	Vb_p	CDR3_p	HLA_p	Expansion_p	Size_p	HLA	Motifs
+single	1	1	2	1.1e-08	1.0e-03	1.0e-03	1.0e+00	1.2e-02	9.5e-01		global-DRDGDGE
+
