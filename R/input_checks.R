@@ -28,6 +28,7 @@ parameter_check <- function(data_sample,
     check_local_min_o(control$local_min_o)
     check_trim_flanks(control$trim_flanks)
     check_flank_size(control$flank_size)
+    check_low_mem(control$low_mem)
     #check_trim_flanks_flank_size(control$trim_flanks,control$flank_size)
     #check_global_pairs(control$global_pairs, data_sample)
 
@@ -52,7 +53,7 @@ check_data_sample <- function(data_sample) {
 }
 
 check_data_ref <- function(data_ref) {
-    if(!base::any(data_ref %in% base::c("gliph_reference"))){
+    if(!base::any(data_ref %in% base::c("gliph_reference"))){ # SK: in gliphR the user *must* provide data_ref (e.g. by loading the data before calling). What is the idea behind this if clause?
         check_missing(data_ref)
         check_dataframe(data_ref)
         check_rowcount(data_ref)
@@ -102,7 +103,7 @@ check_ks <- function(ks) {
     check_infinity(ks)
     check_numeric(ks)
     check_wholenumber(ks)
-    check_singlevalue(ks)
+    check_singlevalue(ks) # SK: ks can be a vector right?
     check_lessthan(ks, 1)
 }
 
@@ -150,8 +151,8 @@ check_local_min_o <- function(local_min_o) { # kmer_mindepth
     check_numeric(local_min_o)
     check_wholenumber(local_min_o)
     check_singlevalue(local_min_o)
-    if(local_min_p <= 2){
-        base::warning("local_min_p <= 2 can increase the False Discovery Rate")
+    if(local_min_o <= 2){
+        base::warning("local_min_o <= 2 can increase the False Discovery Rate")
     }
 }
 
@@ -184,6 +185,13 @@ check_global_pairs <- function(global_pairs, data_sample) {
 
     ## is this global_pairs matrix a user-provided input?
     ## what is the equivalent parameter in gliph/gliph2?
+}
+
+
+check_low_mem <- function(low_mem) {
+    check_missing(x = low_mem)
+    check_singlevalue(x = low_mem)
+    check_logical(x = low_mem)
 }
 
 
@@ -240,6 +248,10 @@ check_lessthan <- function(x, v){
 }
 
 check_logical <- function(x){
+    if(base::is.na(x)) {
+        base::stop(paste0(deparse(substitute(x)),
+                          " has to be logical"))
+    }
     if(!base::is.logical(x)){
         base::stop(paste0(deparse(substitute(x)),
                           " has to be logical"))
@@ -268,6 +280,10 @@ check_rowcount <- function(x){
 }
 
 check_singlevalue <- function(x){
+    if(base::is.na(x)) {
+        base::stop(paste0(deparse(substitute(x)),
+                          " has to be a single value"))
+    }
     if(base::length(x)!=1){
         base::stop(paste0(deparse(substitute(x)),
                           " has to be a single value"))
@@ -281,3 +297,5 @@ check_wholenumber <- function(x){
     }
 }
 
+# SK: current error messages are useful, however, they are not helping the
+# user determine which are the problematic parameters.
