@@ -11,7 +11,8 @@ get_control <- function(control_in) {
         local_min_o = 3,
         trim_flanks = FALSE,
         flank_size = 3,
-        global_pairs = NULL)
+        global_pairs = NULL,
+        low_mem = FALSE)
 
     # if missing control_in -> use default values
     if(missing(control_in)|is.null(control_in)) {
@@ -27,57 +28,6 @@ get_control <- function(control_in) {
         control[[ns[i]]] <- control_in[[ns[i]]]
     }
     return(control)
-}
-
-# Description:
-# Check parameters in list control.(TODO: complete, borrow Kai's scripts)
-check_control <- function(control) {
-
-    check_global_max_dist <- function(global_max_dist) {
-        # check global_max_dist
-        if(base::missing(global_max_dist)) {
-            stop("global_max_dist input not found")
-        }
-        if(base::is.numeric(global_max_dist)==FALSE) {
-            stop("global_max_dist must be a positive real")
-        }
-        if(base::length(global_max_dist)!=1) {
-            stop("global_max_dist must be a positive real")
-        }
-        if(global_max_dist<0) {
-            stop("global_max_dist must be a positive real")
-        }
-        if(base::is.infinite(global_max_dist)==TRUE) {
-            stop("global_max_dist must be a positive real")
-        }
-        if(base::is.na(global_max_dist)==TRUE) {
-            stop("global_max_dist must be a positive real")
-        }
-    }
-
-    check_local_min_p <- function(local_min_p) {
-        # check local_min_p
-        if(base::missing(local_min_p)) {
-            stop("local_min_p input not found")
-        }
-        if(base::is.numeric(local_min_p)==FALSE) {
-            stop("local_min_p must be a positive real")
-        }
-        if(base::length(local_min_p)!=1) {
-            stop("local_min_p must be a positive real")
-        }
-        if(local_min_p<0) {
-            stop("local_min_p must be a positive real")
-        }
-        if(base::is.infinite(local_min_p)==TRUE) {
-            stop("local_min_p must be a positive real")
-        }
-        if(base::is.na(local_min_p)==TRUE) {
-            stop("local_min_p must be a positive real")
-        }
-    }
-
-    # TODO complete checks
 }
 
 
@@ -136,7 +86,7 @@ get_global_pairs <- function(cdr3,
             if(d>global_max_dist) {
                 return(NULL)
             }
-            return(c(cdr3_is[is[1]], cdr3_is[is[2]]))
+            return(c(cdr3[is[1]], cdr3[is[2]]))
         }
 
         d <- stringdist::stringdistmatrix(
@@ -160,6 +110,93 @@ get_global_pairs <- function(cdr3,
                                         cdr3,
                                         cdr3_len,
                                         global_max_dist) {
+        is <- which(cdr3_len == x)
+        if(length(is)==1) {
+            return(NULL)
+        }
+
+        get_pairdist  <- function(x, a, len_a, global_max_dist) {
+            d <- stringdist::stringdist(a = a[x],
+                                        b = a[(x+1):len_a],
+                                        method = "hamming")
+            js <- which(d<=global_max_dist)
+            if(length(js)==0) {
+                return(NULL)
+            }
+            js <- x+js
+            return(cbind(rep(x = x, times = length(js)), js))
+        }
+
+        hd <- lapply(X = 1:(length(is)-1),
+                     FUN = get_pairdist,
+                     a = cdr3[is],
+                     len_a = length(is),
+                     global_max_dist = global_max_dist)
+        hd <- do.call(rbind, hd)
+        if(is.null(hd)) {
+            return(hd)
+        }
+        # map to original indices
+        return(cbind(is[hd[,1]], is[hd[,2]]))
+    }
+
+
+    hd <- lapply(X = cdr3_lens,
+                 FUN = get_hamming_dist,
+                 cdr3 = cdr3,
+                 cdr3_len = cdr3_len,
+                 global_max_dist = global_max_dist)
+    hd <- do.call(rbind, hd)
+    return(hd)
+}
+
+
+
+# Description:
+# Look for global connections. Low-memory mode. Used by gliph_v1 and gliph_v2
+get_global_pairs_mem <- function(cdr3,
+                                 global_max_dist) {
+
+    cdr3_len <- base::nchar(cdr3)
+    cdr3_lens <- unique(cdr3_len)
+
+    get_hamming_dist <- function(x, cdr3, cdr3_len, global_max_dist) {
+        is <- which(cdr3_len == x)
+        if(length(is)==1) {
+            return(NULL)
+        }
+        if(length(is)==2) {
+            d <- stringdist::stringdist(
+                a = cdr3[is[1]],
+                b = cdr3[is[2]],
+                method = "hamming")
+            if(d>global_max_dist) {
+                return(NULL)
+            }
+            return(c(cdr3[is[1]], cdr3[is[2]]))
+        }
+
+        d <- stringdist::stringdistmatrix(
+            a = cdr3[is],
+            b = cdr3[is],
+            method = "hamming")
+        d[upper.tri(x = d, diag = TRUE)] <- NA
+        # d[1:nrow(d), 1:nrow(d)] <- NA
+        js <- which(d<=global_max_dist, arr.ind = TRUE)
+        if(nrow(js)==0) {
+            return(NULL)
+        }
+        return(cbind(is[js[,1]], is[js[,2]]))
+    }
+
+    # Description:
+    # same as get_hamming_dist from get_global_pairs, but slower. However it
+    # has much smaller memory footprint -> appropriate for large input sets.
+    # Similar but faster implementation than that in Jan's code
+    get_hamming_dist <- function(x,
+                                 cdr3,
+                                 cdr3_len,
+                                 global_max_dist) {
         is <- which(cdr3_len == x)
         if(length(is)==1) {
             return(NULL)
