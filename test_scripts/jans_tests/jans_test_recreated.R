@@ -18,11 +18,15 @@ ex_path = "test_scripts/jans_tests/Input_demo_gliph2.csv"
 # results of the GLIPH2 algorithm, computed with local exec
 se_path =
     "test_scripts/gliph2_exec_comparison/Comparison_cluster.csv"
+gl_perl_path =
+    "test_scripts/perl_gliph_output/Input_demo_gliph2.csv-kmer_resample_1000_minp0.001_ove10.txt"
+
 # reference database
 re_path = "test_scripts/jans_tests/ref_CD4_v1.0.txt"
 
 example_input <- read.csv2(file = ex_path, sep = "\t")
 server_output <- read.csv2(file = se_path, sep = ",")
+gliph_perl_output <- read.csv2(file = gl_perl_path, sep = "\t")
 example_reference <- read.csv2(file = re_path, sep = "\t", header = FALSE)
 colnames(example_reference) <- c("CDR3b", "TRBV", "TRBJ")
 
@@ -34,7 +38,7 @@ for(i in 3:11) {
     server_output_cluster[,i] <- as.numeric(server_output_cluster[,i])
 }
 
-head(server_output_cluster)
+
 
 
 ## turboGliph
@@ -47,12 +51,13 @@ package_output <- oldGliph2(cdr3_sequences = example_input,
                             accept_sequences_with_C_F_start_end = FALSE,
                             lcminove = 10,
                             min_seq_length = 0)
-# package version of gliph2
-# package_output <- turboGliph::gliph2(cdr3_sequences = example_input,
-#                             refdb_beta = example_reference,
-#                             accept_sequences_with_C_F_start_end = FALSE,
-#                             lcminove = 10,
-#                             min_seq_length = 0)
+# package version of turboGliph
+package_output_tg <- turboGliph::turbo_gliph(cdr3_sequences = example_input,
+                            refdb_beta = example_reference,
+                            accept_sequences_with_C_F_start_end = FALSE,
+                            lcminove = 10)
+
+tg_output = package_output_tg[["motif_enrichment"]][["selected_motifs"]]
 
 # gliph2 package output
 package_output_cluster <-
@@ -62,7 +67,17 @@ package_output_cluster <-
 package_output_cluster <-
     package_output_cluster[order(package_output_cluster$fisher.score),]
 
-head(package_output_cluster)
+cat("gliph2 local executable output")
+head(server_output_cluster)
+
+cat("turboGliph gliph2 output")
+head(package_output_cluster, n=10)
+
+cat("gliph perl version output")
+gliph_perl_output[order(-gliph_perl_output$Counts),]
+
+cat("turboGliph gliph version output")
+head(tg_output[order(-tg_output$counts),], n=10)
 
 ## comparison - global similarity
 global_cluster_server <-
