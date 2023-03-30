@@ -44,9 +44,17 @@ get_chain_run_v2 <- function(cdr3,
         global_pairs <- control$global_pairs
     }
     else {
-        global_pairs <- get_global_pairs(
-            cdr3 = cdr3,
-            global_max_dist = control$global_max_dist)
+        if(control$low_mem) {
+            global_pairs <- get_global_pairs_mem(
+                cdr3 = cdr3,
+                global_max_dist = control$global_max_dist)
+
+        }
+        else {
+            global_pairs <- get_global_pairs(
+                cdr3 = cdr3,
+                global_max_dist = control$global_max_dist)
+        }
     }
 
     # 3. return TODO: format properly
@@ -102,6 +110,9 @@ get_motifs_v2 <- function(x,
     m <- merge(x = kmers_s, y = kmers_r, by = "motif", all = TRUE)
     m[is.na(m[,"f_sample"]), "f_sample"] <- 0
     m[is.na(m[,"f_ref"]), "f_ref"] <- 0
+    m[is.na(m[,"n_ref"]), "n_ref"] <- kmers_r$n_ref[1]
+    m[is.na(m[,"n_sample"]), "n_sample"] <- kmers_s$n_sample[1]
+
     m$k <- x
 
     # return for statistical test
@@ -133,11 +144,14 @@ get_motif_enrichment_fet_v2 <- function(x) {
     n <- k-m
 
     # TODO: do some testing on demo data
-    u <- matrix(data = NA_integer_, nrow = 2, ncol = 2)
+    # u <- matrix(data = NA_integer_, nrow = 2, ncol = 2)
+    u <- matrix(data = 0, nrow = 2, ncol = 2)
+
     u[1,1] <- x[1]
     u[1,2] <- x[2]
     u[2,1] <- x[3]-x[1]
     u[2,2] <- x[4]-x[2]
+
     fet <- fisher.test(u, alternative = "greater")
     ova <- fet$estimate
     p <- fet$p.value
@@ -155,6 +169,6 @@ get_motif_filter_v2 <- function(m,
                                 min_ove,
                                 min_o) {
     m$filter <- FALSE
-    m$filter[m$p<=min_p&m$ove>=min_ove&m$obs>=min_o] <- TRUE
+    m$filter[m$p<=min_p&m$ove>=min_ove&m$f_sample>=min_o] <- TRUE
     return(m)
 }
