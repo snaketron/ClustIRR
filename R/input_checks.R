@@ -197,9 +197,10 @@ check_global_pairs <- function(global_pairs, data_sample) {
     check_matrix(global_pairs)
     check_matrix_type(global_pairs)
     check_matrix_column_count(global_pairs, 2)
-    if(base::nrow(global_pairs) != base::nrow(data_sample)){
-        base::stop("global_pairs and data_sample must have matching rowcounts")
-    }
+    # # rows can be different, only indices should match
+    # if(base::nrow(global_pairs) != base::nrow(data_sample)){
+    #     base::stop("global_pairs and data_sample must have matching rowcounts")
+    # }
 
 
 }
