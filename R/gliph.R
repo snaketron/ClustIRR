@@ -42,7 +42,6 @@ gliph <- function(data_sample,
     #                 version = version,
     #                 ks = ks,
     #                 cores = cores,
-    #                 B = B,
     #                 control = control)
 
     # get chains to be analyzed
