@@ -46,10 +46,18 @@ get_chain_run_v1 <- function(cdr3,
     # if global_pairs are provided as input use them, else compute them
     if(!is.null(control$global_pairs)) {
         global_pairs <- control$global_pairs
-    } else {
-        global_pairs <- get_global_pairs(
-            cdr3 = cdr3,
-            global_max_dist = control$global_max_dist)
+    }
+    else {
+        if(control$low_mem) {
+            global_pairs <- get_global_pairs_mem(
+                cdr3 = cdr3,
+                global_max_dist = control$global_max_dist)
+        }
+        else {
+            global_pairs <- get_global_pairs(
+                cdr3 = cdr3,
+                global_max_dist = control$global_max_dist)
+        }
     }
 
 
