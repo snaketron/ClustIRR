@@ -16,7 +16,7 @@ parameter_check <- function(data_sample,
                             cores,
                             control) {
     check_data_sample(data_sample)
-    check_data_ref(dat_ref)
+    check_data_ref(data_ref)
     check_data_sample_and_ref(data_sample, data_ref)
     check_version(version)
     check_ks(ks)
@@ -29,9 +29,8 @@ parameter_check <- function(data_sample,
     check_trim_flanks(control$trim_flanks)
     check_flank_size(control$flank_size)
     check_low_mem(control$low_mem)
-    #check_trim_flanks_flank_size(control$trim_flanks,control$flank_size)
-    #check_global_pairs(control$global_pairs, data_sample)
-
+    check_trim_flanks_flank_size(control$trim_flanks,control$flank_size)
+    check_global_pairs(control$global_pairs, data_sample)
 }
 
 check_data_sample <- function(data_sample) {
@@ -168,12 +167,21 @@ check_flank_size <- function(flank_size) { # boundary_size
     check_singlevalue(flank_size)
 }
 
-# check_trim_flanks_flank_size <- function(trim_flanks,
-#                                          flank_size) {
-## Jan set
-## min_seq_length <- max(min_seq_length, 2*boundary_size)
-## don't know if we need that?
-# }
+check_trim_flanks_flank_size <- function(trim_flanks,
+                                         flank_size) {
+    # When testing the inputs you could check what happens downstream if the
+    # user sets trim_flanks = T & flank_size = 3 (that is 6 amino acids
+    # are supposed to be trimmed from both flanks of the CDR3), but a given
+    # CDR3 sequence is 4 amino acids long.
+    if(trim_flanks){
+        if(flank_size > 2){
+            base::warning(paste0("flank_size is set to ",
+                                 flank_size,
+                                 ". Bigger CRD3 sequences could potentially ",
+                                 "get cut off at flanks"))
+        }
+    }
+}
 
 check_global_pairs <- function(global_pairs, data_sample) {
     # global_pairs has to be integer matrix with two columns and u rows.
@@ -183,8 +191,19 @@ check_global_pairs <- function(global_pairs, data_sample) {
     # row in global pairs gives us the indices of two CDR3s that are globally
     # similar (e.g. Hamming dist < 1 or distance computed using external tool)
 
-    ## is this global_pairs matrix a user-provided input?
-    ## what is the equivalent parameter in gliph/gliph2?
+    # global_pairs -> optional user provided input
+    # (e.g. by smarter global clustering)
+    # there is no equivalent parameter in gliph/gliph2
+    check_rowcount(global_pairs)
+    check_matrix(global_pairs)
+    check_matrix_type(global_pairs)
+    check_matrix_column_count(global_pairs, 2)
+    # # rows can be different, only indices should match
+    # if(base::nrow(global_pairs) != base::nrow(data_sample)){
+    #     base::stop("global_pairs and data_sample must have matching rowcounts")
+    # }
+
+
 }
 
 
@@ -198,7 +217,7 @@ check_low_mem <- function(low_mem) {
 check_dataframe <- function(x){
     if(!base::is.data.frame(x)){
         base::stop(paste0(deparse(substitute(x)),
-                          " has to be of type data frame "))
+                          " has to be of type data frame"))
     }
 }
 
@@ -255,6 +274,27 @@ check_logical <- function(x){
     if(!base::is.logical(x)){
         base::stop(paste0(deparse(substitute(x)),
                           " has to be logical"))
+    }
+}
+
+check_matrix <- function(x){
+    if(!base::is.matrix(x)){
+        base::stop(paste0(deparse(substitute(x)),
+                          " has to be of type matrix"))
+    }
+}
+
+check_matrix_column_count <- function(x, c){
+    if(base::ncol(x)!=c){
+        base::stop(paste0(deparse(substitute(x)),
+                          " has to be have ", c, " columns"))
+    }
+}
+
+check_matrix_type <- function(x){
+    if(!base::typeof(x)=="integer"){
+        base::stop(paste0(deparse(substitute(x)),
+                          " has to be an integer type matrix"))
     }
 }
 

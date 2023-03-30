@@ -1,0 +1,24 @@
+#Parameters used to generate this result:
+out_prefix=Comparison
+cdr3_file=Input_demo_gliph2.csv
+hla_file=
+refer_file=ref_CD4_v1.0.txt
+v_usage_freq_file=ref_V_CD4.txt
+cdr3_length_freq_file=ref_L_CD4.txt
+
+single_cell_data=0
+global_convergence_cutoff=1
+local_min_OVE=10
+kmer_min_depth=3
+simulation_depth=1000
+p_depth=1000
+ignored_end_length=3
+cdr3_length_cutoff=8
+motif_distance_cutoff=3
+all_aa_interchangeable=0
+number_of_hla_field=1
+hla_association_cutoff=0.100000
+kmer_sizes=2,3,4
+local_min_pvalue=0.010000
+over_written=0
+interchangeable_aa_groups=DE,LM,TV,HN,HQ,DN,HR,DQ,YF,DS,YH,HY,QD,QE,QH,MF,QK,MI,IF,QN,ED,ML,QR,AC,EH,IL,IM,AG,EK,QS,EN,MQ,VA,EQ,ER,ES,MV,IV,QM,AS,AT,RE,AV,ND,NE,VM,NG,NH,RH,VI,NK,RK,VL,LV,RN,FI,NQ,NR,FL,FM,NS,NT,YW,VT,SA,WF,SD,SE,FY,SG,FW,SK,GA,KE,SN,CA,SQ,ST,WY,KN,KQ,GN,KR,KS,GS,TA,RQ,LF,TN,HE,LI,TS
