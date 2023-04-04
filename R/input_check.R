@@ -235,7 +235,7 @@ check_dataframe_colnames <- function(x, c){
 }
 
 check_dataframe_empty <- function(x){
-    if(base::any(x=="")){
+    if(base::any(x=="", na.rm = T)){
         base::warning(base::paste0(base::deparse(base::substitute(x)),
                                    " contains empty values"))
     }
