@@ -37,14 +37,18 @@ ks <- c(2, 3, 4)
 B <- 1000
 cores <- 1
 
-control_input <- list(
+version = 2
+
+control <- list(
     B = 1000,
     global_max_dist = 1,
     local_min_p = 0.05,
     local_min_ove = c(10^3, 10^2, 10^1),
     local_min_o = 3,
     trim_flanks = FALSE,
-    flank_size = 3)
+    flank_size = 3,
+    low_mem = F,
+    global_pairs = NULL)
 
 source("R/util_v1.R")
 source("R/util_v2.R")
@@ -52,6 +56,20 @@ source("R/util_v1_v2.R")
 source("R/gliph.R")
 source("R/score.R")
 
+# test & profile input checks
+source("R/input_check.R")
+# profile_turboGliphVignette = profvis::profvis({
+    input_check(data_sample = data_sample,
+                data_ref = data_ref,
+                ks = ks,
+                cores = cores,
+                version = version,
+                control = control)
+# }, interval = 0.005)
+
+# htmlwidgets::saveWidget(
+#     profile_turboGliphVignette,
+#     "test_scripts/profiles/profile_inputChecks.html")
 
 
 #### Run ####

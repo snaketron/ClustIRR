@@ -36,13 +36,13 @@ gliph <- function(data_sample,
     # a. control check
     control <- get_control(control_in = control)
 
-    # 1. parameter check
-    # parameter_check(data_sample = data_sample,
-    #                 data_ref = data_ref,
-    #                 version = version,
-    #                 ks = ks,
-    #                 cores = cores,
-    #                 control = control)
+    # 1. input check
+    input_check(data_sample = data_sample,
+                data_ref = data_ref,
+                version = version,
+                ks = ks,
+                cores = cores,
+                control = control)
 
     # get chains to be analyzed
     chains <- get_chains(colnames(data_sample))

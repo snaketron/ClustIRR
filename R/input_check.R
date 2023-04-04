@@ -9,7 +9,7 @@
 #' @param cores, integer: number of CPU cores to use
 #' @param control, list: auxiliary input parameters
 #' @noRd
-parameter_check <- function(data_sample,
+input_check <- function(data_sample,
                             data_ref,
                             version,
                             ks,
@@ -52,7 +52,12 @@ check_data_sample <- function(data_sample) {
 }
 
 check_data_ref <- function(data_ref) {
-    if(!base::any(data_ref %in% base::c("gliph_reference"))){ # SK: in gliphR the user *must* provide data_ref (e.g. by loading the data before calling). What is the idea behind this if clause?
+    if(!base::deparse(base::substitute(data_ref))=="data_ref"){
+#if(!base::any(data_ref %in% base::c("gliph_reference"))){
+# SK: in gliphR the user *must* provide data_ref (e.g. by loading the data before calling). What is the idea behind this if clause?
+# KZ: in the original version, you could put in "gliph_reference" as string (which was redundant, as gliph_reference was also the default).
+#     The idea of this clause was to skip checks if the default database is used, which is something we could keep.
+#     However this check was adapted from some implementation of Jan and turned out really slow, so replaced with deparse(substitute())
         check_missing(data_ref)
         check_dataframe(data_ref)
         check_rowcount(data_ref)
@@ -102,7 +107,10 @@ check_ks <- function(ks) {
     check_infinity(ks)
     check_numeric(ks)
     check_wholenumber(ks)
-    check_singlevalue(ks) # SK: ks can be a vector right?
+    #check_singlevalue(ks)
+    # SK: ks can be a vector right?
+    # KK: somehow thought we'd reduce it to one number.
+    #     should work now with vector input
     check_lessthan(ks, 1)
 }
 
@@ -110,7 +118,7 @@ check_local_min_ove <- function(local_min_ove) {
     check_infinity(local_min_ove)
     check_numeric(local_min_ove)
     check_wholenumber(local_min_ove)
-    check_singlevalue(local_min_ove)
+    #check_singlevalue(local_min_ove)
 }
 
 check_cores <- function(cores) {
@@ -175,7 +183,7 @@ check_trim_flanks_flank_size <- function(trim_flanks,
     # CDR3 sequence is 4 amino acids long.
     if(trim_flanks){
         if(flank_size > 2){
-            base::warning(paste0("flank_size is set to ",
+            base::warning(base::paste0("flank_size is set to ",
                                  flank_size,
                                  ". Bigger CRD3 sequences could potentially ",
                                  "get cut off at flanks"))
@@ -194,16 +202,12 @@ check_global_pairs <- function(global_pairs, data_sample) {
     # global_pairs -> optional user provided input
     # (e.g. by smarter global clustering)
     # there is no equivalent parameter in gliph/gliph2
-    check_rowcount(global_pairs)
-    check_matrix(global_pairs)
-    check_matrix_type(global_pairs)
-    check_matrix_column_count(global_pairs, 2)
-    # # rows can be different, only indices should match
-    # if(base::nrow(global_pairs) != base::nrow(data_sample)){
-    #     base::stop("global_pairs and data_sample must have matching rowcounts")
-    # }
-
-
+    if(!base::is.null(global_pairs)){
+        check_rowcount(global_pairs)
+        check_matrix(global_pairs)
+        check_matrix_type(global_pairs)
+        check_matrix_column_count(global_pairs, 2)
+    }
 }
 
 
@@ -213,129 +217,133 @@ check_low_mem <- function(low_mem) {
     check_logical(x = low_mem)
 }
 
+#-----------------------------------------------------------------------------
 
 check_dataframe <- function(x){
     if(!base::is.data.frame(x)){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be of type data frame"))
     }
 }
 
 check_dataframe_colnames <- function(x, c){
     if(!base::any(base::colnames(x) %in% c)){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to contain the following column(s): "),
-                   paste0(c, collapse=" or "))
+                   base::paste0(c, collapse=" or "))
     }
 }
 
 check_dataframe_empty <- function(x){
     if(base::any(x=="")){
-        base::warning(paste0(deparse(substitute(x)),
-                             " contains empty values"))
+        base::warning(base::paste0(base::deparse(base::substitute(x)),
+                                   " contains empty values"))
     }
 }
 
 check_dataframe_na <- function(x){
     if(base::any(base::is.na(x))){
-        base::warning(paste0(deparse(substitute(x)),
+        base::warning(base::paste0(base::deparse(base::substitute(x)),
                           " contains NA value"))
     }
 }
 
 check_greaterthan <- function(x, v){
-    if(x > v){
-        base::stop(paste0(deparse(substitute(x)),
+    if(base::any(x > v)){
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be <= ",
                           v))
     }
 }
 
 check_infinity <- function(x){
-    if(base::is.infinite(x)){
-        base::stop(paste0(deparse(substitute(x)),
+    if(base::any(base::is.infinite(x))){
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be a finite number"))
     }
 }
 
 check_lessthan <- function(x, v){
-    if(x < v){
-        base::stop(paste0(deparse(substitute(x)),
+    if(base::any(x < v)){
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be >= ",
                           v))
     }
 }
 
 check_logical <- function(x){
-    if(base::is.na(x)) {
-        base::stop(paste0(deparse(substitute(x)),
+    if(base::any(base::is.na(x))) {
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be logical"))
     }
     if(!base::is.logical(x)){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be logical"))
     }
 }
 
 check_matrix <- function(x){
     if(!base::is.matrix(x)){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be of type matrix"))
     }
 }
 
 check_matrix_column_count <- function(x, c){
     if(base::ncol(x)!=c){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be have ", c, " columns"))
     }
 }
 
 check_matrix_type <- function(x){
     if(!base::typeof(x)=="integer"){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be an integer type matrix"))
     }
 }
 
 check_missing <- function(x){
     if(base::missing(x)){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " parameter is missing"))
     }
 }
 
 check_numeric <- function(x){
-    if(!base::is.numeric(x)){
-        base::stop(paste0(deparse(substitute(x)),
+    if(base::any(!base::is.numeric(x))){
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be numeric"))
     }
 }
 
 check_rowcount <- function(x){
     if(base::nrow(x) == 0){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " contains zero rows"))
     }
 }
 
 check_singlevalue <- function(x){
     if(base::is.na(x)) {
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be a single value"))
     }
     if(base::length(x)!=1){
-        base::stop(paste0(deparse(substitute(x)),
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be a single value"))
     }
 }
 
 check_wholenumber <- function(x){
-    if(!(abs(x - round(x)) < .Machine$double.eps^0.5)){
-        base::stop(paste0(deparse(substitute(x)),
+    if(base::any(!(abs(x - round(x)) < .Machine$double.eps^0.5))){
+        base::stop(base::paste0(base::deparse(base::substitute(x)),
                           " has to be a whole number"))
     }
 }
 
 # SK: current error messages are useful, however, they are not helping the
 # user determine which are the problematic parameters.
+# KK: parameter names should get printed via deparse(substitute(x)).
+#     or do you mean individual values or something?
+
