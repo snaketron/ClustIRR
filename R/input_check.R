@@ -53,11 +53,6 @@ check_data_sample <- function(data_sample) {
 
 check_data_ref <- function(data_ref) {
     if(!base::deparse(base::substitute(data_ref))=="data_ref"){
-#if(!base::any(data_ref %in% base::c("gliph_reference"))){
-# SK: in gliphR the user *must* provide data_ref (e.g. by loading the data before calling). What is the idea behind this if clause?
-# KZ: in the original version, you could put in "gliph_reference" as string (which was redundant, as gliph_reference was also the default).
-#     The idea of this clause was to skip checks if the default database is used, which is something we could keep.
-#     However this check was adapted from some implementation of Jan and turned out really slow, so replaced with deparse(substitute())
         check_missing(data_ref)
         check_dataframe(data_ref)
         check_rowcount(data_ref)
@@ -107,10 +102,6 @@ check_ks <- function(ks) {
     check_infinity(ks)
     check_numeric(ks)
     check_wholenumber(ks)
-    #check_singlevalue(ks)
-    # SK: ks can be a vector right?
-    # KK: somehow thought we'd reduce it to one number.
-    #     should work now with vector input
     check_lessthan(ks, 1)
 }
 
@@ -118,7 +109,6 @@ check_local_min_ove <- function(local_min_ove) {
     check_infinity(local_min_ove)
     check_numeric(local_min_ove)
     check_wholenumber(local_min_ove)
-    #check_singlevalue(local_min_ove)
 }
 
 check_cores <- function(cores) {
@@ -207,6 +197,7 @@ check_global_pairs <- function(global_pairs, data_sample) {
         check_matrix(global_pairs)
         check_matrix_type(global_pairs)
         check_matrix_column_count(global_pairs, 2)
+        # TODO max index should not exceed data sample
     }
 }
 
@@ -217,7 +208,7 @@ check_low_mem <- function(low_mem) {
     check_logical(x = low_mem)
 }
 
-#-----------------------------------------------------------------------------
+#Helper functions---------------------------------------------------------------
 
 check_dataframe <- function(x){
     if(!base::is.data.frame(x)){
@@ -341,9 +332,4 @@ check_wholenumber <- function(x){
                           " has to be a whole number"))
     }
 }
-
-# SK: current error messages are useful, however, they are not helping the
-# user determine which are the problematic parameters.
-# KK: parameter names should get printed via deparse(substitute(x)).
-#     or do you mean individual values or something?
 
