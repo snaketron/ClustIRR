@@ -6,7 +6,7 @@ get_control <- function(control_in) {
     control <- list(
         B = 1000,
         global_max_dist = 1,
-        local_min_p = 0.05,
+        local_min_fdr = 0.05,
         local_min_ove = 2,
         local_min_o = 3,
         trim_flanks = FALSE,

@@ -25,24 +25,25 @@ gliph <- function(data_sample,
                   control = list(
                       B = 1000,
                       global_max_dist = 1,
-                      local_min_p = 0.05,
+                      local_min_p = 0.05, #KK: could be renamed to local_max_p
                       local_min_ove = 2,
                       local_min_o = 3,
                       trim_flanks = FALSE,
                       flank_size = 3,
-                      global_pairs = NULL)) {
+                      global_pairs = NULL,
+                      low_mem = F)) {
 
 
     # a. control check
     control <- get_control(control_in = control)
 
-    # 1. parameter check
-    # parameter_check(data_sample = data_sample,
-    #                 data_ref = data_ref,
-    #                 version = version,
-    #                 ks = ks,
-    #                 cores = cores,
-    #                 control = control)
+    # 1. input check
+    input_check(data_sample = data_sample,
+                data_ref = data_ref,
+                version = version,
+                ks = ks,
+                cores = cores,
+                control = control)
 
     # get chains to be analyzed
     chains <- get_chains(colnames(data_sample))
@@ -111,5 +112,5 @@ gliph <- function(data_sample,
     return(list(clust = clust,
                 edges = edges,
                 data_sample = data_sample,
-                control = control))
+                control = control)) #KK: could return full parameter list
 }
