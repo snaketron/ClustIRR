@@ -24,7 +24,7 @@ parameter_check <- function(data_sample,
     check_cores(cores)
     check_B(control$B)
     check_global_max_dist(control$global_max_dist)
-    check_local_min_p(control$local_min_p)
+    check_local_min_fdr(control$local_min_fdr)
     check_local_min_o(control$local_min_o)
     check_trim_flanks(control$trim_flanks)
     check_flank_size(control$flank_size)
@@ -137,12 +137,12 @@ check_global_max_dist <- function(global_max_dist) {
     check_lessthan(global_max_dist,1)
 }
 
-check_local_min_p <- function(local_min_p) {
-    check_infinity(local_min_p)
-    check_numeric(local_min_p)
-    check_singlevalue(local_min_p)
-    check_lessthan(local_min_p, 0)
-    check_greaterthan(local_min_p, 1)
+check_local_min_fdr <- function(local_min_fdr) {
+    check_infinity(local_min_fdr)
+    check_numeric(local_min_fdr)
+    check_singlevalue(local_min_fdr)
+    check_lessthan(local_min_fdr, 0)
+    check_greaterthan(local_min_fdr, 1)
 }
 
 check_local_min_o <- function(local_min_o) { # kmer_mindepth
