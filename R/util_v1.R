@@ -33,7 +33,7 @@ get_chain_run_v1 <- function(cdr3,
     # c. add filter flag
     motif_enrichment <- get_motif_filter_v1(
         m = motif_enrichment,
-        min_p = control$local_min_p,
+        min_fdr = control$local_min_fdr,
         min_ove = control$local_min_ove,
         min_o = control$local_min_o)
 
@@ -209,6 +209,7 @@ get_motif_enrichment_v1 <- function(x,
     colnames(e) <- c("sim_mean", "sim_max",
                      "obs", "ove", "p")
     e$motif <- rownames(e)
+    e$fdr <- stats::p.adjust(p = e$p, method = "fdr")
     e$k <- x
     return(e)
 }
@@ -219,10 +220,10 @@ get_motif_enrichment_v1 <- function(x,
 # filter column with filter = T if motif is enriched (given the input
 # standards) and filter = F if not-enriched
 get_motif_filter_v1 <- function(m,
-                                min_p,
+                                min_fdr,
                                 min_ove,
                                 min_o) {
     m$filter <- FALSE
-    m$filter[m$p<=min_p&m$ove>=min_ove&m$obs>=min_o] <- TRUE
+    m$filter[m$fdr<=min_fdr&m$ove>=min_ove&m$obs>=min_o] <- TRUE
     return(m)
 }
