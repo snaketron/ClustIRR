@@ -101,10 +101,11 @@ gliph <- function(data_sample,
                 control = control)
         }
 
-        edges[[chain]] <- get_edges(local_pairs=clust[[chain]]$local_pairs,
-                                    global_pairs=clust[[chain]]$global_pairs,
-                                    cdr3 = cdr3,
-                                    chain = chain)
+        edges[[chain]] <- NA # large clonal expansions are present->memory/disk
+        # edges[[chain]] <- get_edges(local_pairs=clust[[chain]]$local_pairs,
+        #                             global_pairs=clust[[chain]]$global_pairs,
+        #                             cdr3 = cdr3,
+        #                             chain = chain)
     }
 
     return(list(clust = clust,
