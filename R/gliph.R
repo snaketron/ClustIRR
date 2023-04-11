@@ -25,7 +25,7 @@ gliph <- function(data_sample,
                   control = list(
                       B = 1000,
                       global_max_dist = 1,
-                      local_min_p = 0.05, #KK: could be renamed to local_max_p
+                      local_min_fdr = 0.05,
                       local_min_ove = 2,
                       local_min_o = 3,
                       trim_flanks = FALSE,
