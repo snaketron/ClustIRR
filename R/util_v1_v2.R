@@ -46,6 +46,7 @@ get_local_pair <- function(cdr3,
         if(length(j)==1) {
             return(data.frame(from = j, to = j, motif = motif[x]))
         }
+        j <- unique(j)
         u <- t(utils::combn(x = j, m = 2))
         u <- rbind(u, cbind(j,j))
         return(data.frame(from = u[,1], to = u[,2], motif = motif[x]))
@@ -258,7 +259,7 @@ get_trimmed_flanks <- function(x,
                                flank_size) {
     x <- base::substr(x=x,
                       start=flank_size+1 ,
-                      stop=base::nchar(seqs)-flank_size)
+                      stop=base::nchar(x)-flank_size)
     x[x==""] <- NA
     return(x)
 }

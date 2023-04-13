@@ -7,12 +7,23 @@ get_chain_run_v1 <- function(cdr3,
                              cores,
                              control) {
 
+
+    # 0. trim flanks only relevant for local motifs
+    if(control$trim_flanks) {
+        # NAs ignored by qqgram, how about global dist? TODO
+        cdr3_trim <- get_trimmed_flanks(x = cdr3,
+                                        flank_size = control$flank_size)
+        cdr3_ref_trim <- get_trimmed_flanks(x = cdr3_ref,
+                                            flank_size = control$flank_size)
+    }
+
+
     # 1. local clustering
     # a. get local motifs
     motifs <- lapply(X = ks,
                      FUN = get_motifs_v1,
-                     cdr3 = cdr3,
-                     cdr3_ref = cdr3_ref,
+                     cdr3 = cdr3_trim,
+                     cdr3_ref = cdr3_ref_trim,
                      B = control$B,
                      min_o = control$local_min_o,
                      cores = cores)
@@ -39,7 +50,7 @@ get_chain_run_v1 <- function(cdr3,
 
     # d. find motifs in CDR3
     local_pairs <- get_local_pair(
-        cdr3 = cdr3,
+        cdr3 = cdr3_trim,
         motif = motif_enrichment$motif[motif_enrichment$filter==TRUE])
 
     # 2. global

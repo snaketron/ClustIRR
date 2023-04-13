@@ -148,9 +148,6 @@ check_local_min_o <- function(local_min_o) { # kmer_mindepth
     check_numeric(local_min_o)
     check_wholenumber(local_min_o)
     check_singlevalue(local_min_o)
-    if(local_min_o <= 2){
-        base::warning("local_min_o <= 2 can increase the False Discovery Rate")
-    }
 }
 
 check_trim_flanks <- function(trim_flanks) { # structboundaries
@@ -171,14 +168,16 @@ check_trim_flanks_flank_size <- function(trim_flanks,
     # user sets trim_flanks = T & flank_size = 3 (that is 6 amino acids
     # are supposed to be trimmed from both flanks of the CDR3), but a given
     # CDR3 sequence is 4 amino acids long.
-    if(trim_flanks){
-        if(flank_size > 2){
-            base::warning(base::paste0("flank_size is set to ",
-                                 flank_size,
-                                 ". Bigger CRD3 sequences could potentially ",
-                                 "get cut off at flanks"))
-        }
-    }
+
+    # SK: this is the behavior we want. We should not produce such a warning
+    # if(trim_flanks){
+    #     if(flank_size > 2){
+    #         base::warning(base::paste0("flank_size is set to ",
+    #                              flank_size,
+    #                              ". Bigger CRD3 sequences could potentially ",
+    #                              "get cut off at flanks"))
+    #     }
+    # }
 }
 
 check_global_pairs <- function(global_pairs, data_sample) {

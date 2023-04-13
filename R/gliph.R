@@ -25,7 +25,7 @@ gliph <- function(data_sample,
                   control = list(
                       B = 1000,
                       global_max_dist = 1,
-                      local_min_p = 0.05, #KK: could be renamed to local_max_p
+                      local_max_fdr = 0.05,
                       local_min_ove = 2,
                       local_min_o = 3,
                       trim_flanks = FALSE,
@@ -63,16 +63,6 @@ gliph <- function(data_sample,
     names(edges) <- chains
 
     for(chain in chains) {
-        if(control$trim_flanks) {
-            # NAs ignored by qqgram, how about global dist? TODO
-            data_sample[, chain] <- get_trimmed_flanks(
-                x = data_sample[, chain],
-                flank_size = control$flank_size)
-            data_ref[, chain] <- get_trimmed_flanks(
-                x = data_ref[, chain],
-                flank_size = control$flank_size)
-        }
-
         # create edges of a graph
         if(version==3) {
             cdr3 <- data_sample[, chain]
