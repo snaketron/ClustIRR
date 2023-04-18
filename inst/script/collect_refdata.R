@@ -1,13 +1,13 @@
-# This script describes how to download and prepare the reference (naive) 
+# This script describes how to download and prepare the reference (naive)
 # CD8 and CD4 TCR repertoires of humans and mice. Both datasets are provided
 # by the maintainers of GLIPH2 (http://50.255.35.37:8080/).
 
 # create temporary directory and download the scRNA-seq data:
-if(dir.exists("temp_folder")==FALSE) {
+if (dir.exists("temp_folder") == FALSE) {
     dir.create(path = "temp_folder")
 }
 
-# download data (last tested on 02. March 2023) 
+# download data (last tested on 02. March 2023)
 utils::download.file(
     url = "http://50.255.35.37:8080/downloads/human_v2.0.zip",
     destfile = "temp_folder/human_v2.0.zip")
@@ -22,7 +22,7 @@ utils::unzip(zipfile = "temp_folder/mouse_v1.0.zip", exdir = "temp_folder/")
 
 
 # human (hs) CD8
-CD8 <- read.csv(file = "temp_folder/human_v2.0/ref_CD8_v2.0.txt", sep = "\t", 
+CD8 <- read.csv(file = "temp_folder/human_v2.0/ref_CD8_v2.0.txt", sep = "\t",
                 header = FALSE)
 colnames(CD8) <- c("CDR3b", "TRBV", "TRBJ")
 CD8$CDR3a <- NA
@@ -34,7 +34,7 @@ save(hs_CD8_ref, file = "data/hs_CD8_ref.RData", compress = "xz")
 
 
 # human (hs) CD4
-CD4 <- read.csv(file = "temp_folder/human_v2.0/ref_CD4_v2.0.txt", sep = "\t", 
+CD4 <- read.csv(file = "temp_folder/human_v2.0/ref_CD4_v2.0.txt", sep = "\t",
                 header = FALSE)
 colnames(CD4) <- c("CDR3b", "TRBV", "TRBJ")
 CD4$CDR3a <- NA
@@ -47,7 +47,7 @@ save(hs_CD4_ref, file = "data/hs_CD4_ref.RData", compress = "xz")
 
 
 # mouse (mm) CD8
-CD8 <- read.csv(file = "temp_folder/mouse_v1.0/ref_CD8_ms.txt", sep = "\t", 
+CD8 <- read.csv(file = "temp_folder/mouse_v1.0/ref_CD8_ms.txt", sep = "\t",
                 header = FALSE)
 colnames(CD8) <- c("CDR3b", "TRBV", "TRBJ")
 CD8$CDR3a <- NA
@@ -59,7 +59,7 @@ save(mm_CD8_ref, file = "data/mm_CD8_ref.RData", compress = "xz")
 
 
 # mouse (mm) CD4
-CD4 <- read.csv(file = "temp_folder/mouse_v1.0/ref_CD4_ms.txt", sep = "\t", 
+CD4 <- read.csv(file = "temp_folder/mouse_v1.0/ref_CD4_ms.txt", sep = "\t",
                 header = FALSE)
 colnames(CD4) <- c("CDR3b", "TRBV", "TRBJ")
 CD4$CDR3a <- NA

@@ -36,16 +36,16 @@ get_chain_run_v2 <- function(cdr3,
     # d. find motifs in CDR3
     local_pairs <- get_local_pair(
         cdr3 = cdr3,
-        motif = motif_enrichment$motif[motif_enrichment$filter==TRUE])
+        motif = motif_enrichment$motif[motif_enrichment$filter == TRUE])
 
 
     # 2. global
     # if global_pairs are provided as input use them, else compute them
-    if(!is.null(control$global_pairs)) {
+    if (!is.null(control$global_pairs)) {
         global_pairs <- control$global_pairs
     }
     else {
-        if(control$low_mem) {
+        if (control$low_mem) {
             global_pairs <- get_global_pairs_mem(
                 cdr3 = cdr3,
                 global_max_dist = control$global_max_dist)
@@ -58,7 +58,8 @@ get_chain_run_v2 <- function(cdr3,
         }
     }
 
-    # 3. return TODO: format properly
+    # 3. return
+    # TODO: format properly
     return(list(local_pairs = local_pairs,
                 global_pairs = global_pairs,
                 motif_enrichment = motif_enrichment))
@@ -73,13 +74,13 @@ get_motifs_v2 <- function(x,
 
     # find kmers in sample
     kmers_s <- stringdist::qgrams(cdr3, q = x)
-    if(ncol(kmers_s)==0) {
+    if (ncol(kmers_s) == 0) {
         # in real applications this should not happen -> input checks should
         # catch such errors
         stop("no kmers found in sample")
     }
-    kmers_s <- kmers_s[1, kmers_s[1,]>=min_o]
-    if(length(kmers_s)==0) {
+    kmers_s <- kmers_s[1, kmers_s[1,] >= min_o]
+    if (length(kmers_s) == 0) {
         # in real applications this should not happen -> input checks should
         # catch such errors
         stop("no kmers found in sample")
@@ -88,7 +89,7 @@ get_motifs_v2 <- function(x,
 
     # find kmers in reference
     kmers_r <- stringdist::qgrams(cdr3_ref, q = x)
-    if(ncol(kmers_r)==0) {
+    if (ncol(kmers_r) == 0) {
         # in real applications this should not happen -> input checks should
         # catch such errors
         stop("no kmers found in reference")
@@ -136,13 +137,13 @@ get_motif_enrichment_fet_v2 <- function(x) {
     # n = n_ref+n_sample-(f_ref+f_sample),
     # k = n_ref+n_sample
 
-    # ove TODO: check how is this done in gliph2
+    # TODO: check how is this done in gliph2
     ove <- (x[1]/x[3])/((x[2]/x[4]))
 
     q <- x[1]
-    m <- x[1]+x[2]
-    k <- x[3]+x[4]
-    n <- k-m
+    m <- x[1] + x[2]
+    k <- x[3] + x[4]
+    n <- k - m
 
     # TODO: do some testing on demo data
     # u <- matrix(data = NA_integer_, nrow = 2, ncol = 2)
@@ -150,8 +151,8 @@ get_motif_enrichment_fet_v2 <- function(x) {
 
     u[1,1] <- x[1]
     u[1,2] <- x[2]
-    u[2,1] <- x[3]-x[1]
-    u[2,2] <- x[4]-x[2]
+    u[2,1] <- x[3] - x[1]
+    u[2,2] <- x[4] - x[2]
 
     fet <- fisher.test(u, alternative = "greater")
     ova <- fet$estimate
@@ -163,13 +164,13 @@ get_motif_enrichment_fet_v2 <- function(x) {
 
 # Description:
 # Given data from function get_motif_enrichment, this function adds a
-# filter column with filter = T if motif is enriched (given the input
-# standards) and filter = F if not-enriched
+# filter column with filter = TRUE if motif is enriched (given the input
+# standards) and filter = FALSE if not-enriched
 get_motif_filter_v2 <- function(m,
                                 min_fdr,
                                 min_ove,
                                 min_o) {
     m$filter <- FALSE
-    m$filter[m$fdr<=min_fdr&m$ove>=min_ove&m$f_sample>=min_o] <- TRUE
+    m$filter[m$fdr <= min_fdr & m$ove >= min_ove & m$f_sample >= min_o] <- TRUE
     return(m)
 }

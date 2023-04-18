@@ -13,10 +13,22 @@
 #' @param cores, integer: number of CPU cores to use
 #' @param control, list: auxiliarry input parameters (described below)
 #'
+#' @import stringdist
+#' @import future
+#' @import future.apply
+#' @import methods
+#' @import stats
+#' @import utils
+#' @importFrom igraph components graph_from_data_frame
+#'
 #' @return list(clust = clust, edges = edges, data_sample = data_sample)
+#'
+#'
 #' @export
 #'
 #' @examples
+#' ## TODO add meaningful examples
+#' print("example")
 gliph <- function(data_sample,
                   data_ref,
                   version = 2,
@@ -31,7 +43,7 @@ gliph <- function(data_sample,
                       trim_flanks = FALSE,
                       flank_size = 3,
                       global_pairs = NULL,
-                      low_mem = F)) {
+                      low_mem = FALSE)) {
 
 
     # a. control check
@@ -62,8 +74,8 @@ gliph <- function(data_sample,
     edges <- vector(mode = "list", length = length(chains))
     names(edges) <- chains
 
-    for(chain in chains) {
-        if(control$trim_flanks) {
+    for (chain in chains) {
+        if (control$trim_flanks) {
             # NAs ignored by qqgram, how about global dist? TODO
             data_sample[, chain] <- get_trimmed_flanks(
                 x = data_sample[, chain],
@@ -74,7 +86,7 @@ gliph <- function(data_sample,
         }
 
         # create edges of a graph
-        if(version==3) {
+        if (version == 3) {
             cdr3 <- data_sample[, chain]
             cdr3_ref <- data_ref[, chain]
         }
@@ -85,7 +97,7 @@ gliph <- function(data_sample,
 
 
         # run local + global clustering
-        if(version==1) {
+        if (version == 1) {
             clust[[chain]] <- get_chain_run_v1(
                 cdr3 = cdr3,
                 cdr3_ref = cdr3_ref,
@@ -93,7 +105,7 @@ gliph <- function(data_sample,
                 cores = cores,
                 control = control)
         }
-        if(version==2|version==3) {
+        if (version == 2 | version == 3) {
             clust[[chain]] <- get_chain_run_v2(
                 cdr3 = cdr3,
                 cdr3_ref = cdr3_ref,

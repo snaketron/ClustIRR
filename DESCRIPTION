@@ -2,8 +2,8 @@ Package: gliphR
 Type: Package
 Title: What the Package Does (Title Case)
 Version: 0.1.0
-Author: Who wrote it
-Maintainer:   The package maintainer <yourself@somewhere.net>
+Authors@R: person("Kai", "Wollek", email = "kai.wollek@uni-duisburg-essen.de", 
+    role = c("aut", "cre"), comment=c(ORCID="0009-0008-5941-9160"))
 Description: Clustering of T cell receptors (TCRs) to find groups of TCRs
     with similar specificities. Quantitative comparison of TCR cluster 
     structure between biological conditions.
@@ -17,7 +17,6 @@ Imports:
     future.apply,
     methods,
     stats,
-    base,
     utils,
     igraph
 Suggests:

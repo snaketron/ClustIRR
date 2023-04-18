@@ -15,7 +15,7 @@ get_control <- function(control_in) {
         low_mem = FALSE)
 
     # if missing control_in -> use default values
-    if(missing(control_in)|is.null(control_in)) {
+    if (missing(control_in) | is.null(control_in)) {
         return(control)
     }
 
@@ -24,7 +24,7 @@ get_control <- function(control_in) {
     # live with the following "inefficiency" as the list is generally small
     # (~5 elements)
     ns <- names(control_in)
-    for(i in 1:length(control_in)) {
+    for (i in 1:length(control_in)) {
         control[[ns[i]]] <- control_in[[ns[i]]]
     }
     return(control)
@@ -37,13 +37,13 @@ get_control <- function(control_in) {
 get_local_pair <- function(cdr3,
                            motif) {
     # if no enriched motifs
-    if(length(motif)==0) {
+    if (length(motif) == 0) {
         return(NULL)
     }
 
     get_motif_in_cdr <- function(x, motif, cdr3) {
-        j <- which(regexpr(pattern = motif[x], text = cdr3)!=-1)
-        if(length(j)==1) {
+        j <- which(regexpr(pattern = motif[x], text = cdr3) != -1)
+        if (length(j) == 1) {
             return(data.frame(from = j, to = j, motif = motif[x]))
         }
         u <- t(utils::combn(x = j, m = 2))
@@ -64,8 +64,10 @@ get_global_pairs <- function(cdr3,
                              global_max_dist) {
     # Jan is looping over all sequences and computing distances with the rest.
     # two problems:
-    # a) slower than passing vector to stringdist (but lower max. memory footprint)
-    # b) hamming distance between sequences with unequal lengths computed nontheless
+    # a) slower than passing vector to stringdist
+    #    but lower max. memory footprint
+    # b) hamming distance between sequences
+    #    with unequal lengths computed nonetheless
 
     # at the very least loop over cdr3.lengths -> faster, but somewhat more
     # memory is data passed together to stringdist
@@ -75,15 +77,15 @@ get_global_pairs <- function(cdr3,
 
     get_hamming_dist <- function(x, cdr3, cdr3_len, global_max_dist) {
         is <- which(cdr3_len == x)
-        if(length(is)==1) {
+        if (length(is) == 1) {
             return(NULL)
         }
-        if(length(is)==2) {
+        if (length(is) == 2) {
             d <- stringdist::stringdist(
                 a = cdr3[is[1]],
                 b = cdr3[is[2]],
                 method = "hamming")
-            if(d>global_max_dist) {
+            if (d > global_max_dist) {
                 return(NULL)
             }
             return(c(cdr3[is[1]], cdr3[is[2]]))
@@ -95,8 +97,8 @@ get_global_pairs <- function(cdr3,
             method = "hamming")
         d[upper.tri(x = d, diag = TRUE)] <- NA
         # d[1:nrow(d), 1:nrow(d)] <- NA
-        js <- which(d<=global_max_dist, arr.ind = TRUE)
-        if(nrow(js)==0) {
+        js <- which(d <= global_max_dist, arr.ind = TRUE)
+        if (nrow(js) == 0) {
             return(NULL)
         }
         return(cbind(is[js[,1]], is[js[,2]]))
@@ -111,29 +113,29 @@ get_global_pairs <- function(cdr3,
                                         cdr3_len,
                                         global_max_dist) {
         is <- which(cdr3_len == x)
-        if(length(is)==1) {
+        if (length(is) == 1) {
             return(NULL)
         }
 
         get_pairdist  <- function(x, a, len_a, global_max_dist) {
             d <- stringdist::stringdist(a = a[x],
-                                        b = a[(x+1):len_a],
+                                        b = a[(x + 1):len_a],
                                         method = "hamming")
-            js <- which(d<=global_max_dist)
-            if(length(js)==0) {
+            js <- which(d <= global_max_dist)
+            if (length(js) == 0) {
                 return(NULL)
             }
-            js <- x+js
+            js <- x + js
             return(cbind(rep(x = x, times = length(js)), js))
         }
 
-        hd <- lapply(X = 1:(length(is)-1),
+        hd <- lapply(X = 1:(length(is) - 1),
                      FUN = get_pairdist,
                      a = cdr3[is],
                      len_a = length(is),
                      global_max_dist = global_max_dist)
         hd <- do.call(rbind, hd)
-        if(is.null(hd)) {
+        if (is.null(hd)) {
             return(hd)
         }
         # map to original indices
@@ -162,15 +164,15 @@ get_global_pairs_mem <- function(cdr3,
 
     get_hamming_dist <- function(x, cdr3, cdr3_len, global_max_dist) {
         is <- which(cdr3_len == x)
-        if(length(is)==1) {
+        if (length(is) == 1) {
             return(NULL)
         }
-        if(length(is)==2) {
+        if (length(is) == 2) {
             d <- stringdist::stringdist(
                 a = cdr3[is[1]],
                 b = cdr3[is[2]],
                 method = "hamming")
-            if(d>global_max_dist) {
+            if (d > global_max_dist) {
                 return(NULL)
             }
             return(c(cdr3[is[1]], cdr3[is[2]]))
@@ -182,8 +184,8 @@ get_global_pairs_mem <- function(cdr3,
             method = "hamming")
         d[upper.tri(x = d, diag = TRUE)] <- NA
         # d[1:nrow(d), 1:nrow(d)] <- NA
-        js <- which(d<=global_max_dist, arr.ind = TRUE)
-        if(nrow(js)==0) {
+        js <- which(d <= global_max_dist, arr.ind = TRUE)
+        if (nrow(js) == 0) {
             return(NULL)
         }
         return(cbind(is[js[,1]], is[js[,2]]))
@@ -198,29 +200,29 @@ get_global_pairs_mem <- function(cdr3,
                                  cdr3_len,
                                  global_max_dist) {
         is <- which(cdr3_len == x)
-        if(length(is)==1) {
+        if (length(is) == 1) {
             return(NULL)
         }
 
         get_pairdist  <- function(x, a, len_a, global_max_dist) {
             d <- stringdist::stringdist(a = a[x],
-                                        b = a[(x+1):len_a],
+                                        b = a[(x + 1):len_a],
                                         method = "hamming")
-            js <- which(d<=global_max_dist)
-            if(length(js)==0) {
+            js <- which(d <= global_max_dist)
+            if (length(js) == 0) {
                 return(NULL)
             }
-            js <- x+js
+            js <- x + js
             return(cbind(rep(x = x, times = length(js)), js))
         }
 
-        hd <- lapply(X = 1:(length(is)-1),
+        hd <- lapply(X = 1:(length(is) - 1),
                      FUN = get_pairdist,
                      a = cdr3[is],
                      len_a = length(is),
                      global_max_dist = global_max_dist)
         hd <- do.call(rbind, hd)
-        if(is.null(hd)) {
+        if (is.null(hd)) {
             return(hd)
         }
         # map to original indices
@@ -244,8 +246,8 @@ get_global_pairs_mem <- function(cdr3,
 # one by one.
 # x = columns(data_sample)
 get_chains <- function(x) {
-    js <- c(which(regexpr(pattern = "CDR3b", text = x)!=-1),
-           which(regexpr(pattern = "CDR3a", text = x)!=-1))
+    js <- c(which(regexpr(pattern = "CDR3b", text = x) != -1),
+            which(regexpr(pattern = "CDR3a", text = x) != -1))
     return(x[js])
 }
 
@@ -256,10 +258,10 @@ get_chains <- function(x) {
 # acids
 get_trimmed_flanks <- function(x,
                                flank_size) {
-    x <- base::substr(x=x,
-                      start=flank_size+1 ,
-                      stop=base::nchar(seqs)-flank_size)
-    x[x==""] <- NA
+    x <- base::substr(x = x,
+                      start = flank_size + 1,
+                      stop = base::nchar(seqs) - flank_size)
+    x[x == ""] <- NA
     return(x)
 }
 
@@ -269,16 +271,16 @@ get_trimmed_flanks <- function(x,
 # 1) from clustering: local_pairs and global_pairs
 # 2) from data_sample: data.frame + chain (TCRa==CDR3a or TCRb==CDR3b)
 get_edges_todo <- function(local_pairs,
-                      global_pairs,
-                      data_sample,
-                      chain) {
+                           global_pairs,
+                           data_sample,
+                           chain) {
 
     edges <- c()
-    if(nrow(local_pairs)!=0) {
+    if (nrow(local_pairs) != 0) {
         local_pairs$edge_type <- "local"
         edges <- rbind(edges, local_pairs)
     }
-    if(nrow(global_pairs)!=0) {
+    if (nrow(global_pairs) != 0) {
         global_pairs <- data.frame(
             from = global_pairs[, 1],
             to = global_pairs[, 2],
@@ -286,12 +288,12 @@ get_edges_todo <- function(local_pairs,
             edge_type = "global")
         edges <- rbind(edges, global_pairs)
     }
-    if(nrow(local_pairs)==0 &
-       nrow(global_pairs)==0) {
+    if (nrow(local_pairs) == 0 &
+        nrow(global_pairs) == 0) {
         return(NULL)
     }
 
-    if(chain == "CDR3b") {
+    if (chain == "CDR3b") {
         info_from <- data_sample[edges$from, c("CDR3b", "TRBV", "TRBJ")]
         colnames(info_from) <- paste0("from_", gsub(pattern = "TRB",
                                                     replacement = "TR",
@@ -305,7 +307,7 @@ get_edges_todo <- function(local_pairs,
         edges$chain <- "CDR3b"
         edges <- cbind(edges, info_from)
     }
-    if(chain == "CDR3a") {
+    if (chain == "CDR3a") {
         info_from <- data_sample[edges$from, c("CDR3a", "TRAV", "TRAJ")]
         colnames(info_from) <- paste0("from_", gsub(pattern = "TRA",
                                                     replacement = "TR",
@@ -329,11 +331,11 @@ get_edges <- function(local_pairs,
                       chain) {
 
     edges <- c()
-    if(is.null(local_pairs)==FALSE) {
+    if (is.null(local_pairs) == FALSE) {
         local_pairs$edge_type <- "local"
         edges <- rbind(edges, local_pairs)
     }
-    if(is.null(global_pairs)==FALSE) {
+    if (is.null(global_pairs) == FALSE) {
         global_pairs <- data.frame(
             from = global_pairs[,1],
             to = global_pairs[,2],
@@ -341,16 +343,16 @@ get_edges <- function(local_pairs,
             edge_type = "global")
         edges <- rbind(edges, global_pairs)
     }
-    if(is.null(local_pairs)&is.null(global_pairs)) {
+    if (is.null(local_pairs) & is.null(global_pairs)) {
         return(NULL)
     }
 
-    if(chain == "CDR3b") {
+    if (chain == "CDR3b") {
         edges$from_cdr3 <- cdr3[edges$from]
         edges$to_cdr3 <- cdr3[edges$to]
         edges$chain <- "CDR3b"
     }
-    if(chain == "CDR3a") {
+    if (chain == "CDR3a") {
         edges$from_cdr3 <- cdr3[edges$from]
         edges$to_cdr3 <- cdr3[edges$to]
         edges$chain <- "CDR3a"

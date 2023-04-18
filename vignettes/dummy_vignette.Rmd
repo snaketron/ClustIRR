@@ -1,0 +1,22 @@
+---
+title: "dummy_vignette"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{usageExample}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+sessionInfo()
+```
+
+This vignette will show an example of the usage of the package, 
+using all included functions on the supplied example data.

@@ -40,15 +40,15 @@ get_chain_run_v1 <- function(cdr3,
     # d. find motifs in CDR3
     local_pairs <- get_local_pair(
         cdr3 = cdr3,
-        motif = motif_enrichment$motif[motif_enrichment$filter==TRUE])
+        motif = motif_enrichment$motif[motif_enrichment$filter == TRUE])
 
     # 2. global
     # if global_pairs are provided as input use them, else compute them
-    if(!is.null(control$global_pairs)) {
+    if (!is.null(control$global_pairs)) {
         global_pairs <- control$global_pairs
     }
     else {
-        if(control$low_mem) {
+        if (control$low_mem) {
             global_pairs <- get_global_pairs_mem(
                 cdr3 = cdr3,
                 global_max_dist = control$global_max_dist)
@@ -92,12 +92,12 @@ get_motifs_v1 <- function(cdr3,
         get_qgrams <- function(x, q, cdr3, N, relevant_motifs) {
             draw_cdr3 <- sample(x = cdr3, size = N, replace = TRUE)
             o <- stringdist::qgrams(draw_cdr3, q = q)
-            if(ncol(o)==0) {
+            if (ncol(o) == 0) {
                 return(NA)
             }
             o <- o[1,]
             o <- o[names(o) %in% relevant_motifs]
-            if(length(o)==0) {
+            if (length(o) == 0) {
                 return(NA)
             }
             return(o)
@@ -124,11 +124,11 @@ get_motifs_v1 <- function(cdr3,
                                       min_o){
 
         o <- stringdist::qgrams(cdr3, q = x)
-        if(ncol(o)==0) {
+        if (ncol(o) == 0) {
             return(NA)
         }
-        o <- o[1, o[1,]>=min_o]
-        if(length(o)==0) {
+        o <- o[1, o[1,] >= min_o]
+        if (length(o) == 0) {
             return(NA)
         }
         return(o)
@@ -184,7 +184,7 @@ get_motif_enrichment_v1 <- function(x,
         ove <- o/e_mean
 
         # prob e>=o
-        p <- sum(e>=o)/B
+        p <- sum(e >= o)/B
 
         # return
         return(c(e_mean, e_max, o, ove, p))
@@ -194,12 +194,12 @@ get_motif_enrichment_v1 <- function(x,
     motif_ref <- m[[as.character(x)]]$motif_ref[[1]]
 
     # matrix of k-mer counts
-    f_m <- matrix(data = 0, ncol = B+1, nrow = length(motif_sample))
+    f_m <- matrix(data = 0, ncol = B + 1, nrow = length(motif_sample))
     rownames(f_m) <- names(motif_sample)
     f_m[names(motif_sample), 1] <- motif_sample
-    for(i in 1:length(motif_ref)) {
+    for (i in 1:length(motif_ref)) {
         s <- motif_ref[[i]]
-        f_m[names(s),i+1] <- s
+        f_m[names(s),i + 1] <- s
     }
 
     e <- t(apply(X = f_m, MARGIN = 1, FUN = get_e, B = B))
@@ -217,13 +217,13 @@ get_motif_enrichment_v1 <- function(x,
 
 # Description:
 # Given data from function get_motif_enrichment, this function adds a
-# filter column with filter = T if motif is enriched (given the input
-# standards) and filter = F if not-enriched
+# filter column with filter = TRUE if motif is enriched (given the input
+# standards) and filter = FALSE if not-enriched
 get_motif_filter_v1 <- function(m,
                                 min_fdr,
                                 min_ove,
                                 min_o) {
     m$filter <- FALSE
-    m$filter[m$fdr<=min_fdr&m$ove>=min_ove&m$obs>=min_o] <- TRUE
+    m$filter[m$fdr <= min_fdr & m$ove >= min_ove & m$obs >= min_o] <- TRUE
     return(m)
 }

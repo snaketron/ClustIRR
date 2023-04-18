@@ -1,2 +1,8 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^test_scripts$
+^tests$
+^TODO\.md$
+^styleguide.Rmd$
+^slides$
+^data/hs_CD4_ref\.RData$

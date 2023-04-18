@@ -1,13 +1,3 @@
-#' HS CD4 ref
-#'
-#' \code{"hs_CD4_ref"} to be described
-#'
-#' @docType data
-#' @keywords datasets
-#' @name hs_CD4_ref
-#' @usage data(hs_CD4_ref)
-"hs_CD4_ref"
-
 #' HS CD8 ref
 #'
 #' \code{"hs_CD8_ref"} to be described
