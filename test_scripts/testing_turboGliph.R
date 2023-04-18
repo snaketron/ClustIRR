@@ -53,7 +53,7 @@ version = 3
 control_input <- list(
     B = 1000,
     global_max_dist = 1,
-    local_min_p = 0.05,
+    local_min_fdr = 0.05,
     local_min_ove = c(10^3, 10^2, 10^1),
     local_min_o = 3,
     trim_flanks = FALSE,
@@ -109,9 +109,9 @@ out_v3 <- gliph(data_sample = data_sample,
 
 ###
 gliph_output <- out_v1
-ge <- get_graph(gliph_output = gliph_output,
-                chain = "CDR3a+CDR3b",
-                edge_type = "local+global")
+# ge <- get_graph(gliph_output = gliph_output,
+#                 chain = "CDR3a+CDR3b",
+#                 edge_type = "local+global")
 
 ge$graph
 ge$components

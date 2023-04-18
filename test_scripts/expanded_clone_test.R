@@ -2,6 +2,7 @@ require(turboGliph)
 require(ggplot2)
 require(ggforce)
 require(patchwork)
+require(gliphR)
 
 
 data("hs_CD8_ref")
@@ -25,17 +26,11 @@ for(i in 1:19) {
 control_input <- list(
   B = 1000,
   global_max_dist = 1,
-  local_min_p = 0.05,
+  local_max_fdr = 0.05,
   local_min_ove = 2,
   local_min_o = 1,
   trim_flanks = FALSE,
   flank_size = 3)
-
-source("R/util_v1.R")
-source("R/util_v2.R")
-source("R/util_v1_v2.R")
-source("R/gliph.R")
-source("R/score.R")
 
 
 
@@ -100,13 +95,13 @@ write.table(x = data_ref, file = "test_scripts/benchmark_expansion/data_ref.tsv"
 # CAGRTGVSTDTQYF	TRBV5-1	TRBJ2-3	CAVTPGGGADGLTF	TRAV41		TRAJ45	02/02591
 # CAGYTGRANYGYTF	TRBV2	TRBJ1-2	CVVNGGFGNVLHC	TRAV12-1	TRAJ35	01/08733
 
-v1 <- out_v1$clust$CDR3b$motif_enrichment
-v2 <- out_v2$clust$CDR3b$motif_enrichment
-v3 <- out_v3$clust$CDR3b$motif_enrichment
+v1 <- out_v1$clust$CDR3b$local$m
+v2 <- out_v2$clust$CDR3b$local$m
+v3 <- out_v3$clust$CDR3b$local$m
 
-table(v1$filter)
-table(v2$filter)
-table(v3$filter)
+table(v1$pass)
+table(v2$pass)
+table(v3$pass)
 
 w <- merge(x = v2, y = v3, by = "motif")
 w$ove.change <- w$ove.x/w$ove.y
