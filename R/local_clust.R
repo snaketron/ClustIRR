@@ -166,18 +166,22 @@ get_motifs_v23 <- function(x,
     }
     kmers_r <- kmers_r[1,]
 
-    # we are only interested in enrichment of motifs in sample relative to
-    # reference. Remove all motifs from reference not found in sample.
-    kmers_r <- kmers_r[names(kmers_r) %in% names(kmers_s)]
-
 
     # convert table to data.frame
     kmers_s <- data.frame(motif = names(kmers_s),
                           f_sample = as.numeric(kmers_s))
     kmers_s$n_sample <- sum(kmers_s$f_sample)
+
     kmers_r <- data.frame(motif = names(kmers_r),
                           f_ref = as.numeric(kmers_r))
     kmers_r$n_ref <- sum(kmers_r$f_ref)
+
+
+    # we are only interested in enrichment of motifs in sample relative to
+    # reference. Remove all motifs from reference not found in sample.
+    # Important: n_ref must be sum of all motifs in pop!
+    kmers_r <- kmers_r[kmers_r$motif %in% kmers_s$motif, ]
+
 
     m <- merge(x = kmers_s, y = kmers_r, by = "motif", all = TRUE)
     m[is.na(m[,"f_sample"]), "f_sample"] <- 0
