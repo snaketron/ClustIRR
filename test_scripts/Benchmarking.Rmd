@@ -7,16 +7,14 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
-```{r, include = FALSE}
+```{r setup, include = FALSE}
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
 )
-```
-
-```{r setup}
-library(gliphR)
-library(turboGliph)
+require(gliphR)
+require(turboGliph)
+require(ggplot2)
 ```
 
 This vignette compares the gliphR package with the turboGliph package.
@@ -24,7 +22,9 @@ This vignette compares the gliphR package with the turboGliph package.
 
 # Create input data
 
-```{r}
+```{r create_input_data}
+
+set.seed(123)
 
 data("hs_CD8_ref")
 ref <- base::grep(pattern = "^C.*F$",x = hs_CD8_ref$CDR3b,
@@ -39,7 +39,7 @@ data_ref <- ref[, 1:3]
 
 # Cluster with gliphR versions
 
-```{r}
+```{r run_gliph}
 
 # prepare input parameters
 ks <- c(2, 3, 4)
@@ -80,14 +80,14 @@ out_v3 <- gliph(data_sample = data_sample,
                 control = control_input)
 
 # put in the same data for ref and sample
-out_v1_b <- gliph(data_sample = data_sample,
+out_v1_i <- gliph(data_sample = data_sample,
                 data_ref = data_sample,
                 ks = ks,
                 cores = cores,
                 version = 1,
                 control = control_input)
 
-out_v2_b <- gliph(data_sample = data_sample,
+out_v2_i <- gliph(data_sample = data_sample,
                 data_ref = data_sample,
                 ks = ks,
                 cores = cores,
@@ -95,7 +95,7 @@ out_v2_b <- gliph(data_sample = data_sample,
                 control = control_input)
 
 
-out_v3_b <- gliph(data_sample = data_sample,
+out_v3_i <- gliph(data_sample = data_sample,
                 data_ref = data_sample,
                 ks = ks,
                 cores = cores,
@@ -106,7 +106,7 @@ out_v3_b <- gliph(data_sample = data_sample,
 
 # Cluster with turboGliph versions
 
-```{r}
+```{r run_turbogliph}
 
 jan_v1 <- turboGliph::turbo_gliph(
     cdr3_sequences = data_sample,
@@ -133,7 +133,7 @@ jan_v1 <- turboGliph::turbo_gliph(
 #     )
 
 # put in sample as ref for checking
-jan_v1_b <- turboGliph::turbo_gliph(
+jan_v1_i <- turboGliph::turbo_gliph(
     cdr3_sequences = data_sample,
     refdb_beta = data_sample,
     lcminp = 0.05,
@@ -145,21 +145,143 @@ jan_v1_b <- turboGliph::turbo_gliph(
 
 
 ```
+
 # Compare results
 
-```{r}
+```{r compare_results}
 
+# prepare for visualization
 e_v1 <- out_v1$clust$CDR3b$motif_enrichment
+colnames(e_v1)[which(colnames(e_v1) == 'ove')]     <- 'OvE_gliphR1'
+e_v1_i <- out_v1_i$clust$CDR3b$motif_enrichment
+colnames(e_v1_i)[which(colnames(e_v1_i) == 'ove')] <- 'OvE_gliphR1_identical'
 e_v2 <- out_v2$clust$CDR3b$motif_enrichment
+colnames(e_v2)[which(colnames(e_v2) == 'ove')]     <- 'OvE_gliphR2'
+e_v2_i <- out_v2_i$clust$CDR3b$motif_enrichment
+colnames(e_v2_i)[which(colnames(e_v2_i) == 'ove')] <- 'OvE_gliphR2_identical'
 e_v3 <- out_v3$clust$CDR3b$motif_enrichment
+colnames(e_v3)[which(colnames(e_v3) == 'ove')]     <- 'OvE_gliphR3'
+e_v3_i <- out_v3_i$clust$CDR3b$motif_enrichment
+colnames(e_v3_i)[which(colnames(e_v3_i) == 'ove')] <- 'OvE_gliphR3_identical'
 
-e_v1_b <- out_v1$clust$CDR3b$motif_enrichment
-e_v2_b <- out_v2$clust$CDR3b$motif_enrichment
-e_v3_b <- out_v3$clust$CDR3b$motif_enrichment
+e_jan_v1 <- jan_v1$motif_enrichment$all_motifs
+colnames(e_jan_v1)[which(colnames(e_jan_v1) == 'Motif')] <- 'motif'
+colnames(e_jan_v1)[which(colnames(e_jan_v1) == 'OvE')]   <- 'OvE_turboGliph1'
+e_jan_v1_i <- jan_v1_i$motif_enrichment$all_motif
+colnames(e_jan_v1_i)[which(colnames(e_jan_v1_i) == 'Motif')] <- 'motif'
+colnames(e_jan_v1_i)[which(colnames(e_jan_v1_i) == 'OvE')]   <- 'OvE_turboGliph1_identical'
 
-e_jan_v1 <- jan_v1$motif_enrichment$selected_motifs
 #e_jan_v2 <- jan_v2$motif_enrichment$selected_motifs
 
-e_jan_v1_b <- jan_v1$motif_enrichment$selected_motifs
+```
+
+
+## Identical vs different input
+
+```{r identical_vs_different, fig.width=5, fig.height=5, fig.align='center'}
+
+# gliphR v1 test versus identical input
+c_v1_i <- merge(e_v1, e_v1_i, by = "motif", all=T)
+c_v1_i[is.na(c_v1_i)] <- -1
+ggplot(c_v1_i, aes(x=OvE_gliphR1_identical, y=OvE_gliphR1)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v1 - identical versus different input")
+
+# gliphR v2 test versus identical input
+c_v2_i <- merge(e_v2, e_v2_i, by = "motif", all=T)
+c_v2_i[is.na(c_v2_i)] <- -1
+ggplot(c_v2_i, aes(x=OvE_gliphR2_identical, y=OvE_gliphR2)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v2 - identical versus different input")
+
+# gliphR v3 test versus identical input
+c_v3_i <- merge(e_v3, e_v3_i, by = "motif", all=T)
+c_v3_i[is.na(c_v3_i)] <- -1
+ggplot(c_v3_i, aes(x=OvE_gliphR3_identical, y=OvE_gliphR3)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v3 - identical versus different input")
+
+# turbogliph vs identical input
+c_jan_v1_i <- merge(e_jan_v1, e_jan_v1_i, by = "motif", all=T)
+c_jan_v1_i[is.na(c_jan_v1_i)] <- -1
+ggplot(c_jan_v1_i, aes(x=OvE_turboGliph1_identical, y=OvE_turboGliph1)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("turboGliph1 - identical versus different input")
+
+```
+
+
+## gliphR versus turboGliph
+
+```{r gliphR_turbogliph, fig.width=5, fig.height=5, fig.align='center'}
+
+# gliphR v1 vs turboGliph 1
+c_v1 <- merge(e_v1, e_jan_v1, by = "motif", all=T)
+c_v1[is.na(c_v1)] <- -1
+ggplot(c_v1, aes(x=OvE_gliphR1, y=OvE_turboGliph1)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v1 vs turboGliph::turbo_gliph")
+
+
+# gliphR v2 vs turboGliph 1
+c_v2 <- merge(e_v2, e_jan_v1, by = "motif", all=T)
+c_v2[is.na(c_v2)] <- -1
+ggplot(c_v2, aes(x=OvE_gliphR2, y=OvE_turboGliph1)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v2 vs turboGliph::turbo_gliph")
+
+
+# gliphR v3 vs turboGliph 1
+c_v3 <- merge(e_v3, e_jan_v1, by = "motif", all=T)
+c_v3[is.na(c_v3)] <- -1
+ggplot(c_v3, aes(x=OvE_gliphR3, y=OvE_turboGliph1)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v3 vs turboGliph::turbo_gliph")
+
+
+```
+
+
+## Compare gliphR versions
+
+```{r gliphR_version_comparison, fig.width=5, fig.height=5, fig.align='center'}
+
+# gliphR v1 vs gliphR v2
+c_v1_2 <- merge(e_v1, e_v2, by = "motif", all=T)
+c_v1_2[is.na(c_v1_2)] <- -1
+ggplot(c_v1_2, aes(x=OvE_gliphR1, y=OvE_gliphR2)) +
+  geom_point() +
+  geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v1 vs gliphR v2")
+
+# gliphR v1 vs gliphR v3
+c_v1_3 <- merge(e_v1, e_v3, by = "motif", all=T)
+c_v1_3[is.na(c_v1_3)] <- -1
+ggplot(c_v1_3, aes(x=OvE_gliphR1, y=OvE_gliphR3)) +
+  geom_point() +
+  geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v1 vs gliphR v3")
+
+# gliphR v2 vs gliphR v3
+c_v2_3 <- merge(e_v2, e_v3, by = "motif", all=T)
+c_v2_3[is.na(c_v2_3)] <- -1
+ggplot(c_v2_3, aes(x=OvE_gliphR2, y=OvE_gliphR3)) +
+  geom_point() +
+  geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color="gray") +
+  ggtitle("gliphR v2 vs gliphR v3")
+
 
 ```
