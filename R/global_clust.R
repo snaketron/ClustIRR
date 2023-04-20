@@ -6,8 +6,10 @@ get_global_clust <- function(cdr3,
                              global_max_dist) {
     # Jan is looping over all sequences and computing distances with the rest.
     # two problems:
-    # a) slower than passing vector to stringdist (but lower max. memory footprint)
-    # b) hamming distance between sequences with unequal lengths computed nontheless
+    # a) slower than passing vector to stringdist,
+    #    but lower max. memory footprint
+    # b) hamming distance between sequences
+    #    with unequal lengths computed nonetheless
 
     # at the very least loop over cdr3.lengths -> faster, but somewhat more
     # memory is data passed together to stringdist

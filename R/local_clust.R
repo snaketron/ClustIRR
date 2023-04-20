@@ -124,7 +124,7 @@ get_motif_in_seq <- function(seq,
             return(data.frame(seq = seq[j], motif = motif[x],
                               stringsAsFactors = FALSE))
         }
-        reutnr(NULL)
+        return(NULL)
     }
 
     return(do.call(rbind, lapply(X = 1:length(motif),

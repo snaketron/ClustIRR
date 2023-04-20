@@ -48,7 +48,7 @@ cores <- 12 # later to be changed
 control_input <- list(
   B = 1000,
   global_max_dist = 1,
-  local_min_fdr = 0.05,
+  local_max_fdr = 0.05,
   local_min_ove = c(10^3, 10^2, 10^1),
   local_min_o = 3,
   trim_flanks = FALSE,
@@ -151,17 +151,17 @@ jan_v1_i <- turboGliph::turbo_gliph(
 ```{r compare_results}
 
 # prepare for visualization
-e_v1 <- out_v1$clust$CDR3b$motif_enrichment
+e_v1 <- out_v1$clust$CDR3b$local$m
 colnames(e_v1)[which(colnames(e_v1) == 'ove')]     <- 'OvE_gliphR1'
-e_v1_i <- out_v1_i$clust$CDR3b$motif_enrichment
+e_v1_i <- out_v1_i$clust$CDR3b$local$m
 colnames(e_v1_i)[which(colnames(e_v1_i) == 'ove')] <- 'OvE_gliphR1_identical'
-e_v2 <- out_v2$clust$CDR3b$motif_enrichment
+e_v2 <- out_v2$clust$CDR3b$local$m
 colnames(e_v2)[which(colnames(e_v2) == 'ove')]     <- 'OvE_gliphR2'
-e_v2_i <- out_v2_i$clust$CDR3b$motif_enrichment
+e_v2_i <- out_v2_i$clust$CDR3b$local$m
 colnames(e_v2_i)[which(colnames(e_v2_i) == 'ove')] <- 'OvE_gliphR2_identical'
-e_v3 <- out_v3$clust$CDR3b$motif_enrichment
+e_v3 <- out_v3$clust$CDR3b$local$m
 colnames(e_v3)[which(colnames(e_v3) == 'ove')]     <- 'OvE_gliphR3'
-e_v3_i <- out_v3_i$clust$CDR3b$motif_enrichment
+e_v3_i <- out_v3_i$clust$CDR3b$local$m
 colnames(e_v3_i)[which(colnames(e_v3_i) == 'ove')] <- 'OvE_gliphR3_identical'
 
 e_jan_v1 <- jan_v1$motif_enrichment$all_motifs
