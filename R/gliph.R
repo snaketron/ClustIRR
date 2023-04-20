@@ -101,8 +101,13 @@ gliph <- function(data_sample,
         #                             cdr3 = cdr3,
         #                             chain = chain)
     }
-    return(list(clust = clust, edges = edges, data_sample = data_sample,
-                version = version, ks = ks, cores = cores, control = control))
+    return(list(clust = clust,
+                edges = edges,
+                data_sample = data_sample,
+                version = version,
+                ks = ks,
+                cores = cores,
+                control = control))
 }
 
 
