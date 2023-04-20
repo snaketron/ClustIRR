@@ -24,7 +24,7 @@ input_check <- function(data_sample,
     check_cores(cores)
     check_B(control$B)
     check_global_max_dist(control$global_max_dist)
-    check_local_min_fdr(control$local_min_fdr)
+    check_local_max_fdr(control$local_max_fdr)
     check_local_min_o(control$local_min_o)
     check_trim_flanks(control$trim_flanks)
     check_flank_size(control$flank_size)
@@ -135,12 +135,12 @@ check_global_max_dist <- function(global_max_dist) {
     check_lessthan(global_max_dist,1)
 }
 
-check_local_min_fdr <- function(local_min_fdr) {
-    check_infinity(local_min_fdr)
-    check_numeric(local_min_fdr)
-    check_singlevalue(local_min_fdr)
-    check_lessthan(local_min_fdr, 0)
-    check_greaterthan(local_min_fdr, 1)
+check_local_max_fdr <- function(local_max_fdr) {
+    check_infinity(local_max_fdr)
+    check_numeric(local_max_fdr)
+    check_singlevalue(local_max_fdr)
+    check_lessthan(local_max_fdr, 0)
+    check_greaterthan(local_max_fdr, 1)
 }
 
 check_local_min_o <- function(local_min_o) { # kmer_mindepth
@@ -200,12 +200,53 @@ check_global_pairs <- function(global_pairs, data_sample) {
     }
 }
 
-
 check_low_mem <- function(low_mem) {
     check_missing(x = low_mem)
     check_singlevalue(x = low_mem)
     check_logical(x = low_mem)
 }
+
+# Description:
+# Setup control list.
+# control_in: user generated list (if missing -> use default)
+get_control <- function(control_in) {
+
+    control <- base::list(
+        B = 1000,
+        global_max_dist = 1,
+        local_max_fdr = 0.05,
+        local_min_ove = 2,
+        local_min_o = 3,
+        trim_flanks = FALSE,
+        flank_size = 3,
+        global_pairs = NULL,
+        low_mem = FALSE)
+
+    # if missing control_in -> use default values
+    if(base::missing(control_in)|base::is.null(control_in)) {
+        return(control)
+    }
+    if(base::is.list(control_in)==FALSE) {
+        base::stop("control must be a list")
+    }
+    if(base::is.data.frame(control_in)==TRUE) {
+        base::stop("control must be a list")
+    }
+    if(base::all(base::names(control_in) %in% base::names(control))==FALSE) {
+        base::stop("unrecognized elements found in control")
+    }
+
+    # edit control by user-defined control_in
+    # There are packages to update list given another list, but here we can
+    # live with the following "inefficiency" as the list is generally small
+    # (~5 elements)
+    ns <- names(control_in)
+    for(i in 1:length(control_in)) {
+        control[[ns[i]]] <- control_in[[ns[i]]]
+    }
+    return(control)
+}
+
 
 #Helper functions---------------------------------------------------------------
 

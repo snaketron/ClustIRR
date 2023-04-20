@@ -6,8 +6,10 @@ require(gliphR)
 
 
 data("hs_CD8_ref")
-ref <- base::grep(pattern = "^C.*F$",x = hs_CD8_ref$CDR3b,
-                  perl = TRUE,value = TRUE)
+ref <- base::grep(pattern = "^C.*F$",
+                  x = hs_CD8_ref$CDR3b,
+                  perl = TRUE,
+                  value = TRUE)
 ref <- hs_CD8_ref[hs_CD8_ref$CDR3b %in% ref, ]
 rm(hs_CD8_ref)
 
