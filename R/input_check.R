@@ -108,7 +108,9 @@ check_ks <- function(ks) {
 check_local_min_ove <- function(local_min_ove) {
     check_infinity(local_min_ove)
     check_numeric(local_min_ove)
-    check_wholenumber(local_min_ove)
+    #check_wholenumber(local_min_ove) # SK: min_ove can be a real number
+    check_singlevalue(cores) # SK: contrary to Jan's implementation I
+    # programmed min_ove as a single number (threshold)
 }
 
 check_cores <- function(cores) {
