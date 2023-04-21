@@ -149,12 +149,13 @@ get_motifs_v23 <- function(x,
         # catch such errors
         stop("no kmers found in sample")
     }
-    kmers_s <- kmers_s[1, kmers_s[1,]>=min_o]
+    #kmers_s <- kmers_s[1, kmers_s[1,]>=min_o]
     if(length(kmers_s)==0) {
         # in real applications this should not happen -> input checks should
         # catch such errors
         stop("no kmers found in sample")
     }
+    kmers_s <- kmers_s[1,]
 
 
     # find kmers in reference
