@@ -40,8 +40,7 @@ gliph <- function(data_sample,
                       local_max_fdr = 0.05,
                       local_min_ove = 2,
                       local_min_o = 3,
-                      trim_flanks = FALSE,
-                      flank_size = 3,
+                      trim_flank_aa = 0,
                       global_pairs = NULL,
                       low_mem = FALSE)) {
 

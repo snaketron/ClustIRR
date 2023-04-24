@@ -7,11 +7,11 @@ get_localclust_v1 <- function(cdr3,
                               control) {
 
     # 1. trim flanks only relevant for local motifs
-    if(control$trim_flanks) {
+    if(control$trim_flank_aa!=0) {
         cdr3 <- get_trimmed_flanks(x = cdr3,
-                                   flank_size = control$flank_size)
+                                   flank_size = control$trim_flank_aa)
         cdr3_ref <- get_trimmed_flanks(x = cdr3_ref,
-                                       flank_size = control$flank_size)
+                                       flank_size = control$trim_flank_aa)
     }
 
 
@@ -65,11 +65,11 @@ get_localclust_v23 <- function(cdr3,
 
 
     # 1. trim flanks only relevant for local motifs
-    if(control$trim_flanks) {
+    if(control$trim_flank_aa!=0) {
         cdr3 <- get_trimmed_flanks(x = cdr3,
-                                   flank_size = control$flank_size)
+                                   flank_size = control$trim_flank_aa)
         cdr3_ref <- get_trimmed_flanks(x = cdr3_ref,
-                                       flank_size = control$flank_size)
+                                       flank_size = control$trim_flank_aa)
     }
 
 

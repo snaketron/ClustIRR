@@ -26,10 +26,8 @@ input_check <- function(data_sample,
     check_global_max_dist(control$global_max_dist)
     check_local_max_fdr(control$local_max_fdr)
     check_local_min_o(control$local_min_o)
-    check_trim_flanks(control$trim_flanks)
-    check_flank_size(control$flank_size)
+    check_flank_size(control$trim_flank_aa)
     check_low_mem(control$low_mem)
-    check_trim_flanks_flank_size(control$trim_flanks,control$flank_size)
     check_global_pairs(control$global_pairs, data_sample)
 }
 
@@ -152,35 +150,12 @@ check_local_min_o <- function(local_min_o) { # kmer_mindepth
     check_singlevalue(local_min_o)
 }
 
-check_trim_flanks <- function(trim_flanks) { # structboundaries
-    check_logical(trim_flanks)
-    check_singlevalue(trim_flanks)
-}
-
 check_flank_size <- function(flank_size) { # boundary_size
     check_infinity(flank_size)
     check_numeric(flank_size)
     check_wholenumber(flank_size)
+    check_positive(flank_size)
     check_singlevalue(flank_size)
-}
-
-check_trim_flanks_flank_size <- function(trim_flanks,
-                                         flank_size) {
-    # When testing the inputs you could check what happens downstream if the
-    # user sets trim_flanks = TRUE & flank_size = 3 (that is 6 amino acids
-    # are supposed to be trimmed from both flanks of the CDR3), but a given
-    # CDR3 sequence is 4 amino acids long.
-
-
-    # SK: this is the behavior we want. We should not produce such a warning
-    # if(trim_flanks){
-    #     if(flank_size > 2){
-    #         base::warning(base::paste0("flank_size is set to ",
-    #                              flank_size,
-    #                              ". Bigger CRD3 sequences could potentially ",
-    #                              "get cut off at flanks"))
-    #     }
-    # }
 }
 
 check_global_pairs <- function(global_pairs, data_sample) {
@@ -199,7 +174,10 @@ check_global_pairs <- function(global_pairs, data_sample) {
         check_matrix(global_pairs)
         check_matrix_type(global_pairs)
         check_matrix_column_count(global_pairs, 2)
-        # TODO max index should not exceed data sample
+        if(all(max(as.vector(global_pairs))%in%
+               seq_len(nrow(data_sample)))==FALSE) {
+            stop("global_pair index not found in data_sample")
+        }
     }
 }
 
@@ -220,8 +198,7 @@ get_control <- function(control_in) {
         local_max_fdr = 0.05,
         local_min_ove = 2,
         local_min_o = 3,
-        trim_flanks = FALSE,
-        flank_size = 3,
+        trim_flank_aa = 0,
         global_pairs = NULL,
         low_mem = FALSE)
 
@@ -390,3 +367,10 @@ check_wholenumber <- function(x){
     }
 }
 
+check_positive <- function(x) {
+    w <- base::paste0(base::deparse(base::substitute(x)),
+                      " has to be positive number")
+    if(x<0) {
+        base::stop(w)
+    }
+}
