@@ -11,8 +11,7 @@ gliph(
   ks = c(2, 3, 4),
   cores = 1,
   control = list(B = 1000, global_max_dist = 1, local_max_fdr = 0.05, local_min_ove = 2,
-    local_min_o = 3, trim_flanks = FALSE, flank_size = 3, global_pairs = NULL, low_mem =
-    FALSE)
+    local_min_o = 3, trim_flank_aa = 0, global_pairs = NULL, low_mem = FALSE)
 )
 }
 \arguments{

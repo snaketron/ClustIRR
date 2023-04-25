@@ -57,10 +57,9 @@ control_input <- list(
   B = B,
   global_max_dist = 1,
   local_max_fdr = 0.05,
-  local_min_ove = c(10^3, 10^2, 10^1),
+  local_min_ove = 10^2,
   local_min_o = 3,
-  trim_flanks = TRUE,
-  flank_size = 3,
+  trim_flank_aa = 3,
   low_mem = FALSE,
   global_pairs = NULL)
 

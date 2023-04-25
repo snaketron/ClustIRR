@@ -351,7 +351,7 @@ check_rowcount <- function(x){
 check_singlevalue <- function(x){
     w <- base::paste0(base::deparse(base::substitute(x)),
                       " has to be a single value")
-    if (base::is.na(x)) {
+    if (base::any(base::is.na(x))) {
         base::stop(w)
     }
     if (base::length(x) != 1) {
