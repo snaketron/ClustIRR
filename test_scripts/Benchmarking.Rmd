@@ -68,7 +68,12 @@ for(i in 0:99) {
 # Prepare input parameters
 
 ```{r create_parameters}
+
 cores <- parallel::detectCores()
+
+
+
+
 
 # gliphR v1 + v2 + v3
 ks <- c(2, 3, 4)
@@ -84,6 +89,20 @@ control_input <- list(
   global_pairs = NULL)
 
 
+
+
+
+# turboGLiph (turbo_gliph + gliph2 + gliph_combined)
+cluster_min_size <- 1 
+accept_sequences_with_C_F_start_end <-TRUE
+structboundaries <- TRUE
+min_seq_length <- 8 # turbo_gliph default, but not gliph2 default
+boost_local_significance <- FALSE # gliph2 TRUE, gliph_combinded FALSE
+
+
+
+
+
 # turboGliph::turbo_gliph
 # ref_cluster_size <- "original" # default
 # v_usage_freq <- NULL           # default
@@ -93,9 +112,9 @@ lcminp <- control_input$local_max_fdr
 lcminove <- control_input$local_min_ove
 kmer_mindepth <- control_input$local_min_o
 gccutoff <- control_input$global_max_dist
-accept_sequences_with_C_F_start_end <- TRUE
-# min_seq_length <- 8            # default
-structboundaries <- TRUE
+accept_sequences_with_C_F_start_end <- accept_sequences_with_C_F_start_end
+min_seq_length <- min_seq_length
+structboundaries <- structboundaries
 boundary_size <- control_input$trim_flank_aa
 motif_length <- ks
 # discontinuous <- FALSE         # default
@@ -107,14 +126,77 @@ motif_length <- ks
 # cdr3_len_stratify <- FALSE     # default
 # vgene_stratify <- FALSE        # default
 # public_tcrs <- TRUE            # default
-cluster_min_size <- 1
+cluster_min_size <- cluster_min_size
 # hla_cutoff <- 0.1              # default
 n_cores <- cores
 
-# turboGliph::gliph2
-#TODO
 
-# turboGliph::
+
+
+
+# turboGliph::gliph2
+# v_usage_freq <- NULL           # default
+# cdr3_length_freq <- NULL       # default
+# ref_cluster_size = "original"  # default
+sim_depth <- B
+lcminp <- control_input$local_max_fdr
+lcminove <- control_input$local_min_ove
+motif_distance_cutoff <- control_input$global_max_dist
+kmer_mindepth <- control_input$local_min_o
+accept_sequences_with_C_F_start_end <- accept_sequences_with_C_F_start_end
+min_seq_length <- min_seq_length
+structboundaries = structboundaries
+boundary_size <- control_input$trim_flank_aa
+motif_length <- ks
+# discontinuous_motifs = FALSE   # default
+# local_similarities = TRUE      # default
+# global_similarities = TRUE     # default
+# global_vgene = FALSE           # default
+# all_aa_interchangeable = FALSE # default
+boost_local_significance <- boost_local_significance
+cluster_min_size = cluster_min_size
+# hla_cutoff = 0.1               # default
+n_cores = cores
+
+
+
+
+
+# turboGliph::gliph_combined
+# v_usage_freq <- NULL           # default
+# cdr3_length_freq <- NULL       # default
+# ref_cluster_size = "original"  # default
+min_seq_length <- min_seq_length
+accept_sequences_with_C_F_start_end <- accept_sequences_with_C_F_start_end
+structboundaries <- structboundaries
+boundary_size <- control_input$trim_flank_aa
+# local_similarities = TRUE      # default
+# local_method = "rrs"           # default
+lcsim_depth <- B
+motif_length <- ks
+# motif_distance_cutoff = 3      # default  
+lcminp <- control_input$local_max_fdr
+lcminove <- control_input$local_min_ove
+lckmer_mindepth <- control_input$local_min_o
+# discontinuous_motifs = FALSE   # default
+boost_local_significance <- boost_local_significance
+# cdr3_len_stratify = FALSE      # default   
+# vgene_stratify <- FALSE        # default
+# global_similarities = TRUE     # default
+# global_method = "cutoff"       # default
+gccutoff <- control_input$global_max_dist
+# gcminp = 1                     # default
+gcminove <- control_input$local_min_ove
+gckmer_mindepth <- control_input$local_min_o
+# all_aa_interchangeable = FALSE # default
+# clustering_method = "GLIPH1.0" # default
+# vgene_match = "none"           # default
+# public_tcrs = "all"            # default
+cluster_min_size <- cluster_min_size
+#scoring_method = "GLIPH1.0"     # default
+scoring_sim_depth <- B
+# hla_cutoff = 0.1               # default
+n_cores <- cores
 
 ```
 
@@ -190,30 +272,44 @@ jan_v1 <- turboGliph::turbo_gliph(
   n_cores = cores
   )
 
+jan_v2 <- turboGliph::gliph2(
+    cdr3_sequences = data_sample,
+    refdb_beta = data_ref,
+    sim_depth = B,
+    lcminp = control_input$local_max_fdr,
+    lcminove = control_input$local_min_ove,
+    motif_distance_cutoff = control_input$global_max_dist,
+    kmer_mindepth = control_input$local_min_o,
+    accept_sequences_with_C_F_start_end = accept_sequences_with_C_F_start_end,
+    min_seq_length = min_seq_length,
+    structboundaries = structboundaries,
+    boundary_size = control_input$trim_flank_aa,
+    motif_length = ks,
+    cluster_min_size = cluster_min_size,
+    n_cores = cores
+    )
 
-# jan_v2 <- turboGliph::gliph2(
-#     cdr3_sequences = data_sample,
-#     refdb_beta = data_ref,
-#     sim_depth = B,
-#     lcminp = 0.05,
-#     cdr3_length_freq = NULL,
-#     motif_distance_cutoff = 0,
-#     accept_sequences_with_C_F_start_end = TRUE,
-#     structboundaries = TRUE,
-#     min_seq_length = 1
-#     )
-# 
-# jan_v3 <- turboGliph::gliph_combined(
-#     cdr3_sequences = data_sample,
-#     refdb_beta = data_ref,
-#     lcminp = 0.05,
-#     lcsim_depth = B,
-#     motif_distance_cutoff = 0,
-#     accept_sequences_with_C_F_start_end = TRUE,
-#     structboundaries = TRUE,
-#     min_seq_length = 1
-#     )
 
+jan_v3 <- turboGliph::gliph_combined(
+    cdr3_sequences = data_sample,
+    refdb_beta = data_ref,
+    min_seq_length = min_seq_length,
+    accept_sequences_with_C_F_start_end = accept_sequences_with_C_F_start_end,
+    structboundaries = structboundaries,
+    boundary_size = control_input$trim_flank_aa,
+    lcsim_depth = B,
+    motif_length = ks,
+    lcminp = control_input$local_max_fdr,
+    lcminove = control_input$local_min_ove,
+    lckmer_mindepth = control_input$local_min_o,
+    boost_local_significance = boost_local_significance,
+    gccutoff = control_input$global_max_dist,
+    gcminove = control_input$local_min_ove,
+    gckmer_mindepth = control_input$local_min_o,
+    cluster_min_size = cluster_min_size,
+    scoring_sim_depth = B,
+    n_cores = cores
+    )
 
 # put in sample as ref for checking
 jan_v1_i <- turboGliph::turbo_gliph(
@@ -233,28 +329,44 @@ jan_v1_i <- turboGliph::turbo_gliph(
   )
 
 
-# jan_v2_i <- turboGliph::gliph2(
-#   cdr3_sequences = data_sample,
-#     refdb_beta = data_sample,
-#     lcminp = 0.05,
-#     cdr3_length_freq = NULL,
-#     sim_depth = B,
-#     motif_distance_cutoff = 0,
-#     accept_sequences_with_C_F_start_end = TRUE,
-#     structboundaries = TRUE,
-#     min_seq_length = 1
-#   )
-# 
-# jan_v3_i <- turboGliph::gliph_combined(
-#     cdr3_sequences = data_sample,
-#     refdb_beta = data_sample,
-#     lcminp = 0.05,
-#     lcsim_depth = B,
-#     motif_distance_cutoff = 0,
-#     accept_sequences_with_C_F_start_end = TRUE,
-#     structboundaries = TRUE,
-#     min_seq_length = 1
-#     )
+jan_v2_i <- turboGliph::gliph2(
+    cdr3_sequences = data_sample,
+    refdb_beta = data_sample,
+    sim_depth = B,
+    lcminp = control_input$local_max_fdr,
+    lcminove = control_input$local_min_ove,
+    motif_distance_cutoff = control_input$global_max_dist,
+    kmer_mindepth = control_input$local_min_o,
+    accept_sequences_with_C_F_start_end = accept_sequences_with_C_F_start_end,
+    min_seq_length = min_seq_length,
+    structboundaries = structboundaries,
+    boundary_size = control_input$trim_flank_aa,
+    motif_length = ks,
+    cluster_min_size = cluster_min_size,
+    n_cores = cores
+    )
+
+
+jan_v3_i <- turboGliph::gliph_combined(
+    cdr3_sequences = data_sample,
+    refdb_beta = data_sample,
+    min_seq_length = min_seq_length,
+    accept_sequences_with_C_F_start_end = accept_sequences_with_C_F_start_end,
+    structboundaries = structboundaries,
+    boundary_size = control_input$trim_flank_aa,
+    lcsim_depth = B,
+    motif_length = ks,
+    lcminp = control_input$local_max_fdr,
+    lcminove = control_input$local_min_ove,
+    lckmer_mindepth = control_input$local_min_o,
+    boost_local_significance = boost_local_significance,
+    gccutoff = control_input$global_max_dist,
+    gcminove = control_input$local_min_ove,
+    gckmer_mindepth = control_input$local_min_o,
+    cluster_min_size = cluster_min_size,
+    scoring_sim_depth = B,
+    n_cores = cores
+    )
 
 ```
 
@@ -283,18 +395,18 @@ e_jan_v1_i <- jan_v1_i$motif_enrichment$all_motif
 colnames(e_jan_v1_i)[which(colnames(e_jan_v1_i) == 'Motif')] <- 'motif'
 colnames(e_jan_v1_i)[which(colnames(e_jan_v1_i) == 'OvE')] <-
   'OvE_turboGliph1_identical'
-# e_jan_v2 <- jan_v2$motif_enrichment$all_motifs
-# colnames(e_jan_v2)[which(colnames(e_jan_v2) == 'Motif')] <- 'motif'
-# colnames(e_jan_v2)[which(colnames(e_jan_v2) == 'num_fold')] <- 'OvE_turboGliph2'
-# e_jan_v2_i <- jan_v2_i$motif_enrichment$all_motif
-# colnames(e_jan_v2_i)[which(colnames(e_jan_v2_i) == 'Motif')] <- 'motif'
-# colnames(e_jan_v2_i)[which(colnames(e_jan_v2_i) == 'num_fold')] <-
-#   'OvE_turboGliph2_identical'
-# e_jan_v3 <- jan_v3$motif_enrichment$all_motifs
-# colnames(e_jan_v3)[which(colnames(e_jan_v3) == 'OvE')] <- 'OvE_turboGliph3'
-# e_jan_v3_i <- jan_v3_i$motif_enrichment$all_motif
-# colnames(e_jan_v3_i)[which(colnames(e_jan_v3_i) == 'OvE')] <-
-#   'OvE_turboGliph3_identical'
+e_jan_v2 <- jan_v2$motif_enrichment$all_motifs
+colnames(e_jan_v2)[which(colnames(e_jan_v2) == 'Motif')] <- 'motif'
+colnames(e_jan_v2)[which(colnames(e_jan_v2) == 'num_fold')] <- 'OvE_turboGliph2'
+e_jan_v2_i <- jan_v2_i$motif_enrichment$all_motif
+colnames(e_jan_v2_i)[which(colnames(e_jan_v2_i) == 'Motif')] <- 'motif'
+colnames(e_jan_v2_i)[which(colnames(e_jan_v2_i) == 'num_fold')] <-
+  'OvE_turboGliph2_identical'
+e_jan_v3 <- jan_v3$motif_enrichment$all_motifs
+colnames(e_jan_v3)[which(colnames(e_jan_v3) == 'OvE')] <- 'OvE_turboGliph3'
+e_jan_v3_i <- jan_v3_i$motif_enrichment$all_motif
+colnames(e_jan_v3_i)[which(colnames(e_jan_v3_i) == 'OvE')] <-
+  'OvE_turboGliph3_identical'
 
 
 ```
@@ -336,24 +448,23 @@ g_tg_v1 <- ggplot(c_jan_v1_i, aes(x = OvE_turboGliph1_identical, y = OvE_turboGl
   geom_abline(linewidth = 0.5, color = "gray") +
   ggtitle("turboGliph1 - identical versus different input")
 
-# c_jan_v2_i <- merge(e_jan_v2, e_jan_v2_i, by = "motif", all = TRUE)
-# c_jan_v2_i[is.na(c_jan_v2_i)] <- -1
-# g_tg_v2 <- ggplot(c_jan_v2_i, aes(x = OvE_turboGliph2_identical, y = OvE_turboGliph2)) +
-#   geom_point() +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("turboGliph2 - identical versus different input")
-# 
-# c_jan_v3_i <- merge(e_jan_v3, e_jan_v3_i, by = "motif", all = TRUE)
-# c_jan_v3_i[is.na(c_jan_v3_i)] <- -1
-# g_tg_v3 <- ggplot(c_jan_v3_i, aes(x = OvE_turboGliph3_identical, y = OvE_turboGliph3)) +
-#   geom_point() +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("turboGliph3 - identical versus different input")
+c_jan_v2_i <- merge(e_jan_v2, e_jan_v2_i, by = "motif", all = TRUE)
+c_jan_v2_i[is.na(c_jan_v2_i)] <- -1
+g_tg_v2 <- ggplot(c_jan_v2_i, aes(x = OvE_turboGliph2_identical, y = OvE_turboGliph2)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("turboGliph2 - identical versus different input")
+
+c_jan_v3_i <- merge(e_jan_v3, e_jan_v3_i, by = "motif", all = TRUE)
+c_jan_v3_i[is.na(c_jan_v3_i)] <- -1
+g_tg_v3 <- ggplot(c_jan_v3_i, aes(x = OvE_turboGliph3_identical, y = OvE_turboGliph3)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("turboGliph3 - identical versus different input")
 
 
-# (g_v1 + g_v2 + g_v3 ) / ( g_tg_v1 + g_tg_v2 + g_tg_v3 )
+(g_v1 + g_v2 + g_v3 ) / ( g_tg_v1 + g_tg_v2 + g_tg_v3 )
 
-(g_v1 + g_v2 ) / ( g_tg_v1 + g_v3)
 
 ```
 
@@ -393,70 +504,70 @@ g_gl3_tg1 <- ggplot(c_v3, aes(x = OvE_gliphR3, y = OvE_turboGliph1)) +
 
 
 
-# # gliphR v1 vs turboGliph 2
-# c_v1 <- merge(e_v1, e_jan_v2, by = "motif", all = TRUE)
-# c_v1[is.na(c_v1)] <- -1
-# g_gl1_tg2 <- ggplot(c_v1, aes(x = OvE_gliphR1, y = OvE_turboGliph2)) +
-#   geom_point() +
-#   #geom_smooth(method=lm , color="blue", fill="red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("gliphR v1 vs turboGliph::gliph2")
-# 
-# 
-# # gliphR v2 vs turboGliph 2
-# c_v2 <- merge(e_v2, e_jan_v2, by = "motif", all = TRUE)
-# c_v2[is.na(c_v2)] <- -1
-# g_gl2_tg2 <- ggplot(c_v2, aes(x = OvE_gliphR2, y = OvE_turboGliph2)) +
-#   geom_point() +
-#   #geom_smooth(method=lm , color="blue", fill="red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("gliphR v2 vs turboGliph::gliph2")
-# 
-# 
-# # gliphR v3 vs turboGliph 2
-# c_v3 <- merge(e_v3, e_jan_v2, by = "motif", all = TRUE)
-# c_v3[is.na(c_v3)] <- -1
-# g_gl3_tg2 <- ggplot(c_v3, aes(x = OvE_gliphR3, y = OvE_turboGliph2)) +
-#   geom_point() +
-#   #geom_smooth(method=lm , color="blue", fill="red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("gliphR v3 vs turboGliph::gliph2")
-# 
-# 
-# # gliphR v1 vs turboGliph 3
-# c_v1 <- merge(e_v1, e_jan_v3, by = "motif", all = TRUE)
-# c_v1[is.na(c_v1)] <- -1
-# g_gl1_tg3 <- ggplot(c_v1, aes(x = OvE_gliphR1, y = OvE_turboGliph3)) +
-#   geom_point() +
-#   #geom_smooth(method=lm , color="blue", fill="red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("gliphR v1 vs turboGliph::gliph_combined")
-# 
-# 
-# # gliphR v2 vs turboGliph 3
-# c_v2 <- merge(e_v2, e_jan_v3, by = "motif", all = TRUE)
-# c_v2[is.na(c_v2)] <- -1
-# g_gl2_tg3 <- ggplot(c_v2, aes(x = OvE_gliphR2, y = OvE_turboGliph3)) +
-#   geom_point() +
-#   #geom_smooth(method=lm , color="blue", fill="red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("gliphR v2 vs turboGliph::gliph_combined")
-# 
-# 
-# # gliphR v3 vs turboGliph 3
-# c_v3 <- merge(e_v3, e_jan_v3, by = "motif", all = TRUE)
-# c_v3[is.na(c_v3)] <- -1
-# g_gl3_tg3 <- ggplot(c_v3, aes(x = OvE_gliphR3, y = OvE_turboGliph3)) +
-#   geom_point() +
-#   #geom_smooth(method=lm , color="blue", fill="red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("gliphR v3 vs turboGliph::gliph_combined")
+# gliphR v1 vs turboGliph 2
+c_v1 <- merge(e_v1, e_jan_v2, by = "motif", all = TRUE)
+c_v1[is.na(c_v1)] <- -1
+g_gl1_tg2 <- ggplot(c_v1, aes(x = OvE_gliphR1, y = OvE_turboGliph2)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("gliphR v1 vs turboGliph::gliph2")
 
-# (g_gl1_tg1 + g_gl2_tg1 + g_gl3_tg1) / 
-#     (g_gl1_tg2 + g_gl2_tg2 + g_gl3_tg2) / 
-#     (g_gl1_tg3 + g_gl2_tg3 + g_gl3_tg3)
 
-g_gl1_tg1 + g_gl2_tg1 + g_gl3_tg1
+# gliphR v2 vs turboGliph 2
+c_v2 <- merge(e_v2, e_jan_v2, by = "motif", all = TRUE)
+c_v2[is.na(c_v2)] <- -1
+g_gl2_tg2 <- ggplot(c_v2, aes(x = OvE_gliphR2, y = OvE_turboGliph2)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("gliphR v2 vs turboGliph::gliph2")
+
+
+# gliphR v3 vs turboGliph 2
+c_v3 <- merge(e_v3, e_jan_v2, by = "motif", all = TRUE)
+c_v3[is.na(c_v3)] <- -1
+g_gl3_tg2 <- ggplot(c_v3, aes(x = OvE_gliphR3, y = OvE_turboGliph2)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("gliphR v3 vs turboGliph::gliph2")
+
+
+# gliphR v1 vs turboGliph 3
+c_v1 <- merge(e_v1, e_jan_v3, by = "motif", all = TRUE)
+c_v1[is.na(c_v1)] <- -1
+g_gl1_tg3 <- ggplot(c_v1, aes(x = OvE_gliphR1, y = OvE_turboGliph3)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("gliphR v1 vs turboGliph::gliph_combined")
+
+
+# gliphR v2 vs turboGliph 3
+c_v2 <- merge(e_v2, e_jan_v3, by = "motif", all = TRUE)
+c_v2[is.na(c_v2)] <- -1
+g_gl2_tg3 <- ggplot(c_v2, aes(x = OvE_gliphR2, y = OvE_turboGliph3)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("gliphR v2 vs turboGliph::gliph_combined")
+
+
+# gliphR v3 vs turboGliph 3
+c_v3 <- merge(e_v3, e_jan_v3, by = "motif", all = TRUE)
+c_v3[is.na(c_v3)] <- -1
+g_gl3_tg3 <- ggplot(c_v3, aes(x = OvE_gliphR3, y = OvE_turboGliph3)) +
+  geom_point() +
+  #geom_smooth(method=lm , color="blue", fill="red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("gliphR v3 vs turboGliph::gliph_combined")
+
+(g_gl1_tg1 + g_gl2_tg1 + g_gl3_tg1) /
+    (g_gl1_tg2 + g_gl2_tg2 + g_gl3_tg2) /
+    (g_gl1_tg3 + g_gl2_tg3 + g_gl3_tg3)
+
+
 
 
 ```
@@ -494,36 +605,35 @@ g_gl2_gl3 <- ggplot(c_v2_3, aes(x = OvE_gliphR2, y = OvE_gliphR3)) +
   ggtitle("gliphR v2 vs gliphR v3")
 
 
-# # turboGliph1 vs turboGliph2
-# tg_v1_2 <- merge(e_jan_v1, e_jan_v2, by = "motif", all = TRUE)
-# tg_v1_2[is.na(tg_v1_2)] <- -1
-# g_tg1_gl2 <- ggplot(tg_v1_2, aes(x = OvE_turboGliph1, y = OvE_turboGliph2)) +
-#   geom_point() +
-#   geom_smooth(method = lm , color = "blue", fill = "red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("turboGliph::turbo_gliph vs turboGliph::gliph2")
-# 
-# # turboGliph1 vs turboGliph3
-# tg_v1_3 <- merge(e_jan_v1, e_jan_v3, by = "motif", all = TRUE)
-# tg_v1_3[is.na(tg_v1_3)] <- -1
-# g_tg1_gl3 <- ggplot(tg_v1_3, aes(x = OvE_turboGliph1, y = OvE_turboGliph3)) +
-#   geom_point() +
-#   geom_smooth(method = lm , color = "blue", fill = "red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("turboGliph::turbo_gliph vs turboGliph::gliph_combined")
-# 
-# # turboGliph2 vs turboGliph3
-# tg_v2_3 <- merge(e_jan_v2, e_jan_v3, by = "motif", all = TRUE)
-# tg_v2_3[is.na(tg_v2_3)] <- -1
-# g_tg2_gl3 <- ggplot(tg_v2_3, aes(x = OvE_turboGliph2, y = OvE_turboGliph3)) +
-#   geom_point() +
-#   geom_smooth(method = lm , color = "blue", fill = "red") +
-#   geom_abline(linewidth = 0.5, color = "gray") +
-#   ggtitle("turboGliph::gliph2 vs turboGliph::gliph_combined")
+# turboGliph1 vs turboGliph2
+tg_v1_2 <- merge(e_jan_v1, e_jan_v2, by = "motif", all = TRUE)
+tg_v1_2[is.na(tg_v1_2)] <- -1
+g_tg1_gl2 <- ggplot(tg_v1_2, aes(x = OvE_turboGliph1, y = OvE_turboGliph2)) +
+  geom_point() +
+  geom_smooth(method = lm , color = "blue", fill = "red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("turboGliph::turbo_gliph vs turboGliph::gliph2")
+
+# turboGliph1 vs turboGliph3
+tg_v1_3 <- merge(e_jan_v1, e_jan_v3, by = "motif", all = TRUE)
+tg_v1_3[is.na(tg_v1_3)] <- -1
+g_tg1_gl3 <- ggplot(tg_v1_3, aes(x = OvE_turboGliph1, y = OvE_turboGliph3)) +
+  geom_point() +
+  geom_smooth(method = lm , color = "blue", fill = "red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("turboGliph::turbo_gliph vs turboGliph::gliph_combined")
+
+# turboGliph2 vs turboGliph3
+tg_v2_3 <- merge(e_jan_v2, e_jan_v3, by = "motif", all = TRUE)
+tg_v2_3[is.na(tg_v2_3)] <- -1
+g_tg2_gl3 <- ggplot(tg_v2_3, aes(x = OvE_turboGliph2, y = OvE_turboGliph3)) +
+  geom_point() +
+  geom_smooth(method = lm , color = "blue", fill = "red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("turboGliph::gliph2 vs turboGliph::gliph_combined")
 
 
-#( g_gl1_gl2 + g_gl1_gl3 + g_gl2_gl3 ) / (g_tg1_gl2 + g_tg1_gl3 + g_tg2_gl3)
+( g_gl1_gl2 + g_gl1_gl3 + g_gl2_gl3 ) / (g_tg1_gl2 + g_tg1_gl3 + g_tg2_gl3)
 
-g_gl1_gl2 + g_gl1_gl3 + g_gl2_gl3
 
 ```
