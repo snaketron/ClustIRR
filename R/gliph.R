@@ -143,7 +143,7 @@ get_clust_v1 <- function(cdr3,
                                   global_max_dist = control$global_max_dist)
         }
     }
-    return(list(local = l, gobal = g))
+    return(list(local = l, global = g))
 }
 
 

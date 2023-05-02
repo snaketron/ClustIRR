@@ -238,7 +238,8 @@ get_motif_enrichment_fet <- function(x) {
 
 
 # Description:
-# Computes motif frequencies for a sample and reference using bootsrapping
+# Computes motif frequencies for a sample and reference using bootstrapping
+# K: no bootstrapping when not replacing any more (?)
 # (gliph v1)
 get_motifs_v1 <- function(cdr3,
                           cdr3_ref,
