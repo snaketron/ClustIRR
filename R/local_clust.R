@@ -14,8 +14,7 @@ get_localclust_v1 <- function(cdr3,
                                        flank_size = control$trim_flank_aa)
     }
 
-
-    # 1. local clustering: get local motifs
+    # 2. local clustering: get local motifs
     motifs <- lapply(X = ks,
                      FUN = get_motifs_v1,
                      cdr3 = cdr3,
@@ -25,7 +24,7 @@ get_localclust_v1 <- function(cdr3,
                      cores = cores)
     names(motifs) <- as.character(ks)
 
-    # 2. compute local enrichment scores
+    # 3. compute local enrichment scores
     future::plan(future::multisession, workers = cores)
     me <- do.call(rbind, future.apply::future_lapply(
         X = ks,
@@ -36,13 +35,11 @@ get_localclust_v1 <- function(cdr3,
         future.seed = TRUE))
     future::plan(future::sequential())
 
-
-    # 3. add pass flag
+    # 4. add pass flag
     me$pass <- FALSE
     me$pass[me$fdr<=control$local_max_fdr&
                 me$ove>=control$local_min_ove&
                 me$obs>=control$local_min_o] <- TRUE
-
 
     # 5. find motifs in input CDR3
     lp <- get_motif_in_seq(
@@ -260,7 +257,7 @@ get_motifs_v1 <- function(cdr3,
                                    cores){
 
         get_qgrams <- function(x, q, cdr3, N, relevant_motifs) {
-            draw_cdr3 <- sample(x = cdr3, size = N, replace = TRUE)
+            draw_cdr3 <- sample(x = cdr3, size = N, replace = FALSE) #TRUE
             o <- stringdist::qgrams(draw_cdr3, q = q)
             if(ncol(o)==0) {
                 return(NA)
