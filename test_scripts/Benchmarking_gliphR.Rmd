@@ -25,7 +25,7 @@ as possible for comparability. <br>
 Clustering results are compared by OvE value. <br>
 Results to be interpreted once finished (tba)
 
-TODO: add more meaningful graphs once gliphR 1 is fixed
+TODO: add more meaningful graphs
 
 
 # Create input data
@@ -220,3 +220,44 @@ g_gl2_gl3 <- ggplot(c_v2_3, aes(x = OvE_gliphR2, y = OvE_gliphR3)) +
 
 
 ```
+
+## Ground truth
+
+Check for finds of artificially enhanced CDR3b sequence `CASSETGGTYEQYF`
+
+
+```{r ground truth}
+
+out_v1$clust$CDR3b$local$lp
+
+control_seq <- 'CASSETGGTYEQYF' ## has to be truncated (?)
+
+# extract global clusters for comparison
+out_v1_df <- as.data.frame(out_v1$clust$CDR3b$global)
+cdr3b_indexed_vec <- out_v1$data_sample[,1]
+out_v1_df$V1 <- cdr3b_indexed_vec[out_v1_df$V1]
+out_v1_df$V2 <- cdr3b_indexed_vec[out_v1_df$V2]
+
+out_v1_df[(out_v1_df$V1 == control_seq |
+            out_v1_df$V2 == control_seq),]
+
+# same output in all three version
+# out_v2_df <- as.data.frame(out_v2$clust$CDR3b$global)
+# cdr3b_indexed_vec <- out_v2$data_sample[,1]
+# out_v2_df$V1 <- cdr3b_indexed_vec[out_v2_df$V1]
+# out_v2_df$V2 <- cdr3b_indexed_vec[out_v2_df$V2]
+# 
+# out_v2_df[(out_v2_df$V1 == control_seq |
+#             out_v2_df$V2 == control_seq),]
+# 
+# out_v3_df <- as.data.frame(out_v3$clust$CDR3b$global)
+# cdr3b_indexed_vec <- out_v3$data_sample[,1]
+# out_v3_df$V1 <- cdr3b_indexed_vec[out_v3_df$V1]
+# out_v3_df$V2 <- cdr3b_indexed_vec[out_v3_df$V2]
+# 
+# out_v3_df[(out_v3_df$V1 == control_seq |
+#             out_v3_df$V2 == control_seq),]
+
+
+```
+
