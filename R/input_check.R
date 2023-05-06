@@ -50,7 +50,6 @@ check_data_sample <- function(data_sample) {
 }
 
 check_data_ref <- function(data_ref) {
-    if (!base::deparse(base::substitute(data_ref)) == "data_ref") {
         check_missing(data_ref)
         check_dataframe(data_ref)
         check_rowcount(data_ref)
@@ -65,7 +64,6 @@ check_data_ref <- function(data_ref) {
         }
         check_dataframe_na(data_ref)
         check_dataframe_empty(data_ref)
-    }
     # checks for optional v-gene / j-gene columns tba if necessary
 }
 
