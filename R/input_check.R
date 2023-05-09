@@ -104,9 +104,7 @@ check_ks <- function(ks) {
 check_local_min_ove <- function(local_min_ove) {
     check_infinity(local_min_ove)
     check_numeric(local_min_ove)
-    #check_wholenumber(local_min_ove) # SK: min_ove can be a real number
-    check_singlevalue(local_min_ove) # SK: contrary to Jan's implementation I
-    # programmed min_ove as a single number (threshold)
+    check_singlevalue(local_min_ove)
 }
 
 check_cores <- function(cores) {
@@ -180,7 +178,7 @@ check_global_pairs <- function(global_pairs, data_sample) {
 }
 
 check_low_mem <- function(low_mem) {
-    check_missing(x = low_mem)
+    #check_missing(x = low_mem) # already checked by get_control
     check_singlevalue(x = low_mem)
     check_logical(x = low_mem)
 }
@@ -207,9 +205,10 @@ get_control <- function(control_in) {
     if(base::is.list(control_in)==FALSE) {
         base::stop("control must be a list")
     }
-    if(base::is.data.frame(control_in)==TRUE) {
-        base::stop("control must be a list")
-    }
+    # KK: this is covered by the statement above
+    # if(base::is.data.frame(control_in)==TRUE) {
+    #     base::stop("control must be a list")
+    # }
     if(base::all(base::names(control_in) %in% base::names(control))==FALSE) {
         base::stop("unrecognized elements found in control")
     }
@@ -308,7 +307,7 @@ check_matrix <- function(x){
 
 check_matrix_column_count <- function(x, c){
     w <- base::paste0(base::deparse(base::substitute(x)),
-                      " has to be have ", c, " columns")
+                      " has to have ", c, " columns")
     if (base::ncol(x) != c) {
         base::stop(w)
     }
@@ -325,7 +324,7 @@ check_matrix_type <- function(x){
 check_missing <- function(x){
     w <- base::paste0(base::deparse(base::substitute(x)),
                       " parameter is missing")
-    if (base::missing(x)) {
+    if (base::missing(x) | base::is.null(x)) {
         base::stop(w)
     }
 }
