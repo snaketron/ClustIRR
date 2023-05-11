@@ -120,7 +120,7 @@ get_global_clust_mem <- function(cdr3,
             return(cbind(rep(x = x, times = length(js)), js))
         }
 
-        hd <- lapply(X = 1:(length(is)-1),
+        hd <- lapply(X = seq_len(length(is)-1),  #1:(length(is)-1)
                      FUN = get_pairdist,
                      a = cdr3[is],
                      len_a = length(is),

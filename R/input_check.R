@@ -218,7 +218,7 @@ get_control <- function(control_in) {
     # live with the following "inefficiency" as the list is generally small
     # (~5 elements)
     ns <- names(control_in)
-    for(i in 1:length(control_in)) {
+    for(i in seq_len(length(control_in))) { #1:length(control_in)
         control[[ns[i]]] <- control_in[[ns[i]]]
     }
     return(control)

@@ -124,7 +124,7 @@ get_motif_in_seq <- function(seq,
         return(NULL)
     }
 
-    return(do.call(rbind, lapply(X = 1:length(motif),
+    return(do.call(rbind, lapply(X = seq_len(length(motif)), #1:length(motif)
                                  motif = motif,
                                  FUN = find_motif,
                                  seq = seq)))
@@ -138,7 +138,6 @@ get_motifs_v23 <- function(x,
                            cdr3,
                            cdr3_ref,
                            min_o) {
-
     # find kmers in sample
     kmers_s <- stringdist::qgrams(cdr3, q = x)
     if(ncol(kmers_s)==0) {
@@ -153,7 +152,6 @@ get_motifs_v23 <- function(x,
         stop("no kmers found in sample")
     }
     kmers_s <- kmers_s[1,]
-
 
     # find kmers in reference
     kmers_r <- stringdist::qgrams(cdr3_ref, q = x)
@@ -174,12 +172,10 @@ get_motifs_v23 <- function(x,
                           f_ref = as.numeric(kmers_r))
     kmers_r$n_ref <- sum(kmers_r$f_ref)
 
-
     # we are only interested in enrichment of motifs in sample relative to
     # reference. Remove all motifs from reference not found in sample.
     # Important: n_ref must be sum of all motifs in pop!
     kmers_r <- kmers_r[kmers_r$motif %in% kmers_s$motif, ]
-
 
     m <- merge(x = kmers_s, y = kmers_r, by = "motif", all = TRUE)
     m[is.na(m[,"f_sample"]), "f_sample"] <- 0
@@ -273,7 +269,7 @@ get_motifs_v1 <- function(cdr3,
 
         future::plan(future::multisession, workers = cores)
         o <- future.apply::future_lapply(
-            X = 1:B,
+            X = seq_len(B), #1:B
             q = x,
             N = N,
             relevant_motifs = relevant_motifs,
@@ -364,7 +360,7 @@ get_motif_enrichment_boot <- function(x,
     f_m <- matrix(data = 0, ncol = B+1, nrow = length(motif_sample))
     rownames(f_m) <- names(motif_sample)
     f_m[names(motif_sample), 1] <- motif_sample
-    for(i in 1:length(motif_ref)) {
+    for(i in seq_len(length(motif_ref))) { #1:length(motif_ref
         s <- motif_ref[[i]]
         f_m[names(s),i+1] <- s
     }
