@@ -1,4 +1,3 @@
-
 # Description:
 # Look for pairs of global connections.
 # Used by gliph_v1 and gliph_v2.
@@ -66,34 +65,35 @@ get_global_clust_mem <- function(cdr3,
     cdr3_len <- base::nchar(cdr3)
     cdr3_lens <- unique(cdr3_len)
 
-    get_hamming_dist <- function(x, cdr3, cdr3_len, global_max_dist) {
-        is <- which(cdr3_len == x)
-        if(length(is)==1) {
-            return(NULL)
-        }
-        if(length(is)==2) {
-            d <- stringdist::stringdist(
-                a = cdr3[is[1]],
-                b = cdr3[is[2]],
-                method = "hamming")
-            if(d>global_max_dist) {
-                return(NULL)
-            }
-            return(c(cdr3[is[1]], cdr3[is[2]]))
-        }
-
-        d <- stringdist::stringdistmatrix(
-            a = cdr3[is],
-            b = cdr3[is],
-            method = "hamming")
-        d[upper.tri(x = d, diag = TRUE)] <- NA
-        # d[1:nrow(d), 1:nrow(d)] <- NA
-        js <- which(d<=global_max_dist, arr.ind = TRUE)
-        if(nrow(js)==0) {
-            return(NULL)
-        }
-        return(cbind(is[js[,1]], is[js[,2]]))
-    }
+    # KK: this internal function gets never called
+    # get_hamming_dist <- function(x, cdr3, cdr3_len, global_max_dist) {
+    #     is <- which(cdr3_len == x)
+    #     if(length(is)==1) {
+    #         return(NULL)
+    #     }
+    #     if(length(is)==2) {
+    #         d <- stringdist::stringdist(
+    #             a = cdr3[is[1]],
+    #             b = cdr3[is[2]],
+    #             method = "hamming")
+    #         if(d>global_max_dist) {
+    #             return(NULL)
+    #         }
+    #         return(c(cdr3[is[1]], cdr3[is[2]]))
+    #     }
+    #
+    #     d <- stringdist::stringdistmatrix(
+    #         a = cdr3[is],
+    #         b = cdr3[is],
+    #         method = "hamming")
+    #     d[upper.tri(x = d, diag = TRUE)] <- NA
+    #     # d[1:nrow(d), 1:nrow(d)] <- NA
+    #     js <- which(d<=global_max_dist, arr.ind = TRUE)
+    #     if(nrow(js)==0) {
+    #         return(NULL)
+    #     }
+    #     return(cbind(is[js[,1]], is[js[,2]]))
+    # }
 
     # Description:
     # same as get_hamming_dist from get_global_pairs, but slower. However it

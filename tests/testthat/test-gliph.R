@@ -1,9 +1,10 @@
 # create valid input parameters
 cores <- parallel::detectCores()
 data("hs_CD8_ref")
-data_ref <- hs_CD8_ref[, 1:3]
+# minimal input, only 1000 rows + 50 samples
+data_ref <- hs_CD8_ref[1:1000, 1:3]
 data_sample <- hs_CD8_ref[sample(x = 1:nrow(data_ref),
-                                 size = 500, replace = FALSE), 1:3]
+                                 size = 50, replace = FALSE), 1:3]
 ks <- c(2, 3, 4)
 control_input <- list(
     B = 100,
@@ -93,7 +94,7 @@ for (version in c(1,2,3)){
                            control = control_input))
     })
 
-    test_that("check_data_sample_and_ref() runs as expected", {
+    test_that("different combinations of sample and ref run as expected", {
         data_sample_cdr3a <- data_sample
         data_ref_cdr3a <- data_ref
         colnames(data_sample_cdr3a)[1] ="CDR3a"
@@ -489,6 +490,40 @@ for (version in c(1,2,3)){
                               cores = cores,
                               version = version,
                               control = control_input))
+
+
+    })
+
+    # test all versions with correct input and low_mem = true
+    test_that("gliph works with correct input in low_mem mode", {
+        control_input_tmp <- control_input
+        control_input_tmp$low_mem <- TRUE
+        expect_no_error(gliph(data_sample = data_sample,
+                              data_ref = data_ref,
+                              ks = ks,
+                              cores = cores,
+                              version = version,
+                              control = control_input_tmp))
+
+
     })
 
 }
+
+# test get_clust() functions with global_pairs input
+test_that("get_clust functions works with global_pairs input", {
+    control_input_tmp <- control_input
+    control_input_tmp$global_pairs <- matrix(data=17L, nrow = 10, ncol = 2)
+    expect_no_error(get_clust_v1(cdr3 = data_sample,
+                                  cdr3_ref = data_ref,
+                                  ks = ks,
+                                  cores = cores,
+                                  control = control_input_tmp))
+    expect_no_error(get_clust_v23(cdr3 = data_sample,
+                          cdr3_ref = data_ref,
+                          ks = ks,
+                          cores = cores,
+                          control = control_input_tmp))
+
+
+})
