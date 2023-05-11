@@ -5,23 +5,28 @@ get_localclust_v1 <- function(cdr3,
                               ks,
                               cores,
                               control) {
-
     # 1. trim flanks only relevant for local motifs
-    if(control$trim_flank_aa!=0) {
-        cdr3 <- get_trimmed_flanks(x = cdr3,
-                                   flank_size = control$trim_flank_aa)
-        cdr3_ref <- get_trimmed_flanks(x = cdr3_ref,
-                                       flank_size = control$trim_flank_aa)
+    if (control$trim_flank_aa != 0) {
+        cdr3 <- get_trimmed_flanks(
+            x = cdr3,
+            flank_size = control$trim_flank_aa
+        )
+        cdr3_ref <- get_trimmed_flanks(
+            x = cdr3_ref,
+            flank_size = control$trim_flank_aa
+        )
     }
 
     # 2. local clustering: get local motifs
-    motifs <- lapply(X = ks,
-                     FUN = get_motifs_v1,
-                     cdr3 = cdr3,
-                     cdr3_ref = cdr3_ref,
-                     B = control$B,
-                     min_o = control$local_min_o,
-                     cores = cores)
+    motifs <- lapply(
+        X = ks,
+        FUN = get_motifs_v1,
+        cdr3 = cdr3,
+        cdr3_ref = cdr3_ref,
+        B = control$B,
+        min_o = control$local_min_o,
+        cores = cores
+    )
     names(motifs) <- as.character(ks)
 
     # 3. compute local enrichment scores
@@ -32,19 +37,21 @@ get_localclust_v1 <- function(cdr3,
         m = motifs,
         B = control$B,
         cores = cores,
-        future.seed = TRUE))
+        future.seed = TRUE
+    ))
     future::plan(future::sequential())
 
     # 4. add pass flag
     me$pass <- FALSE
-    me$pass[me$fdr<=control$local_max_fdr&
-                me$ove>=control$local_min_ove&
-                me$obs>=control$local_min_o] <- TRUE
+    me$pass[me$fdr <= control$local_max_fdr &
+        me$ove >= control$local_min_ove &
+        me$obs >= control$local_min_o] <- TRUE
 
     # 5. find motifs in input CDR3
     lp <- get_motif_in_seq(
         seq = cdr3,
-        motif = me$motif[me$pass==TRUE])
+        motif = me$motif[me$pass == TRUE]
+    )
 
     return(list(m = me, lp = lp))
 }
@@ -59,46 +66,53 @@ get_localclust_v23 <- function(cdr3,
                                ks,
                                cores,
                                control) {
-
-
     # 1. trim flanks only relevant for local motifs
-    if(control$trim_flank_aa!=0) {
-        cdr3 <- get_trimmed_flanks(x = cdr3,
-                                   flank_size = control$trim_flank_aa)
-        cdr3_ref <- get_trimmed_flanks(x = cdr3_ref,
-                                       flank_size = control$trim_flank_aa)
+    if (control$trim_flank_aa != 0) {
+        cdr3 <- get_trimmed_flanks(
+            x = cdr3,
+            flank_size = control$trim_flank_aa
+        )
+        cdr3_ref <- get_trimmed_flanks(
+            x = cdr3_ref,
+            flank_size = control$trim_flank_aa
+        )
     }
 
 
     # 2. local clustering: get local motifs
-    m <- lapply(X = ks,
-                FUN = get_motifs_v23,
-                cdr3 = cdr3,
-                cdr3_ref = cdr3_ref,
-                min_o = control$local_min_o)
+    m <- lapply(
+        X = ks,
+        FUN = get_motifs_v23,
+        cdr3 = cdr3,
+        cdr3_ref = cdr3_ref,
+        min_o = control$local_min_o
+    )
     m <- do.call(rbind, m)
 
 
     # 3. compute enrichment by fisher's exact test
-    ms <- t(apply(X = m[, c("f_sample", "f_ref", "n_sample", "n_ref")],
-                  MARGIN = 1, FUN = get_motif_enrichment_fet))
-    m$ove <- ms[,1]
-    m$p_value <- ms[,2]
+    ms <- t(apply(
+        X = m[, c("f_sample", "f_ref", "n_sample", "n_ref")],
+        MARGIN = 1, FUN = get_motif_enrichment_fet
+    ))
+    m$ove <- ms[, 1]
+    m$p_value <- ms[, 2]
     m$fdr <- stats::p.adjust(p = m$p_value, method = "fdr")
     rm(ms)
 
 
     # 4. add pass flag -> TRUE if motif passes tests
     m$pass <- FALSE
-    m$pass[m$fdr<=control$local_max_fdr&
-               m$ove>=control$local_min_ove&
-               m$f_sample>=control$local_min_o] <- TRUE
+    m$pass[m$fdr <= control$local_max_fdr &
+        m$ove >= control$local_min_ove &
+        m$f_sample >= control$local_min_o] <- TRUE
 
 
     # 5. find motifs in input CDR3
     lp <- get_motif_in_seq(
         seq = cdr3,
-        motif = m$motif[m$pass==TRUE])
+        motif = m$motif[m$pass == TRUE]
+    )
 
     return(list(m = m, lp = lp))
 }
@@ -111,23 +125,27 @@ get_localclust_v23 <- function(cdr3,
 get_motif_in_seq <- function(seq,
                              motif) {
     # if no enriched motifs
-    if(length(motif)==0) {
+    if (length(motif) == 0) {
         return(NULL)
     }
 
     find_motif <- function(x, motif, seq) {
-        j <- which(regexpr(pattern = motif[x], text = seq)!=-1)
-        if(length(j)!=0) {
-            return(data.frame(seq = seq[j], motif = motif[x],
-                              stringsAsFactors = FALSE))
+        j <- which(regexpr(pattern = motif[x], text = seq) != -1)
+        if (length(j) != 0) {
+            return(data.frame(
+                seq = seq[j], motif = motif[x],
+                stringsAsFactors = FALSE
+            ))
         }
         return(NULL)
     }
 
-    return(do.call(rbind, lapply(X = seq_len(length(motif)), #1:length(motif)
-                                 motif = motif,
-                                 FUN = find_motif,
-                                 seq = seq)))
+    return(do.call(rbind, lapply(
+        X = seq_len(length(motif)), # 1:length(motif)
+        motif = motif,
+        FUN = find_motif,
+        seq = seq
+    )))
 }
 
 
@@ -140,36 +158,40 @@ get_motifs_v23 <- function(x,
                            min_o) {
     # find kmers in sample
     kmers_s <- stringdist::qgrams(cdr3, q = x)
-    if(ncol(kmers_s)==0) {
+    if (ncol(kmers_s) == 0) {
         # in real applications this should not happen -> input checks should
         # catch such errors
         stop("no kmers found in sample")
     }
-    #kmers_s <- kmers_s[1, kmers_s[1,]>=min_o]
-    if(length(kmers_s)==0) {
+    # kmers_s <- kmers_s[1, kmers_s[1,]>=min_o]
+    if (length(kmers_s) == 0) {
         # in real applications this should not happen -> input checks should
         # catch such errors
         stop("no kmers found in sample")
     }
-    kmers_s <- kmers_s[1,]
+    kmers_s <- kmers_s[1, ]
 
     # find kmers in reference
     kmers_r <- stringdist::qgrams(cdr3_ref, q = x)
-    if(ncol(kmers_r)==0) {
+    if (ncol(kmers_r) == 0) {
         # in real applications this should not happen -> input checks should
         # catch such errors
         stop("no kmers found in reference")
     }
-    kmers_r <- kmers_r[1,]
+    kmers_r <- kmers_r[1, ]
 
 
     # convert table to data.frame
-    kmers_s <- data.frame(motif = names(kmers_s),
-                          f_sample = as.numeric(kmers_s))
+    kmers_s <- data.frame(
+        motif = names(kmers_s),
+        f_sample = as.numeric(kmers_s)
+    )
     kmers_s$n_sample <- sum(kmers_s$f_sample)
 
-    kmers_r <- data.frame(motif = names(kmers_r),
-                          f_ref = as.numeric(kmers_r))
+    kmers_r <- data.frame(
+        motif = names(kmers_r),
+        f_ref = as.numeric(kmers_r)
+    )
     kmers_r$n_ref <- sum(kmers_r$f_ref)
 
     # we are only interested in enrichment of motifs in sample relative to
@@ -178,10 +200,10 @@ get_motifs_v23 <- function(x,
     kmers_r <- kmers_r[kmers_r$motif %in% kmers_s$motif, ]
 
     m <- merge(x = kmers_s, y = kmers_r, by = "motif", all = TRUE)
-    m[is.na(m[,"f_sample"]), "f_sample"] <- 0
-    m[is.na(m[,"f_ref"]), "f_ref"] <- 0
-    m[is.na(m[,"n_ref"]), "n_ref"] <- kmers_r$n_ref[1]
-    m[is.na(m[,"n_sample"]), "n_sample"] <- kmers_s$n_sample[1]
+    m[is.na(m[, "f_sample"]), "f_sample"] <- 0
+    m[is.na(m[, "f_ref"]), "f_ref"] <- 0
+    m[is.na(m[, "n_ref"]), "n_ref"] <- kmers_r$n_ref[1]
+    m[is.na(m[, "n_sample"]), "n_sample"] <- kmers_s$n_sample[1]
 
     m$k <- x
 
@@ -207,21 +229,21 @@ get_motif_enrichment_fet <- function(x) {
     # k = n_ref+n_sample
 
     # ove TODO: check how is this done in gliph2
-    ove <- (x[1]/x[3])/((x[2]/x[4]))
+    ove <- (x[1] / x[3]) / ((x[2] / x[4]))
 
     q <- x[1]
-    m <- x[1]+x[2]
-    k <- x[3]+x[4]
-    n <- k-m
+    m <- x[1] + x[2]
+    k <- x[3] + x[4]
+    n <- k - m
 
     # TODO: do some testing on demo data
     # u <- matrix(data = NA_integer_, nrow = 2, ncol = 2)
     u <- matrix(data = 0, nrow = 2, ncol = 2)
 
-    u[1,1] <- x[1]
-    u[1,2] <- x[2]
-    u[2,1] <- x[3]-x[1]
-    u[2,2] <- x[4]-x[2]
+    u[1, 1] <- x[1]
+    u[1, 2] <- x[2]
+    u[2, 1] <- x[3] - x[1]
+    u[2, 2] <- x[4] - x[2]
 
     fet <- fisher.test(u, alternative = "greater")
     ova <- fet$estimate
@@ -243,7 +265,6 @@ get_motifs_v1 <- function(cdr3,
                           ks,
                           cores,
                           min_o) {
-
     # Description:
     # x = k in k-mer
     get_kmers_freq_ref <- function(x,
@@ -251,17 +272,16 @@ get_motifs_v1 <- function(cdr3,
                                    N,
                                    B,
                                    relevant_motifs,
-                                   cores){
-
+                                   cores) {
         get_qgrams <- function(x, q, cdr3, N, relevant_motifs) {
-            draw_cdr3 <- sample(x = cdr3, size = N, replace = FALSE) #TRUE
+            draw_cdr3 <- sample(x = cdr3, size = N, replace = FALSE) # TRUE
             o <- stringdist::qgrams(draw_cdr3, q = q)
-            if(ncol(o)==0) {
+            if (ncol(o) == 0) {
                 return(NA)
             }
-            o <- o[1,]
+            o <- o[1, ]
             o <- o[names(o) %in% relevant_motifs]
-            if(length(o)==0) {
+            if (length(o) == 0) {
                 return(NA)
             }
             return(o)
@@ -269,13 +289,14 @@ get_motifs_v1 <- function(cdr3,
 
         future::plan(future::multisession, workers = cores)
         o <- future.apply::future_lapply(
-            X = seq_len(B), #1:B
+            X = seq_len(B), # 1:B
             q = x,
             N = N,
             relevant_motifs = relevant_motifs,
             cdr3 = cdr3,
             FUN = get_qgrams,
-            future.seed = TRUE)
+            future.seed = TRUE
+        )
         future::plan(future::sequential())
         return(o)
     }
@@ -285,14 +306,13 @@ get_motifs_v1 <- function(cdr3,
     # x = k in k-mer
     get_kmers_freq_sample <- function(x,
                                       cdr3,
-                                      min_o){
-
+                                      min_o) {
         o <- stringdist::qgrams(cdr3, q = x)
-        if(ncol(o)==0) {
+        if (ncol(o) == 0) {
             return(NA)
         }
-        o <- o[1, o[1,]>=min_o]
-        if(length(o)==0) {
+        o <- o[1, o[1, ] >= min_o]
+        if (length(o) == 0) {
             return(NA)
         }
         return(o)
@@ -303,13 +323,15 @@ get_motifs_v1 <- function(cdr3,
         X = ks, # edit here
         FUN = get_kmers_freq_sample,
         cdr3 = cdr3, # edit here
-        min_o = min_o)
+        min_o = min_o
+    )
     names(motif_sample) <- ks
 
 
     # do sampling & find motifs
     found_kmers <- as.vector(unlist(
-        lapply(X = motif_sample, FUN = names)))
+        lapply(X = motif_sample, FUN = names)
+    ))
     motif_ref <- lapply(
         X = ks,
         FUN = get_kmers_freq_ref,
@@ -317,11 +339,14 @@ get_motifs_v1 <- function(cdr3,
         B = B,
         N = length(cdr3),
         relevant_motifs = found_kmers,
-        cores = cores)
+        cores = cores
+    )
     names(motif_ref) <- ks
 
-    return(list(motif_sample = motif_sample,
-                motif_ref = motif_ref))
+    return(list(
+        motif_sample = motif_sample,
+        motif_ref = motif_ref
+    ))
 }
 
 
@@ -331,7 +356,6 @@ get_motif_enrichment_boot <- function(x,
                                       m,
                                       B,
                                       cores) {
-
     get_e <- function(x, B) {
         # o
         o <- x[1]
@@ -344,10 +368,10 @@ get_motif_enrichment_boot <- function(x,
         e_max <- base::max(e)
 
         # OvE = /e
-        ove <- o/e_mean
+        ove <- o / e_mean
 
         # prob e>=o
-        p <- sum(e>=o)/B
+        p <- sum(e >= o) / B
 
         # return
         return(c(e_mean, e_max, o, ove, p))
@@ -357,25 +381,24 @@ get_motif_enrichment_boot <- function(x,
     motif_ref <- m[[as.character(x)]]$motif_ref[[1]]
 
     # matrix of k-mer counts
-    f_m <- matrix(data = 0, ncol = B+1, nrow = length(motif_sample))
+    f_m <- matrix(data = 0, ncol = B + 1, nrow = length(motif_sample))
     rownames(f_m) <- names(motif_sample)
     f_m[names(motif_sample), 1] <- motif_sample
-    for(i in seq_len(length(motif_ref))) { #1:length(motif_ref
+    for (i in seq_len(length(motif_ref))) { # 1:length(motif_ref
         s <- motif_ref[[i]]
-        f_m[names(s),i+1] <- s
+        f_m[names(s), i + 1] <- s
     }
 
     e <- t(apply(X = f_m, MARGIN = 1, FUN = get_e, B = B))
 
     # format output
     e <- data.frame(e)
-    colnames(e) <- c("sim_mean", "sim_max",
-                     "obs", "ove", "p")
+    colnames(e) <- c(
+        "sim_mean", "sim_max",
+        "obs", "ove", "p"
+    )
     e$motif <- rownames(e)
     e$fdr <- stats::p.adjust(p = e$p, method = "fdr")
     e$k <- x
     return(e)
 }
-
-
-

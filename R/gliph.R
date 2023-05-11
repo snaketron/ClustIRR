@@ -42,24 +42,26 @@ gliph <- function(data_sample,
                       local_min_o = 3,
                       trim_flank_aa = 0,
                       global_pairs = NULL,
-                      low_mem = FALSE)) {
-
+                      low_mem = FALSE
+                  )) {
     # a. control check
     control <- get_control(control_in = control)
 
     # 1. input check
-    input_check(data_sample = data_sample,
-                data_ref = data_ref,
-                version = version,
-                ks = ks,
-                cores = cores,
-                control = control)
+    input_check(
+        data_sample = data_sample,
+        data_ref = data_ref,
+        version = version,
+        ks = ks,
+        cores = cores,
+        control = control
+    )
 
     # get chains to be analyzed
     chains <- get_chains(colnames(data_sample))
 
     # add ID to gliph
-    data_sample$ID <- 1:nrow(data_sample)
+    data_sample$ID <- seq_len(nrow(data_sample)) # 1:nrow(data_sample)
 
     # run analysis for each chain (if available)
     clust <- vector(mode = "list", length = length(chains))
@@ -67,31 +69,32 @@ gliph <- function(data_sample,
     edges <- vector(mode = "list", length = length(chains))
     names(edges) <- chains
 
-    for(chain in chains) {
-        if(version==3) {
+    for (chain in chains) {
+        if (version == 3) {
             cdr3 <- data_sample[, chain]
             cdr3_ref <- data_ref[, chain]
-        }
-        else {
+        } else {
             cdr3 <- unique(data_sample[, chain])
             cdr3_ref <- unique(data_ref[, chain])
         }
         # run local + global clustering
-        if(version==1) {
+        if (version == 1) {
             clust[[chain]] <- get_clust_v1(
                 cdr3 = cdr3,
                 cdr3_ref = cdr3_ref,
                 ks = ks,
                 cores = cores,
-                control = control)
+                control = control
+            )
         }
-        if(version==2|version==3) {
+        if (version == 2 | version == 3) {
             clust[[chain]] <- get_clust_v23(
                 cdr3 = cdr3,
                 cdr3_ref = cdr3_ref,
                 ks = ks,
                 cores = cores,
-                control = control)
+                control = control
+            )
         }
         # TODO
         edges[[chain]] <- NA # large clonal expansions are present->memory/disk
@@ -100,13 +103,15 @@ gliph <- function(data_sample,
         #                             cdr3 = cdr3,
         #                             chain = chain)
     }
-    return(list(clust = clust,
-                edges = edges,
-                data_sample = data_sample,
-                version = version,
-                ks = ks,
-                cores = cores,
-                control = control))
+    return(list(
+        clust = clust,
+        edges = edges,
+        data_sample = data_sample,
+        version = version,
+        ks = ks,
+        cores = cores,
+        control = control
+    ))
 }
 
 
@@ -120,27 +125,30 @@ get_clust_v1 <- function(cdr3,
                          ks,
                          cores,
                          control) {
-
     # 1. local
-    l <- get_localclust_v1(cdr3 = cdr3,
-                           cdr3_ref = cdr3_ref,
-                           ks = ks,
-                           cores = cores,
-                           control = control)
+    l <- get_localclust_v1(
+        cdr3 = cdr3,
+        cdr3_ref = cdr3_ref,
+        ks = ks,
+        cores = cores,
+        control = control
+    )
 
     # 2. global
     # if global_pairs are provided as input use them, else compute them
     if (!is.null(control$global_pairs)) {
         g <- control$global_pairs
-    }
-    else {
+    } else {
         if (control$low_mem) {
-            g <- get_global_clust_mem(cdr3 = base::unique(cdr3),
-                                      global_max_dist = control$global_max_dist)
-        }
-        else {
-            g <- get_global_clust(cdr3 = base::unique(cdr3),
-                                  global_max_dist = control$global_max_dist)
+            g <- get_global_clust_mem(
+                cdr3 = base::unique(cdr3),
+                global_max_dist = control$global_max_dist
+            )
+        } else {
+            g <- get_global_clust(
+                cdr3 = base::unique(cdr3),
+                global_max_dist = control$global_max_dist
+            )
         }
     }
     return(list(local = l, global = g))
@@ -156,30 +164,30 @@ get_clust_v23 <- function(cdr3,
                           ks,
                           cores,
                           control) {
-
-
-
     # 1. local
-    l <- get_localclust_v23(cdr3 = cdr3,
-                            cdr3_ref = cdr3_ref,
-                            ks = ks,
-                            cores = cores,
-                            control = control)
+    l <- get_localclust_v23(
+        cdr3 = cdr3,
+        cdr3_ref = cdr3_ref,
+        ks = ks,
+        cores = cores,
+        control = control
+    )
 
     # 2. global
     # if global_pairs are provided as input use them, else compute them
-    if(!is.null(control$global_pairs)) {
+    if (!is.null(control$global_pairs)) {
         g <- control$global_pairs
-    }
-    else {
-        if(control$low_mem) {
-            g <- get_global_clust_mem(cdr3 = base::unique(cdr3),
-                                      global_max_dist = control$global_max_dist)
-
-        }
-        else {
-            g <- get_global_clust(cdr3 = base::unique(cdr3),
-                                  global_max_dist = control$global_max_dist)
+    } else {
+        if (control$low_mem) {
+            g <- get_global_clust_mem(
+                cdr3 = base::unique(cdr3),
+                global_max_dist = control$global_max_dist
+            )
+        } else {
+            g <- get_global_clust(
+                cdr3 = base::unique(cdr3),
+                global_max_dist = control$global_max_dist
+            )
         }
     }
     return(list(local = l, global = g))

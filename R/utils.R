@@ -37,8 +37,10 @@
 # one by one.
 # x = columns(data_sample)
 get_chains <- function(x) {
-    js <- c(which(regexpr(pattern = "CDR3b", text = x)!=-1),
-           which(regexpr(pattern = "CDR3a", text = x)!=-1))
+    js <- c(
+        which(regexpr(pattern = "CDR3b", text = x) != -1),
+        which(regexpr(pattern = "CDR3a", text = x) != -1)
+    )
     return(x[js])
 }
 
@@ -49,10 +51,12 @@ get_chains <- function(x) {
 # acids
 get_trimmed_flanks <- function(x,
                                flank_size) {
-    x <- base::substr(x=x,
-                      start=flank_size+1 ,
-                      stop=base::nchar(x)-flank_size)
-    x[x==""] <- NA
+    x <- base::substr(
+        x = x,
+        start = flank_size + 1,
+        stop = base::nchar(x) - flank_size
+    )
+    x[x == ""] <- NA
     return(x)
 }
 
@@ -152,4 +156,3 @@ get_trimmed_flanks <- function(x,
 #     }
 #     return(edges)
 # }
-
