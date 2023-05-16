@@ -2,7 +2,7 @@
 % Please edit documentation in R/gliph.R
 \name{gliph}
 \alias{gliph}
-\title{Find groups of TCRs with locally or globally similar CDR3s}
+\title{TCR clustering for specificity analysis}
 \usage{
 gliph(
   data_sample,
@@ -15,25 +15,91 @@ gliph(
 )
 }
 \arguments{
-\item{data_sample, }{data.frame: TCR sample}
+\item{data_sample}{data.frame: TCR sample. Must be a data.frame that has
+the following columns: CDR3b, TRBV, TRBJ, CDR3a, TRAV, TRAJ, sample_id.
+Bare minimum: CDR3b, sample_id}
 
-\item{data_ref, }{data.frame: reference database}
+\item{data_ref}{data.frame: reference database}
 
-\item{version, }{integer: version = 1, 2 or 3, gliph version to use}
+\item{version}{integer: version = 1, 2 or 3, gliph version to use}
 
-\item{ks, }{vector of integers: motif lengths to use (default ks=(2,3,4)),}
+\item{ks}{vector of integers: motif lengths to use (default ks=(2,3,4))}
 
-\item{cores, }{integer: number of CPU cores to use}
+\item{cores}{integer: number of CPU cores to use}
 
-\item{control, }{list: auxiliarry input parameters (described below)}
+\item{control}{list: auxiliary input parameters (described below)
+\itemize{
+  \item B - integer: simulation depth
+  \item global_max_dist - integer: maximum hamming distance for global
+  clustering
+  \item local_max_fdr - numeric: maximum cutoff p-value for random
+generation
+  \item local_min_ove - numeric: minimum fold enrichment
+  \item local_min_o - numeric: minimum motif observations
+  \item trim_flank_aa - integer: cut off value for trimming aa flanks
+  \item low_mem - logical: low memory mode. Slower looping, lower memory
+  footprint
+  \item global_pairs - matrix: optional pre-computed global pairs
+}}
 }
 \value{
-list(clust = clust, edges = edges, data_sample = data_sample)
+gliphR returns a list of the following elements:
+\itemize{
+   \item clust - list: local + global clusters
+   \item edges - list: local + global edges
+   \item data_sample - data.frame: examined data sample
+   \item version - integer: used gliph version
+   \item ks - vector of integers: used motif lengths
+   \item cores - integer: number of used CPU cores
+   \item control - list: used auxiliary input parameters
+}
 }
 \description{
-Find groups of TCRs with locally or globally similar CDR3s
+Find groups of TCRs with locally or globally similar CDR3s.
+Based on Gliph and Gliph2 clustering method.
 }
 \examples{
-## TODO add meaningful examples
-print("example")
+## this example shows how to test gliphR with minimal input
+
+# load package input data
+data("hs_CD8_ref")
+
+# create a minimal reference set from the first 1000 rows
+data_ref <- hs_CD8_ref[1:1000, 1:3]
+
+# draw 50 samples from the reference dataset
+data_sample <- hs_CD8_ref[
+sample(
+x = 1:nrow(data_ref),
+size = 50,
+replace = FALSE
+),
+1:3]
+
+# set parameters
+ks <- c(2, 3, 4)
+cores <- parallel::detectCores()
+version <- 3
+
+control_input <- list(
+B = 100,
+global_max_dist = 1,
+local_max_fdr = 0.05,
+local_min_ove = 2,
+local_min_o = 3,
+trim_flank_aa = 3,
+low_mem = FALSE,
+global_pairs = NULL
+)
+
+# run gliph and save output to gliph_output
+gliph_output <- gliph(
+data_sample = data_sample,
+data_ref = data_ref,
+ks = ks,
+cores = cores,
+version = version,
+control = control_input
+)
+
 }
