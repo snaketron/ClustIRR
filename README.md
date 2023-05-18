@@ -1,8 +1,7 @@
 # gliphR
 
 Clustering of T-cell receptors (TCRs) to find groups of TCRs with similar 
-specificity. 
-Quantitative comparison of TCR cluster structure between 
+specificity. Quantitative comparison of TCR cluster structure between 
 biological conditions. Includes low memory mode to reduce memory usage 
 for large input files.
 
@@ -13,7 +12,7 @@ a minimum for user convenience.
 
 Includes R implementations of the 
 [Gliph](https://github.com/immunoengineer/gliph) and 
-[Gliph2](http://50.255.35.37:8080/tools<br>) clustering algorithms.
+[Gliph2](http://50.255.35.37:8080) clustering algorithms.
 Introduces a new version of the Gliph algorithm called `gliph3`,
 designed for single-cell sequencing input data.
 

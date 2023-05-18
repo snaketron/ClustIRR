@@ -8,7 +8,7 @@
 #' Bare minimum: CDR3b, sample_id
 #' @param data_ref data.frame: reference database
 #' @param version integer: version = 1, 2 or 3, gliph version to use
-#' @param ks vector of integers: motif lengths to use (default ks=(2,3,4))
+#' @param ks integer vector: motif lengths to use (default ks=(2,3,4))
 #' @param cores integer: number of CPU cores to use
 #' @param control list: auxiliary input parameters (described below)
 #' \itemize{
@@ -31,53 +31,27 @@
 #'    \item edges - list: local + global edges
 #'    \item data_sample - data.frame: examined data sample
 #'    \item version - integer: used gliph version
-#'    \item ks - vector of integers: used motif lengths
+#'    \item ks - integer vector: used motif lengths
 #'    \item cores - integer: number of used CPU cores
 #'    \item control - list: used auxiliary input parameters
 #' }
 #'
 #' @examples
-#' ## this example shows how to test gliphR with minimal input
+#' ## this example shows how to run gliphR with minimal input
 #'
 #' # load package input data
 #' data("hs_CD8_ref")
+#' data("gliph_input_data")
+#' data_sample <- gliph_input_data[,1:3]
+#' data_ref <- hs_CD8_ref[,1:3]
 #'
-#' # create a minimal reference set from the first 1000 rows
-#' data_ref <- hs_CD8_ref[1:1000, 1:3]
-#'
-#' # draw 50 samples from the reference dataset
-#' data_sample <- hs_CD8_ref[
-#' sample(
-#' x = 1:nrow(data_ref),
-#' size = 50,
-#' replace = FALSE
-#' ),
-#' 1:3]
-#'
-#' # set parameters
-#' ks <- c(2, 3, 4)
+#' # detect cores
 #' cores <- parallel::detectCores()
-#' version <- 3
-#'
-#' control_input <- list(
-#' B = 100,
-#' global_max_dist = 1,
-#' local_max_fdr = 0.05,
-#' local_min_ove = 2,
-#' local_min_o = 3,
-#' trim_flank_aa = 3,
-#' low_mem = FALSE,
-#' global_pairs = NULL
-#' )
 #'
 #' # run gliph and save output to gliph_output
 #' gliph_output <- gliph(
 #' data_sample = data_sample,
-#' data_ref = data_ref,
-#' ks = ks,
-#' cores = cores,
-#' version = version,
-#' control = control_input
+#' data_ref = data_ref
 #' )
 #'
 #' @import stringdist

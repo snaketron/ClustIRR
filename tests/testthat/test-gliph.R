@@ -1,12 +1,13 @@
-# create valid input parameters
-cores <- parallel::detectCores()
+# load minimal input data
 data("hs_CD8_ref")
-# minimal input, only 1000 rows + 50 samples
-data_ref <- hs_CD8_ref[1:1000, 1:3]
-data_sample <- hs_CD8_ref[sample(
-    x = 1:nrow(data_ref),
-    size = 50, replace = FALSE
-), 1:3]
+data("gliph_input_data")
+data_sample <- gliph_input_data[1:50,1:3]
+data_ref <- hs_CD8_ref[1:1000,1:3]
+
+# detect cores
+cores <- parallel::detectCores()
+
+# set ks and control input parameters
 ks <- c(2, 3, 4)
 control_input <- list(
     B = 100,

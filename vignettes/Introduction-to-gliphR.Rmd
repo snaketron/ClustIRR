@@ -1,0 +1,162 @@
+---
+title: "Introduction to gliphR"
+author: "S. Kitanovski, K. Wollek"
+date: "`r Sys.Date()`"
+output: 
+  prettydoc::html_pretty:
+    theme: cayman
+    df_print: "kable"
+    number_sections: true
+    toc: true
+    toc_depth: 3
+vignette: >
+  %\VignetteIndexEntry{Introduction to gliphR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.height = 5,
+  fig.width = 5,
+  fig.align = "center"
+)
+set.seed(987)
+```
+
+# Introduction
+
+**gliphR** performs clustering of T-cell receptors (TCRs) to find 
+groups of TCRs with similar specificity. Quantitative comparison of TCR cluster
+structure between biological conditions. Includes a low memory mode to 
+reduce memory usage for large input files.
+
+A completely revised version of the 
+[**turboGliph**](https://github.com/HetzDra/turboGliph) package focused on the 
+clustering part of the **Gliph** algorithm. Input parameters are reduced to
+a minimum for user convenience. The first edition of **gliphR** implements the 
+clustering part of the algorithm. Scoring and plotting parts are planned to be
+added in future package versions.
+
+Includes implementations of the 
+[**Gliph**](https://github.com/immunoengineer/gliph) and 
+[**Gliph2**](http://50.255.35.37:8080) clustering algorithms.
+Introduces a new version of the **Gliph** algorithm called `gliph3`,
+designed for single-cell sequencing input data.
+
+# Installation
+
+gliphR can be installed using the BiocManager package.
+
+```{r installation, eval=FALSE}
+if (!requireNamespace("BiocManager", quietly = TRUE)){
+    install.packages("BiocManager")
+    BiocManager::install()
+}
+
+BiocManager::install("gliphR")
+```
+
+# Input
+
+Let's use the included **hs_CD8_ref** as reference and **gliph_input_data** 
+as sample. This datasets were published with GLIPH.\(^1\)
+
+```{r input_data}
+library(gliphR)
+
+# load package input data
+data("hs_CD8_ref")
+data("gliph_input_data")
+
+# detect cores
+cores <- parallel::detectCores()
+```
+
+# Clustering
+
+To run **gliphR** with default parameters, we provide the columns **CDR3b**,
+**TRBV** and **TRBJ** of the data sets (first 3 columns each).
+
+```{r clustering}
+# run gliph with default parameters
+gliph_output <- gliph(
+data_sample = gliph_input_data[,1:3],
+data_ref = hs_CD8_ref[,1:3]
+)
+```
+
+Optional parameters:
+
+- **data_sample** _data.frame_: TCR sample. Must be a _data.frame_ that has
+the following columns: 
+  - **CDR3b** _required_
+  - **TRBV**
+  - **TRBJ**
+  - **CDR3a**
+  - **TRAV**
+  - **TRAJ**
+  - **sample_id** _required_
+- **data_ref** _data.frame_: reference database
+- **version** _integer_: version = 1, 2 or 3, gliph version to use
+- **ks** _integer vector_: motif lengths to use (default ks=(2,3,4))
+- **cores** _integer_: number of CPU cores to use
+
+- **control list** _list_: auxiliary parameters
+  - **B** _integer_: simulation depth
+  - **global_max_dist** _integer_: maximum hamming distance for global clustering
+  - **local_max_fdr** _numeric_: maximum cutoff p-value for random generation
+  - **local_min_ove** _numeric_: minimum fold enrichment
+  - **local_min_o** _numeric_: minimum motif observations
+  - **trim_flank_aa** _integer_: cut off value for trimming aa flanks
+  - **low_mem** _logical_: low memory mode. Slower looping, lower memory footprint
+  - **global_pairs** _matrix_: optional pre-computed global pairs
+
+# Output
+
+**gliphR** returns a list of the following elements:
+
+- **clust** _list_: local + global clusters
+- **edges** _list_: local + global edges
+- **data_sample** _data.frame_: examined data sample
+- **version** _integer_: used gliph version
+- **ks** _integer vector_: used motif lengths
+- **cores** _integer_: number of used CPU cores
+- **control** _list_: used auxiliary input parameters
+
+We can for example inspect local clusters:
+
+```{r output}
+# inspect output
+head(gliph_output$clust$CDR3b$local$m)
+
+```
+
+- **motif**: found motif
+- **f_sample**: motif frequency in the sample set
+- **n_sample**: total frequency in the sample set
+- **f_ref**: motif frequency in the reference set
+- **n_ref**: total motif frequency in the reference set
+- **k**: kmer length
+- **ove**: motif fold enrichment in the sample set compared to the reference set
+- **p_value**: p-value of the Fisher's Exact Test
+- **fdr**: random generation probability
+- **pass**: selected or not selected motif
+
+
+# References
+
+**1**: Glanville, Jacob, et al. "Identifying specificity groups in the 
+T cell receptor repertoire." Nature 547.7661 (2017): 94.<br>
+**2**: Huang, Huang, et al. "Analyzing the Mycobacterium tuberculosis immune 
+response by T-cell receptor clustering with GLIPH2 and genome-wide antigen 
+screening." Nature Biotechnology 38.10 (2020): 1194-1202.<br>
+
+# Sessioninfo
+```{r}
+packageVersion("gliphR")
+
+sessionInfo()
+```
