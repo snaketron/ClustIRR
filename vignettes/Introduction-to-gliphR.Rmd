@@ -28,10 +28,59 @@ set.seed(987)
 
 # Introduction
 
-**gliphR** performs clustering of T-cell receptors (TCRs) to find 
-groups of TCRs with similar specificity. Quantitative comparison of TCR cluster
-structure between biological conditions. Includes a low memory mode to 
-reduce memory usage for large input files.
+The T-cell receptor (TCR) is a protein complex found on the surface of T cells 
+that is responsible for recognizing antigenic peptides (p) presented in the 
+context of the major histocompatibility complex (MHC). Owing to VDJ 
+recombination, virtually every T cell expresses its own unique TCR, and hence 
+has a unique p:MHC specificity. Understanding the relationship between the TCR 
+sequence and p:MHC is essential for the development of e.g. cancer 
+immunotherapies, vaccines and antiviral drugs. Advances in bulk and more 
+currently single cell high-throughput sequencing (HT-seq) technologies now 
+enable the analysis of entire repertoires of TCRs in a single experiment, but 
+the currently available methods for 1) organizing clusters of TCR sequences 
+according to their likely antigen specificities; and 2) quantitative comparison 
+of the abundance of the specificity groups between biological conditions or 
+timepoints, have crucial drawbacks or are not available.
+
+This vignette introduces `r Biocpkg("gliphR")`, a transparent workflow for 
+quantitative exploration of single cell RNA-seq data. 
+
+In short, the algorithm of `r Biocpkg("gliphR")` performs clustering of TCR 
+sequences in a given TCR repertoire, to find groups of TCRs with similar
+specificity. It then employs a quantitative model to compare the abundances 
+of the identified TCR clusters between biological conditions. We explain each 
+step in the following using real TCR-seq data.
+
+To run this vignette we need to load a few R-packages:
+
+```{r}
+library(gliphR)
+library(ggplot2)
+library(patchwork)
+```
+
+
+# Data
+
+SK: Here we talk about the data that we will analyze. 
+
+
+
+# GliphR workflow
+
+
+
+## 1. Clustering
+
+
+
+
+## 2. ...
+
+
+
+Includes a low memory mode to reduce memory usage for large input files. 
+(SK: I would mention this later on)
 
 A completely revised version of the 
 [**turboGliph**](https://github.com/HetzDra/turboGliph) package focused on the 
