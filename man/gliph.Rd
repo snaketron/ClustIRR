@@ -2,7 +2,7 @@
 % Please edit documentation in R/gliph.R
 \name{gliph}
 \alias{gliph}
-\title{TCR clustering for specificity analysis}
+\title{TCR specificity clustering}
 \usage{
 gliph(
   data_sample,
@@ -10,68 +10,94 @@ gliph(
   version = 2,
   ks = c(2, 3, 4),
   cores = 1,
-  control = list(B = 1000, global_max_dist = 1, local_max_fdr = 0.05, local_min_ove = 2,
-    local_min_o = 3, trim_flank_aa = 0, global_pairs = NULL, low_mem = FALSE)
+  control = list(B = 1000,
+                 global_max_dist = 1,
+                 local_max_fdr = 0.05,
+                 local_min_ove = 2,
+                 local_min_o = 3,
+                 trim_flank_aa = 0,
+                 global_pairs = NULL,
+                 low_mem = FALSE)
 )
 }
 \arguments{
-\item{data_sample}{data.frame: TCR sample. Must be a data.frame that has
-the following columns: CDR3b, TRBV, TRBJ, CDR3a, TRAV, TRAJ, sample_id.
-Bare minimum: CDR3b, sample_id}
-
-\item{data_ref}{data.frame: reference database}
-
-\item{version}{integer: version = 1, 2 or 3, gliph version to use}
-
-\item{ks}{integer vector: motif lengths to use (default ks=(2,3,4))}
-
-\item{cores}{integer: number of CPU cores to use}
-
-\item{control}{list: auxiliary input parameters (described below)
+\item{data_sample}{data.frame, TCR repertoire. The data.frame can have one
+column: CDR3b or two columns: CDR3b and CDR3a}
+\item{data_ref}{data.frame, reference database of CDR3 sequences. Tis
+data.frame must have the same structure (number of columns and column names)
+as data_sample}
+\item{version}{integer, version of the algorithm: version=1, 2 or 3 (default)}
+\item{ks}{integer or integer vector, motif lengths ks=2:4 (default)}
+\item{cores}{integer, number of CPU cores, cores=1 (default).}
+\item{control}{list, a named list of auxiliary parameters
+to control algorithm's behavior. See the details below:
 \itemize{
-  \item B - integer: simulation depth
-  \item global_max_dist - integer: maximum hamming distance for global
-  clustering
-  \item local_max_fdr - numeric: maximum cutoff p-value for random
-generation
-  \item local_min_ove - numeric: minimum fold enrichment
-  \item local_min_o - numeric: minimum motif observations
-  \item trim_flank_aa - integer: cut off value for trimming aa flanks
-  \item low_mem - logical: low memory mode. Slower looping, lower memory
-  footprint
-  \item global_pairs - matrix: optional pre-computed global pairs
+  \item {B}, integer, number of bootstrap samples. B is used only by
+  version=1. B=1000 (default)
+  \item {global_max_dist}, number, Hamming distance (HD) threshold to consider
+  two CDR3s as globally clustered. CDR3s \eqn{a} and \eqn{b} are globally
+  clustered if HD(\eqn{a}, \eqn{b}) \eqn{\leq} global_max_dist.
+  global_max_dist=1 (default)
+  \item {local_max_fdr}, numeric, maximum False Discovery Rate (FDR) for the
+  detection of enriched motifs. local_max_fdr=0.05 (default)
+  \item {local_min_ove}, numeric, minimum fold change between observed and
+  expected relative abundances for the detection of enriched motifs.
+  local_min_ove=2 (default)
+  \item {local_min_o}, numeric, minimum absolute frequency of a motif in the
+  data_sample in order for the motif to be used in the enrichment analysis.
+  local_min_o=1 (default)
+  \item {trim_flank_aa}, integer, how many amino acids should be trimmed
+  from the flanks of all CDR3 sequences (only used for local motif
+  clustering. trim_flank_aa=0 (default))
+  \item {low_mem}, logical, allows low memory mode for global clustering. This
+  will lead to increase in the CPU time but lead to a lower memory footprint.
+  low_mem=FALSE (default)
+  \item {global_pairs}, matrix, pre-computed global pairs. If global_pairs
+  is provided by the user, then global clustering is not performed. Instead
+  the CDR3 pairs from global_pairs are used as global clustering pairs.
+  global_pairs is a character matrix with 3 columns. First two columns contain
+  pairs of CDR3 sequences. These are considered globally clustered. The third
+  column contains information about the TCR chain of each pair of CDR3s: TRA or
+  TRB. global_pairs=NULL (default)
 }}
 }
 \value{
-gliphR returns a list of the following elements:
+The output is a list of the following elements:
 \itemize{
-   \item clust - list: local + global clusters
-   \item edges - list: local + global edges
-   \item data_sample - data.frame: examined data sample
-   \item version - integer: used gliph version
-   \item ks - integer vector: used motif lengths
-   \item cores - integer: number of used CPU cores
-   \item control - list: used auxiliary input parameters
+   \item clust: clustering results for each TCR chain
+   \item edges: local + clustering connections between rows in data_sample
+   \item data_sample: provided input data_sample
+   \item version: provided input version
+   \item ks: provided input ks
+   \item cores: provided input cores
+   \item control: provided input control
 }
 }
-\description{
-Find groups of TCRs with locally or globally similar CDR3s.
-Based on Gliph and Gliph2 clustering method.
-}
-\examples{
-## this example shows how to run gliphR with minimal input
 
+\description{
+This algorithm finds groups of TCRs that likely have similar peptide:MHC
+specificity. This is done with two strategies: local motif clustering and
+global CDR3 sequence clustering.
+
+SK: here we need two paragraphs of how each algorithm (local vs. global)
+works, as well as *key* differences between v=1, 2 and 3
+}
+
+\examples{
 # load package input data
 data("hs_CD8_ref")
-data("gliph_input_data")
-data_sample <- gliph_input_data[,1:3]
-data_ref <- hs_CD8_ref[,1:3]
+data_sample <- data.frame(CDR3b = hs_CD8_ref[1:(10^3), "CDR3b"])
+data_ref <- data.frame(CDR3b = hs_CD8_ref[1:(10^4), "CDR3b"])
 
 # detect cores
-cores <- parallel::detectCores()
+# SK: we use the R-package future for multicore execution. parallel
+# is not available on Win OS + we do not declare it in the DESCRIPTION
+# file. Also, we do not use cores later on in the main gliph call, so
+# why declare it here?
+# cores <- future::availableCores()
 
-# run gliph and save output to gliph_output
-gliph_output <- gliph(
+# run analysis
+out <- gliph(
 data_sample = data_sample,
 data_ref = data_ref
 )
