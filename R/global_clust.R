@@ -30,7 +30,8 @@ get_global_clust <- function(cdr3,
             if (d > global_max_dist) {
                 return(NULL)
             }
-            return(c(cdr3[is[1]], cdr3[is[2]]))
+            return(c(cdr3[is[1]],
+                     cdr3[is[2]]))
         }
 
         d <- stringdist::stringdistmatrix(
@@ -39,12 +40,12 @@ get_global_clust <- function(cdr3,
             method = "hamming"
         )
         d[upper.tri(x = d, diag = TRUE)] <- NA
-        # d[1:nrow(d), 1:nrow(d)] <- NA
         js <- which(d <= global_max_dist, arr.ind = TRUE)
         if (nrow(js) == 0) {
             return(NULL)
         }
-        return(cbind(is[js[, 1]], is[js[, 2]]))
+        return(cbind(cdr3[is[js[,1]]],
+                     cdr3[is[js[,2]]]))
     }
 
     hd <- lapply(
@@ -67,36 +68,6 @@ get_global_clust_mem <- function(cdr3,
                                  global_max_dist) {
     cdr3_len <- base::nchar(cdr3)
     cdr3_lens <- unique(cdr3_len)
-
-    # KK: this internal function gets never called
-    # get_hamming_dist <- function(x, cdr3, cdr3_len, global_max_dist) {
-    #     is <- which(cdr3_len == x)
-    #     if(length(is)==1) {
-    #         return(NULL)
-    #     }
-    #     if(length(is)==2) {
-    #         d <- stringdist::stringdist(
-    #             a = cdr3[is[1]],
-    #             b = cdr3[is[2]],
-    #             method = "hamming")
-    #         if(d>global_max_dist) {
-    #             return(NULL)
-    #         }
-    #         return(c(cdr3[is[1]], cdr3[is[2]]))
-    #     }
-    #
-    #     d <- stringdist::stringdistmatrix(
-    #         a = cdr3[is],
-    #         b = cdr3[is],
-    #         method = "hamming")
-    #     d[upper.tri(x = d, diag = TRUE)] <- NA
-    #     # d[1:nrow(d), 1:nrow(d)] <- NA
-    #     js <- which(d<=global_max_dist, arr.ind = TRUE)
-    #     if(nrow(js)==0) {
-    #         return(NULL)
-    #     }
-    #     return(cbind(is[js[,1]], is[js[,2]]))
-    # }
 
     # Description:
     # same as get_hamming_dist from get_global_pairs, but slower. However it
@@ -137,7 +108,7 @@ get_global_clust_mem <- function(cdr3,
             return(hd)
         }
         # map to original indices
-        return(cbind(is[hd[, 1]], is[hd[, 2]]))
+        return(cbind(cdr3[is[hd[, 1]]], cdr3[is[hd[, 2]]]))
     }
 
 
