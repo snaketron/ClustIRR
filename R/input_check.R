@@ -162,17 +162,27 @@ check_global_pairs <- function(global_pairs, data_sample) {
     # row in global pairs gives us the indices of two CDR3s that are globally
     # similar (e.g. Hamming dist < 1 or distance computed using external tool)
 
+    # SK: on 21. May. 2023 I changed the definition of global_pairs in
+    # the following way:
+    # global_pairs has to be a character matrix or with three columns. In each
+    # row we have a pair of globally similar CDR3s (e.g. they have Hamming
+    # dist <= 1 or another distance computed using external tool) and the
+    # third column give us the chain ID: TRA vs. TRB. There should be
+    # no duplicate rows. The CDR3s in column 1 or 2 should be found at least
+    # once in data_sample.
+    # TODO: this part has to be tested extensively
+
+
     # global_pairs -> optional user provided input
     # (e.g. by smarter global clustering)
     # there is no equivalent parameter in gliph/gliph2
     if (!base::is.null(global_pairs)) {
         check_rowcount(global_pairs)
         check_matrix(global_pairs)
-        check_matrix_type(global_pairs)
-        check_matrix_column_count(global_pairs, 2)
-        if (all(max(as.vector(global_pairs)) %in%
-            seq_len(nrow(data_sample))) == FALSE) {
-            stop("global_pair index not found in data_sample")
+        check_matrix_type(global_pairs, type = "character")
+        check_matrix_column_count(global_pairs, 3)
+        if(all(global_pairs[, 1:2] %in% data_sample)==FALSE) {
+            stop("not all CDRs from global_pair are found in data_sample")
         }
     }
 }
@@ -192,7 +202,7 @@ get_control <- function(control_in) {
         global_max_dist = 1,
         local_max_fdr = 0.05,
         local_min_ove = 2,
-        local_min_o = 3,
+        local_min_o = 1,
         trim_flank_aa = 0,
         global_pairs = NULL,
         low_mem = FALSE
@@ -335,13 +345,21 @@ check_matrix_column_count <- function(x, c) {
     }
 }
 
-check_matrix_type <- function(x) {
+check_matrix_type <- function(x, type) {
     w <- base::paste0(
         base::deparse(base::substitute(x)),
-        " has to be an integer type matrix"
+        " has to be a numeric matrix"
     )
-    if (!base::typeof(x) == "integer") {
-        base::stop(w)
+
+    if(type=="numeric") {
+        if (is.numeric(x)==FALSE) {
+            base::stop(w)
+        }
+    }
+    if(type=="character") {
+        if (is.character(x)==FALSE) {
+            base::stop(w)
+        }
     }
 }
 
