@@ -29,7 +29,9 @@ Imports:
 Suggests:
     BiocStyle,
     knitr,
-    testthat
+    testthat,
+    ggplot2,
+    patchwork
 Encoding: UTF-8
 NeedsCompilation: no
 biocViews: Clustering, ImmunoOncology, SingleCell, Software, Classification
