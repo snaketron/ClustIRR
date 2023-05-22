@@ -5,7 +5,7 @@
 cluster_irr(
   data_sample,
   data_ref,
-  version = 2,
+  version = 3,
   ks = c(2, 3, 4),
   cores = 1,
   control = list(B = 1000,
@@ -72,7 +72,8 @@ to control algorithm's behavior. See the details below:
   pairs of CDR3 sequences. These are considered globally clustered. The third
   column contains information about the TCR chain of each pair of CDR3s: TRA or
   TRB. global_pairs=NULL (default)
-}}
+}
+}
 }
 \value{
 The output is a list of the following elements:
@@ -98,21 +99,31 @@ works, as well as *key* differences between v=1, 2 and 3
 
 \examples{
 # load package input data
-data("hs_CD8_ref")
-data_sample <- data.frame(CDR3b = hs_CD8_ref[1:(10^3), "CDR3b"])
-data_ref <- data.frame(CDR3b = hs_CD8_ref[1:(10^4), "CDR3b"])
-
-# detect cores
-# SK: we use the R-package future for multicore execution. parallel
-# is not available on Win OS + we do not declare it in the DESCRIPTION
-# file. Also, we do not use cores later on in the main cluster call, so
-# why declare it here?
-# cores <- future::availableCores()
+data("CD8")
+data_sample <- data.frame(CDR3b = CD8[1:5000, "CDR3b"])
+data_ref <- CD8
 
 # run analysis
-out <- cluster_irr(
-data_sample = data_sample,
-data_ref = data_ref
-)
+out <- cluster_irr(data_sample = data_sample,
+                   data_ref = data_ref,
+                   version = 3,
+                   ks = 4,
+                   cores = 1,
+                   control = list(
+                      B = 1000,
+                      global_max_dist = 1,
+                      local_max_fdr = 0.05,
+                      local_min_ove = 2,
+                      local_min_o = 1,
+                      trim_flank_aa = 3,
+                      global_pairs = NULL,
+                      low_mem = FALSE))
+
+# inspect local motif enrichment results
+knitr::kable(head(out$clust$CDR3b$local$m))
+
+
+# inspect global similarities between CDR3s
+knitr::kable(head(out$clust$CDR3b$global))
 
 }
