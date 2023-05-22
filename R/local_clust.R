@@ -1,5 +1,3 @@
-# Description:
-# Local clustering procedure for gliph v2 and v3
 get_localclust_v1 <- function(cdr3,
                               cdr3_ref,
                               ks,
@@ -58,9 +56,6 @@ get_localclust_v1 <- function(cdr3,
 
 
 
-
-# Description:
-# Local clustering procedure for gliph v2 and v3
 get_localclust_v23 <- function(cdr3,
                                cdr3_ref,
                                ks,
@@ -256,9 +251,12 @@ get_motif_enrichment_fet <- function(x) {
 
 
 # Description:
-# Computes motif frequencies for a sample and reference using bootstrapping
-# K: no bootstrapping when not replacing any more (?)
-# (gliph v1)
+# Computes motif frequencies for a sample (cdr3) and reference (cdr3_ref) sets
+# of CDR3s. This is done using bootstrapping with B iterations. In each
+# iteration, the algorithm draws a number of CDR3s without replacement from
+# cdr3_ref, finds the motifs, and computes motif frequencies. This is repeated
+# B times to generate a vector of Expected (average) motif frequencies. These
+# are compared against the Observed motif frequencies in sample cdr3.
 get_motifs_v1 <- function(cdr3,
                           cdr3_ref,
                           B,
@@ -351,7 +349,7 @@ get_motifs_v1 <- function(cdr3,
 
 
 # Description:
-# Computes motif enrichment using bootstrapping (gliph v1)
+# Computes motif enrichment using bootstrapping (cluster v1)
 get_motif_enrichment_boot <- function(x,
                                       m,
                                       B,
