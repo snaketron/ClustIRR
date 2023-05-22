@@ -27,17 +27,20 @@ set.seed(987)
 ```
 
 # Introduction
-
 The T-cell receptor (TCR) is a protein complex found on the surface of T cells 
 that is responsible for recognizing antigenic peptides (p) presented in the 
-context of the major histocompatibility complex (MHC). Owing to VDJ 
-recombination, virtually every T cell expresses its own unique TCR, and hence 
-has a unique p:MHC specificity. Understanding the relationship between the TCR 
-sequence and p:MHC is essential for the development of e.g. cancer 
+context of the major histocompatibility complex (MHC). B cell receptors (BCRs),
+on the other hand, are protein complexes expressed on B cells that bind 
+directly to antigens. In the following we will refer to BCRs and TCRs using
+the general term immune receptors (IRs).
+
+Owing to VDJ recombination, virtually every B/T cell expresses its own unique 
+IR, and hence has a unique specificity. Understanding the relationship between 
+the IR sequence and antigens is essential for the development of e.g. cancer 
 immunotherapies, vaccines and antiviral drugs. Advances in bulk and more 
 currently single cell high-throughput sequencing (HT-seq) technologies now 
-enable the analysis of entire repertoires of TCRs in a single experiment, but 
-the currently available methods for 1) organizing clusters of TCR sequences 
+enable the analysis of entire repertoires of IRs in a single experiment, but 
+the currently available methods for 1) organizing clusters of IR sequences 
 according to their likely antigen specificities; and 2) quantitative comparison 
 of the abundance of the specificity groups between biological conditions or 
 timepoints, have crucial drawbacks or are not available.
