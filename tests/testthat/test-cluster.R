@@ -20,17 +20,17 @@ control_input <- list(
     global_pairs = NULL
 )
 
-# check everything for all three gliphR versions
+# check everything for all three versions of the algorithm
 for (version in c(1, 2, 3)) {
     test_that("data_sample parameter takes only valid input", {
-        expect_error(gliph( # missing input
+        expect_error(cluster_irr( # missing input
             data_ref = data_ref,
             version = version,
             ks = ks,
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = as.matrix(data_sample), # matrix
             data_ref = data_ref,
             version = version,
@@ -38,7 +38,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample[0:0, ], # 0 row df
             data_ref = data_ref,
             version = version,
@@ -48,7 +48,7 @@ for (version in c(1, 2, 3)) {
         ))
         df <- data_sample
         df["CDR3a"] <- 42
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = df, # numerical CDR3a column
             data_ref = data_ref,
             version = version,
@@ -58,7 +58,7 @@ for (version in c(1, 2, 3)) {
         ))
         df <- data_sample
         df["CDR3b"] <- 42
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = df, # numerical CDR3b column
             data_ref = data_ref,
             version = version,
@@ -70,7 +70,7 @@ for (version in c(1, 2, 3)) {
 
 
     test_that("data_ref parameter takes only valid input", {
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             # missing input
             version = version,
@@ -78,7 +78,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = as.matrix(data_sample), # matrix
             version = version,
@@ -86,7 +86,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref[0:0, ], # 0 row df
             version = version,
@@ -96,7 +96,7 @@ for (version in c(1, 2, 3)) {
         ))
         df <- data_ref
         df["CDR3a"] <- 42
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = df, # numerical CDR3a column
             version = version,
@@ -106,7 +106,7 @@ for (version in c(1, 2, 3)) {
         ))
         df <- data_ref
         df["CDR3b"] <- 42
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = df, # numerical CDR3b column
             version = version,
@@ -146,7 +146,7 @@ for (version in c(1, 2, 3)) {
     })
 
     test_that("version parameter takes only valid input", {
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = "three", # non-numeric
@@ -154,7 +154,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = c(1, 2, 3), # multiple values
@@ -162,7 +162,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = 1.6, # float
@@ -170,7 +170,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = 4, # non-existing version
@@ -181,7 +181,7 @@ for (version in c(1, 2, 3)) {
     })
 
     test_that("ks parameter takes only valid input", {
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -189,7 +189,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -197,7 +197,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -205,7 +205,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -216,7 +216,7 @@ for (version in c(1, 2, 3)) {
     })
 
     test_that("cores parameter takes only valid input", {
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -224,7 +224,7 @@ for (version in c(1, 2, 3)) {
             cores = Inf, # infinite
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -232,7 +232,7 @@ for (version in c(1, 2, 3)) {
             cores = "all of them", # non-numeric
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -240,7 +240,7 @@ for (version in c(1, 2, 3)) {
             cores = 1.7, # float
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -248,7 +248,7 @@ for (version in c(1, 2, 3)) {
             cores = c(1, 2, 3), # multiple values
             control = control_input
         ))
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -261,7 +261,7 @@ for (version in c(1, 2, 3)) {
     test_that("control_input$B parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$B <- Inf # infinity
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -270,7 +270,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$B <- "Everyone" # non-numeric
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -279,7 +279,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$B <- 1.7 # float
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -288,7 +288,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$B <- c(1, 2, 3) # multiple values
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -297,7 +297,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$B <- 0 # < 1
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -310,7 +310,7 @@ for (version in c(1, 2, 3)) {
     test_that("control_input$global_max_dist param takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$global_max_dist <- Inf # infinity
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -319,7 +319,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$global_max_dist <- "Everyone" # non-numeric
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -328,7 +328,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$global_max_dist <- 1.7 # float
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -337,7 +337,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$global_max_dist <- c(1, 2) # multiple values
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -346,7 +346,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$global_max_dist <- 0 # < 1
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -359,7 +359,7 @@ for (version in c(1, 2, 3)) {
     test_that("control_input$local_max_fdr param takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$local_max_fdr <- Inf # infinity
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -368,7 +368,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_max_fdr <- "Everyone" # non-numeric
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -377,7 +377,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_max_fdr <- 1.7 # float
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -386,7 +386,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_max_fdr <- -1 # < 0
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -395,7 +395,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_max_fdr <- 2 # > 1
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -408,7 +408,7 @@ for (version in c(1, 2, 3)) {
     test_that("control_input$local_min_ove parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$local_min_ove <- Inf # infinity
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -417,7 +417,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_min_ove <- "Everyone" # non-numeric
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -426,7 +426,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_min_ove <- c(1, 2, 3) # multiple values
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -439,7 +439,7 @@ for (version in c(1, 2, 3)) {
     test_that("control_input$local_min_o parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$local_min_o <- Inf # infinity
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -448,7 +448,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_min_o <- "Everyone" # non-numeric
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -457,7 +457,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_min_o <- 1.7 # float
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -466,7 +466,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$local_min_o <- c(1, 2, 3) # multiple values
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -479,7 +479,7 @@ for (version in c(1, 2, 3)) {
     test_that("control_input$trim_flank_aa parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$trim_flank_aa <- Inf # infinity
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -488,7 +488,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$trim_flank_aa <- "Everyone" # non-numeric
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -497,7 +497,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$trim_flank_aa <- 1.7 # float
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -506,7 +506,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$trim_flank_aa <- -2 # positive
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -515,7 +515,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$trim_flank_aa <- c(1, 2, 3) # single value
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -528,7 +528,7 @@ for (version in c(1, 2, 3)) {
     test_that("control_input$low_mem parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$low_mem <- c(1, 2, 3) # multiple values
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -537,7 +537,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$low_mem <- "TRUE" # not logical
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -554,7 +554,7 @@ for (version in c(1, 2, 3)) {
             nrow = 0,
             ncol = 1
         ) # rowcount zero
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -563,7 +563,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
         control_input_tmp$global_pairs <- data.frame(c(1, 2)) # rowcount zero
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -576,7 +576,7 @@ for (version in c(1, 2, 3)) {
             nrow = 1,
             ncol = 1
         ) # non-integer matrix
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -589,7 +589,7 @@ for (version in c(1, 2, 3)) {
             nrow = 1,
             ncol = 3
         ) # ≠ 2 columns
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -603,7 +603,7 @@ for (version in c(1, 2, 3)) {
             nrow = 30,
             ncol = 2
         ) # wrong index
-        expect_error(gliph(
+        expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             version = version,
@@ -615,8 +615,8 @@ for (version in c(1, 2, 3)) {
 
 
     # test all versions with correct input
-    test_that("gliph works with correct input", {
-        expect_no_error(gliph(
+    test_that("cluster_irr works with correct input", {
+        expect_no_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             ks = ks,
@@ -627,10 +627,10 @@ for (version in c(1, 2, 3)) {
     })
 
     # test all versions with correct input and low_mem = true
-    test_that("gliph works with correct input in low_mem mode", {
+    test_that("cluster_irr works with correct input in low_mem mode", {
         control_input_tmp <- control_input
         control_input_tmp$low_mem <- TRUE
-        expect_no_error(gliph(
+        expect_no_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref,
             ks = ks,
