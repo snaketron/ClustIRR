@@ -1,19 +1,6 @@
-# Description:
-# Look for pairs of global connections.
-# Used by gliph_v1 and gliph_v2.
 get_global_clust <- function(cdr3,
                              global_max_dist) {
-    # Jan is looping over all sequences and computing distances with the rest.
-    # two problems:
-    # a) slower than passing vector to stringdist,
-    #    but lower max. memory footprint
-    # b) hamming distance between sequences
-    #    with unequal lengths computed nonetheless
-
-    # at the very least loop over cdr3.lengths -> faster, but somewhat more
-    # memory is data passed together to stringdist
-
-    cdr3_len <- base::nchar(cdr3)
+        cdr3_len <- base::nchar(cdr3)
     cdr3_lens <- unique(cdr3_len)
 
     get_hamming_dist <- function(x, cdr3, cdr3_len, global_max_dist) {
@@ -61,18 +48,11 @@ get_global_clust <- function(cdr3,
 
 
 
-# Description:
-# Look for global connections. Low-memory mode.
-# Used by gliph_v1 and gliph_v2
 get_global_clust_mem <- function(cdr3,
                                  global_max_dist) {
     cdr3_len <- base::nchar(cdr3)
     cdr3_lens <- unique(cdr3_len)
 
-    # Description:
-    # same as get_hamming_dist from get_global_pairs, but slower. However it
-    # has much smaller memory footprint -> appropriate for large input sets.
-    # Similar but faster implementation than that in Jan's code
     get_hamming_dist <- function(x,
                                  cdr3,
                                  cdr3_len,
