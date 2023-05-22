@@ -24,7 +24,7 @@
 #' @export
 cluster_irr <- function(data_sample,
                         data_ref,
-                        version = 2,
+                        version = 3,
                         ks = c(2, 3, 4),
                         cores = 1,
                         control = list(
@@ -32,7 +32,7 @@ cluster_irr <- function(data_sample,
                             global_max_dist = 1,
                             local_max_fdr = 0.05,
                             local_min_ove = 2,
-                            local_min_o = 3,
+                            local_min_o = 1,
                             trim_flank_aa = 0,
                             global_pairs = NULL,
                             low_mem = FALSE)) {
