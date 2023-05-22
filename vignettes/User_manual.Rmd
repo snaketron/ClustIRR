@@ -1,5 +1,5 @@
 ---
-title: "Introduction to gliphR"
+title: "Introduction to ClustIRR"
 author: "S. Kitanovski, K. Wollek"
 date: "`r Sys.Date()`"
 output: 
@@ -10,7 +10,7 @@ output:
     toc: true
     toc_depth: 3
 vignette: >
-  %\VignetteIndexEntry{Introduction to gliphR}
+  %\VignetteIndexEntry{Introduction to ClustIRR}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -42,10 +42,10 @@ according to their likely antigen specificities; and 2) quantitative comparison
 of the abundance of the specificity groups between biological conditions or 
 timepoints, have crucial drawbacks or are not available.
 
-This vignette introduces `r Biocpkg("gliphR")`, a transparent workflow for 
+This vignette introduces `r Biocpkg("ClustIRR")`, a transparent workflow for 
 quantitative exploration of single cell RNA-seq data. 
 
-In short, the algorithm of `r Biocpkg("gliphR")` performs clustering of TCR 
+In short, the algorithm of `r Biocpkg("ClustIRR")` performs clustering of TCR 
 sequences in a given TCR repertoire, to find groups of TCRs with similar
 specificity. It then employs a quantitative model to compare the abundances 
 of the identified TCR clusters between biological conditions. We explain each 
@@ -54,7 +54,7 @@ step in the following using real TCR-seq data.
 To run this vignette we need to load a few R-packages:
 
 ```{r}
-library(gliphR)
+library(ClustIRR)
 library(ggplot2)
 library(patchwork)
 ```
@@ -66,7 +66,7 @@ SK: Here we talk about the data that we will analyze.
 
 
 
-# GliphR workflow
+# ClustIRR workflow
 
 
 
@@ -85,7 +85,7 @@ Includes a low memory mode to reduce memory usage for large input files.
 A completely revised version of the 
 [**turboGliph**](https://github.com/HetzDra/turboGliph) package focused on the 
 clustering part of the **Gliph** algorithm. Input parameters are reduced to
-a minimum for user convenience. The first edition of **gliphR** implements the 
+a minimum for user convenience. The first edition of **ClustIRR** implements the 
 clustering part of the algorithm. Scoring and plotting parts are planned to be
 added in future package versions.
 
@@ -97,7 +97,7 @@ designed for single-cell sequencing input data.
 
 # Installation
 
-gliphR can be installed using the BiocManager package.
+ClustIRR can be installed using the BiocManager package.
 
 ```{r installation, eval=FALSE}
 if (!requireNamespace("BiocManager", quietly = TRUE)){
@@ -105,7 +105,7 @@ if (!requireNamespace("BiocManager", quietly = TRUE)){
     BiocManager::install()
 }
 
-BiocManager::install("gliphR")
+BiocManager::install("ClustIRR")
 ```
 
 # Input
@@ -114,7 +114,7 @@ Let's use the included **hs_CD8_ref** as reference and **gliph_input_data**
 as sample. This datasets were published with GLIPH.\(^1\)
 
 ```{r input_data}
-library(gliphR)
+library(ClustIRR)
 
 # load package input data
 data("hs_CD8_ref")
@@ -126,7 +126,7 @@ cores <- parallel::detectCores()
 
 # Clustering
 
-To run **gliphR** with default parameters, we provide the columns **CDR3b**,
+To run **ClustIRR** with default parameters, we provide the columns **CDR3b**,
 **TRBV** and **TRBJ** of the data sets (first 3 columns each).
 
 ```{r clustering}
@@ -165,7 +165,7 @@ the following columns:
 
 # Output
 
-**gliphR** returns a list of the following elements:
+**ClustIRR** returns a list of the following elements:
 
 - **clust** _list_: local + global clusters
 - **edges** _list_: local + global edges
@@ -205,7 +205,7 @@ screening." Nature Biotechnology 38.10 (2020): 1194-1202.<br>
 
 # Sessioninfo
 ```{r}
-packageVersion("gliphR")
+packageVersion("ClustIRR")
 
 sessionInfo()
 ```
