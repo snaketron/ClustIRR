@@ -1,14 +1,3 @@
-# Description:
-# Now exported to user, but used within function gliph.R
-#' Input checks for gliphR parameters
-#'
-#' @param data_sample, data.frame: TCR sample
-#' @param data_ref, data.frame: reference database
-#' @param version, integer: version = 1, 2 or 3, gliph version to use
-#' @param ks, vector of integers: motif lengths to use (default ks=(2,3,4)),
-#' @param cores, integer: number of CPU cores to use
-#' @param control, list: auxiliary input parameters
-#' @noRd
 input_check <- function(data_sample,
                         data_ref,
                         version,
@@ -171,11 +160,6 @@ check_global_pairs <- function(global_pairs, data_sample) {
     # no duplicate rows. The CDR3s in column 1 or 2 should be found at least
     # once in data_sample.
     # TODO: this part has to be tested extensively
-
-
-    # global_pairs -> optional user provided input
-    # (e.g. by smarter global clustering)
-    # there is no equivalent parameter in gliph/gliph2
     if (!base::is.null(global_pairs)) {
         check_rowcount(global_pairs)
         check_matrix(global_pairs)
