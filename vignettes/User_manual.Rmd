@@ -2,13 +2,8 @@
 title: "Introduction to ClustIRR"
 author: "S. Kitanovski, K. Wollek"
 date: "`r Sys.Date()`"
-output: 
-  prettydoc::html_pretty:
-    theme: cayman
-    df_print: "kable"
-    number_sections: true
-    toc: true
-    toc_depth: 3
+output:
+  BiocStyle::html_document
 vignette: >
   %\VignetteIndexEntry{Introduction to ClustIRR}
   %\VignetteEngine{knitr::rmarkdown}
@@ -16,13 +11,11 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-  collapse = TRUE,
-  comment = "#>",
-  fig.height = 5,
-  fig.width = 5,
-  fig.align = "center"
-)
+knitr::opts_chunk$set(collapse = TRUE,
+                      comment = "#>",
+                      fig.height = 5,
+                      fig.width = 5,
+                      fig.align = "center")
 set.seed(987)
 ```
 
@@ -99,18 +92,6 @@ Includes implementations of the
 Introduces a new version of the **Gliph** algorithm called `gliph3`,
 designed for single-cell sequencing input data.
 
-# Installation
-
-ClustIRR can be installed using the BiocManager package.
-
-```{r installation, eval=FALSE}
-if (!requireNamespace("BiocManager", quietly = TRUE)){
-    install.packages("BiocManager")
-    BiocManager::install()
-}
-
-BiocManager::install("ClustIRR")
-```
 
 # Input
 
@@ -118,8 +99,6 @@ Let's use the included **hs_CD8_ref** as reference and **gliph_input_data**
 as sample. This datasets were published with GLIPH.\(^1\)
 
 ```{r input_data}
-library(ClustIRR)
-
 # load package input data
 data("hs_CD8_ref")
 data("gliph_input_data")
@@ -135,10 +114,10 @@ To run **ClustIRR** with default parameters, we provide the columns **CDR3b**,
 
 ```{r clustering}
 # run gliph with default parameters
-gliph_output <- gliph(
-data_sample = gliph_input_data[,1:3],
-data_ref = hs_CD8_ref[,1:3]
-)
+# gliph_output <- cluster_irr(
+# data_sample = gliph_input_data[,1:3],
+# data_ref = hs_CD8_ref[,1:3]
+# )
 ```
 
 Optional parameters:
@@ -183,7 +162,7 @@ We can for example inspect local clusters:
 
 ```{r output}
 # inspect output
-head(gliph_output$clust$CDR3b$local$m)
+# head(gliph_output$clust$CDR3b$local$m)
 
 ```
 
@@ -207,9 +186,13 @@ T cell receptor repertoire." Nature 547.7661 (2017): 94.<br>
 response by T-cell receptor clustering with GLIPH2 and genome-wide antigen 
 screening." Nature Biotechnology 38.10 (2020): 1194-1202.<br>
 
-# Sessioninfo
+# Session Info
+
 ```{r}
 packageVersion("ClustIRR")
+```
 
+
+```{r}
 sessionInfo()
 ```
