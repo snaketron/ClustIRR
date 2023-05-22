@@ -1,11 +1,10 @@
 # load minimal input data
-data("hs_CD8_ref")
-data("gliph_input_data")
-data_sample <- gliph_input_data[1:50,1:3]
-data_ref <- hs_CD8_ref[1:1000,1:3]
+data("CD8")
+data_sample <- data.frame(CDR3b = CD8[1:5000, "CDR3b"])
+data_ref <- CD8
 
 # detect cores
-cores <- parallel::detectCores()
+cores <- future::availableCores()
 
 # set ks and control input parameters
 ks <- c(2, 3, 4)
@@ -14,7 +13,7 @@ control_input <- list(
     global_max_dist = 1,
     local_max_fdr = 0.05,
     local_min_ove = 2,
-    local_min_o = 3,
+    local_min_o = 1,
     trim_flank_aa = 3,
     low_mem = FALSE,
     global_pairs = NULL

@@ -33,7 +33,7 @@ test_that("get_control() runs as expected", {
         global_max_dist = 1,
         local_max_fdr = 0.05,
         local_min_ove = 2,
-        local_min_o = 3,
+        local_min_o = 1,
         trim_flank_aa = 0,
         global_pairs = NULL,
         low_mem = FALSE

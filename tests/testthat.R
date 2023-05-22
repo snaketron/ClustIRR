@@ -1,3 +1,3 @@
 library(testthat)
-library(gliphR)
-test_check("gliphR")
+library(ClustIRR)
+test_check("ClustIRR")
