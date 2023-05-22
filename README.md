@@ -1,28 +1,28 @@
-# gliphR
+# ClustIRR: Clustering of Immune cell Receptor Repertoires (IRRs). 
 
-Clustering of T-cell receptors (TCRs) to find groups of TCRs with similar 
-specificity. Quantitative comparison of TCR cluster structure between 
-biological conditions. Includes low memory mode to reduce memory usage 
-for large input files.
+ClustIRR is a quantitative method for clustering of immune cell 
+receptor repertoires (IRRs). The algorithm of ClustIRR finds groups of 
+T or B cell receptors (TCRs or BCRs) that likely have similar specificity. 
+This is achieved by comparing the global and local sequence features of 
+complementarity determining regions (CDRs) as proposed in [1,2]. Once the 
+specificity groups are identified in a set of IRRs, the algorithm performs 
+quantitative comparison of the cluster structures and their properties 
+between biological conditions. 
 
-A completely revised version of the 
-[turboGliph](https://github.com/HetzDra/turboGliph) package focused on the 
-clustering part of the Gliph algorithm. Input parameters are reduced to
-a minimum for user convenience.
+TODOs:
 
-Includes R implementations of the 
-[Gliph](https://github.com/immunoengineer/gliph) and 
-[Gliph2](http://50.255.35.37:8080) clustering algorithms.
-Introduces a new version of the Gliph algorithm called `gliph3`,
-designed for single-cell sequencing input data.
+1) graphical abstract
 
-See the package vignette for further information.
+2) soon will be submitted to Bioconductor, provide link
+
+3) How to use?, provide link to vignette
+
 
 ### References
 
-**1**: Glanville, Jacob, et al. "Identifying specificity groups in the 
+[1] Glanville, Jacob, et al. "Identifying specificity groups in the 
 T cell receptor repertoire." Nature 547.7661 (2017): 94.<br>
-**2**: Huang, Huang, et al. "Analyzing the Mycobacterium tuberculosis immune 
+[2] Huang, Huang, et al. "Analyzing the Mycobacterium tuberculosis immune 
 response by T-cell receptor clustering with GLIPH2 and genome-wide antigen 
 screening." Nature Biotechnology 38.10 (2020): 1194-1202.<br>
 
