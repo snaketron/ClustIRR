@@ -48,6 +48,7 @@ timepoints, have crucial drawbacks or are not available.
 This vignette introduces `r Biocpkg("ClustIRR")`, a transparent workflow for 
 quantitative exploration of single cell RNA-seq data. 
 
+# ClustIRR algorithm
 In short, the algorithm of `r Biocpkg("ClustIRR")` performs clustering of TCR 
 sequences in a given TCR repertoire, to find groups of TCRs with similar
 specificity. It then employs a quantitative model to compare the abundances 
