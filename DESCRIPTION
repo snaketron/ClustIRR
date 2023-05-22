@@ -1,16 +1,20 @@
-Package: gliphR
+Package: ClustIRR
 Type: Package
-Title: TCR specificity analysis, based on Gliph and Gliph2 clustering method 
-Version: 0.1.0
+Title: Clustering of immune receptor repertoires
+Version: 0.99.0
 Authors@R: c(
     person("Simo", "Kitanovski", email = "simo.kitanovski@uni-due.de", 
     role = c("aut", "cre"), comment=c(ORCID="0000-0003-2909-5376")),
     person("Kai", "Wollek", email = "kai.wollek@uni-duisburg-essen.de", 
     role = c("aut"), comment=c(ORCID="0009-0008-5941-9160")))
-Description: Clustering of T-cell receptors (TCRs) to find groups of TCRs
-    with similar specificity. Quantitative comparison of TCR cluster 
-    structure between biological conditions. Includes low memory mode to 
-    reduce memory usage for large input files.
+Description: ClustIRR is a quantitative method for clustering of immune cell 
+    receptor repertoires (IRRs). The algorithm of ClustIRR finds groups of 
+    T or B cell receptors (TCRs or BCRs) that likely have similar specificity. 
+    This is achieved by comparing the global and local sequence features of 
+    complementarity determining regions (CDRs). Once the specificity groups 
+    are identified in a set of IRRs, the algorithm performs quantitative 
+    comparison of the cluster structures and their properties between 
+    biological conditions. 
 License: GPL-3 + file LICENSE
 LazyData: false
 Depends: 
@@ -21,17 +25,14 @@ Imports:
     future.apply,
     methods,
     stats,
-    utils,
-    igraph
+    utils
 Suggests:
     BiocStyle,
     knitr,
     testthat
 Encoding: UTF-8
 NeedsCompilation: no
-biocViews: FunctionalPrediction, MotifDiscovery, GeneticVariability, 
-    FunctionalGenomics, ImmunoOncology, Clustering
-SystemRequirements: Python (>= 3.6), leidenalg (>= 0.8.2)
+biocViews: Clustering, ImmunoOncology, SingleCell, Software, Classification
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 URL: https://github.com/snaketron/gliphR
