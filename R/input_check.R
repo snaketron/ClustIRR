@@ -193,24 +193,16 @@ get_control <- function(control_in) {
     )
 
     # if missing control_in -> use default values
-    if(base::missing(control_in) | base::is.null(control_in)) {
+    if(base::missing(control_in) || base::is.null(control_in)) {
         return(control)
     }
     if(base::is.list(control_in) == FALSE) {
         base::stop("control must be a list")
     }
-    # KK: this is covered by the statement above
-    # if(base::is.data.frame(control_in)==TRUE) {
-    #     base::stop("control must be a list")
-    # }
     if(base::all(base::names(control_in) %in% base::names(control)) == FALSE) {
         base::stop("unrecognized elements found in control")
     }
 
-    # edit control by user-defined control_in
-    # There are packages to update list given another list, but here we can
-    # live with the following "inefficiency" as the list is generally small
-    # (~5 elements)
     ns <- names(control_in)
     for(i in seq_len(length(control_in))) {
         control[[ns[i]]] <- control_in[[ns[i]]]
@@ -352,7 +344,7 @@ check_missing <- function(x) {
         base::deparse(base::substitute(x)),
         " parameter is missing"
     )
-    if(base::missing(x) | base::is.null(x)) {
+    if(base::missing(x) || base::is.null(x)) {
         base::stop(w)
     }
 }
