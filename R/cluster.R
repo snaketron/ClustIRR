@@ -86,11 +86,12 @@ cluster_irr <- function(data_sample,
     }
     return(base::list(clust = clust,
                       edges = edges,
-                      data_sample = data_sample,
-                      version = version,
-                      ks = ks,
-                      cores = cores,
-                      control = control))
+                      inputs = base::list(
+                          data_sample = data_sample,
+                          version = version,
+                          ks = ks,
+                          cores = cores,
+                          control = control)))
 }
 
 

@@ -80,11 +80,14 @@ The output is a list of the following elements:
 \itemize{
    \item clust: clustering results for each TCR chain
    \item edges: local + clustering connections between rows in data_sample
-   \item data_sample: provided input data_sample
-   \item version: provided input version
-   \item ks: provided input ks
-   \item cores: provided input cores
-   \item control: provided input control
+   \item inputs: list of user provided inputs
+   \itemize{
+      \item data_sample: provided input data_sample
+      \item version: provided input version
+      \item ks: provided input ks
+      \item cores: provided input cores
+      \item control: provided input control
+   }
 }
 }
 
