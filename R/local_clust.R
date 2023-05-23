@@ -196,15 +196,15 @@ get_motif_enrichment_fet <- function(x) {
     # ove <- (x[1] / x[3]) / ((x[2] / x[4]))
     # or use OvE provided by fisher.test
 
-    q <- x[1]
-    m <- x[1] + x[2]
-    k <- x[3] + x[4]
-    n <- k - m
+    # q <- x[1]
+    # m <- x[1] + x[2]
+    # k <- x[3] + x[4]
+    # n <- k - m
 
     u <- base::matrix(data = 0, nrow = 2, ncol = 2)
     u[1, 1] <- x[1]
-    u[1, 2] <- x[2]
-    u[2, 1] <- x[3] - x[1]
+    u[2, 1] <- x[2]
+    u[1, 2] <- x[3] - x[1]
     u[2, 2] <- x[4] - x[2]
 
     fet <- stats::fisher.test(u, alternative = "greater", conf.level = 0.95)
