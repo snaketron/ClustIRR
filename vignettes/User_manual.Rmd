@@ -36,7 +36,7 @@ enable the analysis of entire repertoires of IRs in a single experiment, but
 the currently available methods for 1) organizing clusters of IR sequences 
 according to their likely antigen specificities; and 2) quantitative comparison 
 of the abundance of the specificity groups between biological conditions or 
-timepoints, have crucial drawbacks or are not available.
+time points, have crucial drawbacks or are not available.
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a transparent workflow for 
 quantitative exploration of single cell RNA-seq data. 
@@ -99,12 +99,12 @@ Let's use the included **hs_CD8_ref** as reference and **gliph_input_data**
 as sample. This datasets were published with GLIPH.\(^1\)
 
 ```{r input_data}
-# load package input data
-data("hs_CD8_ref")
-data("gliph_input_data")
-
-# detect cores
-cores <- parallel::detectCores()
+# # load package input data
+# data("hs_CD8_ref")
+# data("gliph_input_data")
+# 
+# # detect cores
+# cores <- parallel::detectCores()
 ```
 
 # Clustering
@@ -120,31 +120,6 @@ To run **ClustIRR** with default parameters, we provide the columns **CDR3b**,
 # )
 ```
 
-Optional parameters:
-
-- **data_sample** _data.frame_: TCR sample. Must be a _data.frame_ that has
-the following columns: 
-  - **CDR3b** _required_
-  - **TRBV**
-  - **TRBJ**
-  - **CDR3a**
-  - **TRAV**
-  - **TRAJ**
-  - **sample_id** _required_
-- **data_ref** _data.frame_: reference database
-- **version** _integer_: version = 1, 2 or 3, gliph version to use
-- **ks** _integer vector_: motif lengths to use (default ks=(2,3,4))
-- **cores** _integer_: number of CPU cores to use
-
-- **control list** _list_: auxiliary parameters
-  - **B** _integer_: simulation depth
-  - **global_max_dist** _integer_: maximum hamming distance for global clustering
-  - **local_max_fdr** _numeric_: maximum cutoff p-value for random generation
-  - **local_min_ove** _numeric_: minimum fold enrichment
-  - **local_min_o** _numeric_: minimum motif observations
-  - **trim_flank_aa** _integer_: cut off value for trimming aa flanks
-  - **low_mem** _logical_: low memory mode. Slower looping, lower memory footprint
-  - **global_pairs** _matrix_: optional pre-computed global pairs
 
 # Output
 
