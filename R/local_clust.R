@@ -7,16 +7,16 @@ get_localclust_v1 <- function(cdr3,
                               control) {
     # 1. trim flanks only relevant for local motifs
     if(control$trim_flank_aa != 0) {
-        cdr3 <- get_trimmed_flanks(x = cdr3,
-                                   flank_size = control$trim_flank_aa)
-        cdr3_ref <- get_trimmed_flanks(x = cdr3_ref,
-                                       flank_size = control$trim_flank_aa)
+        cdr3_core <- get_trimmed_flanks(x = cdr3,
+                                        flank_size = control$trim_flank_aa)
+        cdr3_ref_core <- get_trimmed_flanks(x = cdr3_ref,
+                                            flank_size = control$trim_flank_aa)
     }
     # 2. local clustering: get local motifs
     motifs <- base::lapply(X = ks,
                            FUN = get_motifs_v1,
-                           cdr3 = cdr3,
-                           cdr3_ref = cdr3_ref,
+                           cdr3 = cdr3_core,
+                           cdr3_ref = cdr3_ref_core,
                            B = control$B,
                            min_o = control$local_min_o,
                            cores = cores)
@@ -41,7 +41,9 @@ get_localclust_v1 <- function(cdr3,
                 me$obs >= control$local_min_o] <- TRUE
 
     # 5. find motifs in input CDR3
-    lp <- get_motif_in_seq(seq = cdr3, motif = me$motif[me$pass == TRUE])
+    lp <- get_motif_in_seq(cdr3 = cdr3,
+                           cdr3_core = cdr3_core,
+                           motif = me$motif[me$pass == TRUE])
     return(list(m = me, lp = lp))
 }
 
@@ -55,19 +57,19 @@ get_localclust_v23 <- function(cdr3,
 
     # 1. trim flanks only relevant for local motifs
     if(control$trim_flank_aa != 0) {
-        cdr3 <- get_trimmed_flanks(x = cdr3,
-                                   flank_size = control$trim_flank_aa)
-        cdr3_ref <- get_trimmed_flanks(x = cdr3_ref,
-                                       flank_size = control$trim_flank_aa)
+        cdr3_core <- get_trimmed_flanks(x = cdr3,
+                                        flank_size = control$trim_flank_aa)
+        cdr3_ref_core <- get_trimmed_flanks(x = cdr3_ref,
+                                            flank_size = control$trim_flank_aa)
     }
 
     # 2. local clustering: get local motifs
-    m <- lapply(X = ks,
-                FUN = get_motifs_v23,
-                cdr3 = cdr3,
-                cdr3_ref = cdr3_ref,
-                min_o = control$local_min_o)
-    m <- do.call(rbind, m)
+    m <- base::lapply(X = ks,
+                      FUN = get_motifs_v23,
+                      cdr3 = cdr3_core,
+                      cdr3_ref = cdr3_ref_core,
+                      min_o = control$local_min_o)
+    m <- base::do.call(base::rbind, m)
 
     # 3. compute enrichment by fisher's exact test
     ms <- t(apply(X = m[, c("f_sample", "f_ref", "n_sample", "n_ref")],
@@ -87,7 +89,8 @@ get_localclust_v23 <- function(cdr3,
                m$f_sample >= control$local_min_o] <- TRUE
 
     # 5. find motifs in input CDR3
-    lp <- get_motif_in_seq(seq = cdr3,
+    lp <- get_motif_in_seq(cdr3 = cdr3,
+                           cdr3_core = cdr3_core,
                            motif = m$motif[m$pass == TRUE])
     return(list(m = m, lp = lp))
 }
@@ -97,30 +100,31 @@ get_localclust_v23 <- function(cdr3,
 # Description:
 # Given a set of sequences and motifs (shorter sequences),
 # create a seq->motif map
-get_motif_in_seq <- function(seq,
+get_motif_in_seq <- function(cdr3_core,
+                             cdr3,
                              motif) {
     # if no enriched motifs
-    if(length(motif) == 0) {
+    if(base::length(motif) == 0) {
         return(NULL)
     }
 
-    find_motif <- function(x, motif, seq) {
-        j <- which(regexpr(pattern = motif[x], text = seq) != -1)
-        if(length(j) != 0) {
-            return(data.frame(
-                seq = seq[j], motif = motif[x],
-                stringsAsFactors = FALSE
-            ))
+    find_motif <- function(x, motif, cdr3_core, cdr3) {
+        j<-base::which(base::regexpr(pattern = motif[x], text = cdr3_core)!=-1)
+        if(base::length(j) != 0) {
+            return(base::data.frame(cdr3 = cdr3[j],
+                                    cdr3_core = cdr3_core[j],
+                                    motif = motif[x],
+                                    stringsAsFactors = FALSE))
         }
         return(NULL)
     }
 
-    return(do.call(rbind, lapply(
-        X = seq_len(length(motif)),
-        motif = motif,
-        FUN = find_motif,
-        seq = seq
-    )))
+    return(base::do.call(base::rbind,
+                         base::lapply(X = base::seq_len(base::length(motif)),
+                                      motif = motif,
+                                      FUN = find_motif,
+                                      cdr3 = cdr3,
+                                      cdr3_core = cdr3_core)))
 }
 
 
