@@ -15,7 +15,7 @@ input_check <- function(data_sample,
     check_global_max_dist(control$global_max_dist)
     check_local_max_fdr(control$local_max_fdr)
     check_local_min_o(control$local_min_o)
-    check_flank_size(control$trim_flank_aa)
+    check_trim_flank_aa(control$trim_flank_aa)
     check_low_mem(control$low_mem)
     check_global_pairs(control$global_pairs, data_sample)
 }
@@ -135,12 +135,12 @@ check_local_min_o <- function(local_min_o) { # kmer_mindepth
     check_singlevalue(local_min_o)
 }
 
-check_flank_size <- function(flank_size) { # boundary_size
-    check_infinity(flank_size)
-    check_numeric(flank_size)
-    check_wholenumber(flank_size)
-    check_positive(flank_size)
-    check_singlevalue(flank_size)
+check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size
+    check_singlevalue(trim_flank_aa)
+    check_infinity(trim_flank_aa)
+    check_numeric(trim_flank_aa)
+    check_wholenumber(trim_flank_aa)
+    check_positive(trim_flank_aa)
 }
 
 check_global_pairs <- function(global_pairs, data_sample) {
@@ -227,7 +227,7 @@ check_dataframe_colnames <- function(x, c) {
     w <- base::paste0(
         base::paste0(
             base::deparse(base::substitute(x)),
-            " has to contain the following column(s): "
+            " has to contain the following columns: "
         ),
         base::paste0(c, collapse = " or ")
     )
