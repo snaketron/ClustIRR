@@ -4,7 +4,7 @@ ClustIRR is a quantitative method for clustering of immune cell
 receptor repertoires (IRRs). The algorithm of ClustIRR finds groups of 
 T or B cell receptors (TCRs or BCRs) that likely have similar specificity. 
 This is achieved by comparing the global and local sequence features of 
-complementary determining regions (CDRs) as proposed in [1,2]. Once the 
+complementarity-determining regions (CDRs) as proposed in [1,2]. Once the 
 specificity groups are identified in a set of IRRs, the algorithm performs 
 quantitative comparison of the cluster structures and their properties 
 between biological conditions. 
