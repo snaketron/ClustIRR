@@ -1,3 +1,5 @@
+
+
 get_localclust_v1 <- function(cdr3,
                               cdr3_ref,
                               ks,
@@ -73,7 +75,6 @@ get_localclust_v23 <- function(cdr3,
         )
     }
 
-
     # 2. local clustering: get local motifs
     m <- lapply(
         X = ks,
@@ -84,14 +85,13 @@ get_localclust_v23 <- function(cdr3,
     )
     m <- do.call(rbind, m)
 
-
     # 3. compute enrichment by fisher's exact test
-    ms <- t(apply(
-        X = m[, c("f_sample", "f_ref", "n_sample", "n_ref")],
-        MARGIN = 1, FUN = get_motif_enrichment_fet
-    ))
-    m$ove <- ms[, 1]
-    m$p_value <- ms[, 2]
+    ms <- t(apply(X = m[, c("f_sample", "f_ref", "n_sample", "n_ref")],
+                  MARGIN = 1, FUN = get_motif_enrichment_fet))
+    m$ove <- ms[,1]
+    m$ove_ci_l95 <- ms[,2]
+    m$ove_ci_h95 <- ms[,3]
+    m$p_value <- ms[,4]
     m$fdr <- stats::p.adjust(p = m$p_value, method = "fdr")
     rm(ms)
 
@@ -223,28 +223,27 @@ get_motif_enrichment_fet <- function(x) {
     # n = n_ref+n_sample-(f_ref+f_sample),
     # k = n_ref+n_sample
 
-    # ove TODO: check how is this done in gliph2
-    ove <- (x[1] / x[3]) / ((x[2] / x[4]))
+    # ove <- (x[1] / x[3]) / ((x[2] / x[4]))
+    # or use OvE provided by fisher.test
 
     q <- x[1]
     m <- x[1] + x[2]
     k <- x[3] + x[4]
     n <- k - m
 
-    # TODO: do some testing on demo data
-    # u <- matrix(data = NA_integer_, nrow = 2, ncol = 2)
     u <- matrix(data = 0, nrow = 2, ncol = 2)
-
     u[1, 1] <- x[1]
     u[1, 2] <- x[2]
     u[2, 1] <- x[3] - x[1]
     u[2, 2] <- x[4] - x[2]
 
-    fet <- fisher.test(u, alternative = "greater")
-    ova <- fet$estimate
+    fet <- stats::fisher.test(u,
+                              alternative = "greater",
+                              conf.level = 0.95)
+    ove <- fet$estimate
     p <- fet$p.value
-    # ova_ci <- fet$conf.int[1:2]
-    return(c(ove, p))
+    ove_ci <- fet$conf.int[1:2]
+    return(c(ove, ove_ci, p))
 }
 
 

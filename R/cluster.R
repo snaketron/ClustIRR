@@ -150,8 +150,6 @@ get_clust_v23 <- function(cdr3,
                           cores,
                           control) {
 
-
-
     # 1. local
     l <- get_localclust_v23(cdr3 = cdr3,
                             cdr3_ref = cdr3_ref,
