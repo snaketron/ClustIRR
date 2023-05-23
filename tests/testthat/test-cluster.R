@@ -28,7 +28,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ))
+        ), regexp = "data_sample parameter is missing")
         expect_error(cluster_irr(
             data_sample = as.matrix(data_sample), # matrix
             data_ref = data_ref,
@@ -36,7 +36,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ))
+        ), regexp = "data_sample has to be of type data frame")
         expect_error(cluster_irr(
             data_sample = data_sample[0:0, ], # 0 row df
             data_ref = data_ref,
@@ -44,7 +44,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ))
+        ), regexp = "data_sample has to be of type data frame")
         df <- data_sample
         df["CDR3a"] <- 42
         expect_error(cluster_irr(
@@ -54,7 +54,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ))
+        ), regexp = "CDR3a column has to of type character")
         df <- data_sample
         df["CDR3b"] <- 42
         expect_error(cluster_irr(
@@ -64,7 +64,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ))
+        ), regexp = "CDR3b column has to of type character")
     })
 
 
@@ -76,7 +76,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ))
+        ), regexp = "data_ref parameter is missing")
         expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = as.matrix(data_sample), # matrix
@@ -84,7 +84,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ))
+        ), regexp = "data_ref has to be of type data frame")
         expect_error(cluster_irr(
             data_sample = data_sample,
             data_ref = data_ref[0:0, ], # 0 row df
