@@ -1,7 +1,6 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
 ^test_scripts$
-^tests$
 ^TODO\.md$
 ^styleguide.Rmd$
 ^slides$
