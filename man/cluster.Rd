@@ -76,18 +76,57 @@ to control algorithm's behavior. See the details below:
 }
 }
 \value{
-The output is a list of the following elements:
+The output is an object with 'clust_irr' structure. This object is formed by
+two sublists ('clust'= clustering results; and 'inputs'= original user inputs):
 \itemize{
-   \item clust: clustering results for each TCR chain
-   \item edges: local + clustering connections between rows in data_sample
-   \item inputs: list of user provided inputs
+   \item clust, list, clustering results
    \itemize{
-      \item data_sample: provided input data_sample
-      \item version: provided input version
-      \item ks: provided input ks
-      \item cores: provided input cores
-      \item control: provided input control
-   }
+      \item CDR3b, list, contains global+local clustering results for CDR3s
+      from chain TRB
+      \itemize{
+        \item local, list, local clustering results
+          \itemize{
+            \item m, data.frame, with motif enrichment results
+
+            For version=2 and version=3, data.frame m has the following set of
+            columns: 'motif': motif sequence; 'f_sample' & 'f_ref': observed
+            motif counts in sample and reference data; n_sample & n_ref: number of
+            all observed motifs in sample and reference set; k: motif length;
+            ove, ove_ci_l95, ove_ci_h95: mean observed/expected relative motif
+            frequency and 95\% confidence intervals of ove; p_value: p-value
+            from Fisher's exact test; fdr: false discovery rate, i.e. adjusted
+            p-value by Benjamini & Hochberg correction; pass: logical value
+            indicating whether a motifs are enriched (pass=TRUE) given the
+            user-defined thresholds in control.
+
+            For version = 1, data.frame m has the following columns:
+            motif = motif sequence; k: motif length, f_sample: motif counts in
+            sample; mean_f_ref, min_f_ref, max_f_ref: mean, minimum and maximum
+            motif counts in reference set computed based on B simulations; ove:
+            observed (f_sample)/expected (mean_f_ref) motif relative frequency;
+            p: probability of observing a motif count in the reference set that
+            is at least as high or higher as in the sample set; fdr: false
+            discovery rate, i.e. adjusted p-value by Benjamini & Hochberg
+            correction; pass: logical value indicating whether motifs are
+            enriched (pass=TRUE) given the user-defined thresholds in control.
+
+            \item lp, data.frame, enriched motifs are linked to their original
+            CDR3 sequences and shown as rows in the data.frame
+
+            The data.frame lp contains the following columns: cdr3 & cdr3_core:
+            CDR3 sequence and the corresponding core of the CDR3 sequence
+            obtained by trimming 'trim_flank_aa' amino acids (user-defined
+            parameter in control). if trim_flank_aa=0, then cdr3=cdr3_core;
+            motif: enriched motif from cdr3_core.
+          }
+        \item global, matrix, global clustering results. Pairs of globally
+        similar CDR3s are shown in each row of the matrix (analogous to lp)
+      }
+      \item CDR3a, list, contains global+local clustering results for CDR3s
+      from chain TRA (has the same structure as in CDR3b)
+    }
+   \item inputs, list, user provided inputs (see input arguments: data_sample,
+   version, ks, cores, control)
 }
 }
 
@@ -97,7 +136,7 @@ specificity. This is done with two strategies: local motif clustering and
 global CDR3 sequence clustering.
 
 SK: here we need two paragraphs of how each algorithm (local vs. global)
-works, as well as *key* differences between v=1, 2 and 3
+works, as well as *key* differences between version=1, 2 and 3
 }
 
 \examples{
@@ -122,11 +161,15 @@ out <- cluster_irr(data_sample = data_sample,
                       global_pairs = NULL,
                       low_mem = FALSE))
 
+# output class
+class(out)
+
+# output structure
+str(out)
+
 # inspect local motif enrichment results
 knitr::kable(head(out$clust$CDR3b$local$m))
 
-
-# inspect global similarities between CDR3s
+# inspect which CDR3bs are globally similar
 knitr::kable(head(out$clust$CDR3b$global))
-
 }
