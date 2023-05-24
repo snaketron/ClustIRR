@@ -20,7 +20,7 @@
 #' @import stats
 #' @import utils
 #'
-#' @return list(clust = clust, edges = edges, data_sample = data_sample)
+#' @return list(clust = clust, inputs)
 #' @export
 cluster_irr <- function(data_sample,
                         data_ref,
@@ -56,8 +56,6 @@ cluster_irr <- function(data_sample,
     # run analysis for each chain (if available)
     clust <- base::vector(mode = "list", length = base::length(chains))
     base::names(clust) <- chains
-    edges <- base::vector(mode = "list", length = base::length(chains))
-    base::names(edges) <- chains
 
     for(chain in chains) {
         if(version==3) {
@@ -82,16 +80,16 @@ cluster_irr <- function(data_sample,
                                             cores = cores,
                                             control = control)
         }
-        edges[[chain]] <- NA # TODO
     }
-    return(base::list(clust = clust,
-                      edges = edges,
-                      inputs = base::list(
-                          data_sample = data_sample,
-                          version = version,
-                          ks = ks,
-                          cores = cores,
-                          control = control)))
+
+    return(base::structure(class = "clust_irr",
+                           base::list(clust = clust,
+                                      inputs = base::list(
+                                          data_sample = data_sample,
+                                          version = version,
+                                          ks = ks,
+                                          cores = cores,
+                                          control = control))))
 }
 
 
@@ -128,7 +126,7 @@ get_clust_v1 <- function(cdr3,
                                   global_max_dist = control$global_max_dist)
         }
     }
-    return(base::list(local = l, gobal = g))
+    return(base::list(local = l, global = g))
 }
 
 
