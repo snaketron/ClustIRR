@@ -44,6 +44,8 @@ get_localclust_v1 <- function(cdr3,
     lp <- get_motif_in_seq(cdr3 = cdr3,
                            cdr3_core = cdr3_core,
                            motif = me$motif[me$pass == TRUE])
+
+
     return(list(m = me, lp = lp))
 }
 
@@ -92,6 +94,13 @@ get_localclust_v23 <- function(cdr3,
     lp <- get_motif_in_seq(cdr3 = cdr3,
                            cdr3_core = cdr3_core,
                            motif = m$motif[m$pass == TRUE])
+
+
+    # remove duplicated entries in lp (this is only relevant for v3)
+    if(base::is.null(lp)==FALSE) {
+        lp <- lp[base::duplicated(lp)==FALSE,]
+    }
+
     return(list(m = m, lp = lp))
 }
 
