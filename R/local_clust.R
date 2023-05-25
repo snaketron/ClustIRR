@@ -233,10 +233,10 @@ get_motif_enrichment_fet <- function(x) {
 # Description:
 # Computes motif frequencies for a sample (cdr3) and reference (cdr3_ref) sets
 # of CDR3s. This is done using bootstrapping with B iterations. In each
-# iteration, the algorithm draws a number of CDR3s without replacement from
+# iteration, the algorithm draws |cdr3| CDR3s without replacement from
 # cdr3_ref, finds the motifs, and computes motif frequencies. This is repeated
-# B times to generate a vector of Expected (average) motif frequencies. These
-# are compared against the Observed motif frequencies in sample cdr3.
+# B times to generate a vector of motif frequencies. The mean (expected) motif
+# frequency is compared against the observed motif frequencies in sample cdr3.
 get_motifs_v1 <- function(cdr3, cdr3_ref, B, ks, cores, min_o) {
 
     # x = k in k-mer
