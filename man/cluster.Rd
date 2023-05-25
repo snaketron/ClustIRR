@@ -90,8 +90,8 @@ two sublists ('clust'= clustering results; and 'inputs'= original user inputs):
 
             For version=2 and version=3, data.frame m has the following set of
             columns: 'motif': motif sequence; 'f_sample' & 'f_ref': observed
-            motif counts in sample and reference data; n_sample & n_ref: number of
-            all observed motifs in sample and reference set; k: motif length;
+            motif counts in sample and reference data; n_sample & n_ref: number
+            of all observed motifs in sample and reference set; k: motif length;
             ove, ove_ci_l95, ove_ci_h95: mean observed/expected relative motif
             frequency and 95\% confidence intervals of ove; p_value: p-value
             from Fisher's exact test; fdr: false discovery rate, i.e. adjusted
