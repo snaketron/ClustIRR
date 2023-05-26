@@ -1,13 +1,13 @@
-# ClustIRR: Clustering of Immune cell Receptor Repertoires (IRRs). 
+# ClustIRR: Clustering of Immune Receptor Repertoires (IRRs). 
 
-ClustIRR is a quantitative method for clustering of immune cell 
-receptor repertoires (IRRs). The algorithm of ClustIRR finds groups of 
-T or B cell receptors (TCRs or BCRs) that likely have similar specificity. 
-This is achieved by comparing the global and local sequence features of 
-complementarity-determining regions (CDRs) as proposed in [1,2]. Once the 
-specificity groups are identified in a set of IRRs, the algorithm performs 
-quantitative comparison of the cluster structures and their properties 
-between biological conditions. 
+ClustIRR is a quantitative method for clustering of immune receptor 
+repertoires (IRRs). The algorithm of ClustIRR finds groups of T or B 
+cell receptors (TCRs or BCRs) that likely have the same antigen specificity. 
+This is achieved by comparing global and local sequence features of the 
+complementarity determining regions (CDRs) of TCRs and BCRs as proposed in 
+[1,2]. Once the specificity groups are identified in a set of IRRs, the algorithm 
+performs quantitative comparison of the cluster structure abundances and their
+properties between biological conditions. 
 
 TODOs:
 
