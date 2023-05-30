@@ -1,0 +1,318 @@
+---
+title: "Benchmarking"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{benchmarking}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+require(ClustIRR)
+require(ggplot2)
+require(patchwork)
+require(immuneSIM)
+
+```
+
+
+# Create input data
+
+An artificial clonal expansion of 100 vs 1 sequences of a made up
+CDR3b sequence is created as input.
+
+```{r create_input_data}
+
+# set seed for reproducibility
+set.seed(1234)
+
+## create artificial reference repertoire
+data_ref_f <- immuneSIM(
+  number_of_seqs = 600,         # number of simulated sequences
+  species = "hs",               # species (human)
+  receptor = "tr",              # receptor-type (t-cells)
+  chain = "b",                  # chain type (beta chain)
+  max_cdr3_length = 100,        # max cdr3 length
+  min_cdr3_length = 6,          # min cdr3 length
+  user_defined_alpha = 1.1,     # clone count distribution
+  verbose = TRUE)               # output progress
+
+## create artificial sample repertoire by inserting motifs
+
+# # create n random motifs of length k
+# motifs <- list(
+#   "n" = 3,                      # 3 different motifs
+#   "k" = 3,                      # 3mer's
+#   "freq" = c(0.05, 0.25, 0.4))  # occurrence probabilities
+
+# create motifs manually
+motifs <- data.frame(aa   = c("CCC","FFF"),
+                    nt   = c("gccgcc","tttttt"),
+                    freq = c(0.2,0.1))
+
+data_sample_f <- motif_implantation(
+  sim_repertoire = data_ref_f,  # source repertoire
+  motif = motifs,               # motifs to implant
+  fixed_pos = 5)                # insert at random (0) or fixed (n) position
+
+# random subset motif enriched dataset
+data_sample_f <- data.frame(data_sample_f[sample(1:nrow(data_sample_f),
+                                             50,
+                                             replace = FALSE),])
+
+# Reduce to CDR3b sequence
+data_ref    <- data.frame(data_ref_f[,4])
+data_sample <- data.frame(data_sample_f[,4])
+names(data_ref)[1]    <- "CDR3b"
+names(data_sample)[1] <- "CDR3b"
+
+## Insert global sequence for global check
+
+# Random sequence for global similarity
+groundtruth_expansion <- c(CDR3b = "QQQQTTTQQQQTTT")
+
+# Insert 1 time in data_ref for reference
+data_ref <- rbind(data_ref, groundtruth_expansion) 
+
+# Insert 20 times in sample
+for(i in 0:19) {
+  data_sample <- rbind(data_sample, groundtruth_expansion)
+}
+
+rm(i, groundtruth_expansion)
+
+```
+
+
+
+# Prepare input parameters
+
+```{r create_parameters}
+
+cores <- parallel::detectCores()
+
+# gliphR v1 + v2 + v3
+ks <- c(2, 3, 4)
+B <- 1000
+control_input <- list(
+  B = B,
+  global_max_dist = 1,
+  local_max_fdr = 0.05,
+  local_min_ove = 2,
+  local_min_o = 3,
+  trim_flank_aa = 3,
+  low_mem = FALSE,
+  global_pairs = NULL)
+
+
+```
+
+# Cluster with ClustIRR versions
+
+```{r run_clustirr}
+out_v1 <- cluster_irr(data_sample = data_sample,
+                data_ref = data_ref,
+                ks = ks,
+                cores = cores,
+                version = 1,
+                control = control_input)
+
+out_v2 <- cluster_irr(data_sample = data_sample,
+                data_ref = data_ref,
+                ks = ks,
+                cores = cores,
+                version = 2,
+                control = control_input)
+
+
+out_v3 <- cluster_irr(data_sample = data_sample,
+                data_ref = data_ref,
+                ks = ks,
+                cores = cores,
+                version = 3,
+                control = control_input)
+
+# put in the same data for ref and sample
+out_v1_i <- cluster_irr(data_sample = data_sample,
+                  data_ref = data_sample,
+                  ks = ks,
+                  cores = cores,
+                  version = 1,
+                  control = control_input)
+
+out_v2_i <- cluster_irr(data_sample = data_sample,
+                  data_ref = data_sample,
+                  ks = ks,
+                  cores = cores,
+                  version = 2,
+                  control = control_input)
+
+
+out_v3_i <- cluster_irr(data_sample = data_sample,
+                  data_ref = data_sample,
+                  ks = ks,
+                  cores = cores,
+                  version = 3,
+                  control = control_input)
+
+rm(B, cores, ks, control_input)
+
+```
+
+
+# Compare results
+
+```{r compare_results}
+
+# prepare for visualization
+e_v1 <- out_v1$clust$CDR3b$local$m
+colnames(e_v1)[which(colnames(e_v1) == 'ove')]     <- 'OvE_ClustIRRR1'
+e_v1_i <- out_v1_i$clust$CDR3b$local$m
+colnames(e_v1_i)[which(colnames(e_v1_i) == 'ove')] <- 'OvE_ClustIRRR1_identical'
+e_v2 <- out_v2$clust$CDR3b$local$m
+colnames(e_v2)[which(colnames(e_v2) == 'ove')]     <- 'OvE_ClustIRRR2'
+e_v2_i <- out_v2_i$clust$CDR3b$local$m
+colnames(e_v2_i)[which(colnames(e_v2_i) == 'ove')] <- 'OvE_ClustIRRR2_identical'
+e_v3 <- out_v3$clust$CDR3b$local$m
+colnames(e_v3)[which(colnames(e_v3) == 'ove')]     <- 'OvE_ClustIRRR3'
+e_v3_i <- out_v3_i$clust$CDR3b$local$m
+colnames(e_v3_i)[which(colnames(e_v3_i) == 'ove')] <- 'OvE_ClustIRRR3_identical'
+
+
+```
+
+
+## Identical vs different input & version OVE comparison
+
+```{r identical_vs_different, fig.width=10, fig.height=10, fig.align='center'}
+
+# ClustIRRR v1 test versus identical input
+c_v1_i <- merge(e_v1, e_v1_i, by = "motif", all = TRUE)
+c_v1_i[is.na(c_v1_i)] <- -1
+g_v1 <- ggplot(c_v1_i, aes(x = OvE_ClustIRRR1_identical, y = OvE_ClustIRRR1)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("ClustIRRR v1 - identical versus different input")
+
+# ClustIRRR v2 test versus identical input
+c_v2_i <- merge(e_v2, e_v2_i, by = "motif", all = TRUE)
+c_v2_i[is.na(c_v2_i)] <- -1
+g_v2 <- ggplot(c_v2_i, aes(x = OvE_ClustIRRR2_identical, y = OvE_ClustIRRR2)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("ClustIRRR v2 - identical versus different input")
+
+# ClustIRRR v3 test versus identical input
+c_v3_i <- merge(e_v3, e_v3_i, by = "motif", all = TRUE)
+c_v3_i[is.na(c_v3_i)] <- -1
+g_v3 <- ggplot(c_v3_i, aes(x = OvE_ClustIRRR3_identical, y = OvE_ClustIRRR3)) +
+  geom_point() +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("ClustIRRR v3 - identical versus different input")
+
+# ClustIRRR v1 vs ClustIRRR v2
+c_v1_2 <- merge(e_v1, e_v2, by = "motif", all = TRUE)
+c_v1_2[is.na(c_v1_2)] <- -1
+g_gl1_gl2 <- ggplot(c_v1_2, aes(x = OvE_ClustIRRR1, y = OvE_ClustIRRR2)) +
+  geom_point() +
+  geom_smooth(method = lm , color = "blue", fill = "red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("ClustIRRR v1 vs ClustIRRR v2")
+
+# ClustIRRR v1 vs ClustIRRR v3
+c_v1_3 <- merge(e_v1, e_v3, by = "motif", all = TRUE)
+c_v1_3[is.na(c_v1_3)] <- -1
+g_gl1_gl3 <- ggplot(c_v1_3, aes(x = OvE_ClustIRRR1, y = OvE_ClustIRRR3)) +
+  geom_point() +
+  geom_smooth(method = lm , color = "blue", fill = "red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("ClustIRRR v1 vs ClustIRRR v3")
+
+# ClustIRRR v2 vs ClustIRRR v3
+c_v2_3 <- merge(e_v2, e_v3, by = "motif", all = TRUE)
+c_v2_3[is.na(c_v2_3)] <- -1
+g_gl2_gl3 <- ggplot(c_v2_3, aes(x = OvE_ClustIRRR2, y = OvE_ClustIRRR3)) +
+  geom_point() +
+  geom_smooth(method = lm , color = "blue", fill = "red") +
+  geom_abline(linewidth = 0.5, color = "gray") +
+  ggtitle("ClustIRRR v2 vs ClustIRRR v3")
+
+( g_v1 + g_v2 + g_v3 ) / (g_gl1_gl2 + g_gl1_gl3 + g_gl2_gl3)
+
+
+rm(e_v1, e_v2, e_v3, e_v1_i, e_v2_i, e_v3_i,
+   g_v1, g_v2, g_v3, g_gl1_gl2, g_gl1_gl3, g_gl2_gl3,
+   c_v1_2, c_v1_3, c_v1_i, c_v2_3, c_v2_i, c_v3_i)
+
+``` 
+## OVE interpretation: v1 seems to finds less, v3 finds more than v2 when groundtruth_expansion is inserted, as expected
+
+
+## Check if implanted motifs are found (v1 does not find any motif)
+
+
+```{r local_motifs}
+
+# inspect local motif enrichment results
+knitr::kable(out_v1$clust$CDR3b$local$m[
+  out_v1$clust$CDR3b$local$m$pass==TRUE,])
+
+knitr::kable(out_v2$clust$CDR3b$local$m[
+  out_v2$clust$CDR3b$local$m$pass==TRUE,])
+
+knitr::kable(out_v3$clust$CDR3b$local$m[
+  out_v3$clust$CDR3b$local$m$pass==TRUE,])
+
+```
+
+## V1 local motifs for reference
+
+
+```{r local_motifs_v1}
+
+# inspect local motif enrichment results
+knitr::kable(out_v1$clust$CDR3b$local$m)
+
+
+```
+
+## Check if implanted motifs are found in identical input (should be empty)
+
+
+```{r local_motifs_i}
+
+# inspect local motif enrichment results for identical input (should be empty)
+knitr::kable(out_v1_i$clust$CDR3b$local$m[
+  out_v1_i$clust$CDR3b$local$m$pass==TRUE,])
+
+knitr::kable(out_v2_i$clust$CDR3b$local$m[
+  out_v2_i$clust$CDR3b$local$m$pass==TRUE,])
+
+knitr::kable(out_v3_i$clust$CDR3b$local$m[
+  out_v3_i$clust$CDR3b$local$m$pass==TRUE,])
+
+
+# # inspect which CDR3bs are globally similar
+# knitr::kable(head(out_v1$clust$CDR3b$global))
+# knitr::kable(head(out_v2$clust$CDR3b$global))
+# knitr::kable(head(out_v3$clust$CDR3b$global))
+```
+
+## Check global clustering (all NULL right now?)
+
+
+```{r global_motifs}
+# inspect which CDR3bs are globally similar
+knitr::kable(out_v1$clust$CDR3b$global)
+knitr::kable(out_v2$clust$CDR3b$global)
+knitr::kable(out_v3$clust$CDR3b$global)
+
+knitr::kable(out_v1_i$clust$CDR3b$global)
+knitr::kable(out_v2_i$clust$CDR3b$global)
+knitr::kable(out_v3_i$clust$CDR3b$global)
+```
+
