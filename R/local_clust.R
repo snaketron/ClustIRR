@@ -275,7 +275,8 @@ get_motifs_v1 <- function(cdr3, cdr3_ref, B, ks, cores, min_o) {
         if(base::ncol(o) == 0) {
             return(NA)
         }
-        o <- o[1, o[1, ] >= min_o]
+        o <- o[1, ]
+        #o <- o[1, o[1, ] >= min_o]
         if(base::length(o) == 0) {
             return(NA)
         }
