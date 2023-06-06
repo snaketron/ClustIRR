@@ -38,7 +38,7 @@ get_localclust_v1 <- function(cdr3,
     me$pass <- FALSE
     me$pass[me$fdr <= control$local_max_fdr &
                 me$ove >= control$local_min_ove &
-                me$obs >= control$local_min_o] <- TRUE
+                me$f_sample >= control$local_min_o] <- TRUE
 
     # 5. find motifs in input CDR3
     lp <- get_motif_in_seq(cdr3 = cdr3,
