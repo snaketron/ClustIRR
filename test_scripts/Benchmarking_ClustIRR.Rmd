@@ -74,19 +74,22 @@ names(data_sample)[1] <- "CDR3b"
 
 ## Insert global sequence for global check
 
-# Random sequence for clonal expansion simulation
-cl_expansion <- c(CDR3b = "QQQQTTTQQQQTTT")
+# Random sequences for clonal expansion simulation
+cl_expansion1 <- c(CDR3b = "QQQQTTTQQQQTTT")
+cl_expansion2 <- c(CDR3b = "QQQQTTTQQQQTTQ")
 
-# Insert 1 time in data_ref for reference
-data_ref <- rbind(data_ref, cl_expansion) 
+# Insert 1 time in data_ref for reference (does not matter)
+data_ref <- rbind(data_ref, cl_expansion1) 
+data_ref <- rbind(data_ref, cl_expansion2) 
 
-# Insert 20 times in sample
+# Insert each 100 times in sample
 data_sample_exp <- data_sample
-for(i in 0:199) {
-  data_sample_exp <- rbind(data_sample_exp, cl_expansion)
+for(i in 0:99) {
+  data_sample_exp <- rbind(data_sample_exp, cl_expansion1)
+  data_sample_exp <- rbind(data_sample_exp, cl_expansion2)
 }
 
-rm(i, cl_expansion)
+rm(i, cl_expansion1, cl_expansion2)
 
 ```
 
@@ -350,8 +353,6 @@ knitr::kable(out_v3_i$clust$CDR3b$local$m[
 ```
 
 ## Check if implanted motifs are found
-#### v1 does not find any motif
-
 
 ```{r local_motifs}
 # inspect local motif enrichment results
@@ -366,16 +367,7 @@ knitr::kable(out_v3$clust$CDR3b$local$m[
 
 ```
 
-#### All V1 local motifs for reference
-
-
-```{r local_motifs_v1_a}
-# inspect local motif enrichment results
-knitr::kable(out_v1$clust$CDR3b$local$m)
-
-```
 ## Check what happens when clonal expansion is added
-#### v1 does not find any motif
 
 
 ```{r local_motifs_exp}
@@ -391,14 +383,6 @@ knitr::kable(out_v3_exp$clust$CDR3b$local$m[
 
 ```
 
-#### All V1 local motifs for reference with clonal expansion
-
-
-```{r local_motifs_v1}
-# inspect local motif enrichment results
-knitr::kable(out_v1_exp$clust$CDR3b$local$m)
-
-```
 
 ## Check global clustering
 
