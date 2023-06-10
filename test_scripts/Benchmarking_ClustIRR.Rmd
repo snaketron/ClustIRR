@@ -27,32 +27,32 @@ require(immuneSIM)
 # set seed for reproducibility
 set.seed(1234)
 
-## create artificial reference repertoire with immuneSIM package
-data_ref_full <- immuneSIM(
-  number_of_seqs = 10000,       # number of simulated sequences
-  species = "hs",               # species (human)
-  receptor = "tr",              # receptor-type (t-cells)
-  chain = "b",                  # chain type (beta chain)
-  max_cdr3_length = 100,        # max cdr3 length
-  min_cdr3_length = 6,          # min cdr3 length
-  user_defined_alpha = 1.1,     # clone count distribution
-  verbose = TRUE)               # output progress
-
-save(data_ref_full, file="immuneSIM/immuneSIM_10000seqs.RData")
+# ## create artificial reference repertoire with immuneSIM package
+# data_ref_full <- immuneSIM(
+#   number_of_seqs = 10000,       # number of simulated sequences
+#   species = "hs",               # species (human)
+#   receptor = "tr",              # receptor-type (t-cells)
+#   chain = "b",                  # chain type (beta chain)
+#   max_cdr3_length = 100,        # max cdr3 length
+#   min_cdr3_length = 6,          # min cdr3 length
+#   user_defined_alpha = 1.1,     # clone count distribution
+#   verbose = TRUE)               # output progress
+# 
+# save(data_ref_full, file="test_scripts/immuneSIM/immuneSIM_10000seqs.RData")
 
 # load precomputed repertoire
-load("immuneSIM/immuneSIM_10000seqs.RData")
+load("test_scripts/immuneSIM/immuneSIM_10000seqs.RData")
 
 ## insert motifs
 
 # # create n random motifs of length k
 # motifs <- list(
 #   "n" = 3,                      # 3 different motifs
-#   "k" = 3,                      # 3mer's
+#   "k" = 4,                      # 4mer's
 #   "freq" = c(0.05, 0.25, 0.4))  # occurrence probabilities
 
 # create motifs manually
-motifs <- data.frame(aa   = c("CCC","FFF"), # make this 4 letter
+motifs <- data.frame(aa   = c("YPGQ","VNTE"),
                     nt   = c("gccgcc","tttttt"),
                     freq = c(0.2,0.1))
 
@@ -89,7 +89,65 @@ for(i in 0:99) {
   data_sample_exp <- rbind(data_sample_exp, cl_expansion2)
 }
 
-rm(i, cl_expansion1, cl_expansion2)
+rm(i, cl_expansion1, cl_expansion2, data_sample_full, data_ref_full, motifs)
+
+```
+
+
+# OvE Ground truth
+
+```{r, ove_ground_truth}
+# Compute OvE for data
+# (f_sample / n_sample) / (f_ref / n_ref)
+# f_ref/sample = motifs of a certain length found in ref / sample
+# n_ref/sample = motif count of a certain length present in ref / sample
+
+# motif length
+motif_length <- 4
+
+# find motifs
+f_ref        <- stringdist::qgrams(data_ref$CDR3b,        q=motif_length)
+f_sample     <- stringdist::qgrams(data_sample$CDR3b,     q=motif_length)
+f_sample_exp <- stringdist::qgrams(data_sample_exp$CDR3b, q=motif_length)
+
+# convert to data frames
+f_ref        <- f_ref[1,]
+f_ref        <- data.frame(motif=names(f_ref), 
+                           f_ref=as.numeric(f_ref))
+f_sample     <- f_sample[1,]
+f_sample     <- data.frame(motif=names(f_sample), 
+                           f_sample=as.numeric(f_sample))
+f_sample_exp <- f_sample_exp[1,]
+f_sample_exp <- data.frame(motif=names(f_sample_exp), 
+                           f_sample_exp=as.numeric(f_sample_exp))
+
+# find motif counts
+f_ref$n_ref               <- sum(f_ref$f_ref)
+f_sample$n_sample         <- sum(f_sample$f_sample)
+f_sample_exp$n_sample_exp <- sum(f_sample_exp$f_sample_exp)
+
+# consolidate to motifs found in sample
+f_ref     <- f_ref[f_ref$motif %in% f_sample$motif, ]
+f_ref_exp <- f_ref[f_ref$motif %in% f_sample_exp$motif, ]
+motifs     <- merge(f_sample,     f_ref, by = "motif", all = TRUE)
+motifs_exp <- merge(f_sample_exp, f_ref, by = "motif", all = TRUE)
+
+motifs[is.na(motifs[, "f_ref"]), "f_ref"] <- 0
+motifs[is.na(motifs[, "n_ref"]), "n_ref"] <- motifs$n_ref[1]
+motifs_exp[is.na(motifs_exp[, "f_ref"]), "f_ref"] <- 0
+motifs_exp[is.na(motifs_exp[, "n_ref"]), "n_ref"] <- motifs_exp$n_ref[1]
+
+# compute ove
+motifs$ove <- (motifs$f_sample / motifs$n_sample) / 
+  (motifs$f_ref / motifs$n_ref)
+motifs_exp$ove_exp <- (motifs_exp$f_sample_exp / motifs_exp$n_sample_exp) / 
+  (motifs_exp$f_ref / motifs_exp$n_ref)
+
+gt_motifs <- merge(motifs, motifs_exp, 
+                   by = c("motif", "f_ref", "n_ref"), all = TRUE)
+
+rm(f_ref, f_ref_exp, f_sample, f_sample_exp, motifs, motifs_exp,
+   motif_length)
 
 ```
 
@@ -98,14 +156,12 @@ rm(i, cl_expansion1, cl_expansion2)
 # Prepare input parameters
 
 ```{r create_parameters}
-
+# v1 + v2 + v3
+ks <- 4
 cores <- parallel::detectCores()
 
-# v1 + v2 + v3
-ks <- c(2, 3, 4) # only 4
-B <- 1000
 control_input <- list(
-  B = B,
+  B = 1000,
   global_max_dist = 1,
   local_max_fdr = 0.05,
   local_min_ove = 2,
@@ -113,7 +169,6 @@ control_input <- list(
   trim_flank_aa = 3,
   low_mem = FALSE,
   global_pairs = NULL)
-
 
 ```
 
