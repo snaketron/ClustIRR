@@ -208,8 +208,7 @@ rm(cores, ks, control_input)
 # Compare results
 
 
-```{r compare_results}
-
+```{r compare_results, fig.width=8, fig.height=8, fig.align='center'}
 # one big table
 all_versions <- merge(out_v1$clust$CDR3b$local$m, 
                       out_v2$clust$CDR3b$local$m,
@@ -236,9 +235,9 @@ names(all_versions) <- c("motif", "v1_mean_f_ref", "v1_min_f_ref",
                          "gt_f_sample_exp", "gt_n_sample_exp", "gt_ove_exp")
 
 ggplot(all_versions) + 
-  geom_line(aes(x = gt_ove, y = v1_ove, color = "Version 1")) +
-  geom_line(aes(x = gt_ove, y = v2_ove, color = "Version 2")) +
-  geom_line(aes(x = gt_ove, y = v3_ove, color = "Version 3")) +
+  geom_line(aes(x = gt_ove_exp, y = v1_ove, color = "Version 1")) +
+  geom_line(aes(x = gt_ove_exp, y = v2_ove, color = "Version 2")) +
+  geom_line(aes(x = gt_ove_exp, y = v3_ove, color = "Version 3")) +
   scale_x_continuous(trans = 'log2') +
   scale_y_continuous(trans = 'log2') +
   scale_color_manual(values = c("red", "blue", "green"),
@@ -249,214 +248,31 @@ ggplot(all_versions) +
 
 
 
-## Identical vs different input & version OVE comparison
-
-```{r identical_vs_different_passed, fig.width=10, fig.height=10, fig.align='center'}
-
-## identical input
-
-# ClustIRR v1 test with identical input
-c_v1_i <- merge(e_v1, e_v1_i, by = "motif", all = TRUE)
-c_v1_i[is.na(c_v1_i)] <- 1e-1
-g_v1 <- ggplot(c_v1_i, aes(log(OvE_ClustIRR1_id), log(OvE_ClustIRR1))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 - identical versus different input")
-
-# ClustIRR v2 test with identical input
-c_v2_i <- merge(e_v2, e_v2_i, by = "motif", all = TRUE)
-c_v2_i[is.na(c_v2_i)] <- 1e-1
-g_v2 <- ggplot(c_v2_i, aes(log(OvE_ClustIRR2_id), log(OvE_ClustIRR2))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v2 - identical versus different input")
-
-# ClustIRR v3 test with identical input
-c_v3_i <- merge(e_v3, e_v3_i, by = "motif", all = TRUE)
-c_v3_i[is.na(c_v3_i)] <- 1e-1
-g_v3 <- ggplot(c_v3_i, aes(log(OvE_ClustIRR3_id), log(OvE_ClustIRR3))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v3 - identical versus different input")
-
-## motifs expanded
-
-# ClustIRR v1 vs ClustIRR v2
-c_v1_2 <- merge(e_v1, e_v2, by = "motif", all = TRUE)
-c_v1_2[is.na(c_v1_2)] <- 1e-1
-g_gl1_gl2 <- ggplot(c_v1_2, aes(log(OvE_ClustIRR1), log(OvE_ClustIRR2))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 vs v2 - motifs enriched")
-
-# ClustIRR v1 vs ClustIRR v3
-c_v1_3 <- merge(e_v1, e_v3, by = "motif", all = TRUE)
-c_v1_3[is.na(c_v1_3)] <- 1e-1
-g_gl1_gl3 <- ggplot(c_v1_3, aes(log(OvE_ClustIRR1), log(OvE_ClustIRR3))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 vs v3 - motifs enriched")
-
-# ClustIRR v2 vs ClustIRR v3
-c_v2_3 <- merge(e_v2, e_v3, by = "motif", all = TRUE)
-c_v2_3[is.na(c_v2_3)] <- 1e-1
-g_gl2_gl3 <- ggplot(c_v2_3, aes(log(OvE_ClustIRR2), log(OvE_ClustIRR3))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v2 vs v3 - motifs enriched")
-
-## motifs expanded + clonal expansion
-
-# ClustIRR v1 vs ClustIRR v2
-c_v1_2_exp <- merge(e_v1_exp, e_v2_exp, by = "motif", all = TRUE)
-c_v1_2_exp[is.na(c_v1_2_exp)] <- 1e-1
-g_gl1_gl2_exp <- ggplot(c_v1_2_exp, aes(log(OvE_ClustIRR1_exp), 
-                                        log(OvE_ClustIRR2_exp))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 vs v2 - motifs enriched + clonal expansion")
-
-# ClustIRR v1 vs ClustIRR v3
-c_v1_3_exp <- merge(e_v1_exp, e_v3_exp, by = "motif", all = TRUE)
-c_v1_3_exp[is.na(c_v1_3_exp)] <- 1e-1
-g_gl1_gl3_exp <- ggplot(c_v1_3_exp, aes(log(OvE_ClustIRR1_exp), 
-                                        log(OvE_ClustIRR3_exp))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 vs v3 - motifs enriched + clonal expansion")
-
-# ClustIRR v2 vs ClustIRR v3
-c_v2_3_exp <- merge(e_v2_exp, e_v3_exp, by = "motif", all = TRUE)
-c_v2_3_exp[is.na(c_v2_3_exp)] <- 1e-1
-g_gl2_gl3_exp <- ggplot(c_v2_3_exp, aes(log(OvE_ClustIRR2_exp), 
-                                        log(OvE_ClustIRR3_exp))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v2 vs v3 - motifs enriched + clonal expansion")
-
-( g_v1 + g_v2 + g_v3 ) / 
-  (g_gl1_gl2 + g_gl1_gl3 + g_gl2_gl3) / 
-  (g_gl1_gl2_exp + g_gl1_gl3_exp + g_gl2_gl3_exp)
-
-# 
-# rm(e_v1, e_v2, e_v3,
-#    e_v1_i, e_v2_i, e_v3_i,
-#    e_v1_exp, e_v2_exp, e_v3_exp,
-#    g_v1, g_v2, g_v3,
-#    g_gl1_gl2, g_gl1_gl3, g_gl2_gl3,
-#    g_gl1_gl2_exp, g_gl1_gl3_exp, g_gl2_gl3_exp,
-#    c_v1_i, c_v2_i, c_v3_i,
-#    c_v1_2, c_v1_3, c_v2_3,
-#    c_v1_2_exp, c_v1_3_exp, c_v2_3_exp)
-
-``` 
-
-
-## Check how many motifs are found in different versions
-
-```{r overall_motifs}
-# inspect local motif enrichment results
-cat("total motif count v1: \n")
-cat("identical input: ")
-nrow(out_v1_i$clust$CDR3b$local$m)
-cat("enriched motifs: ")
-nrow(out_v1$clust$CDR3b$local$m)
-cat("clonal expansion: ")
-nrow(out_v1_exp$clust$CDR3b$local$m)
-
-cat("\n")
-
-cat("total motif count v2: \n")
-cat("identical input: ")
-nrow(out_v2_i$clust$CDR3b$local$m)
-cat("enriched motifs: ")
-nrow(out_v2$clust$CDR3b$local$m)
-cat("clonal expansion: ")
-nrow(out_v2_exp$clust$CDR3b$local$m)
-
-cat("\n")
-
-cat("total motif count v3: \n")
-cat("identical input: ")
-nrow(out_v3_i$clust$CDR3b$local$m)
-cat("enriched motifs: ")
-nrow(out_v3$clust$CDR3b$local$m)
-cat("clonal expansion: ")
-nrow(out_v3_exp$clust$CDR3b$local$m)
-
-
-```
 
 ```{r found_motifs}
 # inspect local motif enrichment results
 cat("passed motif count v1: \n")
-cat("identical input: ")
-nrow(out_v1_i$clust$CDR3b$local$m[
-  out_v1_i$clust$CDR3b$local$m$pass==TRUE,])
-cat("enriched motifs: ")
 nrow(out_v1$clust$CDR3b$local$m[
   out_v1$clust$CDR3b$local$m$pass==TRUE,])
-cat("clonal expansion: ")
-nrow(out_v1_exp$clust$CDR3b$local$m[
-  out_v1_exp$clust$CDR3b$local$m$pass==TRUE,])
 
 cat("\n")
 
 # inspect local motif enrichment results
 cat("passed motif count v2: \n")
-cat("identical input: ")
-nrow(out_v2_i$clust$CDR3b$local$m[
-  out_v2_i$clust$CDR3b$local$m$pass==TRUE,])
-cat("enriched motifs: ")
 nrow(out_v2$clust$CDR3b$local$m[
   out_v2$clust$CDR3b$local$m$pass==TRUE,])
-cat("clonal expansion: ")
-nrow(out_v2_exp$clust$CDR3b$local$m[
-  out_v2_exp$clust$CDR3b$local$m$pass==TRUE,])
+
 
 cat("\n")
 
 # inspect local motif enrichment results
 cat("passed motif count v3: \n")
-cat("identical input: ")
-nrow(out_v3_i$clust$CDR3b$local$m[
-  out_v3_i$clust$CDR3b$local$m$pass==TRUE,])
-cat("enriched motifs: ")
 nrow(out_v3$clust$CDR3b$local$m[
   out_v3$clust$CDR3b$local$m$pass==TRUE,])
-cat("clonal expansion: ")
-nrow(out_v3_exp$clust$CDR3b$local$m[
-  out_v3_exp$clust$CDR3b$local$m$pass==TRUE,])
 
 
 ```
 
-
-## Check if implanted motifs are found in identical input 
-#### should be empty
-
-
-```{r local_motifs_i}
-# inspect local motif enrichment results for identical input
-
-cat("motif count v1: ")
-nrow(out_v1_i$clust$CDR3b$local$m[
-  out_v1_i$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v1_i$clust$CDR3b$local$m[
-  out_v1_i$clust$CDR3b$local$m$pass==TRUE,])
-
-cat("motif count v2: ")
-nrow(out_v2_i$clust$CDR3b$local$m[
-  out_v2_i$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v2_i$clust$CDR3b$local$m[
-  out_v2_i$clust$CDR3b$local$m$pass==TRUE,])
-
-cat("motif count v3: ")
-nrow(out_v3_i$clust$CDR3b$local$m[
-  out_v3_i$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v3_i$clust$CDR3b$local$m[
-  out_v3_i$clust$CDR3b$local$m$pass==TRUE,])
-```
 
 ## Check if implanted motifs are found
 
@@ -481,50 +297,3 @@ knitr::kable(out_v3$clust$CDR3b$local$m[
   out_v3$clust$CDR3b$local$m$pass==TRUE,])
 
 ```
-
-## Check what happens when clonal expansion is added
-
-
-```{r local_motifs_exp}
-# inspect local motif enrichment results
-cat("motif count v1: ")
-nrow(out_v1_exp$clust$CDR3b$local$m[
-  out_v1_exp$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v1_exp$clust$CDR3b$local$m[
-  out_v1_exp$clust$CDR3b$local$m$pass==TRUE,])
-
-cat("motif count v2: ")
-nrow(out_v2_exp$clust$CDR3b$local$m[
-  out_v2_exp$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v2_exp$clust$CDR3b$local$m[
-  out_v2_exp$clust$CDR3b$local$m$pass==TRUE,])
-
-cat("motif count v3: ")
-nrow(out_v3_exp$clust$CDR3b$local$m[
-  out_v3_exp$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v3_exp$clust$CDR3b$local$m[
-  out_v3_exp$clust$CDR3b$local$m$pass==TRUE,])
-
-```
-
-
-## Check global clustering
-#### Same algorithm for all versions, so only one per check sufficient
-
-
-```{r global_motifs}
-# inspect which CDR3bs are globally similar
-cat("global count identical: ")
-nrow(out_v3_i$clust$CDR3b$global)
-knitr::kable(out_v3_i$clust$CDR3b$global)
-
-cat("global count motif implanted: ")
-nrow(out_v3$clust$CDR3b$global)
-knitr::kable(out_v3$clust$CDR3b$global)
-
-cat("global count motif implanted + clone expansion: ")
-nrow(out_v3_exp$clust$CDR3b$global)
-knitr::kable(out_v3_exp$clust$CDR3b$global)
-
-```
-
