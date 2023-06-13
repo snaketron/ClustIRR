@@ -38,10 +38,10 @@ set.seed(1234)
 #   user_defined_alpha = 1.1,     # clone count distribution
 #   verbose = TRUE)               # output progress
 # 
-# save(data_ref_full, file="test_scripts/immuneSIM/immuneSIM_10000seqs.RData")
+# save(data_ref_full, file="immuneSIM/immuneSIM_10000seqs.RData")
 
 # load precomputed repertoire
-load("test_scripts/immuneSIM/immuneSIM_10000seqs.RData")
+load("immuneSIM/immuneSIM_10000seqs.RData")
 
 ## insert motifs
 
@@ -79,8 +79,8 @@ cl_expansion1 <- c(CDR3b = "QQQQTTTQQQQTTT")
 cl_expansion2 <- c(CDR3b = "QQQQTTTQQQQTTQ")
 
 # Insert 1 time in data_ref for reference (does not matter)
-data_ref <- rbind(data_ref, cl_expansion1) 
-data_ref <- rbind(data_ref, cl_expansion2) 
+data_ref <- rbind(data_ref, cl_expansion1)
+data_ref <- rbind(data_ref, cl_expansion2)
 
 # Insert each 100 times in sample
 data_sample_exp <- data_sample
@@ -88,6 +88,7 @@ for(i in 0:99) {
   data_sample_exp <- rbind(data_sample_exp, cl_expansion1)
   data_sample_exp <- rbind(data_sample_exp, cl_expansion2)
 }
+
 
 rm(i, cl_expansion1, cl_expansion2, data_sample_full, data_ref_full, motifs)
 
@@ -149,6 +150,7 @@ gt_motifs <- merge(motifs, motifs_exp,
 rm(f_ref, f_ref_exp, f_sample, f_sample_exp, motifs, motifs_exp,
    motif_length)
 
+
 ```
 
 
@@ -166,7 +168,7 @@ control_input <- list(
   local_max_fdr = 0.05,
   local_min_ove = 2,
   local_min_o = 3,
-  trim_flank_aa = 3,
+  trim_flank_aa = 0,
   low_mem = FALSE,
   global_pairs = NULL)
 
@@ -175,38 +177,15 @@ control_input <- list(
 # Cluster with ClustIRR versions
 
 ```{r run_clustirr}
-# data_sample with inserted motifs but without clonal expansion
-out_v1 <- cluster_irr(data_sample = data_sample,
-                data_ref = data_ref,
-                ks = ks,
-                cores = cores,
-                version = 1,
-                control = control_input)
-
-out_v2 <- cluster_irr(data_sample = data_sample,
-                data_ref = data_ref,
-                ks = ks,
-                cores = cores,
-                version = 2,
-                control = control_input)
-
-
-out_v3 <- cluster_irr(data_sample = data_sample,
-                data_ref = data_ref,
-                ks = ks,
-                cores = cores,
-                version = 3,
-                control = control_input)
-
 # data_sample with inserted motifs and clonal expansion
-out_v1_exp <- cluster_irr(data_sample = data_sample_exp,
+out_v1 <- cluster_irr(data_sample = data_sample_exp,
                 data_ref = data_ref,
                 ks = ks,
                 cores = cores,
                 version = 1,
                 control = control_input)
 
-out_v2_exp <- cluster_irr(data_sample = data_sample_exp,
+out_v2 <- cluster_irr(data_sample = data_sample_exp,
                 data_ref = data_ref,
                 ks = ks,
                 cores = cores,
@@ -214,226 +193,60 @@ out_v2_exp <- cluster_irr(data_sample = data_sample_exp,
                 control = control_input)
 
 
-out_v3_exp <- cluster_irr(data_sample = data_sample_exp,
+out_v3 <- cluster_irr(data_sample = data_sample_exp,
                 data_ref = data_ref,
                 ks = ks,
                 cores = cores,
                 version = 3,
                 control = control_input)
 
-# put in the same data for ref and sample
-out_v1_i <- cluster_irr(data_sample = data_sample,
-                  data_ref = data_sample,
-                  ks = ks,
-                  cores = cores,
-                  version = 1,
-                  control = control_input)
-
-out_v2_i <- cluster_irr(data_sample = data_sample,
-                  data_ref = data_sample,
-                  ks = ks,
-                  cores = cores,
-                  version = 2,
-                  control = control_input)
-
-
-out_v3_i <- cluster_irr(data_sample = data_sample,
-                  data_ref = data_sample,
-                  ks = ks,
-                  cores = cores,
-                  version = 3,
-                  control = control_input)
-
-rm(B, cores, ks, control_input)
+rm(cores, ks, control_input)
 
 ```
 
 
 # Compare results
 
+
 ```{r compare_results}
 
-# prepare for visualization
-e_v1 <- out_v1$clust$CDR3b$local$m
-#e_v1$ove[is.infinite(e_v1$ove)] <- 9999999
-colnames(e_v1)[which(colnames(e_v1) == 'ove')]     <- 'OvE_ClustIRR1'
-e_v1_i <- out_v1_i$clust$CDR3b$local$m
-#e_v1_i$ove[is.infinite(e_v1_i$ove)] <- 9999999
-colnames(e_v1_i)[which(colnames(e_v1_i) == 'ove')] <- 'OvE_ClustIRR1_id'
-e_v1_exp <- out_v1_exp$clust$CDR3b$local$m
-#e_v1_exp$ove[is.infinite(e_v1_exp$ove)] <- 9999999
-colnames(e_v1_exp)[which(colnames(e_v1_exp) == 'ove')] <- 'OvE_ClustIRR1_exp'
+# one big table
+all_versions <- merge(out_v1$clust$CDR3b$local$m, 
+                      out_v2$clust$CDR3b$local$m,
+                      by = "motif", all = TRUE)
+all_versions <- merge(all_versions, 
+                      out_v3$clust$CDR3b$local$m,
+                      by = "motif", all = TRUE)
 
-e_v2 <- out_v2$clust$CDR3b$local$m
-#e_v2$ove[is.infinite(e_v2$ove)] <- 9999999
-colnames(e_v2)[which(colnames(e_v2) == 'ove')]     <- 'OvE_ClustIRR2'
-e_v2_i <- out_v2_i$clust$CDR3b$local$m
-#e_v2_i$ove[is.infinite(e_v2_i$ove)] <- 9999999
-colnames(e_v2_i)[which(colnames(e_v2_i) == 'ove')] <- 'OvE_ClustIRR2_id'
-e_v2_exp <- out_v2_exp$clust$CDR3b$local$m
-#e_v2_exp$ove[is.infinite(e_v2_exp$ove)] <- 9999999
-colnames(e_v2_exp)[which(colnames(e_v2_exp) == 'ove')] <- 'OvE_ClustIRR2_exp'
+all_versions <- merge(all_versions, 
+                      gt_motifs,
+                      by = "motif", all = TRUE)
 
-e_v3 <- out_v3$clust$CDR3b$local$m
-#e_v3$ove[is.infinite(e_v3$ove)] <- 9999999
-colnames(e_v3)[which(colnames(e_v3) == 'ove')]     <- 'OvE_ClustIRR3'
-e_v3_i <- out_v3_i$clust$CDR3b$local$m
-#e_v3_i$ove[is.infinite(e_v3_i$ove)] <- 9999999
-colnames(e_v3_i)[which(colnames(e_v3_i) == 'ove')] <- 'OvE_ClustIRR3_id'
-e_v3_exp <- out_v3_exp$clust$CDR3b$local$m
-#e_v3_exp$ove[is.infinite(e_v3_exp$ove)] <- 9999999
-colnames(e_v3_exp)[which(colnames(e_v3_exp) == 'ove')] <- 'OvE_ClustIRR3_exp'
+names(all_versions) <- c("motif", "v1_mean_f_ref", "v1_min_f_ref", 
+                         "v1_max_f_ref", "v1_f_sample", "v1_ove", 
+                         "v1_p", "v1_fdr", "v1_k", "v1_pass",
+                         "v2_f_sample", "v2_n_sample", "v2_f_ref", 
+                         "v2_n_ref", "v2_k", "v2_ove", "v2_ove_ci_l95", 
+                         "v2_ove_ci_h95", "v2_p_value", "v2_fdr", "v2_pass",
+                         "v3_f_sample", "v3_n_sample", "v3_f_ref", 
+                         "v3_n_ref", "v3_k", "v3_ove", "v3_ove_ci_l95", 
+                         "v3_ove_ci_h95", "v3_p_value", "v3_fdr", "v3_pass",
+                         "gt_f_ref", "gt_n_ref", 
+                         "gt_f_sample", "gt_n_sample", "gt_ove",
+                         "gt_f_sample_exp", "gt_n_sample_exp", "gt_ove_exp")
 
-
-```
-
-
-## Identical vs different input & version OVE comparison
-
-```{r identical_vs_different, fig.width=10, fig.height=10, fig.align='center'}
-
-## identical input
-
-# ClustIRR v1 test with identical input
-c_v1_i <- merge(e_v1, e_v1_i, by = "motif", all = TRUE)
-c_v1_i[is.na(c_v1_i)] <- 1e-1
-g_v1 <- ggplot(c_v1_i, aes(log(OvE_ClustIRR1_id), log(OvE_ClustIRR1))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 - identical versus different input")
-
-# ClustIRR v2 test with identical input
-c_v2_i <- merge(e_v2, e_v2_i, by = "motif", all = TRUE)
-c_v2_i[is.na(c_v2_i)] <- 1e-1
-g_v2 <- ggplot(c_v2_i, aes(log(OvE_ClustIRR2_id), log(OvE_ClustIRR2))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v2 - identical versus different input")
-
-# ClustIRR v3 test with identical input
-c_v3_i <- merge(e_v3, e_v3_i, by = "motif", all = TRUE)
-c_v3_i[is.na(c_v3_i)] <- 1e-1
-g_v3 <- ggplot(c_v3_i, aes(log(OvE_ClustIRR3_id), log(OvE_ClustIRR3))) +
-  geom_point() +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v3 - identical versus different input")
-
-## motifs expanded
-
-# ClustIRR v1 vs ClustIRR v2
-c_v1_2 <- merge(e_v1, e_v2, by = "motif", all = TRUE)
-c_v1_2[is.na(c_v1_2)] <- 1e-1
-g_gl1_gl2 <- ggplot(c_v1_2, aes(log(OvE_ClustIRR1), log(OvE_ClustIRR2))) +
-  geom_point() +
-  #geom_smooth(method = lm , color = "blue", fill = "red") +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 vs v2 - motifs enriched")
-
-# ClustIRR v1 vs ClustIRR v3
-c_v1_3 <- merge(e_v1, e_v3, by = "motif", all = TRUE)
-c_v1_3[is.na(c_v1_3)] <- 1e-1
-g_gl1_gl3 <- ggplot(c_v1_3, aes(log(OvE_ClustIRR1), log(OvE_ClustIRR3))) +
-  geom_point() +
-  #geom_smooth(method = lm , color = "blue", fill = "red") +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 vs v3 - motifs enriched")
-
-# ClustIRR v2 vs ClustIRR v3
-c_v2_3 <- merge(e_v2, e_v3, by = "motif", all = TRUE)
-c_v2_3[is.na(c_v2_3)] <- 1e-1
-g_gl2_gl3 <- ggplot(c_v2_3, aes(log(OvE_ClustIRR2), log(OvE_ClustIRR3))) +
-  geom_point() +
-  #geom_smooth(method = lm , color = "blue", fill = "red") +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v2 vs v3 - motifs enriched")
-
-## motifs expanded + clonal expansion
-
-# ClustIRR v1 vs ClustIRR v2
-c_v1_2_exp <- merge(e_v1_exp, e_v2_exp, by = "motif", all = TRUE)
-c_v1_2_exp[is.na(c_v1_2_exp)] <- 1e-1
-g_gl1_gl2_exp <- ggplot(c_v1_2_exp, aes(log(OvE_ClustIRR1_exp), 
-                                        log(OvE_ClustIRR2_exp))) +
-  geom_point() +
-  #geom_smooth(method = lm , color = "blue", fill = "red") +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 vs v2 - motifs enriched + clonal expansion")
-
-# ClustIRR v1 vs ClustIRR v3
-c_v1_3_exp <- merge(e_v1_exp, e_v3_exp, by = "motif", all = TRUE)
-c_v1_3_exp[is.na(c_v1_3_exp)] <- 1e-1
-g_gl1_gl3_exp <- ggplot(c_v1_3_exp, aes(log(OvE_ClustIRR1_exp), 
-                                        log(OvE_ClustIRR3_exp))) +
-  geom_point() +
-  #geom_smooth(method = lm , color = "blue", fill = "red") +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v1 vs v3 - motifs enriched + clonal expansion")
-
-# ClustIRR v2 vs ClustIRR v3
-c_v2_3_exp <- merge(e_v2_exp, e_v3_exp, by = "motif", all = TRUE)
-c_v2_3_exp[is.na(c_v2_3_exp)] <- 1e-1
-g_gl2_gl3_exp <- ggplot(c_v2_3_exp, aes(log(OvE_ClustIRR2_exp), 
-                                        log(OvE_ClustIRR3_exp))) +
-  geom_point() +
-  #geom_smooth(method = lm , color = "blue", fill = "red") +
-  geom_abline(linewidth = 0.5, color = "gray") +
-  ggtitle("v2 vs v3 - motifs enriched + clonal expansion")
-
-( g_v1 + g_v2 + g_v3 ) / 
-  (g_gl1_gl2 + g_gl1_gl3 + g_gl2_gl3) / 
-  (g_gl1_gl2_exp + g_gl1_gl3_exp + g_gl2_gl3_exp)
-
-
-rm(e_v1, e_v2, e_v3,
-   e_v1_i, e_v2_i, e_v3_i,
-   e_v1_exp, e_v2_exp, e_v3_exp,
-   g_v1, g_v2, g_v3,
-   g_gl1_gl2, g_gl1_gl3, g_gl2_gl3,
-   g_gl1_gl2_exp, g_gl1_gl3_exp, g_gl2_gl3_exp,
-   c_v1_i, c_v2_i, c_v3_i,
-   c_v1_2, c_v1_3, c_v2_3,
-   c_v1_2_exp, c_v1_3_exp, c_v2_3_exp)
-
-``` 
-
-# Compare results only for passed motifs
-
-
-```{r compare_results_passed}
-
-# prepare for visualization
-e_v1 <- out_v1$clust$CDR3b$local$m[
-  out_v1$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v1)[which(colnames(e_v1) == 'ove')]     <- 'OvE_ClustIRR1'
-e_v1_i <- out_v1_i$clust$CDR3b$local$m[
-  out_v1_i$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v1_i)[which(colnames(e_v1_i) == 'ove')] <- 'OvE_ClustIRR1_id'
-e_v1_exp <- out_v1_exp$clust$CDR3b$local$m[
-  out_v1_exp$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v1_exp)[which(colnames(e_v1_exp) == 'ove')] <- 'OvE_ClustIRR1_exp'
-
-e_v2 <- out_v2$clust$CDR3b$local$m[
-  out_v2$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v2)[which(colnames(e_v2) == 'ove')]     <- 'OvE_ClustIRR2'
-e_v2_i <- out_v2_i$clust$CDR3b$local$m[
-  out_v2_i$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v2_i)[which(colnames(e_v2_i) == 'ove')] <- 'OvE_ClustIRR2_id'
-e_v2_exp <- out_v2_exp$clust$CDR3b$local$m[
-  out_v2_exp$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v2_exp)[which(colnames(e_v2_exp) == 'ove')] <- 'OvE_ClustIRR2_exp'
-
-e_v3 <- out_v3$clust$CDR3b$local$m[
-  out_v3$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v3)[which(colnames(e_v3) == 'ove')]     <- 'OvE_ClustIRR3'
-e_v3_i <- out_v3_i$clust$CDR3b$local$m[
-  out_v3_i$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v3_i)[which(colnames(e_v3_i) == 'ove')] <- 'OvE_ClustIRR3_id'
-e_v3_exp <- out_v3_exp$clust$CDR3b$local$m[
-  out_v3_exp$clust$CDR3b$local$m$pass==TRUE,]
-colnames(e_v3_exp)[which(colnames(e_v3_exp) == 'ove')] <- 'OvE_ClustIRR3_exp'
-
+ggplot(all_versions) + 
+  geom_line(aes(x = gt_ove, y = v1_ove, color = "Version 1")) +
+  geom_line(aes(x = gt_ove, y = v2_ove, color = "Version 2")) +
+  geom_line(aes(x = gt_ove, y = v3_ove, color = "Version 3")) +
+  scale_x_continuous(trans = 'log2') +
+  scale_y_continuous(trans = 'log2') +
+  scale_color_manual(values = c("red", "blue", "green"),
+                     labels = c("Version 1", "Version 2", "Version 3")) +
+  labs(x = "Groundtruth", y = "ClustIRR", title = "OvE comparison")
 
 ```
+
 
 
 ## Identical vs different input & version OVE comparison
