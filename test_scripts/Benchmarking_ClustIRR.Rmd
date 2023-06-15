@@ -130,25 +130,24 @@ f_sample_exp$n_sample_exp <- sum(f_sample_exp$f_sample_exp)
 # consolidate to motifs found in sample
 f_ref     <- f_ref[f_ref$motif %in% f_sample$motif, ]
 f_ref_exp <- f_ref[f_ref$motif %in% f_sample_exp$motif, ]
-motifs     <- merge(f_sample,     f_ref, by = "motif", all = TRUE)
-motifs_exp <- merge(f_sample_exp, f_ref, by = "motif", all = TRUE)
+gt_motifs     <- merge(f_sample,     f_ref, by = "motif", all = TRUE)
+gt_motifs_exp <- merge(f_sample_exp, f_ref, by = "motif", all = TRUE)
 
-motifs[is.na(motifs[, "f_ref"]), "f_ref"] <- 0
-motifs[is.na(motifs[, "n_ref"]), "n_ref"] <- motifs$n_ref[1]
-motifs_exp[is.na(motifs_exp[, "f_ref"]), "f_ref"] <- 0
-motifs_exp[is.na(motifs_exp[, "n_ref"]), "n_ref"] <- motifs_exp$n_ref[1]
+gt_motifs[is.na(gt_motifs[, "f_ref"]), "f_ref"] <- 0
+gt_motifs[is.na(gt_motifs[, "n_ref"]), "n_ref"] <- gt_motifs$n_ref[1]
+gt_motifs_exp[is.na(gt_motifs_exp[, "f_ref"]), "f_ref"] <- 0
+gt_motifs_exp[is.na(gt_motifs_exp[, "n_ref"]), "n_ref"] <- 
+  gt_motifs_exp$n_ref[1]
 
 # compute ove
-motifs$ove <- (motifs$f_sample / motifs$n_sample) / 
-  (motifs$f_ref / motifs$n_ref)
-motifs_exp$ove_exp <- (motifs_exp$f_sample_exp / motifs_exp$n_sample_exp) / 
-  (motifs_exp$f_ref / motifs_exp$n_ref)
+gt_motifs$ove <- (gt_motifs$f_sample / gt_motifs$n_sample) / 
+  (gt_motifs$f_ref / gt_motifs$n_ref)
+gt_motifs_exp$ove_exp <- (gt_motifs_exp$f_sample_exp / 
+                            gt_motifs_exp$n_sample_exp) / 
+  (gt_motifs_exp$f_ref / gt_motifs_exp$n_ref)
 
-gt_motifs <- merge(motifs, motifs_exp, 
-                   by = c("motif", "f_ref", "n_ref"), all = TRUE)
 
-rm(f_ref, f_ref_exp, f_sample, f_sample_exp, motifs, motifs_exp,
-   motif_length)
+rm(f_ref, f_ref_exp, f_sample, f_sample_exp)
 
 
 ```
@@ -159,7 +158,7 @@ rm(f_ref, f_ref_exp, f_sample, f_sample_exp, motifs, motifs_exp,
 
 ```{r create_parameters}
 # v1 + v2 + v3
-ks <- 4
+ks <- motif_length
 cores <- parallel::detectCores()
 
 control_input <- list(
@@ -177,15 +176,15 @@ control_input <- list(
 # Cluster with ClustIRR versions
 
 ```{r run_clustirr}
-# data_sample with inserted motifs and clonal expansion
-out_v1 <- cluster_irr(data_sample = data_sample_exp,
+# data_sample with inserted motifs but without clonal expansion
+out_v1 <- cluster_irr(data_sample = data_sample,
                 data_ref = data_ref,
                 ks = ks,
                 cores = cores,
                 version = 1,
                 control = control_input)
 
-out_v2 <- cluster_irr(data_sample = data_sample_exp,
+out_v2 <- cluster_irr(data_sample = data_sample,
                 data_ref = data_ref,
                 ks = ks,
                 cores = cores,
@@ -193,7 +192,30 @@ out_v2 <- cluster_irr(data_sample = data_sample_exp,
                 control = control_input)
 
 
-out_v3 <- cluster_irr(data_sample = data_sample_exp,
+out_v3 <- cluster_irr(data_sample = data_sample,
+                data_ref = data_ref,
+                ks = ks,
+                cores = cores,
+                version = 3,
+                control = control_input)
+
+# data_sample with inserted motifs and clonal expansion
+out_v1_exp <- cluster_irr(data_sample = data_sample_exp,
+                data_ref = data_ref,
+                ks = ks,
+                cores = cores,
+                version = 1,
+                control = control_input)
+
+out_v2_exp <- cluster_irr(data_sample = data_sample_exp,
+                data_ref = data_ref,
+                ks = ks,
+                cores = cores,
+                version = 2,
+                control = control_input)
+
+
+out_v3_exp <- cluster_irr(data_sample = data_sample_exp,
                 data_ref = data_ref,
                 ks = ks,
                 cores = cores,
@@ -230,19 +252,61 @@ names(all_versions) <- c("motif", "v1_mean_f_ref", "v1_min_f_ref",
                          "v3_f_sample", "v3_n_sample", "v3_f_ref", 
                          "v3_n_ref", "v3_k", "v3_ove", "v3_ove_ci_l95", 
                          "v3_ove_ci_h95", "v3_p_value", "v3_fdr", "v3_pass",
-                         "gt_f_ref", "gt_n_ref", 
-                         "gt_f_sample", "gt_n_sample", "gt_ove",
-                         "gt_f_sample_exp", "gt_n_sample_exp", "gt_ove_exp")
+                         "gt_f_sample", "gt_n_sample","gt_f_ref", "gt_n_ref", 
+                         "gt_ove")
 
+# the same for expanded versions
+# one big table
+all_versions_exp <- merge(out_v1_exp$clust$CDR3b$local$m, 
+                      out_v2_exp$clust$CDR3b$local$m,
+                      by = "motif", all = TRUE)
+all_versions_exp <- merge(all_versions_exp, 
+                      out_v3_exp$clust$CDR3b$local$m,
+                      by = "motif", all = TRUE)
+
+all_versions_exp <- merge(all_versions_exp, 
+                      gt_motifs_exp,
+                      by = "motif", all = TRUE)
+
+names(all_versions_exp) <- c("motif", "v1_mean_f_ref", "v1_min_f_ref", 
+                         "v1_max_f_ref", "v1_f_sample", "v1_ove", 
+                         "v1_p", "v1_fdr", "v1_k", "v1_pass",
+                         "v2_f_sample", "v2_n_sample", "v2_f_ref", 
+                         "v2_n_ref", "v2_k", "v2_ove", "v2_ove_ci_l95", 
+                         "v2_ove_ci_h95", "v2_p_value", "v2_fdr", "v2_pass",
+                         "v3_f_sample", "v3_n_sample", "v3_f_ref", 
+                         "v3_n_ref", "v3_k", "v3_ove", "v3_ove_ci_l95", 
+                         "v3_ove_ci_h95", "v3_p_value", "v3_fdr", "v3_pass",
+                         "gt_f_sample_exp", "gt_n_sample_exp", 
+                         "gt_f_ref", "gt_n_ref", "gt_ove_exp")
+
+all_versions$delta_v2 <- (all_versions$v2_ove - all_versions$gt_ove)
+all_versions$delta_v3 <- (all_versions$v3_ove - all_versions$gt_ove)
+
+# Visualize OvE between versions and ground truth
 ggplot(all_versions) + 
+  geom_line(aes(x = gt_ove, y = v1_ove, color = "Version 1")) +
+  geom_line(aes(x = gt_ove, y = v2_ove, color = "Version 2")) +
+  geom_line(aes(x = gt_ove, y = v3_ove, color = "Version 3")) +
+  scale_x_continuous(trans = 'log2') +
+  scale_y_continuous(trans = 'log2') +
+  geom_abline(intercept = 0, slope = 1) +
+  scale_color_manual(values = c("red", "blue", "green"),
+                     labels = c("Version 1", "Version 2", "Version 3")) +
+  labs(x = "Groundtruth", y = "ClustIRR", title = "OvE comparison")
+
+# Visualize OvE between versions and ground truth wwith clonal expansion
+ggplot(all_versions_exp) + 
   geom_line(aes(x = gt_ove_exp, y = v1_ove, color = "Version 1")) +
   geom_line(aes(x = gt_ove_exp, y = v2_ove, color = "Version 2")) +
   geom_line(aes(x = gt_ove_exp, y = v3_ove, color = "Version 3")) +
   scale_x_continuous(trans = 'log2') +
   scale_y_continuous(trans = 'log2') +
+  geom_abline(intercept = 0, slope = 1) +
   scale_color_manual(values = c("red", "blue", "green"),
                      labels = c("Version 1", "Version 2", "Version 3")) +
-  labs(x = "Groundtruth", y = "ClustIRR", title = "OvE comparison")
+  labs(x = "Groundtruth", y = "ClustIRR", title = "OvE comparison with exp")
+
 
 ```
 
@@ -250,25 +314,24 @@ ggplot(all_versions) +
 
 
 ```{r found_motifs}
-# inspect local motif enrichment results
-cat("passed motif count v1: \n")
-nrow(out_v1$clust$CDR3b$local$m[
-  out_v1$clust$CDR3b$local$m$pass==TRUE,])
 
-cat("\n")
+m_v1 <- out_v1$clust$CDR3b$local$m[out_v1$clust$CDR3b$local$m$pass==TRUE,]
+m_v2 <- out_v2$clust$CDR3b$local$m[out_v2$clust$CDR3b$local$m$pass==TRUE,]
+m_v3 <- out_v3$clust$CDR3b$local$m[out_v3$clust$CDR3b$local$m$pass==TRUE,]
 
-# inspect local motif enrichment results
-cat("passed motif count v2: \n")
-nrow(out_v2$clust$CDR3b$local$m[
-  out_v2$clust$CDR3b$local$m$pass==TRUE,])
+m_v1_exp <- out_v1_exp$clust$CDR3b$local$m[
+  out_v1_exp$clust$CDR3b$local$m$pass==TRUE,]
+m_v2_exp <- out_v2_exp$clust$CDR3b$local$m[
+  out_v2_exp$clust$CDR3b$local$m$pass==TRUE,]
+m_v3_exp <- out_v3_exp$clust$CDR3b$local$m[
+  out_v3_exp$clust$CDR3b$local$m$pass==TRUE,]
 
+df <- data.frame(version = c("1","2","3"),
+                 found_motifs = c(nrow(m_v1), nrow(m_v2), nrow(m_v3)),
+                 found_motifs_clexp = c(nrow(m_v1_exp), nrow(m_v2_exp), 
+                                      nrow(m_v3_exp)))
 
-cat("\n")
-
-# inspect local motif enrichment results
-cat("passed motif count v3: \n")
-nrow(out_v3$clust$CDR3b$local$m[
-  out_v3$clust$CDR3b$local$m$pass==TRUE,])
+knitr::kable(df)
 
 
 ```
@@ -278,22 +341,19 @@ nrow(out_v3$clust$CDR3b$local$m[
 
 ```{r local_motifs}
 # inspect local motif enrichment results
-cat("motif count v1: ")
-nrow(out_v1$clust$CDR3b$local$m[
-  out_v1$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v1$clust$CDR3b$local$m[
-  out_v1$clust$CDR3b$local$m$pass==TRUE,])
-
-cat("motif count v2: ")
-nrow(out_v2$clust$CDR3b$local$m[
-  out_v2$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v2$clust$CDR3b$local$m[
-  out_v2$clust$CDR3b$local$m$pass==TRUE,])
-
-cat("motif count v3: ")
-nrow(out_v3$clust$CDR3b$local$m[
-  out_v3$clust$CDR3b$local$m$pass==TRUE,])
-knitr::kable(out_v3$clust$CDR3b$local$m[
-  out_v3$clust$CDR3b$local$m$pass==TRUE,])
+# nrow(out_v1$clust$CDR3b$local$m[
+#   out_v1$clust$CDR3b$local$m$pass==TRUE,])
+# knitr::kable(out_v1$clust$CDR3b$local$m[
+#   out_v1$clust$CDR3b$local$m$pass==TRUE,])
+# 
+# nrow(out_v2$clust$CDR3b$local$m[
+#   out_v2$clust$CDR3b$local$m$pass==TRUE,])
+# knitr::kable(out_v2$clust$CDR3b$local$m[
+#   out_v2$clust$CDR3b$local$m$pass==TRUE,])
+# 
+# nrow(out_v3$clust$CDR3b$local$m[
+#   out_v3$clust$CDR3b$local$m$pass==TRUE,])
+# knitr::kable(out_v3$clust$CDR3b$local$m[
+#   out_v3$clust$CDR3b$local$m$pass==TRUE,])
 
 ```
