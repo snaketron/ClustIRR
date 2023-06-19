@@ -132,11 +132,42 @@ two sublists ('clust'= clustering results; and 'inputs'= original user inputs):
 
 \description{
 This algorithm finds groups of TCRs that likely have similar peptide:MHC
-specificity. This is done with two strategies: local motif clustering and
-global CDR3 sequence clustering.
+specificity. We use two strategies: a) local motif clustering and b) global
+CDR3 sequence clustering.
 
-SK: here we need two paragraphs of how each algorithm (local vs. global)
-works, as well as *key* differences between version=1, 2 and 3
+\bold{Local motif clustering procedure:}
+
+1. CDR3 processing steps: get set of non-redundant CDR3s (only in version = 1
+   or 2); trim CDR3 ends
+
+2. For motif \eqn{i} compute:
+\itemize{
+  \item motif frequencies in sample (\eqn{f_{sample}}) and reference
+  (\eqn{f_{ref}})
+  \item total number of motifs in sample (\eqn{n_{sample}}) and reference
+  (\eqn{n_{ref}})
+  \item ratio of observed vs. expected motif counts: \eqn{OvE} =
+  \eqn{(f_{sample}/n_{sample})/(f_{ref}/n_{ref}})
+  \item probability \eqn{p_i} of finding the observed or a larger \eqn{OvE}
+  for motif \eqn{i} given that the null hypothesis is true computed with
+  the Fisher's exact test. In version=1 \eqn{p_i} is computed by bootstrapping.
+}
+
+3. classify motif \eqn{i} as pass=TRUE if the motif passes all filters
+   specified in user-provided control list, and otherwise as pass=FALSE.
+
+
+\bold{Global CDR3 sequence clustering:}
+
+ClustIRR provides two approaches for global clustering:
+
+1. For equal-length CDR3 sequences \eqn{i} and \eqn{j} compute their Hamming
+distance \eqn{d_{ij}}. Sequences with \eqn{d_{ij}\leq} \code{global_max_dist}
+(user-defined input) are considered globally similar.
+
+2. The user is allowed to provide a matrix of globally similar CDR3 sequences
+   computed by a complementary approach (e.g. tcrdist). In such as case, step
+   1. is not executed.
 }
 
 \examples{
