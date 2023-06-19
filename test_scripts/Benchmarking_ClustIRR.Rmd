@@ -22,6 +22,27 @@ require(immuneSIM)
 
 # Create input data
 
+```{r}
+data("CD8")
+
+# data sample d0: 500 unique CDR3s drawn from reference database (CD8) with 10^4 CDR3s
+set.seed(seed = 1234)
+d_0 <- data.frame(CDR3b = CD8[sample(x = 1:nrow(CD8), size = 500, replace = FALSE),])
+
+
+# data sample d1: enrich motif 'RQWW'
+d_1 <- d_0
+substr(x = d_1$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+
+
+# data sample d2: clonal expansion
+d_2 <- d_0
+clone <- data.frame(CDR3b = rep(x = "CATSRAAKPDGLAALETQYF", times = 30))
+d_2 <- rbind(d_2, clone)
+```
+
+
+
 ```{r create_input_data}
 
 # set seed for reproducibility
@@ -42,6 +63,8 @@ set.seed(1234)
 
 # load precomputed repertoire
 load("immuneSIM/immuneSIM_10000seqs.RData")
+
+data("CD8")
 
 ## insert motifs
 
