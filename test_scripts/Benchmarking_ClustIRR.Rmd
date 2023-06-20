@@ -35,7 +35,7 @@ substr(x = d_1$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
 
 # data sample d2: clonal expansion with two similar clones of hdist 1
-d_2 <- d_0
+d_2 <- d_1
 clone_a <- data.frame(CDR3b = rep(x = "CATSRAAKPDGLAALETQYF", times = 15))
 clone_b <- data.frame(CDR3b = rep(x = "CATSRAAKPDGLAALSTQYF", times = 15))
 d_2 <- rbind(d_2, clone_a)
@@ -106,8 +106,6 @@ rm(f_ref, f_ref_e, f_sample, f_sample_e)
 
 
 ```
-
-
 
 # Prepare input parameters
 
@@ -401,8 +399,8 @@ knitr::kable(out_v3_e$clust$CDR3b$global, caption="with clonal expansion")
 rm(df, fr_v1, fr_v1e, fr_v2, fr_v2e, fr_v3, fr_v3e,
    fs_v1, fs_v1e, fs_v2, fs_v2e, fs_v3, fs_v3e,
    m_v1, m_v2, m_v3, m_v1_e, m_v2_e, m_v3_e,
-   nr_v1, nr_v1e, nr_v2, nr_v2e, nr_v3, nr_v3e,
-   ns_v1, ns_v1e, ns_v2, ns_v2e, ns_v3, ns_v3e,
+   nr_v2, nr_v2e, nr_v3, nr_v3e,
+   ns_v2, ns_v2e, ns_v3, ns_v3e,
    ove_v1, ove_v1e, ove_v2, ove_v2e, ove_v3, ove_v3e)
 
 ```
