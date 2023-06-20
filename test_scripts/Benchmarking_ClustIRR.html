@@ -429,7 +429,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>control_input <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">B =</span> <span class="dv">1000</span>,</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">global_max_dist =</span> <span class="dv">1</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_max_fdr =</span> <span class="fl">0.05</span>,</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_max_fdr =</span> <span class="fl">0.01</span>,</span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_min_ove =</span> <span class="dv">2</span>,</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_min_o =</span> <span class="dv">3</span>,</span>
 <span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">trim_flank_aa =</span> <span class="dv">0</span>,</span>
@@ -480,9 +480,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>                <span class="at">ks =</span> ks,</span>
 <span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                <span class="at">cores =</span> cores,</span>
 <span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>                <span class="at">version =</span> <span class="dv">3</span>,</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> control_input)</span>
-<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(cores, ks, control_input)</span></code></pre></div>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> control_input)</span></code></pre></div>
 </div>
 <div id="prepare-results" class="section level1">
 <h1>Prepare results</h1>
@@ -734,18 +732,18 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <tbody>
 <tr class="odd">
 <td align="left">1</td>
-<td align="right">14</td>
-<td align="right">13</td>
+<td align="right">11</td>
+<td align="right">10</td>
 </tr>
 <tr class="even">
 <td align="left">2</td>
-<td align="right">7</td>
-<td align="right">7</td>
+<td align="right">2</td>
+<td align="right">2</td>
 </tr>
 <tr class="odd">
 <td align="left">3</td>
-<td align="right">7</td>
-<td align="right">26</td>
+<td align="right">2</td>
+<td align="right">21</td>
 </tr>
 </tbody>
 </table>
@@ -753,20 +751,20 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <h2>Check if implanted motif “RQWW” is found</h2>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect local motif enrichment results</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v1, <span class="at">caption=</span><span class="st">&quot;v1&quot;</span>)</span></code></pre></div>
-<table style="width:100%;">
+<table>
 <caption>v1</caption>
 <colgroup>
-<col width="5%" />
+<col width="6%" />
+<col width="14%" />
 <col width="13%" />
-<col width="11%" />
-<col width="11%" />
-<col width="10%" />
-<col width="10%" />
-<col width="7%" />
-<col width="7%" />
-<col width="11%" />
-<col width="3%" />
+<col width="13%" />
+<col width="12%" />
+<col width="12%" />
+<col width="4%" />
+<col width="8%" />
 <col width="5%" />
+<col width="4%" />
+<col width="6%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -785,184 +783,145 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">WYEQ</td>
-<td align="right">0.134</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">22.38806</td>
-<td align="right">0.001</td>
-<td align="left">WYEQ</td>
-<td align="right">0.0472923</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
 <td align="left">VGGV</td>
 <td align="right">0.138</td>
 <td align="right">0</td>
 <td align="right">2</td>
 <td align="right">3</td>
 <td align="right">21.73913</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">VGGV</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">SSLE</td>
 <td align="right">4.977</td>
 <td align="right">0</td>
 <td align="right">13</td>
 <td align="right">14</td>
 <td align="right">2.81294</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">SSLE</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">RQWW</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">20</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">RQWW</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">SERQ</td>
 <td align="right">0.054</td>
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="right">3</td>
 <td align="right">55.55556</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">SERQ</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">QWWG</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">QWWG</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">QWWP</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">QWWP</td>
-<td align="right">0.0000000</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">RGDN</td>
-<td align="right">0.315</td>
 <td align="right">0</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">9.52381</td>
-<td align="right">0.001</td>
-<td align="left">RGDN</td>
-<td align="right">0.0472923</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">RAQE</td>
-<td align="right">0.238</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">12.60504</td>
-<td align="right">0.001</td>
-<td align="left">RAQE</td>
-<td align="right">0.0472923</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
 <td align="left">QWWN</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">QWWN</td>
-<td align="right">0.0000000</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">QRQW</td>
-<td align="right">0.000</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">0.000</td>
-<td align="left">QRQW</td>
-<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
+<td align="left">QRQW</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">0</td>
+<td align="left">QRQW</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
 <td align="left">IRQW</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">IRQW</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">GNSN</td>
 <td align="right">0.221</td>
 <td align="right">0</td>
 <td align="right">2</td>
 <td align="right">3</td>
 <td align="right">13.57466</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">GNSN</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">ERQW</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">ERQW</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -982,7 +941,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <col width="4%" />
 <col width="11%" />
 <col width="11%" />
-<col width="10%" />
+<col width="8%" />
 <col width="10%" />
 <col width="5%" />
 </colgroup>
@@ -1005,51 +964,6 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">574</td>
-<td align="left">ERQW</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.63605</td>
-<td align="right">Inf</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0477737</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">1200</td>
-<td align="left">IRQW</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.63605</td>
-<td align="right">Inf</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0477737</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">1772</td>
-<td align="left">QRQW</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.63605</td>
-<td align="right">Inf</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0477737</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
 <td align="left">1795</td>
 <td align="left">QWWG</td>
 <td align="right">4</td>
@@ -1060,41 +974,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">17.90037</td>
 <td align="right">Inf</td>
-<td align="right">0.0000052</td>
+<td align="right">5.2e-06</td>
 <td align="right">0.0079795</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
-<td align="left">1798</td>
-<td align="left">QWWN</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.63605</td>
-<td align="right">Inf</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0477737</td>
-<td align="left">TRUE</td>
-</tr>
 <tr class="even">
-<td align="left">1799</td>
-<td align="left">QWWP</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.63605</td>
-<td align="right">Inf</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0477737</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
 <td align="left">1947</td>
 <td align="left">RQWW</td>
 <td align="right">20</td>
@@ -1105,7 +989,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">123.59139</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1125,7 +1009,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <col width="4%" />
 <col width="11%" />
 <col width="11%" />
-<col width="10%" />
+<col width="8%" />
 <col width="10%" />
 <col width="5%" />
 </colgroup>
@@ -1148,51 +1032,6 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">574</td>
-<td align="left">ERQW</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.64732</td>
-<td align="right">Inf</td>
-<td align="right">0.0001085</td>
-<td align="right">0.0476417</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">1200</td>
-<td align="left">IRQW</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.64732</td>
-<td align="right">Inf</td>
-<td align="right">0.0001085</td>
-<td align="right">0.0476417</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">1772</td>
-<td align="left">QRQW</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.64732</td>
-<td align="right">Inf</td>
-<td align="right">0.0001085</td>
-<td align="right">0.0476417</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
 <td align="left">1795</td>
 <td align="left">QWWG</td>
 <td align="right">4</td>
@@ -1203,41 +1042,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">17.91788</td>
 <td align="right">Inf</td>
-<td align="right">0.0000052</td>
+<td align="right">5.2e-06</td>
 <td align="right">0.0079501</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
-<td align="left">1798</td>
-<td align="left">QWWN</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.64732</td>
-<td align="right">Inf</td>
-<td align="right">0.0001085</td>
-<td align="right">0.0476417</td>
-<td align="left">TRUE</td>
-</tr>
 <tr class="even">
-<td align="left">1799</td>
-<td align="left">QWWP</td>
-<td align="right">3</td>
-<td align="right">5847</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.64732</td>
-<td align="right">Inf</td>
-<td align="right">0.0001085</td>
-<td align="right">0.0476417</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
 <td align="left">1947</td>
 <td align="left">RQWW</td>
 <td align="right">20</td>
@@ -1248,27 +1057,27 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">123.71726</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
 <div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v1_e, <span class="at">caption=</span><span class="st">&quot;v1 exp&quot;</span>)</span></code></pre></div>
-<table>
+<table style="width:100%;">
 <caption>v1 exp</caption>
 <colgroup>
-<col width="5%" />
-<col width="12%" />
+<col width="6%" />
+<col width="14%" />
+<col width="13%" />
+<col width="13%" />
 <col width="11%" />
-<col width="11%" />
-<col width="10%" />
-<col width="11%" />
-<col width="7%" />
-<col width="7%" />
-<col width="11%" />
+<col width="13%" />
 <col width="3%" />
+<col width="7%" />
 <col width="5%" />
+<col width="3%" />
+<col width="6%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1293,35 +1102,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">2</td>
 <td align="right">3</td>
 <td align="right">23.255814</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">WYEQ</td>
-<td align="right">0.0000000</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">WDTQ</td>
-<td align="right">0.261</td>
 <td align="right">0</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">11.494253</td>
-<td align="right">0.001</td>
-<td align="left">WDTQ</td>
-<td align="right">0.0447536</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">VGGV</td>
-<td align="right">0.155</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">19.354839</td>
-<td align="right">0.001</td>
-<td align="left">VGGV</td>
-<td align="right">0.0447536</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1332,9 +1115,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">13</td>
 <td align="right">14</td>
 <td align="right">2.888981</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">SSLE</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1345,9 +1128,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">0</td>
 <td align="right">20</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">RQWW</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1358,9 +1141,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">1</td>
 <td align="right">3</td>
 <td align="right">65.217391</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">SERQ</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1371,9 +1154,9 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">0</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">QWWG</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1384,74 +1167,61 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">QWWP</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">RAQE</td>
-<td align="right">0.291</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">10.309278</td>
-<td align="right">0.001</td>
-<td align="left">RAQE</td>
-<td align="right">0.0447536</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
 <td align="left">QWWN</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">QWWN</td>
-<td align="right">0.0000000</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">QRQW</td>
-<td align="right">0.000</td>
 <td align="right">0</td>
-<td align="right">0</td>
-<td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">0.000</td>
-<td align="left">QRQW</td>
-<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">IRQW</td>
+<td align="left">QRQW</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
-<td align="left">IRQW</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
+<td align="left">QRQW</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
+<td align="left">IRQW</td>
+<td align="right">0.000</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">0</td>
+<td align="left">IRQW</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
 <td align="left">ERQW</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0.000</td>
+<td align="right">0</td>
 <td align="left">ERQW</td>
-<td align="right">0.0000000</td>
+<td align="right">0</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1471,7 +1241,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <col width="4%" />
 <col width="11%" />
 <col width="11%" />
-<col width="10%" />
+<col width="8%" />
 <col width="10%" />
 <col width="5%" />
 </colgroup>
@@ -1494,51 +1264,6 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">581</td>
-<td align="left">ERQW</td>
-<td align="right">3</td>
-<td align="right">5881</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.56877</td>
-<td align="right">Inf</td>
-<td align="right">0.0001106</td>
-<td align="right">0.0487928</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">1208</td>
-<td align="left">IRQW</td>
-<td align="right">3</td>
-<td align="right">5881</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.56877</td>
-<td align="right">Inf</td>
-<td align="right">0.0001106</td>
-<td align="right">0.0487928</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">1783</td>
-<td align="left">QRQW</td>
-<td align="right">3</td>
-<td align="right">5881</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.56877</td>
-<td align="right">Inf</td>
-<td align="right">0.0001106</td>
-<td align="right">0.0487928</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
 <td align="left">1806</td>
 <td align="left">QWWG</td>
 <td align="right">4</td>
@@ -1549,41 +1274,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">17.79606</td>
 <td align="right">Inf</td>
-<td align="right">0.0000053</td>
+<td align="right">5.3e-06</td>
 <td align="right">0.0081949</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
-<td align="left">1809</td>
-<td align="left">QWWN</td>
-<td align="right">3</td>
-<td align="right">5881</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.56877</td>
-<td align="right">Inf</td>
-<td align="right">0.0001106</td>
-<td align="right">0.0487928</td>
-<td align="left">TRUE</td>
-</tr>
 <tr class="even">
-<td align="left">1810</td>
-<td align="left">QWWP</td>
-<td align="right">3</td>
-<td align="right">5881</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">11.56877</td>
-<td align="right">Inf</td>
-<td align="right">0.0001106</td>
-<td align="right">0.0487928</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
 <td align="left">1959</td>
 <td align="left">RQWW</td>
 <td align="right">20</td>
@@ -1594,14 +1289,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">122.83625</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
 <div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v3_e, <span class="at">caption=</span><span class="st">&quot;v3 exp&quot;</span>)</span></code></pre></div>
-<table style="width:100%;">
+<table>
 <caption>v3 exp</caption>
 <colgroup>
 <col width="4%" />
@@ -1614,7 +1309,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <col width="10%" />
 <col width="10%" />
 <col width="10%" />
-<col width="9%" />
+<col width="7%" />
 <col width="9%" />
 <col width="4%" />
 </colgroup>
@@ -1647,7 +1342,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">561.864250</td>
 <td align="right">109.330924</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1662,7 +1357,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">276.118542</td>
 <td align="right">51.300137</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1677,7 +1372,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">83.307345</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1692,7 +1387,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">175.780300</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1707,7 +1402,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">55.174833</td>
 <td align="right">21.985837</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1722,7 +1417,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">276.118542</td>
 <td align="right">51.300137</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1737,7 +1432,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">3.814538</td>
 <td align="right">2.752213</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1752,7 +1447,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">2.557451</td>
 <td align="right">1.916074</td>
 <td align="right">Inf</td>
-<td align="right">0.0000002</td>
+<td align="right">2.0e-07</td>
 <td align="right">0.0000323</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1767,26 +1462,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">79.205129</td>
 <td align="right">38.098590</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">581</td>
-<td align="left">ERQW</td>
-<td align="right">3</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">10.710951</td>
-<td align="right">Inf</td>
-<td align="right">0.0001377</td>
-<td align="right">0.0163550</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
 <td align="left">881</td>
 <td align="left">GLAA</td>
 <td align="right">30</td>
@@ -1797,23 +1477,8 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">27.651696</td>
 <td align="right">16.600438</td>
 <td align="right">Inf</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">1208</td>
-<td align="left">IRQW</td>
-<td align="right">3</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">10.710951</td>
-<td align="right">Inf</td>
-<td align="right">0.0001377</td>
-<td align="right">0.0163550</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
@@ -1827,7 +1492,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">175.780300</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1842,7 +1507,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">276.771604</td>
 <td align="right">81.682357</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1857,7 +1522,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">9.498620</td>
 <td align="right">5.387319</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000001</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1872,7 +1537,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">294.551425</td>
 <td align="right">55.130153</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1887,26 +1552,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">276.771604</td>
 <td align="right">81.682357</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">1783</td>
-<td align="left">QRQW</td>
-<td align="right">3</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">10.710951</td>
-<td align="right">Inf</td>
-<td align="right">0.0001377</td>
-<td align="right">0.0163550</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
 <td align="left">1806</td>
 <td align="left">QWWG</td>
 <td align="right">4</td>
@@ -1917,41 +1567,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">16.479057</td>
 <td align="right">Inf</td>
-<td align="right">0.0000071</td>
+<td align="right">7.1e-06</td>
 <td align="right">0.0010453</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="even">
-<td align="left">1809</td>
-<td align="left">QWWN</td>
-<td align="right">3</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">10.710951</td>
-<td align="right">Inf</td>
-<td align="right">0.0001377</td>
-<td align="right">0.0163550</td>
-<td align="left">TRUE</td>
-</tr>
 <tr class="odd">
-<td align="left">1810</td>
-<td align="left">QWWP</td>
-<td align="right">3</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">10.710951</td>
-<td align="right">Inf</td>
-<td align="right">0.0001377</td>
-<td align="right">0.0163550</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
 <td align="left">1818</td>
 <td align="left">RAAK</td>
 <td align="right">30</td>
@@ -1962,11 +1582,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">175.780300</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">1959</td>
 <td align="left">RQWW</td>
 <td align="right">20</td>
@@ -1977,11 +1597,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">Inf</td>
 <td align="right">114.306859</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">2357</td>
 <td align="left">SRAA</td>
 <td align="right">30</td>
@@ -1992,11 +1612,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">184.463456</td>
 <td align="right">65.994589</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">2550</td>
 <td align="left">STQY</td>
 <td align="right">16</td>
@@ -2007,11 +1627,11 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">32.720583</td>
 <td align="right">15.419128</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">2761</td>
 <td align="left">TSRA</td>
 <td align="right">30</td>
@@ -2022,9 +1642,309 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">39.525252</td>
 <td align="right">22.361516</td>
 <td align="right">Inf</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="compare-p-values-and-fdr" class="section level2">
+<h2>Compare p-values and fdr</h2>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fdr        &lt;= local_max_fdr</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ove        &gt;= local_min_ove</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># f_sample   &gt;= local_min_o</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># thresholds</span></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">local_max_fdr =</span> control_input<span class="sc">$</span>local_max_fdr,</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">local_min_ove =</span> control_input<span class="sc">$</span>local_min_ove,</span>
+<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">local_min_o   =</span> control_input<span class="sc">$</span>local_min_o)</span>
+<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df, <span class="at">caption=</span><span class="st">&quot;selection thresholds&quot;</span>)</span></code></pre></div>
+<table>
+<caption>selection thresholds</caption>
+<thead>
+<tr class="header">
+<th align="right">local_max_fdr</th>
+<th align="right">local_min_ove</th>
+<th align="right">local_min_o</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="right">0.01</td>
+<td align="right">2</td>
+<td align="right">3</td>
+</tr>
+</tbody>
+</table>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># subset selected motifs</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> res[(res<span class="sc">$</span>pass_v1<span class="sc">==</span><span class="cn">TRUE</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>pass_v1) ) <span class="sc">|</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>           (res<span class="sc">$</span>pass_v2<span class="sc">==</span><span class="cn">TRUE</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>pass_v2) ) <span class="sc">|</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>           (res<span class="sc">$</span>pass_v3<span class="sc">==</span><span class="cn">TRUE</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>pass_v3) ),</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>         <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;pass_v1&quot;</span>, <span class="st">&quot;pass_v2&quot;</span>, <span class="st">&quot;pass_v3&quot;</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;p_v1&quot;</span>, <span class="st">&quot;p_value_v2&quot;</span>, <span class="st">&quot;p_value_v3&quot;</span>, </span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;fdr_v1&quot;</span>, <span class="st">&quot;fdr_v2&quot;</span>,   <span class="st">&quot;fdr_v3&quot;</span>, </span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>           <span class="co">#&quot;mean_f_ref_v1&quot;, &quot;f_ref_v2&quot;, &quot;f_ref_v3&quot;, </span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;f_sample_v1&quot;</span>, <span class="st">&quot;f_sample_v2&quot;</span>, <span class="st">&quot;f_sample_v3&quot;</span>,</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;ove_v1&quot;</span>, <span class="st">&quot;ove_v2&quot;</span>, <span class="st">&quot;ove_v3&quot;</span>)]</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># sort</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> r[<span class="fu">order</span>(<span class="sc">-</span>r<span class="sc">$</span>pass_v2),]</span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect local motif enrichment results</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(r, <span class="at">caption=</span><span class="st">&quot;p-value / fdr comparison&quot;</span>)</span></code></pre></div>
+<table>
+<caption>p-value / fdr comparison</caption>
+<colgroup>
+<col width="3%" />
+<col width="3%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="3%" />
+<col width="7%" />
+<col width="7%" />
+<col width="4%" />
+<col width="6%" />
+<col width="6%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="5%" />
+<col width="6%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">motif</th>
+<th align="left">pass_v1</th>
+<th align="left">pass_v2</th>
+<th align="left">pass_v3</th>
+<th align="right">p_v1</th>
+<th align="right">p_value_v2</th>
+<th align="right">p_value_v3</th>
+<th align="right">fdr_v1</th>
+<th align="right">fdr_v2</th>
+<th align="right">fdr_v3</th>
+<th align="right">f_sample_v1</th>
+<th align="right">f_sample_v2</th>
+<th align="right">f_sample_v3</th>
+<th align="right">ove_v1</th>
+<th align="right">ove_v2</th>
+<th align="right">ove_v3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1806</td>
+<td align="left">QWWG</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="right">0</td>
+<td align="right">0.0000052</td>
+<td align="right">0.0000052</td>
+<td align="right">0</td>
+<td align="right">0.0079795</td>
+<td align="right">0.0079501</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">1959</td>
+<td align="left">RQWW</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="right">0</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">581</td>
+<td align="left">ERQW</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0001088</td>
+<td align="right">0.0001085</td>
+<td align="right">0</td>
+<td align="right">0.0477737</td>
+<td align="right">0.0476417</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">921</td>
+<td align="left">GNSN</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0050819</td>
+<td align="right">0.0050687</td>
+<td align="right">0</td>
+<td align="right">0.3181375</td>
+<td align="right">0.3183412</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">13.57466</td>
+<td align="right">11.970143</td>
+<td align="right">11.981882</td>
+</tr>
+<tr class="odd">
+<td align="left">1208</td>
+<td align="left">IRQW</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0001088</td>
+<td align="right">0.0001085</td>
+<td align="right">0</td>
+<td align="right">0.0477737</td>
+<td align="right">0.0476417</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">1783</td>
+<td align="left">QRQW</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0001088</td>
+<td align="right">0.0001085</td>
+<td align="right">0</td>
+<td align="right">0.0477737</td>
+<td align="right">0.0476417</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">1809</td>
+<td align="left">QWWN</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0001088</td>
+<td align="right">0.0001085</td>
+<td align="right">0</td>
+<td align="right">0.0477737</td>
+<td align="right">0.0476417</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">1810</td>
+<td align="left">QWWP</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0001088</td>
+<td align="right">0.0001085</td>
+<td align="right">0</td>
+<td align="right">0.0477737</td>
+<td align="right">0.0476417</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">2082</td>
+<td align="left">SERQ</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0004196</td>
+<td align="right">0.0004184</td>
+<td align="right">0</td>
+<td align="right">0.1612233</td>
+<td align="right">0.1607833</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">55.55556</td>
+<td align="right">59.810401</td>
+<td align="right">59.868223</td>
+</tr>
+<tr class="even">
+<td align="left">2446</td>
+<td align="left">SSLE</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0010114</td>
+<td align="right">0.0010025</td>
+<td align="right">0</td>
+<td align="right">0.3181375</td>
+<td align="right">0.3183412</td>
+<td align="right">14</td>
+<td align="right">14</td>
+<td align="right">14</td>
+<td align="right">2.81294</td>
+<td align="right">2.824742</td>
+<td align="right">2.827482</td>
+</tr>
+<tr class="odd">
+<td align="left">2856</td>
+<td align="left">VGGV</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0</td>
+<td align="right">0.0019509</td>
+<td align="right">0.0019458</td>
+<td align="right">0</td>
+<td align="right">0.3181375</td>
+<td align="right">0.3183412</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">21.73913</td>
+<td align="right">19.952581</td>
+<td align="right">19.971869</td>
 </tr>
 </tbody>
 </table>
@@ -2032,14 +1952,14 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <div id="check-if-global-sequences-catsraakpdglaaletqyf-and-catsraakpdglaalstqyf-are-found" class="section level2">
 <h2>Check if global sequences “CATSRAAKPDGLAALETQYF” and
 “CATSRAAKPDGLAALSTQYF” are found</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect which CDR3bs are globally similar</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">version =</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;2&quot;</span>,<span class="st">&quot;3&quot;</span>),</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">no_exp =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(m_v1), <span class="fu">nrow</span>(m_v2), <span class="fu">nrow</span>(m_v3)),</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">exp =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(m_v1_e), <span class="fu">nrow</span>(m_v2_e), </span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">nrow</span>(m_v3_e)))</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(out_v3<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>global, <span class="at">caption=</span><span class="st">&quot;without clonal expansion&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect which CDR3bs are globally similar</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">version =</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;2&quot;</span>,<span class="st">&quot;3&quot;</span>),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">no_exp =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(m_v1), <span class="fu">nrow</span>(m_v2), <span class="fu">nrow</span>(m_v3)),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">exp =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(m_v1_e), <span class="fu">nrow</span>(m_v2_e), </span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">nrow</span>(m_v3_e)))</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(out_v3<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>global, <span class="at">caption=</span><span class="st">&quot;without clonal expansion&quot;</span>)</span></code></pre></div>
 <table>
 <caption>without clonal expansion</caption>
 <tbody>
@@ -2057,7 +1977,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(out_v3_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>global, <span class="at">caption=</span><span class="st">&quot;with clonal expansion&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(out_v3_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>global, <span class="at">caption=</span><span class="st">&quot;with clonal expansion&quot;</span>)</span></code></pre></div>
 <table>
 <caption>with clonal expansion</caption>
 <tbody>
@@ -2079,13 +1999,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(df, fr_v1, fr_v1e, fr_v2, fr_v2e, fr_v3, fr_v3e,</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>   fs_v1, fs_v1e, fs_v2, fs_v2e, fs_v3, fs_v3e,</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>   m_v1, m_v2, m_v3, m_v1_e, m_v2_e, m_v3_e,</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>   nr_v2, nr_v2e, nr_v3, nr_v3e,</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>   ns_v2, ns_v2e, ns_v3, ns_v3e,</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>   ove_v1, ove_v1e, ove_v2, ove_v2e, ove_v3, ove_v3e)</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(df, fr_v1, fr_v1e, fr_v2, fr_v2e, fr_v3, fr_v3e,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>   fs_v1, fs_v1e, fs_v2, fs_v2e, fs_v3, fs_v3e,</span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>   m_v1, m_v2, m_v3, m_v1_e, m_v2_e, m_v3_e,</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>   nr_v2, nr_v2e, nr_v3, nr_v3e,</span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>   ns_v2, ns_v2e, ns_v3, ns_v3e,</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>   ove_v1, ove_v1e, ove_v2, ove_v2e, ove_v3, ove_v3e)</span></code></pre></div>
 </div>
 </div>
 
