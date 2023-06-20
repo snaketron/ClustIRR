@@ -23,6 +23,7 @@ require(patchwork)
 
 ```{r}
 data("CD8")
+CD8 <- data.frame(CDR3b = unique(CD8$CDR3b)) # simplification for benchmarking -> non-redundant sequences in reference
 
 # data sample d0: 500 unique CDR3s drawn from reference database (CD8) with 10^4 CDR3s
 set.seed(seed = 1234)
