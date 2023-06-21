@@ -1,5 +1,5 @@
 ---
-title: "Benchmarking"
+title: "ClustIRR Benchmarking"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{benchmarking}
@@ -18,12 +18,30 @@ require(patchwork)
 
 ```
 
+# TL;DR
 
+## Confirmed
+
+- Motifs successfully detected accross all versions
+- Global similarites also found (same algorithm for all versions)
+- OvE values for found motifs of v1/2 roughly comparable to ground truth
+
+## To be investigated
+
+- p-value of v1 seems to be lacking accuracy compared to v2/3
+  - leads to fdr of version 1 being lower than v2/3
+  - leads to v1 detecting more motifs than v2/3 (effectively lowered detection threshold)
+- OvE values for found motifs of v3 partially different than ground truth
+  - high value in v3 (i.e. 275.762251) against infinity in gt
+  - maybe caused by FET implementation vs formula used for GT
+
+
+```{r create_input, echo=FALSE}
 # Create input data
 
-```{r}
 data("CD8")
-CD8 <- data.frame(CDR3b = unique(CD8$CDR3b)) # simplification for benchmarking -> non-redundant sequences in reference
+CD8 <- data.frame(CDR3b = unique(CD8$CDR3b)) 
+# simplification for benchmarking -> non-redundant sequences in reference
 
 # data sample d0: 500 unique CDR3s drawn from reference database (CD8) with 10^4 CDR3s
 set.seed(seed = 1234)
@@ -43,7 +61,6 @@ d_2 <- rbind(d_2, clone_a)
 d_2 <- rbind(d_2, clone_b)
 
 data_ref      <- CD8
-data_ref_u    <- unique(CD8)
 data_sample   <- d_1
 #data_sample_u <- unique(d_1) # already unique
 data_sample_e <- d_2
@@ -53,106 +70,17 @@ rm(CD8, clone_a, clone_b, d_0, d_1, d_2)
 
 ```
 
-
-# OvE Ground truth
-
-```{r, ove_ground_truth}
-# Compute OvE for data
-# (f_sample / n_sample) / (f_ref / n_ref)
-# f_ref/sample = motifs of a certain length found in ref / sample
-# n_ref/sample = motif count of a certain length present in ref / sample
-
-# motif length
-motif_length <- 4
-
-# find motifs
-f_ref        <- stringdist::qgrams(data_ref$CDR3b,        q=motif_length)
-f_ref_u      <- stringdist::qgrams(data_ref_u$CDR3b,      q=motif_length)
-f_sample     <- stringdist::qgrams(data_sample$CDR3b,     q=motif_length)
-f_sample_e   <- stringdist::qgrams(data_sample_e$CDR3b,   q=motif_length)
-f_sample_e_u <- stringdist::qgrams(data_sample_e_u$CDR3b, q=motif_length)
-
-
-# convert to data frames
-f_ref        <- f_ref[1,]
-f_ref        <- data.frame(motif=names(f_ref), 
-                           f_ref=as.numeric(f_ref))
-f_ref_u      <- f_ref_u[1,]
-f_ref_u      <- data.frame(motif=names(f_ref_u), 
-                           f_ref_u=as.numeric(f_ref_u))
-f_sample     <- f_sample[1,]
-f_sample     <- data.frame(motif=names(f_sample), 
-                           f_sample=as.numeric(f_sample))
-f_sample_e   <- f_sample_e[1,]
-f_sample_e   <- data.frame(motif=names(f_sample_e), 
-                           f_sample_e_u=as.numeric(f_sample_e))
-f_sample_e_u <- f_sample_e_u[1,]
-f_sample_e_u <- data.frame(motif=names(f_sample_e_u), 
-                           f_sample_e_u=as.numeric(f_sample_e_u))
-
-# find motif counts
-f_ref$n_ref               <- sum(f_ref$f_ref)
-f_ref_u$n_ref_u           <- sum(f_ref_u$f_ref_u)
-f_sample$n_sample         <- sum(f_sample$f_sample)
-f_sample_e$n_sample_e     <- sum(f_sample_e$f_sample_e)
-f_sample_e_u$n_sample_e_u <- sum(f_sample_e_u$f_sample_e_u)
-
-# consolidate to motifs found in sample
-f_ref     <- f_ref  [f_ref$motif   %in% f_sample$motif,     ]
-f_ref_u   <- f_ref_u[f_ref_u$motif %in% f_sample$motif,     ]
-f_ref_e   <- f_ref  [f_ref$motif   %in% f_sample_e$motif,   ]
-f_ref_e_u <- f_ref_u[f_ref_u$motif %in% f_sample_e_u$motif, ]
-
-gt_motifs     <- merge(f_sample,     f_ref,   by = "motif", all = TRUE)
-gt_motifs_u   <- merge(f_sample,     f_ref_u, by = "motif", all = TRUE)
-gt_motifs_e   <- merge(f_sample_e,   f_ref,   by = "motif", all = TRUE)
-gt_motifs_e_u <- merge(f_sample_e_u, f_ref_u, by = "motif", all = TRUE)
-
-# replace f_ref NA with 0 and n_ref NA with n_ref
-gt_motifs[is.na(gt_motifs[, "f_ref"]), "f_ref"] <- 0
-gt_motifs[is.na(gt_motifs[, "n_ref"]), "n_ref"] <- gt_motifs$n_ref[1]
-
-gt_motifs_u[is.na(gt_motifs_u[, "f_ref_u"]), "f_ref_u"] <- 0
-gt_motifs_u[is.na(gt_motifs_u[, "n_ref_u"]), "n_ref_u"] <- 
-  gt_motifs_u$n_ref_u[1]
-
-gt_motifs_e[is.na(gt_motifs_e[, "f_ref"]), "f_ref"] <- 0
-gt_motifs_e[is.na(gt_motifs_e[, "n_ref"]), "n_ref"] <- 
-  gt_motifs_e$n_ref[1]
-
-gt_motifs_e_u[is.na(gt_motifs_e_u[, "f_ref_u"]), "f_ref_u"] <- 0
-gt_motifs_e_u[is.na(gt_motifs_e_u[, "n_ref_u"]), "n_ref_u"] <- 
-  gt_motifs_e_u$n_ref_u[1]
-
-# compute ove
-gt_motifs$ove <- (gt_motifs$f_sample / gt_motifs$n_sample) / 
-  (gt_motifs$f_ref / gt_motifs$n_ref)
-
-gt_motifs_u$ove <- (gt_motifs_u$f_sample / gt_motifs_u$n_sample) / 
-  (gt_motifs_u$f_ref_u / gt_motifs_u$n_ref_u)
-
-gt_motifs_e$ove <- (gt_motifs_e$f_sample_e / gt_motifs_e$n_sample_e) / 
-  (gt_motifs_e$f_ref / gt_motifs_e$n_ref)
-
-gt_motifs_e_u$ove <- (gt_motifs_e_u$f_sample_e_u / gt_motifs_e_u$n_sample_e_u) / 
-  (gt_motifs_e_u$f_ref_u / gt_motifs_e_u$n_ref_u)
-
-
-rm(f_ref, f_ref_u, f_ref_e, f_ref_e_u, f_sample, f_sample_e, f_sample_e_u)
-
-```
-
-# Prepare input parameters
+## Input parameters
 
 ```{r create_parameters}
 # v1 + v2 + v3
-ks <- motif_length
+ks <- 4
 cores <- parallel::detectCores()
 
 control_input <- list(
   B = 1000,
   global_max_dist = 1,
-  local_max_fdr = 0.01,
+  local_max_fdr = 0.05,
   local_min_ove = 2,
   local_min_o = 3,
   trim_flank_aa = 0,
@@ -161,9 +89,88 @@ control_input <- list(
 
 ```
 
+
+
+```{r, ove_ground_truth, echo=FALSE}
+# Calculate OvE Ground truth
+
+# Compute OvE for data
+# (f_sample / n_sample) / (f_ref / n_ref)
+# f_ref/sample = motifs of a certain length found in ref / sample
+# n_ref/sample = motif count of a certain length present in ref / sample
+
+### when ove and p-value worked out, add flank trimming here
+####
+#####
+######
+
+# find motifs
+f_ref        <- stringdist::qgrams(data_ref$CDR3b,        q=ks)
+f_sample     <- stringdist::qgrams(data_sample$CDR3b,     q=ks)
+f_sample_e   <- stringdist::qgrams(data_sample_e$CDR3b,   q=ks)
+f_sample_e_u <- stringdist::qgrams(data_sample_e_u$CDR3b, q=ks)
+
+
+# convert to data frames
+f_ref        <- f_ref[1,]
+f_ref        <- data.frame(motif=names(f_ref), 
+                           f_ref=as.numeric(f_ref))
+f_sample     <- f_sample[1,]
+f_sample     <- data.frame(motif=names(f_sample), 
+                           f_sample=as.numeric(f_sample))
+f_sample_e   <- f_sample_e[1,]
+f_sample_e   <- data.frame(motif=names(f_sample_e), 
+                           f_sample=as.numeric(f_sample_e))
+f_sample_e_u <- f_sample_e_u[1,]
+f_sample_e_u <- data.frame(motif=names(f_sample_e_u), 
+                           f_sample=as.numeric(f_sample_e_u))
+
+# find motif counts
+f_ref$n_ref           <- sum(f_ref$f_ref)
+f_sample$n_sample     <- sum(f_sample$f_sample)
+f_sample_e$n_sample   <- sum(f_sample_e$f_sample)
+f_sample_e_u$n_sample <- sum(f_sample_e_u$f_sample)
+
+# consolidate to motifs found in samples
+f_ref     <- f_ref[f_ref$motif %in% f_sample$motif,     ]
+f_ref_e   <- f_ref[f_ref$motif %in% f_sample_e$motif,   ]
+f_ref_e_u <- f_ref[f_ref$motif %in% f_sample_e_u$motif, ]
+
+gt_motifs     <- merge(f_sample,     f_ref,     by = "motif", all = TRUE)
+gt_motifs_e   <- merge(f_sample_e,   f_ref_e,   by = "motif", all = TRUE)
+gt_motifs_e_u <- merge(f_sample_e_u, f_ref_e_u, by = "motif", all = TRUE)
+
+# replace f_ref NA with 0 and n_ref NA with n_ref
+gt_motifs[is.na(gt_motifs[, "f_ref"]), "f_ref"] <- 0
+gt_motifs[is.na(gt_motifs[, "n_ref"]), "n_ref"] <- gt_motifs$n_ref[1]
+
+gt_motifs_e[is.na(gt_motifs_e[, "f_ref"]), "f_ref"] <- 0
+gt_motifs_e[is.na(gt_motifs_e[, "n_ref"]), "n_ref"] <- gt_motifs_e$n_ref[1]
+
+gt_motifs_e_u[is.na(gt_motifs_e_u[, "f_ref"]), "f_ref"] <- 0
+gt_motifs_e_u[is.na(gt_motifs_e_u[, "n_ref"]), "n_ref"] <- gt_motifs_e_u$n_ref[1]
+
+# compute ove
+gt_motifs$ove <- (gt_motifs$f_sample / gt_motifs$n_sample) / 
+  (gt_motifs$f_ref / gt_motifs$n_ref)
+
+gt_motifs_e$ove <- (gt_motifs_e$f_sample / gt_motifs_e$n_sample) / 
+  (gt_motifs_e$f_ref / gt_motifs_e$n_ref)
+
+gt_motifs_e_u$ove <- (gt_motifs_e_u$f_sample / gt_motifs_e_u$n_sample) / 
+  (gt_motifs_e_u$f_ref / gt_motifs_e_u$n_ref)
+
+rm(f_ref, f_ref_e, f_ref_e_u, f_sample, f_sample_e, f_sample_e_u)
+
+```
+
+
+
+
+```{r run_clustirr, echo=FALSE}
 # Cluster with ClustIRR versions
 
-```{r run_clustirr}
+
 # data_sample with inserted motifs but without clonal expansion
 out_v1 <- cluster_irr(data_sample = data_sample,
                 data_ref = data_ref,
@@ -211,10 +218,11 @@ out_v3_e <- cluster_irr(data_sample = data_sample_e,
 ```
 
 
+
+```{r prep_results,  echo=FALSE}
 # Prepare results
 
 
-```{r prep_results}
 o1  <- out_v1$clust$CDR3b$local$m
 o2  <- out_v2$clust$CDR3b$local$m
 o3  <- out_v3$clust$CDR3b$local$m
@@ -240,35 +248,46 @@ names(gt_motifs)[names(gt_motifs) != "motif"] <-
   paste(names(gt_motifs)[names(gt_motifs) != "motif"], "gt", sep="_")
 names(gt_motifs_e)[names(gt_motifs_e) != "motif"] <- 
   paste(names(gt_motifs_e)[names(gt_motifs_e) != "motif"], "gt_e", sep="_")
+names(gt_motifs_e_u)[names(gt_motifs_e_u) != "motif"] <- 
+  paste(names(gt_motifs_e_u)[names(gt_motifs_e_u) != "motif"], "gt_e_u", sep="_")
 
 # reduce to one big table
 res <- Reduce(function (...) { merge(..., by = "motif", all = TRUE) },
                        list(o1, o2, o3, o1e, o2e, o3e, 
-                            gt_motifs, gt_motifs_e)) 
+                            gt_motifs, gt_motifs_e, gt_motifs_e_u)) 
 
 # compute delta values for ove
 res$delta_ove_v1 <- (res$ove_v1 - res$ove_gt)
 res$delta_ove_v2 <- (res$ove_v2 - res$ove_gt)
 res$delta_ove_v3 <- (res$ove_v3 - res$ove_gt)
-res$delta_ove_v1_e <- (res$ove_v1_e - res$ove_gt_e)
-res$delta_ove_v2_e <- (res$ove_v2_e - res$ove_gt_e)
-res$delta_ove_v3_e <- (res$ove_v3_e - res$ove_gt_e)
+res$delta_ove_v1_e <- (res$ove_v1_e - res$ove_gt_e) # left in for comparison
+res$delta_ove_v2_e <- (res$ove_v2_e - res$ove_gt_e) # ...
+res$delta_ove_v3_e <- (res$ove_v3_e - res$ove_gt_e) 
+res$delta_ove_v1_e_u <- (res$ove_v1_e - res$ove_gt_e_u)
+res$delta_ove_v2_e_u <- (res$ove_v2_e - res$ove_gt_e_u)
+res$delta_ove_v3_e_u <- (res$ove_v3_e - res$ove_gt_e_u)
 
 # compute delta values for f_sample
 res$delta_f_sample_v1 <- (res$f_sample_v1 - res$f_sample_gt)
 res$delta_f_sample_v2 <- (res$f_sample_v2 - res$f_sample_gt)
 res$delta_f_sample_v3 <- (res$f_sample_v3 - res$f_sample_gt)
-res$delta_f_sample_v1_e <- (res$f_sample_v1_e - res$f_sample_e_gt)
-res$delta_f_sample_v2_e <- (res$f_sample_v2_e - res$f_sample_e_gt)
-res$delta_f_sample_v3_e <- (res$f_sample_v3_e - res$f_sample_e_gt)
+res$delta_f_sample_v1_e <- (res$f_sample_v1_e - res$f_sample_gt_e)
+res$delta_f_sample_v2_e <- (res$f_sample_v2_e - res$f_sample_gt_e)
+res$delta_f_sample_v3_e <- (res$f_sample_v3_e - res$f_sample_gt_e)
+res$delta_f_sample_v1_e_u <- (res$f_sample_v1_e - res$f_sample_gt_e_u)
+res$delta_f_sample_v2_e_u <- (res$f_sample_v2_e - res$f_sample_gt_e_u)
+res$delta_f_sample_v3_e_u <- (res$f_sample_v3_e - res$f_sample_gt_e_u)
 
 # compute delta values for n_sample
 res$delta_n_sample_v1 <- NA
 res$delta_n_sample_v2 <- (res$n_sample_v2 - res$n_sample_gt)
 res$delta_n_sample_v3 <- (res$n_sample_v3 - res$n_sample_gt)
 res$delta_n_sample_v1_e <- NA
-res$delta_n_sample_v2_e <- (res$n_sample_v2_e - res$n_sample_e_gt)
-res$delta_n_sample_v3_e <- (res$n_sample_v3_e - res$n_sample_e_gt)
+res$delta_n_sample_v2_e <- (res$n_sample_v2_e - res$n_sample_gt_e)
+res$delta_n_sample_v3_e <- (res$n_sample_v3_e - res$n_sample_gt_e)
+res$delta_n_sample_v1_e_u <- NA
+res$delta_n_sample_v2_e_u <- (res$n_sample_v2_e - res$n_sample_gt_e_u)
+res$delta_n_sample_v3_e_u <- (res$n_sample_v3_e - res$n_sample_gt_e_u)
 
 # compute delta values for f_ref
 res$delta_f_ref_v1 <- (res$mean_f_ref_v1 - res$f_ref_gt)
@@ -277,6 +296,9 @@ res$delta_f_ref_v3 <- (res$f_ref_v3 - res$f_ref_gt)
 res$delta_f_ref_v1_e <- (res$mean_f_ref_v1_e - res$f_ref_gt_e)
 res$delta_f_ref_v2_e <- (res$f_ref_v2_e - res$f_ref_gt_e)
 res$delta_f_ref_v3_e <- (res$f_ref_v3_e - res$f_ref_gt_e)
+res$delta_f_ref_v1_e_u <- (res$mean_f_ref_v1_e - res$f_ref_gt_e_u)
+res$delta_f_ref_v2_e_u <- (res$f_ref_v2_e - res$f_ref_gt_e_u)
+res$delta_f_ref_v3_e_u <- (res$f_ref_v3_e - res$f_ref_gt_e_u)
 
 # compute delta values for n_ref
 res$delta_n_ref_v1 <- NA
@@ -285,97 +307,23 @@ res$delta_n_ref_v3 <- (res$n_ref_v3 - res$n_ref_gt)
 res$delta_n_ref_v1_e <- NA
 res$delta_n_ref_v2_e <- (res$n_ref_v2_e - res$n_ref_gt_e)
 res$delta_n_ref_v3_e <- (res$n_ref_v3_e - res$n_ref_gt_e)
+res$delta_n_ref_v1_e_u <- NA
+res$delta_n_ref_v2_e_u <- (res$n_ref_v2_e - res$n_ref_gt_e_u)
+res$delta_n_ref_v3_e_u <- (res$n_ref_v3_e - res$n_ref_gt_e_u)
 
-rm(o1, o2, o3, o1e, o2e, o3e, gt_motifs, gt_motifs_e)
-
-```
-
-# Check Delta Counts
-
-```{r check_deltas}
-
-# ove
-ove_v1 <- res[(!is.na(res$delta_ove_v1) & res$delta_ove_v1 != 0),
-              c("motif", "ove_v1", "ove_gt", "delta_ove_v1")]
-ove_v2 <- res[(!is.na(res$delta_ove_v2) & res$delta_ove_v2 != 0),
-              c("motif", "ove_v2", "ove_gt", "delta_ove_v2")]
-ove_v3 <- res[(!is.na(res$delta_ove_v3) & res$delta_ove_v3 != 0),
-              c("motif", "ove_v3", "ove_gt", "delta_ove_v3")]
-
-ove_v1e <- res[(!is.na(res$delta_ove_v1_e) & res$delta_ove_v1_e != 0),
-              c("motif", "ove_v1_e", "ove_gt_e", "delta_ove_v1_e")]
-ove_v2e <- res[(!is.na(res$delta_ove_v2_e) & res$delta_ove_v2_e != 0),
-              c("motif", "ove_v2_e", "ove_gt_e", "delta_ove_v2_e")]
-ove_v3e <- res[(!is.na(res$delta_ove_v3_e) & res$delta_ove_v3_e != 0),
-              c("motif", "ove_v3_e", "ove_gt_e", "delta_ove_v3_e")]
-
-# f_sample
-fs_v1 <- res[(!is.na(res$delta_f_sample_v1) & res$delta_f_sample_v1 != 0), 
-             c("motif", "f_sample_v1", "f_sample_gt")]
-fs_v2 <- res[(!is.na(res$delta_f_sample_v2) & res$delta_f_sample_v2 != 0), 
-             c("motif", "f_sample_v2", "f_sample_gt")]
-fs_v3 <- res[(!is.na(res$delta_f_sample_v3) & res$delta_f_sample_v3 != 0), 
-             c("motif", "f_sample_v3", "f_sample_gt")]
-
-fs_v1e <- res[(!is.na(res$delta_f_sample_v1_e) & res$delta_f_sample_v1_e != 0), 
-             c("motif", "f_sample_v1_e", "f_sample_e_gt_e")]
-fs_v2e <- res[(!is.na(res$delta_f_sample_v2_e) & res$delta_f_sample_v2_e != 0), 
-             c("motif", "f_sample_v2_e", "f_sample_e_gt_e")]
-fs_v3e <- res[(!is.na(res$delta_f_sample_v3) & res$delta_f_sample_v3 != 0), 
-             c("motif", "f_sample_v3_e", "f_sample_e_gt_e")]
-
-# n_sample
-ns_v2 <- res[(!is.na(res$delta_n_sample_v2) & res$delta_n_sample_v2 != 0), 
-             c("motif", "n_sample_v2", "n_sample_gt")]
-ns_v3 <- res[(!is.na(res$delta_n_sample_v3) & res$delta_n_sample_v3 != 0), 
-             c("motif", "n_sample_v3", "n_sample_gt")]
-ns_v2e <- res[(!is.na(res$delta_n_sample_v2_e) & res$delta_n_sample_v2_e != 0), 
-             c("motif", "n_sample_v2_e", "n_sample_e_gt_e")]
-ns_v3e <- res[(!is.na(res$delta_n_sample_v3) & res$delta_n_sample_v3 != 0), 
-             c("motif", "n_sample_v3_e", "n_sample_e_gt_e")]
-
-# f_ref
-fr_v1 <- res[(!is.na(res$delta_f_ref_v1) & res$delta_f_ref_v1 != 0), 
-             c("motif", "mean_f_ref_v1", "f_ref_gt")]
-fr_v2 <- res[(!is.na(res$delta_f_ref_v2) & res$delta_f_ref_v2 != 0), 
-             c("motif", "f_ref_v2", "f_ref_gt")]
-fr_v3 <- res[(!is.na(res$delta_f_ref_v3) & res$delta_f_ref_v3 != 0), 
-             c("motif", "f_ref_v3", "f_ref_gt")]
-
-fr_v1e <- res[(!is.na(res$delta_f_ref_v1_e) & res$delta_f_ref_v1_e != 0), 
-             c("motif", "mean_f_ref_v1_e", "f_ref_gt_e")]
-fr_v2e <- res[(!is.na(res$delta_f_ref_v2_e) & res$delta_f_ref_v2_e != 0), 
-             c("motif", "f_ref_v2_e", "f_ref_gt_e")]
-fr_v3e <- res[(!is.na(res$delta_f_ref_v3) & res$delta_f_ref_v3 != 0), 
-             c("motif", "f_ref_v3_e", "f_ref_gt_e")]
-
-# n_ref
-nr_v2 <- res[(!is.na(res$delta_n_ref_v2) & res$delta_n_ref_v2 != 0), 
-             c("motif", "n_ref_v2", "n_ref_gt")]
-nr_v3 <- res[(!is.na(res$delta_n_ref_v3) & res$delta_n_ref_v3 != 0), 
-             c("motif", "n_ref_v3", "n_ref_gt")]
-nr_v2e <- res[(!is.na(res$delta_n_ref_v2_e) & res$delta_n_ref_v2_e != 0), 
-             c("motif", "n_ref_v2_e", "n_ref_gt_e")]
-nr_v3e <- res[(!is.na(res$delta_n_ref_v3) & res$delta_n_ref_v3 != 0), 
-             c("motif", "n_ref_v3_e", "n_ref_gt_e")]
-
-df <- data.frame(version = c("1","2","3"),
-                 ove = c(nrow(ove_v1), nrow(ove_v2), nrow(ove_v3)),
-                 ove_e = c(nrow(ove_v1e), nrow(ove_v2e), nrow(ove_v3e)),
-                 f_sample = c(nrow(fs_v1), nrow(fs_v2), nrow(fs_v3)),
-                 f_sample_e = c(nrow(fs_v1e), nrow(fs_v2e), nrow(fs_v3e)),
-                 n_sample = c(NA, nrow(ns_v2), nrow(ns_v3)),
-                 n_sample_e = c(NA, nrow(ns_v2e), nrow(ns_v3e)),
-                 n_ref = c(NA, nrow(nr_v2), nrow(nr_v3)),
-                 n_ref_e = c(NA, nrow(nr_v2e), nrow(nr_v3e))
-                 )
-
-knitr::kable(df, caption="number of rows that are different from ground truth")
+rm(o1, o2, o3, o1e, o2e, o3e, gt_motifs, gt_motifs_e, gt_motifs_e_u)
 
 ```
-# Investigate found motif
 
-```{r found_motifs}
+
+## Check implanted motifs
+
+Implanted motif **RQWW** gets found in all versions. <br>
+When using clonal expanded data_sample as input, only version 3 finds more motifs. <br>
+Version 1 and 2 find less motifs when expanded because of motifs near threshold, see below in section about **p-value**/**fdr**. <br>
+Reason for version 1 finding more motifs when not expanded could be **p-value** being calculated differently
+
+```{r found_motifs, echo=FALSE}
 
 m_v1 <- out_v1$clust$CDR3b$local$m[out_v1$clust$CDR3b$local$m$pass==TRUE,]
 m_v2 <- out_v2$clust$CDR3b$local$m[out_v2$clust$CDR3b$local$m$pass==TRUE,]
@@ -395,25 +343,45 @@ df <- data.frame(version = c("1","2","3"),
 
 knitr::kable(df, caption="found motifs")
 
-
-```
-
-
-## Check if implanted motif "RQWW" is found
-
-```{r local_motifs}
 # inspect local motif enrichment results
-knitr::kable(m_v1, caption="v1")
-knitr::kable(m_v2, caption="v2")
-knitr::kable(m_v3, caption="v3")
-knitr::kable(m_v1_e, caption="v1 exp")
-knitr::kable(m_v2_e, caption="v2 exp")
-knitr::kable(m_v3_e, caption="v3 exp")
+knitr::kable(m_v1[order(-m_v1$f_sample),], caption="v1")
+knitr::kable(m_v2[order(-m_v2$f_sample),], caption="v2")
+knitr::kable(m_v3[order(-m_v3$f_sample),], caption="v3")
+knitr::kable(m_v1_e[order(-m_v1_e$f_sample),], caption="v1 exp")
+knitr::kable(m_v2_e[order(-m_v2_e$f_sample),], caption="v2 exp")
+knitr::kable(m_v3_e[order(-m_v3_e$f_sample),], caption="v3 exp")
+
+
 
 ```
+## Check global sequences
+
+Inserted sequences **CATSRAAKPDGLAALETQYF** and **CATSRAAKPDGLAALSTQYF** are found by all versions (same algorithm).
+
+```{r global_motifs, echo=FALSE}
+# inspect which CDR3bs are globally similar
+
+df <- data.frame(version = c("1","2","3"),
+                 no_exp = c(nrow(m_v1), nrow(m_v2), nrow(m_v3)),
+                 exp = c(nrow(m_v1_e), nrow(m_v2_e), 
+                                      nrow(m_v3_e)))
+
+knitr::kable(out_v3$clust$CDR3b$global, caption="without clonal expansion")
+knitr::kable(out_v3_e$clust$CDR3b$global, caption="with clonal expansion")
+
+rm(df, m_v1, m_v2, m_v3, m_v1_e, m_v2_e, m_v3_e)
+
+```
+
 ## Compare p-values and fdr
 
-```{r p_fdr}
+Both **p-value** and **fdr** seem to be comparable between versions. <br>
+
+**OvE** also looks reasonable for found motifs. <br>
+
+**p-value** of version 1 seems to cut off value < 0.000, possible reason for more found motifs
+
+```{r p_fdr, echo=FALSE}
 # fdr        <= local_max_fdr
 # ove        >= local_min_ove
 # f_sample   >= local_min_o
@@ -441,33 +409,232 @@ r <- r[order(-r$pass_v2),]
 # inspect local motif enrichment results
 knitr::kable(r, caption="p-value / fdr comparison")
 
+# subset selected motifs
+r <- res[(res$pass_v1_e==TRUE & !is.na(res$pass_v1_e) ) |
+           (res$pass_v2_e==TRUE & !is.na(res$pass_v2_e) ) |
+           (res$pass_v3_e==TRUE & !is.na(res$pass_v3_e) ),
+         c("motif", "pass_v1_e", "pass_v2_e", "pass_v3_e",
+           "p_v1_e", "p_value_v2_e", "p_value_v3_e", 
+           "fdr_v1_e", "fdr_v2_e",   "fdr_v3_e", 
+           #"mean_f_ref_v1", "f_ref_v2", "f_ref_v3", 
+           "f_sample_v1_e", "f_sample_v2_e", "f_sample_v3_e",
+           "ove_v1_e", "ove_v2_e", "ove_v3_e")]
+# sort
+r <- r[order(-r$pass_v3_e, -r$pass_v1_e),]
 
+# inspect local motif enrichment results
+knitr::kable(r, caption="p-value / fdr comparison - expanded")
+
+rm(df, r)
 
 ```
 
-## Check if global sequences "CATSRAAKPDGLAALETQYF" and "CATSRAAKPDGLAALSTQYF" are found
+## Investigate OvE values
 
-```{r global_motifs}
-# inspect which CDR3bs are globally similar
+For found motifs of version 1 against ground truth, OvE values look reasonably comparable.
+
+```{r ove_comparison_v1, echo=FALSE}
+
+df <- res[res$pass_v1 == TRUE & !is.na(res$pass_v1),]
+df <- df[c("motif", "ove_gt", "ove_v1", "delta_ove_v1", "pass_v1")]
+knitr::kable(df[order(-df$ove_v1),], caption="v1 found motifs OvE vs gt OvE")
+
+df <- res[res$pass_v1_e == TRUE & !is.na(res$pass_v1_e),]
+df <- df[c("motif", "ove_gt_e_u", "ove_v1_e", "delta_ove_v1_e_u", "pass_v1_e")]
+knitr::kable(df[order(-df$ove_v1_e),], caption="v1 found motifs OvE vs gt OvE - with clonal expansion")
+
+rm(df)
+
+```
+
+For found motifs of version 2 against ground truth, OvE values look comparable (only one value to be seen, though).
+
+```{r ove_comparison_v2, echo=FALSE}
+
+df <- res[res$pass_v2 == TRUE & !is.na(res$pass_v2),]
+df <- df[c("motif", "ove_gt", "ove_v2", "delta_ove_v2", "pass_v2")]
+knitr::kable(df[order(-df$ove_v2),], caption="v2 found motifs OvE vs gt OvE")
+
+df <- res[res$pass_v2_e == TRUE & !is.na(res$pass_v2_e),]
+df <- df[c("motif", "ove_gt_e_u", "ove_v2_e", "delta_ove_v2_e_u", "pass_v2_e")]
+knitr::kable(df[order(-df$ove_v2_e),], caption="v2 found motifs OvE vs gt OvE - with clonal expansion")
+
+rm(df)
+
+```
+
+For found motifs of version 3 against ground truth, OvE values look different in some values (if **Inf**) -> to be investigated.
+
+```{r ove_comparison_v3, echo=FALSE}
+
+df <- res[res$pass_v3 == TRUE & !is.na(res$pass_v3),]
+df <- df[c("motif", "ove_gt", "ove_v3", "delta_ove_v3", "pass_v3")]
+knitr::kable(df[order(-df$ove_v3),], caption="v3 found motifs OvE vs gt OvE")
+
+df <- res[res$pass_v3_e == TRUE & !is.na(res$pass_v3_e),]
+df <- df[c("motif", "ove_gt_e", "ove_v3_e", "delta_ove_v3_e", "pass_v3_e")]
+knitr::kable(df[order(-df$ove_v3_e),], caption="v3 found motifs OvE vs gt OvE - with clonal expansion")
+
+
+rm(df)
+
+```
+
+## Check Delta Counts (sanity check for ground truth comparability)
+
+Comparing delta between versions and ground truth versions. <br>
+
+Suffix _e: compared with ground truth expanded <br> 
+Suffix _e_u: compared with ground truth expanded and reduced to unique values. <br> <br>
+
+Version 1 has no **n_sample** / **n_ref** output, **OvE** computed with bootstrapping results. <br>
+
+**OvE** different to GT in all versions, but mostly small deviations (see **OvE** section). <br>
+
+```{r check_deltas, echo=FALSE}
+
+# ove
+ove_v1 <- res[(!is.na(res$delta_ove_v1) & res$delta_ove_v1 != 0),
+              c("motif", "ove_v1", "ove_gt", "delta_ove_v1")]
+ove_v2 <- res[(!is.na(res$delta_ove_v2) & res$delta_ove_v2 != 0),
+              c("motif", "ove_v2", "ove_gt", "delta_ove_v2")]
+ove_v3 <- res[(!is.na(res$delta_ove_v3) & res$delta_ove_v3 != 0),
+              c("motif", "ove_v3", "ove_gt", "delta_ove_v3")]
+
+ove_v1e <- res[(!is.na(res$delta_ove_v1_e) & res$delta_ove_v1_e != 0),
+              c("motif", "ove_v1_e", "ove_gt_e", "delta_ove_v1_e")]
+ove_v2e <- res[(!is.na(res$delta_ove_v2_e) & res$delta_ove_v2_e != 0),
+              c("motif", "ove_v2_e", "ove_gt_e", "delta_ove_v2_e")]
+ove_v3e <- res[(!is.na(res$delta_ove_v3_e) & res$delta_ove_v3_e != 0),
+              c("motif", "ove_v3_e", "ove_gt_e", "delta_ove_v3_e")]
+
+ove_v1eu <- res[(!is.na(res$delta_ove_v1_e_u) & res$delta_ove_v1_e_u != 0),
+              c("motif", "ove_v1_e", "ove_gt_e_u", "delta_ove_v1_e_u")]
+ove_v2eu <- res[(!is.na(res$delta_ove_v2_e_u) & res$delta_ove_v2_e != 0),
+              c("motif", "ove_v2_e", "ove_gt_e_u", "delta_ove_v2_e_u")]
+ove_v3eu <- res[(!is.na(res$delta_ove_v3_e_u) & res$delta_ove_v3_e != 0),
+              c("motif", "ove_v3_e", "ove_gt_e_u", "delta_ove_v3_e_u")]
+
+# f_sample
+fs_v1 <- res[(!is.na(res$delta_f_sample_v1) & res$delta_f_sample_v1 != 0), 
+             c("motif", "f_sample_v1", "f_sample_gt")]
+fs_v2 <- res[(!is.na(res$delta_f_sample_v2) & res$delta_f_sample_v2 != 0), 
+             c("motif", "f_sample_v2", "f_sample_gt")]
+fs_v3 <- res[(!is.na(res$delta_f_sample_v3) & res$delta_f_sample_v3 != 0), 
+             c("motif", "f_sample_v3", "f_sample_gt")]
+
+fs_v1e <- res[(!is.na(res$delta_f_sample_v1_e) & res$delta_f_sample_v1_e != 0), 
+             c("motif", "f_sample_v1_e", "f_sample_gt_e")]
+fs_v2e <- res[(!is.na(res$delta_f_sample_v2_e) & res$delta_f_sample_v2_e != 0), 
+             c("motif", "f_sample_v2_e", "f_sample_gt_e")]
+fs_v3e <- res[(!is.na(res$delta_f_sample_v3_e) & res$delta_f_sample_v3_e != 0), 
+             c("motif", "f_sample_v3_e", "f_sample_gt_e")]
+
+fs_v1eu <- res[(!is.na(res$delta_f_sample_v1_e_u) & res$delta_f_sample_v1_e_u != 0), 
+             c("motif", "f_sample_v1_e", "f_sample_gt_e_u")]
+fs_v2eu <- res[(!is.na(res$delta_f_sample_v2_e_u) & res$delta_f_sample_v2_e_u != 0), 
+             c("motif", "f_sample_v2_e", "f_sample_gt_e_u")]
+fs_v3eu <- res[(!is.na(res$delta_f_sample_v3_e_u) & res$delta_f_sample_v3_e_u != 0), 
+             c("motif", "f_sample_v3_e", "f_sample_gt_e_u")]
+
+# n_sample
+ns_v2 <- res[(!is.na(res$delta_n_sample_v2) & res$delta_n_sample_v2 != 0), 
+             c("motif", "n_sample_v2", "n_sample_gt")]
+ns_v3 <- res[(!is.na(res$delta_n_sample_v3) & res$delta_n_sample_v3 != 0), 
+             c("motif", "n_sample_v3", "n_sample_gt")]
+ns_v2e <- res[(!is.na(res$delta_n_sample_v2_e) & res$delta_n_sample_v2_e != 0), 
+             c("motif", "n_sample_v2_e", "n_sample_gt_e")]
+ns_v3e <- res[(!is.na(res$delta_n_sample_v3_e) & res$delta_n_sample_v3_e != 0), 
+             c("motif", "n_sample_v3_e", "n_sample_gt_e")]
+ns_v2eu <- res[(!is.na(res$delta_n_sample_v2_e_u) & res$delta_n_sample_v2_e_u != 0), 
+             c("motif", "n_sample_v2_e", "n_sample_gt_e_u")]
+ns_v3eu <- res[(!is.na(res$delta_n_sample_v3_e_u) & res$delta_n_sample_v3_e_u != 0), 
+             c("motif", "n_sample_v3_e", "n_sample_gt_e_u")]
+
+# f_ref
+fr_v1 <- res[(!is.na(res$delta_f_ref_v1) & res$delta_f_ref_v1 != 0), 
+             c("motif", "mean_f_ref_v1", "f_ref_gt")]
+fr_v2 <- res[(!is.na(res$delta_f_ref_v2) & res$delta_f_ref_v2 != 0), 
+             c("motif", "f_ref_v2", "f_ref_gt")]
+fr_v3 <- res[(!is.na(res$delta_f_ref_v3) & res$delta_f_ref_v3 != 0), 
+             c("motif", "f_ref_v3", "f_ref_gt")]
+
+fr_v1e <- res[(!is.na(res$delta_f_ref_v1_e) & res$delta_f_ref_v1_e != 0), 
+             c("motif", "mean_f_ref_v1_e", "f_ref_gt_e")]
+fr_v2e <- res[(!is.na(res$delta_f_ref_v2_e) & res$delta_f_ref_v2_e != 0), 
+             c("motif", "f_ref_v2_e", "f_ref_gt_e")]
+fr_v3e <- res[(!is.na(res$delta_f_ref_v3_e) & res$delta_f_ref_v3_e != 0), 
+             c("motif", "f_ref_v3_e", "f_ref_gt_e")]
+
+fr_v1eu <- res[(!is.na(res$delta_f_ref_v1_e_u) & res$delta_f_ref_v1_e_u != 0), 
+             c("motif", "mean_f_ref_v1_e", "f_ref_gt_e_u")]
+fr_v2eu <- res[(!is.na(res$delta_f_ref_v2_e_u) & res$delta_f_ref_v2_e_u != 0), 
+             c("motif", "f_ref_v2_e", "f_ref_gt_e_u")]
+fr_v3eu <- res[(!is.na(res$delta_f_ref_v3_e_u) & res$delta_f_ref_v3_e_u != 0), 
+             c("motif", "f_ref_v3_e", "f_ref_gt_e_u")]
+
+# n_ref
+nr_v2 <- res[(!is.na(res$delta_n_ref_v2) & res$delta_n_ref_v2 != 0), 
+             c("motif", "n_ref_v2", "n_ref_gt")]
+nr_v3 <- res[(!is.na(res$delta_n_ref_v3) & res$delta_n_ref_v3 != 0), 
+             c("motif", "n_ref_v3", "n_ref_gt")]
+nr_v2e <- res[(!is.na(res$delta_n_ref_v2_e) & res$delta_n_ref_v2_e != 0), 
+             c("motif", "n_ref_v2_e", "n_ref_gt_e")]
+nr_v3e <- res[(!is.na(res$delta_n_ref_v3_e) & res$delta_n_ref_v3_e != 0), 
+             c("motif", "n_ref_v3_e", "n_ref_gt_e")]
+nr_v2eu <- res[(!is.na(res$delta_n_ref_v2_e_u) & res$delta_n_ref_v2_e_u != 0), 
+             c("motif", "n_ref_v2_e", "n_ref_gt_e_u")]
+nr_v3eu <- res[(!is.na(res$delta_n_ref_v3_e_u) & res$delta_n_ref_v3_e_u != 0), 
+             c("motif", "n_ref_v3_e", "n_ref_gt_e_u")]
+
+```
+
+
+For data_sample without clonal expansion in all versions **f_sample**, **n_sample** and **n_ref** no difference to ground truth.<br>
+
+```{r check_deltas_sample, echo=FALSE}
 
 df <- data.frame(version = c("1","2","3"),
-                 no_exp = c(nrow(m_v1), nrow(m_v2), nrow(m_v3)),
-                 exp = c(nrow(m_v1_e), nrow(m_v2_e), 
-                                      nrow(m_v3_e)))
+                 ove = c(nrow(ove_v1), nrow(ove_v2), nrow(ove_v3)),
+                 f_sample = c(nrow(fs_v1), nrow(fs_v2), nrow(fs_v3)),
+                 n_sample = c(NA, nrow(ns_v2), nrow(ns_v3)),
+                 n_ref = c(NA, nrow(nr_v2), nrow(nr_v3))
+                 )
 
-knitr::kable(out_v3$clust$CDR3b$global, caption="without clonal expansion")
-knitr::kable(out_v3_e$clust$CDR3b$global, caption="with clonal expansion")
-
+knitr::kable(df, caption="number of rows that are different from ground truth computed with data_sample")
 
 ```
 
-```{r cleanup}
+As expected, for data_sample with clonal expansion and ground truth computed without reduction to unique sequences, **f_sample_e** and **n_sample_e** are different between ground truth and version 1/2, but not version 3. <br>
 
-rm(df, fr_v1, fr_v1e, fr_v2, fr_v2e, fr_v3, fr_v3e,
-   fs_v1, fs_v1e, fs_v2, fs_v2e, fs_v3, fs_v3e,
-   m_v1, m_v2, m_v3, m_v1_e, m_v2_e, m_v3_e,
-   nr_v2, nr_v2e, nr_v3, nr_v3e,
-   ns_v2, ns_v2e, ns_v3, ns_v3e,
-   ove_v1, ove_v1e, ove_v2, ove_v2e, ove_v3, ove_v3e)
+```{r check_deltas_sample_e, echo=FALSE}
+df <- data.frame(version = c("1","2","3"),
+                 ove_e = c(nrow(ove_v1e), nrow(ove_v2e), nrow(ove_v3e)),
+                 f_sample_e = c(nrow(fs_v1e), nrow(fs_v2e), nrow(fs_v3e)),
+                 n_sample_e = c(NA, nrow(ns_v2e), nrow(ns_v3e)),
+                 n_ref_e = c(NA, nrow(nr_v2e), nrow(nr_v3e))
+                 )
+
+knitr::kable(df, caption="number of rows that are different from ground truth computed with expanded data_sample")
+
+```
+
+Also as expected, when using the ground truth calculated for data_sample with clonal expansion and reduction to unique sequences, **f_sample** and **n_sample** match between version 1/2 and ground truth, but not version 3.
+
+```{r check_deltas_sample_e_u, echo=FALSE}
+df <- data.frame(version = c("1","2","3"),
+                 ove_e_u = c(nrow(ove_v1eu), nrow(ove_v2eu), nrow(ove_v3eu)),
+                 f_sample_e_u = c(nrow(fs_v1eu), nrow(fs_v2eu), nrow(fs_v3eu)),
+                 n_sample_e_u = c(NA, nrow(ns_v2eu), nrow(ns_v3eu)),
+                 n_ref_e_u = c(NA, nrow(nr_v2eu), nrow(nr_v3eu))
+                 )
+
+knitr::kable(df, caption="number of rows that are different from ground truth computed with expanded data_sample, reduced to unique sequences")
+
+rm(df, ove_v1, ove_v2, ove_v3, ove_v1e, ove_v2e, ove_v3e, ove_v1eu, ove_v2eu, ove_v3eu, 
+   fr_v1, fr_v1e, fr_v1eu, fr_v2, fr_v2e, fr_v2eu, fr_v3, fr_v3e, fr_v3eu,
+   fs_v1, fs_v1e, fs_v1eu, fs_v2, fs_v2e, fs_v2eu, fs_v3, fs_v3e, fs_v3eu,
+   nr_v2, nr_v2e, nr_v2eu, nr_v3, nr_v3e, nr_v3eu,
+   ns_v2, ns_v2e, ns_v2eu, ns_v3, ns_v3e, ns_v3eu)
 
 ```

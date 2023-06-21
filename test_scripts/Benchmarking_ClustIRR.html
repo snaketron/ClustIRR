@@ -12,7 +12,7 @@
 
 
 
-<title>Benchmarking</title>
+<title>ClustIRR Benchmarking</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -336,390 +336,63 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 
 
-<h1 class="title toc-ignore">Benchmarking</h1>
+<h1 class="title toc-ignore">ClustIRR Benchmarking</h1>
 
 
 
-<div id="create-input-data" class="section level1">
-<h1>Create input data</h1>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;CD8&quot;</span>)</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co"># data sample d0: 500 unique CDR3s drawn from reference database (CD8) with 10^4 CDR3s</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="at">seed =</span> <span class="dv">1234</span>)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>d_0 <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">CDR3b =</span> CD8[<span class="fu">sample</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(CD8), <span class="at">size =</span> <span class="dv">500</span>, <span class="at">replace =</span> <span class="cn">FALSE</span>),])</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># data sample d1: enrich motif &#39;RQWW&#39;</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>d_1 <span class="ot">&lt;-</span> d_0</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">substr</span>(<span class="at">x =</span> d_1<span class="sc">$</span>CDR3b[<span class="dv">1</span><span class="sc">:</span><span class="dv">20</span>], <span class="at">start =</span> <span class="dv">6</span>, <span class="at">stop =</span> <span class="dv">9</span>) <span class="ot">&lt;-</span> <span class="st">&quot;RQWW&quot;</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># data sample d2: clonal expansion with two similar clones of hdist 1</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>d_2 <span class="ot">&lt;-</span> d_1</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>clone_a <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">CDR3b =</span> <span class="fu">rep</span>(<span class="at">x =</span> <span class="st">&quot;CATSRAAKPDGLAALETQYF&quot;</span>, <span class="at">times =</span> <span class="dv">15</span>))</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>clone_b <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">CDR3b =</span> <span class="fu">rep</span>(<span class="at">x =</span> <span class="st">&quot;CATSRAAKPDGLAALSTQYF&quot;</span>, <span class="at">times =</span> <span class="dv">15</span>))</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>d_2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(d_2, clone_a)</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>d_2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(d_2, clone_b)</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>data_ref      <span class="ot">&lt;-</span> CD8</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>data_sample   <span class="ot">&lt;-</span> d_1</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>data_sample_e <span class="ot">&lt;-</span> d_2</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(CD8, clone_a, clone_b, d_0, d_1, d_2)</span></code></pre></div>
+<div id="tldr" class="section level1">
+<h1>TL;DR</h1>
+<div id="confirmed" class="section level2">
+<h2>Confirmed</h2>
+<ul>
+<li>Motifs successfully detected accross all versions</li>
+<li>Global similarites also found (same algorithm for all versions)</li>
+<li>OvE values for found motifs of v1/2 roughly comparable to ground
+truth</li>
+</ul>
 </div>
-<div id="ove-ground-truth" class="section level1">
-<h1>OvE Ground truth</h1>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Compute OvE for data</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># (f_sample / n_sample) / (f_ref / n_ref)</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co"># f_ref/sample = motifs of a certain length found in ref / sample</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># n_ref/sample = motif count of a certain length present in ref / sample</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># motif length</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>motif_length <span class="ot">&lt;-</span> <span class="dv">4</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># find motifs</span></span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>f_ref        <span class="ot">&lt;-</span> stringdist<span class="sc">::</span><span class="fu">qgrams</span>(data_ref<span class="sc">$</span>CDR3b,        <span class="at">q=</span>motif_length)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>f_sample     <span class="ot">&lt;-</span> stringdist<span class="sc">::</span><span class="fu">qgrams</span>(data_sample<span class="sc">$</span>CDR3b,     <span class="at">q=</span>motif_length)</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>f_sample_e   <span class="ot">&lt;-</span> stringdist<span class="sc">::</span><span class="fu">qgrams</span>(data_sample_e<span class="sc">$</span>CDR3b,   <span class="at">q=</span>motif_length)</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="co"># convert to data frames</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>f_ref        <span class="ot">&lt;-</span> f_ref[<span class="dv">1</span>,]</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>f_ref        <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">motif=</span><span class="fu">names</span>(f_ref), </span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>                           <span class="at">f_ref=</span><span class="fu">as.numeric</span>(f_ref))</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>f_sample     <span class="ot">&lt;-</span> f_sample[<span class="dv">1</span>,]</span>
-<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>f_sample     <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">motif=</span><span class="fu">names</span>(f_sample), </span>
-<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>                           <span class="at">f_sample=</span><span class="fu">as.numeric</span>(f_sample))</span>
-<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>f_sample_e <span class="ot">&lt;-</span> f_sample_e[<span class="dv">1</span>,]</span>
-<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>f_sample_e <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">motif=</span><span class="fu">names</span>(f_sample_e), </span>
-<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>                           <span class="at">f_sample_e=</span><span class="fu">as.numeric</span>(f_sample_e))</span>
-<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="co"># find motif counts</span></span>
-<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>f_ref<span class="sc">$</span>n_ref               <span class="ot">&lt;-</span> <span class="fu">sum</span>(f_ref<span class="sc">$</span>f_ref)</span>
-<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>f_sample<span class="sc">$</span>n_sample         <span class="ot">&lt;-</span> <span class="fu">sum</span>(f_sample<span class="sc">$</span>f_sample)</span>
-<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>f_sample_e<span class="sc">$</span>n_sample_e <span class="ot">&lt;-</span> <span class="fu">sum</span>(f_sample_e<span class="sc">$</span>f_sample_e)</span>
-<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="co"># consolidate to motifs found in sample</span></span>
-<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>f_ref     <span class="ot">&lt;-</span> f_ref[f_ref<span class="sc">$</span>motif <span class="sc">%in%</span> f_sample<span class="sc">$</span>motif, ]</span>
-<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>f_ref_e <span class="ot">&lt;-</span> f_ref[f_ref<span class="sc">$</span>motif <span class="sc">%in%</span> f_sample_e<span class="sc">$</span>motif, ]</span>
-<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>gt_motifs     <span class="ot">&lt;-</span> <span class="fu">merge</span>(f_sample,     f_ref, <span class="at">by =</span> <span class="st">&quot;motif&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>gt_motifs_e <span class="ot">&lt;-</span> <span class="fu">merge</span>(f_sample_e, f_ref, <span class="at">by =</span> <span class="st">&quot;motif&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>gt_motifs[<span class="fu">is.na</span>(gt_motifs[, <span class="st">&quot;f_ref&quot;</span>]), <span class="st">&quot;f_ref&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>gt_motifs[<span class="fu">is.na</span>(gt_motifs[, <span class="st">&quot;n_ref&quot;</span>]), <span class="st">&quot;n_ref&quot;</span>] <span class="ot">&lt;-</span> gt_motifs<span class="sc">$</span>n_ref[<span class="dv">1</span>]</span>
-<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>gt_motifs_e[<span class="fu">is.na</span>(gt_motifs_e[, <span class="st">&quot;f_ref&quot;</span>]), <span class="st">&quot;f_ref&quot;</span>] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
-<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>gt_motifs_e[<span class="fu">is.na</span>(gt_motifs_e[, <span class="st">&quot;n_ref&quot;</span>]), <span class="st">&quot;n_ref&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  gt_motifs_e<span class="sc">$</span>n_ref[<span class="dv">1</span>]</span>
-<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="co"># compute ove</span></span>
-<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>gt_motifs<span class="sc">$</span>ove <span class="ot">&lt;-</span> (gt_motifs<span class="sc">$</span>f_sample <span class="sc">/</span> gt_motifs<span class="sc">$</span>n_sample) <span class="sc">/</span> </span>
-<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>  (gt_motifs<span class="sc">$</span>f_ref <span class="sc">/</span> gt_motifs<span class="sc">$</span>n_ref)</span>
-<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>gt_motifs_e<span class="sc">$</span>ove <span class="ot">&lt;-</span> (gt_motifs_e<span class="sc">$</span>f_sample_e <span class="sc">/</span> </span>
-<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>                            gt_motifs_e<span class="sc">$</span>n_sample_e) <span class="sc">/</span> </span>
-<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  (gt_motifs_e<span class="sc">$</span>f_ref <span class="sc">/</span> gt_motifs_e<span class="sc">$</span>n_ref)</span>
-<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(f_ref, f_ref_e, f_sample, f_sample_e)</span></code></pre></div>
+<div id="to-be-investigated" class="section level2">
+<h2>To be investigated</h2>
+<ul>
+<li>p-value of v1 seems to be lacking accuracy compared to v2/3
+<ul>
+<li>leads to fdr of version 1 being lower than v2/3</li>
+<li>leads to v1 detecting more motifs than v2/3 (effectively lowered
+detection threshold)</li>
+</ul></li>
+<li>OvE values for found motifs of v3 partially different than ground
+truth
+<ul>
+<li>high value in v3 (i.e. 275.762251) against infinity in gt</li>
+<li>maybe caused by FET implementation vs formula used for GT</li>
+</ul></li>
+</ul>
 </div>
-<div id="prepare-input-parameters" class="section level1">
-<h1>Prepare input parameters</h1>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># v1 + v2 + v3</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ks <span class="ot">&lt;-</span> motif_length</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>cores <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>control_input <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">B =</span> <span class="dv">1000</span>,</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">global_max_dist =</span> <span class="dv">1</span>,</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_max_fdr =</span> <span class="fl">0.01</span>,</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_min_ove =</span> <span class="dv">2</span>,</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_min_o =</span> <span class="dv">3</span>,</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">trim_flank_aa =</span> <span class="dv">0</span>,</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">low_mem =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">global_pairs =</span> <span class="cn">NULL</span>)</span></code></pre></div>
+<div id="input-parameters" class="section level2">
+<h2>Input parameters</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># v1 + v2 + v3</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>ks <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>cores <span class="ot">&lt;-</span> parallel<span class="sc">::</span><span class="fu">detectCores</span>()</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>control_input <span class="ot">&lt;-</span> <span class="fu">list</span>(</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">B =</span> <span class="dv">1000</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">global_max_dist =</span> <span class="dv">1</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_max_fdr =</span> <span class="fl">0.05</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_min_ove =</span> <span class="dv">2</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>  <span class="at">local_min_o =</span> <span class="dv">3</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>  <span class="at">trim_flank_aa =</span> <span class="dv">0</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>  <span class="at">low_mem =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>  <span class="at">global_pairs =</span> <span class="cn">NULL</span>)</span></code></pre></div>
 </div>
-<div id="cluster-with-clustirr-versions" class="section level1">
-<h1>Cluster with ClustIRR versions</h1>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># data_sample with inserted motifs but without clonal expansion</span></span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>out_v1 <span class="ot">&lt;-</span> <span class="fu">cluster_irr</span>(<span class="at">data_sample =</span> data_sample,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>                <span class="at">data_ref =</span> data_ref,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>                <span class="at">ks =</span> ks,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>                <span class="at">cores =</span> cores,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>                <span class="at">version =</span> <span class="dv">1</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> control_input)</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>out_v2 <span class="ot">&lt;-</span> <span class="fu">cluster_irr</span>(<span class="at">data_sample =</span> data_sample,</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>                <span class="at">data_ref =</span> data_ref,</span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>                <span class="at">ks =</span> ks,</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>                <span class="at">cores =</span> cores,</span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>                <span class="at">version =</span> <span class="dv">2</span>,</span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> control_input)</span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a>out_v3 <span class="ot">&lt;-</span> <span class="fu">cluster_irr</span>(<span class="at">data_sample =</span> data_sample,</span>
-<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>                <span class="at">data_ref =</span> data_ref,</span>
-<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>                <span class="at">ks =</span> ks,</span>
-<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>                <span class="at">cores =</span> cores,</span>
-<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>                <span class="at">version =</span> <span class="dv">3</span>,</span>
-<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> control_input)</span>
-<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co"># data_sample with inserted motifs and clonal expansion</span></span>
-<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>out_v1_e <span class="ot">&lt;-</span> <span class="fu">cluster_irr</span>(<span class="at">data_sample =</span> data_sample_e,</span>
-<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                <span class="at">data_ref =</span> data_ref,</span>
-<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>                <span class="at">ks =</span> ks,</span>
-<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                <span class="at">cores =</span> cores,</span>
-<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                <span class="at">version =</span> <span class="dv">1</span>,</span>
-<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> control_input)</span>
-<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>out_v2_e <span class="ot">&lt;-</span> <span class="fu">cluster_irr</span>(<span class="at">data_sample =</span> data_sample_e,</span>
-<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>                <span class="at">data_ref =</span> data_ref,</span>
-<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>                <span class="at">ks =</span> ks,</span>
-<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>                <span class="at">cores =</span> cores,</span>
-<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>                <span class="at">version =</span> <span class="dv">2</span>,</span>
-<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> control_input)</span>
-<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a>out_v3_e <span class="ot">&lt;-</span> <span class="fu">cluster_irr</span>(<span class="at">data_sample =</span> data_sample_e,</span>
-<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a>                <span class="at">data_ref =</span> data_ref,</span>
-<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a>                <span class="at">ks =</span> ks,</span>
-<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a>                <span class="at">cores =</span> cores,</span>
-<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a>                <span class="at">version =</span> <span class="dv">3</span>,</span>
-<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a>                <span class="at">control =</span> control_input)</span></code></pre></div>
-</div>
-<div id="prepare-results" class="section level1">
-<h1>Prepare results</h1>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>o1  <span class="ot">&lt;-</span> out_v1<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>o2  <span class="ot">&lt;-</span> out_v2<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>o3  <span class="ot">&lt;-</span> out_v3<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>o1e <span class="ot">&lt;-</span> out_v1_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>o2e <span class="ot">&lt;-</span> out_v2_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>o3e <span class="ot">&lt;-</span> out_v3_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># rename all columns except &quot;motif&quot;</span></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(o1)[<span class="fu">names</span>(o1) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">names</span>(o1)[<span class="fu">names</span>(o1) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>], <span class="st">&quot;v1&quot;</span>, <span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(o2)[<span class="fu">names</span>(o2) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">names</span>(o2)[<span class="fu">names</span>(o2) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>], <span class="st">&quot;v2&quot;</span>, <span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(o3)[<span class="fu">names</span>(o3) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">names</span>(o3)[<span class="fu">names</span>(o3) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>], <span class="st">&quot;v3&quot;</span>, <span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(o1e)[<span class="fu">names</span>(o1e) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">names</span>(o1e)[<span class="fu">names</span>(o1e) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>], <span class="st">&quot;v1_e&quot;</span>, <span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(o2e)[<span class="fu">names</span>(o2e) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">names</span>(o2e)[<span class="fu">names</span>(o2e) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>], <span class="st">&quot;v2_e&quot;</span>, <span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(o3e)[<span class="fu">names</span>(o3e) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">names</span>(o3e)[<span class="fu">names</span>(o3e) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>], <span class="st">&quot;v3_e&quot;</span>, <span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(gt_motifs)[<span class="fu">names</span>(gt_motifs) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">names</span>(gt_motifs)[<span class="fu">names</span>(gt_motifs) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>], <span class="st">&quot;gt&quot;</span>, <span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(gt_motifs_e)[<span class="fu">names</span>(gt_motifs_e) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>] <span class="ot">&lt;-</span> </span>
-<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">paste</span>(<span class="fu">names</span>(gt_motifs_e)[<span class="fu">names</span>(gt_motifs_e) <span class="sc">!=</span> <span class="st">&quot;motif&quot;</span>], <span class="st">&quot;gt_e&quot;</span>, <span class="at">sep=</span><span class="st">&quot;_&quot;</span>)</span>
-<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a><span class="co"># reduce to one big table</span></span>
-<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>res <span class="ot">&lt;-</span> <span class="fu">Reduce</span>(<span class="cf">function</span> (...) { <span class="fu">merge</span>(..., <span class="at">by =</span> <span class="st">&quot;motif&quot;</span>, <span class="at">all =</span> <span class="cn">TRUE</span>) },</span>
-<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>                       <span class="fu">list</span>(o1, o2, o3, o1e, o2e, o3e, </span>
-<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>                            gt_motifs, gt_motifs_e)) </span>
-<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a><span class="co"># compute delta values for ove</span></span>
-<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_ove_v1 <span class="ot">&lt;-</span> (res<span class="sc">$</span>ove_v1 <span class="sc">-</span> res<span class="sc">$</span>ove_gt)</span>
-<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_ove_v2 <span class="ot">&lt;-</span> (res<span class="sc">$</span>ove_v2 <span class="sc">-</span> res<span class="sc">$</span>ove_gt)</span>
-<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_ove_v3 <span class="ot">&lt;-</span> (res<span class="sc">$</span>ove_v3 <span class="sc">-</span> res<span class="sc">$</span>ove_gt)</span>
-<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_ove_v1_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>ove_v1_e <span class="sc">-</span> res<span class="sc">$</span>ove_gt_e)</span>
-<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_ove_v2_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>ove_v2_e <span class="sc">-</span> res<span class="sc">$</span>ove_gt_e)</span>
-<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_ove_v3_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>ove_v3_e <span class="sc">-</span> res<span class="sc">$</span>ove_gt_e)</span>
-<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="co"># compute delta values for f_sample</span></span>
-<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_sample_v1 <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_sample_v1 <span class="sc">-</span> res<span class="sc">$</span>f_sample_gt)</span>
-<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_sample_v2 <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_sample_v2 <span class="sc">-</span> res<span class="sc">$</span>f_sample_gt)</span>
-<span id="cb5-43"><a href="#cb5-43" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_sample_v3 <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_sample_v3 <span class="sc">-</span> res<span class="sc">$</span>f_sample_gt)</span>
-<span id="cb5-44"><a href="#cb5-44" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_sample_v1_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_sample_v1_e <span class="sc">-</span> res<span class="sc">$</span>f_sample_e_gt)</span>
-<span id="cb5-45"><a href="#cb5-45" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_sample_v2_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_sample_v2_e <span class="sc">-</span> res<span class="sc">$</span>f_sample_e_gt)</span>
-<span id="cb5-46"><a href="#cb5-46" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_sample_v3_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_sample_v3_e <span class="sc">-</span> res<span class="sc">$</span>f_sample_e_gt)</span>
-<span id="cb5-47"><a href="#cb5-47" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-48"><a href="#cb5-48" aria-hidden="true" tabindex="-1"></a><span class="co"># compute delta values for n_sample</span></span>
-<span id="cb5-49"><a href="#cb5-49" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_sample_v1 <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb5-50"><a href="#cb5-50" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_sample_v2 <span class="ot">&lt;-</span> (res<span class="sc">$</span>n_sample_v2 <span class="sc">-</span> res<span class="sc">$</span>n_sample_gt)</span>
-<span id="cb5-51"><a href="#cb5-51" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_sample_v3 <span class="ot">&lt;-</span> (res<span class="sc">$</span>n_sample_v3 <span class="sc">-</span> res<span class="sc">$</span>n_sample_gt)</span>
-<span id="cb5-52"><a href="#cb5-52" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_sample_v1_e <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb5-53"><a href="#cb5-53" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_sample_v2_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>n_sample_v2_e <span class="sc">-</span> res<span class="sc">$</span>n_sample_e_gt)</span>
-<span id="cb5-54"><a href="#cb5-54" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_sample_v3_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>n_sample_v3_e <span class="sc">-</span> res<span class="sc">$</span>n_sample_e_gt)</span>
-<span id="cb5-55"><a href="#cb5-55" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-56"><a href="#cb5-56" aria-hidden="true" tabindex="-1"></a><span class="co"># compute delta values for f_ref</span></span>
-<span id="cb5-57"><a href="#cb5-57" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_ref_v1 <span class="ot">&lt;-</span> (res<span class="sc">$</span>mean_f_ref_v1 <span class="sc">-</span> res<span class="sc">$</span>f_ref_gt)</span>
-<span id="cb5-58"><a href="#cb5-58" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_ref_v2 <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_ref_v2 <span class="sc">-</span> res<span class="sc">$</span>f_ref_gt)</span>
-<span id="cb5-59"><a href="#cb5-59" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_ref_v3 <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_ref_v3 <span class="sc">-</span> res<span class="sc">$</span>f_ref_gt)</span>
-<span id="cb5-60"><a href="#cb5-60" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_ref_v1_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>mean_f_ref_v1_e <span class="sc">-</span> res<span class="sc">$</span>f_ref_gt_e)</span>
-<span id="cb5-61"><a href="#cb5-61" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_ref_v2_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_ref_v2_e <span class="sc">-</span> res<span class="sc">$</span>f_ref_gt_e)</span>
-<span id="cb5-62"><a href="#cb5-62" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_f_ref_v3_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>f_ref_v3_e <span class="sc">-</span> res<span class="sc">$</span>f_ref_gt_e)</span>
-<span id="cb5-63"><a href="#cb5-63" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-64"><a href="#cb5-64" aria-hidden="true" tabindex="-1"></a><span class="co"># compute delta values for n_ref</span></span>
-<span id="cb5-65"><a href="#cb5-65" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_ref_v1 <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb5-66"><a href="#cb5-66" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_ref_v2 <span class="ot">&lt;-</span> (res<span class="sc">$</span>n_ref_v2 <span class="sc">-</span> res<span class="sc">$</span>n_ref_gt)</span>
-<span id="cb5-67"><a href="#cb5-67" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_ref_v3 <span class="ot">&lt;-</span> (res<span class="sc">$</span>n_ref_v3 <span class="sc">-</span> res<span class="sc">$</span>n_ref_gt)</span>
-<span id="cb5-68"><a href="#cb5-68" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_ref_v1_e <span class="ot">&lt;-</span> <span class="cn">NA</span></span>
-<span id="cb5-69"><a href="#cb5-69" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_ref_v2_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>n_ref_v2_e <span class="sc">-</span> res<span class="sc">$</span>n_ref_gt_e)</span>
-<span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a>res<span class="sc">$</span>delta_n_ref_v3_e <span class="ot">&lt;-</span> (res<span class="sc">$</span>n_ref_v3_e <span class="sc">-</span> res<span class="sc">$</span>n_ref_gt_e)</span>
-<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(o1, o2, o3, o1e, o2e, o3e, gt_motifs, gt_motifs_e)</span></code></pre></div>
-</div>
-<div id="check-delta-counts" class="section level1">
-<h1>Check Delta Counts</h1>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ove</span></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>ove_v1 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_ove_v1) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_ove_v1 <span class="sc">!=</span> <span class="dv">0</span>),</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;ove_v1&quot;</span>, <span class="st">&quot;ove_gt&quot;</span>, <span class="st">&quot;delta_ove_v1&quot;</span>)]</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>ove_v2 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_ove_v2) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_ove_v2 <span class="sc">!=</span> <span class="dv">0</span>),</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;ove_v2&quot;</span>, <span class="st">&quot;ove_gt&quot;</span>, <span class="st">&quot;delta_ove_v2&quot;</span>)]</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>ove_v3 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_ove_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_ove_v3 <span class="sc">!=</span> <span class="dv">0</span>),</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;ove_v3&quot;</span>, <span class="st">&quot;ove_gt&quot;</span>, <span class="st">&quot;delta_ove_v3&quot;</span>)]</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>ove_v1e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_ove_v1_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_ove_v1_e <span class="sc">!=</span> <span class="dv">0</span>),</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;ove_v1_e&quot;</span>, <span class="st">&quot;ove_gt_e&quot;</span>, <span class="st">&quot;delta_ove_v1_e&quot;</span>)]</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>ove_v2e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_ove_v2_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_ove_v2_e <span class="sc">!=</span> <span class="dv">0</span>),</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;ove_v2_e&quot;</span>, <span class="st">&quot;ove_gt_e&quot;</span>, <span class="st">&quot;delta_ove_v2_e&quot;</span>)]</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>ove_v3e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_ove_v3_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_ove_v3_e <span class="sc">!=</span> <span class="dv">0</span>),</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>              <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;ove_v3_e&quot;</span>, <span class="st">&quot;ove_gt_e&quot;</span>, <span class="st">&quot;delta_ove_v3_e&quot;</span>)]</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="co"># f_sample</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>fs_v1 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_sample_v1) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_sample_v1 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_sample_v1&quot;</span>, <span class="st">&quot;f_sample_gt&quot;</span>)]</span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>fs_v2 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_sample_v2) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_sample_v2 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_sample_v2&quot;</span>, <span class="st">&quot;f_sample_gt&quot;</span>)]</span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>fs_v3 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_sample_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_sample_v3 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_sample_v3&quot;</span>, <span class="st">&quot;f_sample_gt&quot;</span>)]</span>
-<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a>fs_v1e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_sample_v1_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_sample_v1_e <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_sample_v1_e&quot;</span>, <span class="st">&quot;f_sample_e_gt_e&quot;</span>)]</span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>fs_v2e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_sample_v2_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_sample_v2_e <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_sample_v2_e&quot;</span>, <span class="st">&quot;f_sample_e_gt_e&quot;</span>)]</span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>fs_v3e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_sample_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_sample_v3 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_sample_v3_e&quot;</span>, <span class="st">&quot;f_sample_e_gt_e&quot;</span>)]</span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="co"># n_sample</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>ns_v2 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_n_sample_v2) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_n_sample_v2 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;n_sample_v2&quot;</span>, <span class="st">&quot;n_sample_gt&quot;</span>)]</span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a>ns_v3 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_n_sample_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_n_sample_v3 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;n_sample_v3&quot;</span>, <span class="st">&quot;n_sample_gt&quot;</span>)]</span>
-<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a>ns_v2e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_n_sample_v2_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_n_sample_v2_e <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;n_sample_v2_e&quot;</span>, <span class="st">&quot;n_sample_e_gt_e&quot;</span>)]</span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a>ns_v3e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_n_sample_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_n_sample_v3 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;n_sample_v3_e&quot;</span>, <span class="st">&quot;n_sample_e_gt_e&quot;</span>)]</span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a><span class="co"># f_ref</span></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a>fr_v1 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_ref_v1) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_ref_v1 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;mean_f_ref_v1&quot;</span>, <span class="st">&quot;f_ref_gt&quot;</span>)]</span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a>fr_v2 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_ref_v2) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_ref_v2 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_ref_v2&quot;</span>, <span class="st">&quot;f_ref_gt&quot;</span>)]</span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>fr_v3 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_ref_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_ref_v3 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_ref_v3&quot;</span>, <span class="st">&quot;f_ref_gt&quot;</span>)]</span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>fr_v1e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_ref_v1_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_ref_v1_e <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;mean_f_ref_v1_e&quot;</span>, <span class="st">&quot;f_ref_gt_e&quot;</span>)]</span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>fr_v2e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_ref_v2_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_ref_v2_e <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_ref_v2_e&quot;</span>, <span class="st">&quot;f_ref_gt_e&quot;</span>)]</span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>fr_v3e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_f_ref_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_f_ref_v3 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;f_ref_v3_e&quot;</span>, <span class="st">&quot;f_ref_gt_e&quot;</span>)]</span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="co"># n_ref</span></span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>nr_v2 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_n_ref_v2) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_n_ref_v2 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;n_ref_v2&quot;</span>, <span class="st">&quot;n_ref_gt&quot;</span>)]</span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>nr_v3 <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_n_ref_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_n_ref_v3 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;n_ref_v3&quot;</span>, <span class="st">&quot;n_ref_gt&quot;</span>)]</span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>nr_v2e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_n_ref_v2_e) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_n_ref_v2_e <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;n_ref_v2_e&quot;</span>, <span class="st">&quot;n_ref_gt_e&quot;</span>)]</span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>nr_v3e <span class="ot">&lt;-</span> res[(<span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>delta_n_ref_v3) <span class="sc">&amp;</span> res<span class="sc">$</span>delta_n_ref_v3 <span class="sc">!=</span> <span class="dv">0</span>), </span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>             <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;n_ref_v3_e&quot;</span>, <span class="st">&quot;n_ref_gt_e&quot;</span>)]</span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">version =</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;2&quot;</span>,<span class="st">&quot;3&quot;</span>),</span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ove =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(ove_v1), <span class="fu">nrow</span>(ove_v2), <span class="fu">nrow</span>(ove_v3)),</span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>                 <span class="at">ove_e =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(ove_v1e), <span class="fu">nrow</span>(ove_v2e), <span class="fu">nrow</span>(ove_v3e)),</span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>                 <span class="at">f_sample =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(fs_v1), <span class="fu">nrow</span>(fs_v2), <span class="fu">nrow</span>(fs_v3)),</span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>                 <span class="at">f_sample_e =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(fs_v1e), <span class="fu">nrow</span>(fs_v2e), <span class="fu">nrow</span>(fs_v3e)),</span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>                 <span class="at">n_sample =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(ns_v2), <span class="fu">nrow</span>(ns_v3)),</span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>                 <span class="at">n_sample_e =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(ns_v2e), <span class="fu">nrow</span>(ns_v3e)),</span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>                 <span class="at">n_ref =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(nr_v2), <span class="fu">nrow</span>(nr_v3)),</span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>                 <span class="at">n_ref_e =</span> <span class="fu">c</span>(<span class="cn">NA</span>, <span class="fu">nrow</span>(nr_v2e), <span class="fu">nrow</span>(nr_v3e))</span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>                 )</span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df, <span class="at">caption=</span><span class="st">&quot;number of rows that are different from ground truth&quot;</span>)</span></code></pre></div>
-<table style="width:100%;">
-<caption>number of rows that are different from ground truth</caption>
-<colgroup>
-<col width="10%" />
-<col width="6%" />
-<col width="8%" />
-<col width="12%" />
-<col width="15%" />
-<col width="12%" />
-<col width="15%" />
-<col width="8%" />
-<col width="10%" />
-</colgroup>
-<thead>
-<tr class="header">
-<th align="left">version</th>
-<th align="right">ove</th>
-<th align="right">ove_e</th>
-<th align="right">f_sample</th>
-<th align="right">f_sample_e</th>
-<th align="right">n_sample</th>
-<th align="right">n_sample_e</th>
-<th align="right">n_ref</th>
-<th align="right">n_ref_e</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">1</td>
-<td align="right">3018</td>
-<td align="right">3028</td>
-<td align="right">0</td>
-<td align="right">21</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-<td align="right">NA</td>
-</tr>
-<tr class="even">
-<td align="left">2</td>
-<td align="right">3018</td>
-<td align="right">3028</td>
-<td align="right">0</td>
-<td align="right">21</td>
-<td align="right">0</td>
-<td align="right">3088</td>
-<td align="right">3074</td>
-<td align="right">3088</td>
-</tr>
-<tr class="odd">
-<td align="left">3</td>
-<td align="right">3018</td>
-<td align="right">3028</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-<td align="right">0</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="investigate-found-motif" class="section level1">
-<h1>Investigate found motif</h1>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>m_v1 <span class="ot">&lt;-</span> out_v1<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m[out_v1<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m<span class="sc">$</span>pass<span class="sc">==</span><span class="cn">TRUE</span>,]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>m_v2 <span class="ot">&lt;-</span> out_v2<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m[out_v2<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m<span class="sc">$</span>pass<span class="sc">==</span><span class="cn">TRUE</span>,]</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>m_v3 <span class="ot">&lt;-</span> out_v3<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m[out_v3<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m<span class="sc">$</span>pass<span class="sc">==</span><span class="cn">TRUE</span>,]</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>m_v1_e <span class="ot">&lt;-</span> out_v1_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m[</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  out_v1_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m<span class="sc">$</span>pass<span class="sc">==</span><span class="cn">TRUE</span>,]</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>m_v2_e <span class="ot">&lt;-</span> out_v2_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m[</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>  out_v2_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m<span class="sc">$</span>pass<span class="sc">==</span><span class="cn">TRUE</span>,]</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>m_v3_e <span class="ot">&lt;-</span> out_v3_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m[</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  out_v3_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>local<span class="sc">$</span>m<span class="sc">$</span>pass<span class="sc">==</span><span class="cn">TRUE</span>,]</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">version =</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;2&quot;</span>,<span class="st">&quot;3&quot;</span>),</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>                 <span class="at">no_exp =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(m_v1), <span class="fu">nrow</span>(m_v2), <span class="fu">nrow</span>(m_v3)),</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>                 <span class="at">exp =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(m_v1_e), <span class="fu">nrow</span>(m_v2_e), </span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">nrow</span>(m_v3_e)))</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df, <span class="at">caption=</span><span class="st">&quot;found motifs&quot;</span>)</span></code></pre></div>
+<div id="check-implanted-motifs" class="section level2">
+<h2>Check implanted motifs</h2>
+<p>Implanted motif <strong>RQWW</strong> gets found in all versions.
+<br> When using clonal expanded data_sample as input, only version 3
+finds more motifs. <br> Version 1 and 2 find less motifs when expanded
+because of motifs near threshold, see below in section about
+<strong>p-value</strong>/<strong>fdr</strong>. <br> Reason for version 1
+finding more motifs when not expanded could be <strong>p-value</strong>
+being calculated differently</p>
 <table>
 <caption>found motifs</caption>
 <thead>
@@ -732,39 +405,35 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <tbody>
 <tr class="odd">
 <td align="left">1</td>
-<td align="right">11</td>
-<td align="right">10</td>
+<td align="right">13</td>
+<td align="right">12</td>
 </tr>
 <tr class="even">
 <td align="left">2</td>
-<td align="right">2</td>
-<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">3</td>
 </tr>
 <tr class="odd">
 <td align="left">3</td>
-<td align="right">2</td>
-<td align="right">21</td>
+<td align="right">4</td>
+<td align="right">25</td>
 </tr>
 </tbody>
 </table>
-<div id="check-if-implanted-motif-rqww-is-found" class="section level2">
-<h2>Check if implanted motif “RQWW” is found</h2>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect local motif enrichment results</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v1, <span class="at">caption=</span><span class="st">&quot;v1&quot;</span>)</span></code></pre></div>
 <table>
 <caption>v1</caption>
 <colgroup>
-<col width="6%" />
-<col width="14%" />
-<col width="13%" />
-<col width="13%" />
-<col width="12%" />
-<col width="12%" />
-<col width="4%" />
-<col width="8%" />
 <col width="5%" />
-<col width="4%" />
-<col width="6%" />
+<col width="12%" />
+<col width="11%" />
+<col width="11%" />
+<col width="10%" />
+<col width="11%" />
+<col width="7%" />
+<col width="7%" />
+<col width="11%" />
+<col width="3%" />
+<col width="5%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -783,54 +452,54 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">VGGV</td>
-<td align="right">0.138</td>
-<td align="right">0</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">21.73913</td>
-<td align="right">0</td>
-<td align="left">VGGV</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">SSLE</td>
-<td align="right">4.977</td>
-<td align="right">0</td>
-<td align="right">13</td>
-<td align="right">14</td>
-<td align="right">2.81294</td>
-<td align="right">0</td>
-<td align="left">SSLE</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
 <td align="left">RQWW</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">20</td>
 <td align="right">Inf</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
 <td align="left">RQWW</td>
-<td align="right">0</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">SERQ</td>
-<td align="right">0.054</td>
+<td align="left">WTEA</td>
+<td align="right">0.769</td>
 <td align="right">0</td>
-<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">6</td>
+<td align="right">7.802341</td>
+<td align="right">0.000</td>
+<td align="left">WTEA</td>
+<td align="right">0.0000000</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">SLRQ</td>
+<td align="right">0.462</td>
+<td align="right">0</td>
 <td align="right">3</td>
-<td align="right">55.55556</td>
+<td align="right">6</td>
+<td align="right">12.987013</td>
+<td align="right">0.000</td>
+<td align="left">SLRQ</td>
+<td align="right">0.0000000</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">LRQW</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
-<td align="left">SERQ</td>
 <td align="right">0</td>
+<td align="right">6</td>
+<td align="right">Inf</td>
+<td align="right">0.000</td>
+<td align="left">LRQW</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -841,61 +510,87 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">0</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
 <td align="left">QWWG</td>
-<td align="right">0</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">QWWP</td>
+<td align="left">WWDT</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">QWWP</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="left">WWDT</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">QWWN</td>
-<td align="right">0.000</td>
-<td align="right">0</td>
+<td align="left">SSGK</td>
+<td align="right">0.284</td>
 <td align="right">0</td>
 <td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">QWWN</td>
-<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">10.563380</td>
+<td align="right">0.001</td>
+<td align="left">SSGK</td>
+<td align="right">0.0489683</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">QRQW</td>
-<td align="right">0.000</td>
-<td align="right">0</td>
+<td align="left">SQTS</td>
+<td align="right">0.326</td>
 <td align="right">0</td>
 <td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">QRQW</td>
-<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">9.202454</td>
+<td align="right">0.001</td>
+<td align="left">SQTS</td>
+<td align="right">0.0489683</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">IRQW</td>
+<td align="left">RVGL</td>
+<td align="right">0.151</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">19.867550</td>
+<td align="right">0.000</td>
+<td align="left">RVGL</td>
+<td align="right">0.0000000</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">RAQE</td>
+<td align="right">0.238</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">12.605042</td>
+<td align="right">0.001</td>
+<td align="left">RAQE</td>
+<td align="right">0.0489683</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">QWWD</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">IRQW</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="left">QWWD</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -905,29 +600,28 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">0</td>
 <td align="right">2</td>
 <td align="right">3</td>
-<td align="right">13.57466</td>
-<td align="right">0</td>
+<td align="right">13.574661</td>
+<td align="right">0.000</td>
 <td align="left">GNSN</td>
-<td align="right">0</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">ERQW</td>
-<td align="right">0.000</td>
+<td align="left">GDIQ</td>
+<td align="right">0.239</td>
 <td align="right">0</td>
-<td align="right">0</td>
+<td align="right">2</td>
 <td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">ERQW</td>
-<td align="right">0</td>
+<td align="right">12.552301</td>
+<td align="right">0.000</td>
+<td align="left">GDIQ</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v2, <span class="at">caption=</span><span class="st">&quot;v2&quot;</span>)</span></code></pre></div>
 <table>
 <caption>v2</caption>
 <colgroup>
@@ -938,10 +632,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <col width="6%" />
 <col width="7%" />
 <col width="3%" />
-<col width="4%" />
+<col width="9%" />
 <col width="11%" />
 <col width="11%" />
-<col width="8%" />
+<col width="9%" />
 <col width="10%" />
 <col width="5%" />
 </colgroup>
@@ -964,38 +658,67 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">1795</td>
-<td align="left">QWWG</td>
-<td align="right">4</td>
-<td align="right">5847</td>
+<td align="left">1970</td>
+<td align="left">RQWW</td>
+<td align="right">20</td>
+<td align="right">5864</td>
 <td align="right">0</td>
 <td align="right">116615</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">17.90037</td>
+<td align="right">123.213122</td>
 <td align="right">Inf</td>
-<td align="right">5.2e-06</td>
-<td align="right">0.0079795</td>
+<td align="right">0.00e+00</td>
+<td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">1947</td>
-<td align="left">RQWW</td>
-<td align="right">20</td>
-<td align="right">5847</td>
+<td align="left">1411</td>
+<td align="left">LRQW</td>
+<td align="right">6</td>
+<td align="right">5864</td>
 <td align="right">0</td>
 <td align="right">116615</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">123.59139</td>
+<td align="right">30.738253</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
+<td align="right">0.00e+00</td>
+<td align="right">0.0000185</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">2254</td>
+<td align="left">SLRQ</td>
+<td align="right">6</td>
+<td align="right">5864</td>
+<td align="right">10</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">11.94065</td>
+<td align="right">4.301924</td>
+<td align="right">Inf</td>
+<td align="right">6.34e-05</td>
+<td align="right">0.0489108</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1799</td>
+<td align="left">QWWG</td>
+<td align="right">4</td>
+<td align="right">5864</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">17.848031</td>
+<td align="right">Inf</td>
+<td align="right">5.20e-06</td>
+<td align="right">0.0053981</td>
 <td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v3, <span class="at">caption=</span><span class="st">&quot;v3&quot;</span>)</span></code></pre></div>
 <table>
 <caption>v3</caption>
 <colgroup>
@@ -1006,10 +729,10 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <col width="6%" />
 <col width="7%" />
 <col width="3%" />
-<col width="4%" />
+<col width="9%" />
 <col width="11%" />
 <col width="11%" />
-<col width="8%" />
+<col width="9%" />
 <col width="10%" />
 <col width="5%" />
 </colgroup>
@@ -1032,52 +755,81 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">1795</td>
-<td align="left">QWWG</td>
-<td align="right">4</td>
-<td align="right">5847</td>
+<td align="left">1970</td>
+<td align="left">RQWW</td>
+<td align="right">20</td>
+<td align="right">5864</td>
 <td align="right">0</td>
-<td align="right">116728</td>
+<td align="right">116615</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">17.91788</td>
+<td align="right">123.213122</td>
 <td align="right">Inf</td>
-<td align="right">5.2e-06</td>
-<td align="right">0.0079501</td>
+<td align="right">0.00e+00</td>
+<td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">1947</td>
-<td align="left">RQWW</td>
-<td align="right">20</td>
-<td align="right">5847</td>
+<td align="left">1411</td>
+<td align="left">LRQW</td>
+<td align="right">6</td>
+<td align="right">5864</td>
 <td align="right">0</td>
-<td align="right">116728</td>
+<td align="right">116615</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">123.71726</td>
+<td align="right">30.738253</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
+<td align="right">0.00e+00</td>
+<td align="right">0.0000185</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">2254</td>
+<td align="left">SLRQ</td>
+<td align="right">6</td>
+<td align="right">5864</td>
+<td align="right">10</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">11.94065</td>
+<td align="right">4.301924</td>
+<td align="right">Inf</td>
+<td align="right">6.34e-05</td>
+<td align="right">0.0489108</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1799</td>
+<td align="left">QWWG</td>
+<td align="right">4</td>
+<td align="right">5864</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">17.848031</td>
+<td align="right">Inf</td>
+<td align="right">5.20e-06</td>
+<td align="right">0.0053981</td>
 <td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v1_e, <span class="at">caption=</span><span class="st">&quot;v1 exp&quot;</span>)</span></code></pre></div>
-<table style="width:100%;">
+<table>
 <caption>v1 exp</caption>
 <colgroup>
-<col width="6%" />
-<col width="14%" />
-<col width="13%" />
-<col width="13%" />
-<col width="11%" />
-<col width="13%" />
-<col width="3%" />
-<col width="7%" />
 <col width="5%" />
+<col width="12%" />
+<col width="11%" />
+<col width="11%" />
+<col width="10%" />
+<col width="11%" />
+<col width="7%" />
+<col width="7%" />
+<col width="11%" />
 <col width="3%" />
-<col width="6%" />
+<col width="5%" />
 </colgroup>
 <thead>
 <tr class="header">
@@ -1096,54 +848,54 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">WYEQ</td>
-<td align="right">0.129</td>
-<td align="right">0</td>
-<td align="right">2</td>
-<td align="right">3</td>
-<td align="right">23.255814</td>
-<td align="right">0</td>
-<td align="left">WYEQ</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">SSLE</td>
-<td align="right">4.846</td>
-<td align="right">0</td>
-<td align="right">13</td>
-<td align="right">14</td>
-<td align="right">2.888981</td>
-<td align="right">0</td>
-<td align="left">SSLE</td>
-<td align="right">0</td>
-<td align="right">4</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
 <td align="left">RQWW</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">20</td>
 <td align="right">Inf</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
 <td align="left">RQWW</td>
-<td align="right">0</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">SERQ</td>
-<td align="right">0.046</td>
+<td align="left">WTEA</td>
+<td align="right">0.761</td>
 <td align="right">0</td>
-<td align="right">1</td>
-<td align="right">3</td>
-<td align="right">65.217391</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">7.884363</td>
+<td align="right">0.000</td>
+<td align="left">WTEA</td>
+<td align="right">0.0000000</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">SLRQ</td>
+<td align="right">0.539</td>
 <td align="right">0</td>
-<td align="left">SERQ</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">11.131725</td>
+<td align="right">0.000</td>
+<td align="left">SLRQ</td>
+<td align="right">0.0000000</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">LRQW</td>
+<td align="right">0.000</td>
 <td align="right">0</td>
+<td align="right">0</td>
+<td align="right">6</td>
+<td align="right">Inf</td>
+<td align="right">0.000</td>
+<td align="left">LRQW</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
@@ -1154,80 +906,105 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <td align="right">0</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
 <td align="left">QWWG</td>
-<td align="right">0</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">QWWP</td>
+<td align="left">WWDT</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">QWWP</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
+<td align="left">WWDT</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">QWWN</td>
-<td align="right">0.000</td>
-<td align="right">0</td>
+<td align="left">WDTQ</td>
+<td align="right">0.261</td>
 <td align="right">0</td>
 <td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">QWWN</td>
-<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">11.494253</td>
+<td align="right">0.001</td>
+<td align="left">WDTQ</td>
+<td align="right">0.0455735</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">QRQW</td>
-<td align="right">0.000</td>
-<td align="right">0</td>
+<td align="left">SQTS</td>
+<td align="right">0.294</td>
 <td align="right">0</td>
 <td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">QRQW</td>
-<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">10.204082</td>
+<td align="right">0.001</td>
+<td align="left">SQTS</td>
+<td align="right">0.0455735</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">IRQW</td>
-<td align="right">0.000</td>
+<td align="left">RVGL</td>
+<td align="right">0.133</td>
 <td align="right">0</td>
-<td align="right">0</td>
+<td align="right">2</td>
 <td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">0</td>
-<td align="left">IRQW</td>
-<td align="right">0</td>
+<td align="right">22.556391</td>
+<td align="right">0.000</td>
+<td align="left">RVGL</td>
+<td align="right">0.0000000</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">ERQW</td>
+<td align="left">RAQE</td>
+<td align="right">0.291</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">10.309278</td>
+<td align="right">0.001</td>
+<td align="left">RAQE</td>
+<td align="right">0.0455735</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">QWWD</td>
 <td align="right">0.000</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 <td align="right">Inf</td>
+<td align="right">0.000</td>
+<td align="left">QWWD</td>
+<td align="right">0.0000000</td>
+<td align="right">4</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">GDIQ</td>
+<td align="right">0.250</td>
 <td align="right">0</td>
-<td align="left">ERQW</td>
-<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">12.000000</td>
+<td align="right">0.001</td>
+<td align="left">GDIQ</td>
+<td align="right">0.0455735</td>
 <td align="right">4</td>
 <td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v2_e, <span class="at">caption=</span><span class="st">&quot;v2 exp&quot;</span>)</span></code></pre></div>
 <table>
 <caption>v2 exp</caption>
 <colgroup>
@@ -1264,39 +1041,53 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">1806</td>
-<td align="left">QWWG</td>
-<td align="right">4</td>
-<td align="right">5881</td>
-<td align="right">0</td>
-<td align="right">116615</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">17.79606</td>
-<td align="right">Inf</td>
-<td align="right">5.3e-06</td>
-<td align="right">0.0081949</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">1959</td>
+<td align="left">1982</td>
 <td align="left">RQWW</td>
 <td align="right">20</td>
-<td align="right">5881</td>
+<td align="right">5898</td>
 <td align="right">0</td>
 <td align="right">116615</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">122.83625</td>
+<td align="right">122.46077</td>
 <td align="right">Inf</td>
 <td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
+<tr class="even">
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="right">6</td>
+<td align="right">5898</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">30.56676</td>
+<td align="right">Inf</td>
+<td align="right">0.0e+00</td>
+<td align="right">0.0000192</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1810</td>
+<td align="left">QWWG</td>
+<td align="right">4</td>
+<td align="right">5898</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">17.74445</td>
+<td align="right">Inf</td>
+<td align="right">5.4e-06</td>
+<td align="right">0.0055433</td>
+<td align="left">TRUE</td>
+</tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(m_v3_e, <span class="at">caption=</span><span class="st">&quot;v3 exp&quot;</span>)</span></code></pre></div>
-<table>
+<table style="width:100%;">
 <caption>v3 exp</caption>
 <colgroup>
 <col width="4%" />
@@ -1309,7 +1100,7 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <col width="10%" />
 <col width="10%" />
 <col width="10%" />
-<col width="7%" />
+<col width="9%" />
 <col width="9%" />
 <col width="4%" />
 </colgroup>
@@ -1332,335 +1123,442 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">8</td>
-<td align="left">AAKP</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">1</td>
-<td align="right">116728</td>
+<td align="left">310</td>
+<td align="left">CATS</td>
+<td align="right">47</td>
+<td align="right">6374</td>
+<td align="right">309</td>
+<td align="right">116615</td>
 <td align="right">4</td>
-<td align="right">561.864250</td>
-<td align="right">109.330924</td>
+<td align="right">2.796000</td>
+<td align="right">2.119681</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000008</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">250</td>
+<td align="left">ATSR</td>
+<td align="right">41</td>
+<td align="right">6374</td>
+<td align="right">174</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">4.332360</td>
+<td align="right">3.183782</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">890</td>
+<td align="left">GLAA</td>
+<td align="right">31</td>
+<td align="right">6374</td>
+<td align="right">20</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">28.478640</td>
+<td align="right">17.166872</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">9</td>
-<td align="left">AALE</td>
-<td align="right">15</td>
-<td align="right">6357</td>
-<td align="right">1</td>
-<td align="right">116728</td>
+<td align="left">2781</td>
+<td align="left">TSRA</td>
+<td align="right">31</td>
+<td align="right">6374</td>
+<td align="right">14</td>
+<td align="right">116615</td>
 <td align="right">4</td>
-<td align="right">276.118542</td>
-<td align="right">51.300137</td>
+<td align="right">40.716915</td>
+<td align="right">23.111519</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">8</td>
+<td align="left">AAKP</td>
+<td align="right">30</td>
+<td align="right">6374</td>
+<td align="right">1</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">559.785350</td>
+<td align="right">108.913471</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">97</td>
+<td align="left">AKPD</td>
+<td align="right">30</td>
+<td align="right">6374</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">175.141565</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">368</td>
+<td align="left">DGLA</td>
+<td align="right">30</td>
+<td align="right">6374</td>
+<td align="right">7</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">78.915316</td>
+<td align="right">37.959758</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1267</td>
+<td align="left">KPDG</td>
+<td align="right">30</td>
+<td align="right">6374</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">175.141565</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1279</td>
+<td align="left">LAAL</td>
+<td align="right">30</td>
+<td align="right">6374</td>
+<td align="right">2</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">275.762251</td>
+<td align="right">81.383136</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1550</td>
+<td align="left">PDGL</td>
+<td align="right">30</td>
+<td align="right">6374</td>
+<td align="right">2</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">275.762251</td>
+<td align="right">81.383136</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1823</td>
+<td align="left">RAAK</td>
+<td align="right">30</td>
+<td align="right">6374</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">175.141565</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2383</td>
+<td align="left">SRAA</td>
+<td align="right">30</td>
+<td align="right">6374</td>
+<td align="right">3</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">183.791103</td>
+<td align="right">65.694813</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1982</td>
+<td align="left">RQWW</td>
+<td align="right">20</td>
+<td align="right">6374</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">113.909627</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1333</td>
+<td align="left">LETQ</td>
+<td align="right">16</td>
+<td align="right">6374</td>
+<td align="right">31</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">9.464073</td>
+<td align="right">5.367702</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000001</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
 <td align="left">10</td>
+<td align="left">AALE</td>
+<td align="right">15</td>
+<td align="right">6374</td>
+<td align="right">1</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">275.113324</td>
+<td align="right">51.112378</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">11</td>
 <td align="left">AALS</td>
 <td align="right">15</td>
-<td align="right">6357</td>
+<td align="right">6374</td>
 <td align="right">0</td>
-<td align="right">116728</td>
+<td align="right">116615</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">83.307345</td>
+<td align="right">83.003869</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">103</td>
-<td align="left">AKPD</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">175.780300</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">104</td>
+<td align="left">102</td>
 <td align="left">ALET</td>
 <td align="right">15</td>
-<td align="right">6357</td>
+<td align="right">6374</td>
 <td align="right">5</td>
-<td align="right">116728</td>
+<td align="right">116615</td>
 <td align="right">4</td>
-<td align="right">55.174833</td>
-<td align="right">21.985837</td>
+<td align="right">54.974440</td>
+<td align="right">21.906086</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
+<td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">109</td>
+<td align="left">106</td>
 <td align="left">ALST</td>
 <td align="right">15</td>
-<td align="right">6357</td>
+<td align="right">6374</td>
 <td align="right">1</td>
-<td align="right">116728</td>
+<td align="right">116615</td>
 <td align="right">4</td>
-<td align="right">276.118542</td>
-<td align="right">51.300137</td>
+<td align="right">275.113324</td>
+<td align="right">51.112378</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
+<td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">255</td>
-<td align="left">ATSR</td>
-<td align="right">36</td>
-<td align="right">6357</td>
-<td align="right">174</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">3.814538</td>
-<td align="right">2.752213</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">311</td>
-<td align="left">CATS</td>
-<td align="right">43</td>
-<td align="right">6357</td>
-<td align="right">310</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">2.557451</td>
-<td align="right">1.916074</td>
-<td align="right">Inf</td>
-<td align="right">2.0e-07</td>
-<td align="right">0.0000323</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">372</td>
-<td align="left">DGLA</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">7</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">79.205129</td>
-<td align="right">38.098590</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">881</td>
-<td align="left">GLAA</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">20</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">27.651696</td>
-<td align="right">16.600438</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">1244</td>
-<td align="left">KPDG</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">175.780300</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">1258</td>
-<td align="left">LAAL</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">2</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">276.771604</td>
-<td align="right">81.682357</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">1312</td>
-<td align="left">LETQ</td>
-<td align="right">16</td>
-<td align="right">6357</td>
-<td align="right">31</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">9.498620</td>
-<td align="right">5.387319</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000001</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">1406</td>
+<td align="left">1430</td>
 <td align="left">LSTQ</td>
-<td align="right">16</td>
-<td align="right">6357</td>
+<td align="right">15</td>
+<td align="right">6374</td>
 <td align="right">1</td>
-<td align="right">116728</td>
+<td align="right">116615</td>
 <td align="right">4</td>
-<td align="right">294.551425</td>
-<td align="right">55.130153</td>
+<td align="right">275.113324</td>
+<td align="right">51.112378</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">1522</td>
-<td align="left">PDGL</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">2</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">276.771604</td>
-<td align="right">81.682357</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
 <td align="right">0.0000000</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">1806</td>
+<td align="left">2583</td>
+<td align="left">STQY</td>
+<td align="right">15</td>
+<td align="right">6374</td>
+<td align="right">9</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">30.559174</td>
+<td align="right">14.234426</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="right">6</td>
+<td align="right">6374</td>
+<td align="right">0</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">28.267763</td>
+<td align="right">Inf</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000029</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2266</td>
+<td align="left">SLRQ</td>
+<td align="right">6</td>
+<td align="right">6374</td>
+<td align="right">10</td>
+<td align="right">116615</td>
+<td align="right">4</td>
+<td align="right">10.986120</td>
+<td align="right">3.957481</td>
+<td align="right">Inf</td>
+<td align="right">0.0000985</td>
+<td align="right">0.0132757</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1810</td>
 <td align="left">QWWG</td>
 <td align="right">4</td>
-<td align="right">6357</td>
+<td align="right">6374</td>
 <td align="right">0</td>
-<td align="right">116728</td>
+<td align="right">116615</td>
 <td align="right">4</td>
 <td align="right">Inf</td>
-<td align="right">16.479057</td>
+<td align="right">16.417146</td>
 <td align="right">Inf</td>
-<td align="right">7.1e-06</td>
-<td align="right">0.0010453</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">1818</td>
-<td align="left">RAAK</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">175.780300</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0000072</td>
+<td align="right">0.0010153</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">1959</td>
-<td align="left">RQWW</td>
-<td align="right">20</td>
-<td align="right">6357</td>
-<td align="right">0</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">114.306859</td>
-<td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="odd">
-<td align="left">2357</td>
-<td align="left">SRAA</td>
-<td align="right">30</td>
-<td align="right">6357</td>
+<td align="left">1808</td>
+<td align="left">QWWD</td>
 <td align="right">3</td>
-<td align="right">116728</td>
+<td align="right">6374</td>
+<td align="right">0</td>
+<td align="right">116615</td>
 <td align="right">4</td>
-<td align="right">184.463456</td>
-<td align="right">65.994589</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
-<td align="left">TRUE</td>
-</tr>
-<tr class="even">
-<td align="left">2550</td>
-<td align="left">STQY</td>
-<td align="right">16</td>
-<td align="right">6357</td>
-<td align="right">9</td>
-<td align="right">116728</td>
-<td align="right">4</td>
-<td align="right">32.720583</td>
-<td align="right">15.419128</td>
+<td align="right">10.672085</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
+<td align="right">0.0001391</td>
+<td align="right">0.0172475</td>
 <td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">2761</td>
-<td align="left">TSRA</td>
-<td align="right">30</td>
-<td align="right">6357</td>
-<td align="right">14</td>
-<td align="right">116728</td>
+<td align="left">3022</td>
+<td align="left">WWDT</td>
+<td align="right">3</td>
+<td align="right">6374</td>
+<td align="right">0</td>
+<td align="right">116615</td>
 <td align="right">4</td>
-<td align="right">39.525252</td>
-<td align="right">22.361516</td>
 <td align="right">Inf</td>
-<td align="right">0.0e+00</td>
-<td align="right">0.0000000</td>
+<td align="right">10.672085</td>
+<td align="right">Inf</td>
+<td align="right">0.0001391</td>
+<td align="right">0.0172475</td>
 <td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="check-global-sequences" class="section level2">
+<h2>Check global sequences</h2>
+<p>Inserted sequences <strong>CATSRAAKPDGLAALETQYF</strong> and
+<strong>CATSRAAKPDGLAALSTQYF</strong> are found by all versions (same
+algorithm).</p>
+<table>
+<caption>without clonal expansion</caption>
+<tbody>
+<tr class="odd">
+<td align="left">CASGWAGPNGYAF</td>
+<td align="left">CASSWAGPNGYAF</td>
+</tr>
+<tr class="even">
+<td align="left">CASSLRQWWDTQYF</td>
+<td align="left">CASSWRQWWDTQYF</td>
+</tr>
+<tr class="odd">
+<td align="left">CASSIGRGDNEQFF</td>
+<td align="left">CASSQGRGDNEQFF</td>
+</tr>
+<tr class="even">
+<td align="left">CASSPGQGQTEAFF</td>
+<td align="left">CASSPGQGLTEAFF</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>with clonal expansion</caption>
+<tbody>
+<tr class="odd">
+<td align="left">CASGWAGPNGYAF</td>
+<td align="left">CASSWAGPNGYAF</td>
+</tr>
+<tr class="even">
+<td align="left">CASSLRQWWDTQYF</td>
+<td align="left">CASSWRQWWDTQYF</td>
+</tr>
+<tr class="odd">
+<td align="left">CASSIGRGDNEQFF</td>
+<td align="left">CASSQGRGDNEQFF</td>
+</tr>
+<tr class="even">
+<td align="left">CASSPGQGQTEAFF</td>
+<td align="left">CASSPGQGLTEAFF</td>
+</tr>
+<tr class="odd">
+<td align="left">CATSRAAKPDGLAALSTQYF</td>
+<td align="left">CATSRAAKPDGLAALETQYF</td>
 </tr>
 </tbody>
 </table>
 </div>
 <div id="compare-p-values-and-fdr" class="section level2">
 <h2>Compare p-values and fdr</h2>
-<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># fdr        &lt;= local_max_fdr</span></span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="co"># ove        &gt;= local_min_ove</span></span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="co"># f_sample   &gt;= local_min_o</span></span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a><span class="co"># thresholds</span></span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">local_max_fdr =</span> control_input<span class="sc">$</span>local_max_fdr,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>                 <span class="at">local_min_ove =</span> control_input<span class="sc">$</span>local_min_ove,</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>                 <span class="at">local_min_o   =</span> control_input<span class="sc">$</span>local_min_o)</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(df, <span class="at">caption=</span><span class="st">&quot;selection thresholds&quot;</span>)</span></code></pre></div>
+<p>Both <strong>p-value</strong> and <strong>fdr</strong> seem to be
+comparable between versions. <br></p>
+<p><strong>OvE</strong> also looks reasonable for found motifs. <br></p>
+<p><strong>p-value</strong> of version 1 seems to cut off value &lt;
+0.000, possible reason for more found motifs</p>
 <table>
 <caption>selection thresholds</caption>
 <thead>
@@ -1672,29 +1570,13 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="right">0.01</td>
+<td align="right">0.05</td>
 <td align="right">2</td>
 <td align="right">3</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="co"># subset selected motifs</span></span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> res[(res<span class="sc">$</span>pass_v1<span class="sc">==</span><span class="cn">TRUE</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>pass_v1) ) <span class="sc">|</span></span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>           (res<span class="sc">$</span>pass_v2<span class="sc">==</span><span class="cn">TRUE</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>pass_v2) ) <span class="sc">|</span></span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>           (res<span class="sc">$</span>pass_v3<span class="sc">==</span><span class="cn">TRUE</span> <span class="sc">&amp;</span> <span class="sc">!</span><span class="fu">is.na</span>(res<span class="sc">$</span>pass_v3) ),</span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>         <span class="fu">c</span>(<span class="st">&quot;motif&quot;</span>, <span class="st">&quot;pass_v1&quot;</span>, <span class="st">&quot;pass_v2&quot;</span>, <span class="st">&quot;pass_v3&quot;</span>,</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;p_v1&quot;</span>, <span class="st">&quot;p_value_v2&quot;</span>, <span class="st">&quot;p_value_v3&quot;</span>, </span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;fdr_v1&quot;</span>, <span class="st">&quot;fdr_v2&quot;</span>,   <span class="st">&quot;fdr_v3&quot;</span>, </span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>           <span class="co">#&quot;mean_f_ref_v1&quot;, &quot;f_ref_v2&quot;, &quot;f_ref_v3&quot;, </span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;f_sample_v1&quot;</span>, <span class="st">&quot;f_sample_v2&quot;</span>, <span class="st">&quot;f_sample_v3&quot;</span>,</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>           <span class="st">&quot;ove_v1&quot;</span>, <span class="st">&quot;ove_v2&quot;</span>, <span class="st">&quot;ove_v3&quot;</span>)]</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a><span class="co"># sort</span></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>r <span class="ot">&lt;-</span> r[<span class="fu">order</span>(<span class="sc">-</span>r<span class="sc">$</span>pass_v2),]</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect local motif enrichment results</span></span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(r, <span class="at">caption=</span><span class="st">&quot;p-value / fdr comparison&quot;</span>)</span></code></pre></div>
-<table>
+<table style="width:100%;">
 <caption>p-value / fdr comparison</caption>
 <colgroup>
 <col width="3%" />
@@ -1703,15 +1585,15 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 <col width="5%" />
 <col width="5%" />
 <col width="3%" />
-<col width="7%" />
-<col width="7%" />
-<col width="4%" />
 <col width="6%" />
 <col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
 <col width="7%" />
 <col width="7%" />
 <col width="7%" />
-<col width="5%" />
+<col width="6%" />
 <col width="6%" />
 <col width="6%" />
 </colgroup>
@@ -1738,274 +1620,1609 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 </thead>
 <tbody>
 <tr class="odd">
-<td align="left">1806</td>
-<td align="left">QWWG</td>
+<td align="left">1420</td>
+<td align="left">LRQW</td>
 <td align="left">TRUE</td>
 <td align="left">TRUE</td>
 <td align="left">TRUE</td>
-<td align="right">0</td>
-<td align="right">0.0000052</td>
-<td align="right">0.0000052</td>
-<td align="right">0</td>
-<td align="right">0.0079795</td>
-<td align="right">0.0079501</td>
-<td align="right">4</td>
-<td align="right">4</td>
-<td align="right">4</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-</tr>
-<tr class="even">
-<td align="left">1959</td>
-<td align="left">RQWW</td>
-<td align="left">TRUE</td>
-<td align="left">TRUE</td>
-<td align="left">TRUE</td>
-<td align="right">0</td>
+<td align="right">0.000</td>
 <td align="right">0.0000000</td>
 <td align="right">0.0000000</td>
-<td align="right">0</td>
 <td align="right">0.0000000</td>
-<td align="right">0.0000000</td>
-<td align="right">20</td>
-<td align="right">20</td>
-<td align="right">20</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-</tr>
-<tr class="odd">
-<td align="left">581</td>
-<td align="left">ERQW</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0001085</td>
-<td align="right">0</td>
-<td align="right">0.0477737</td>
-<td align="right">0.0476417</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-</tr>
-<tr class="even">
-<td align="left">921</td>
-<td align="left">GNSN</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0050819</td>
-<td align="right">0.0050687</td>
-<td align="right">0</td>
-<td align="right">0.3181375</td>
-<td align="right">0.3183412</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">13.57466</td>
-<td align="right">11.970143</td>
-<td align="right">11.981882</td>
-</tr>
-<tr class="odd">
-<td align="left">1208</td>
-<td align="left">IRQW</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0001085</td>
-<td align="right">0</td>
-<td align="right">0.0477737</td>
-<td align="right">0.0476417</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-</tr>
-<tr class="even">
-<td align="left">1783</td>
-<td align="left">QRQW</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0001085</td>
-<td align="right">0</td>
-<td align="right">0.0477737</td>
-<td align="right">0.0476417</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-<td align="right">Inf</td>
-</tr>
-<tr class="odd">
-<td align="left">1809</td>
-<td align="left">QWWN</td>
-<td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0001085</td>
-<td align="right">0</td>
-<td align="right">0.0477737</td>
-<td align="right">0.0476417</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">3</td>
+<td align="right">0.0000185</td>
+<td align="right">0.0000185</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">6</td>
 <td align="right">Inf</td>
 <td align="right">Inf</td>
 <td align="right">Inf</td>
 </tr>
 <tr class="even">
 <td align="left">1810</td>
-<td align="left">QWWP</td>
+<td align="left">QWWG</td>
 <td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0001088</td>
-<td align="right">0.0001085</td>
-<td align="right">0</td>
-<td align="right">0.0477737</td>
-<td align="right">0.0476417</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">3</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0000052</td>
+<td align="right">0.0000052</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0053981</td>
+<td align="right">0.0053981</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">4</td>
 <td align="right">Inf</td>
 <td align="right">Inf</td>
 <td align="right">Inf</td>
 </tr>
 <tr class="odd">
-<td align="left">2082</td>
-<td align="left">SERQ</td>
+<td align="left">1982</td>
+<td align="left">RQWW</td>
 <td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0004196</td>
-<td align="right">0.0004184</td>
-<td align="right">0</td>
-<td align="right">0.1612233</td>
-<td align="right">0.1607833</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">3</td>
-<td align="right">55.55556</td>
-<td align="right">59.810401</td>
-<td align="right">59.868223</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
 </tr>
 <tr class="even">
-<td align="left">2446</td>
-<td align="left">SSLE</td>
+<td align="left">2266</td>
+<td align="left">SLRQ</td>
 <td align="left">TRUE</td>
-<td align="left">FALSE</td>
-<td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0010114</td>
-<td align="right">0.0010025</td>
-<td align="right">0</td>
-<td align="right">0.3181375</td>
-<td align="right">0.3183412</td>
-<td align="right">14</td>
-<td align="right">14</td>
-<td align="right">14</td>
-<td align="right">2.81294</td>
-<td align="right">2.824742</td>
-<td align="right">2.827482</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0000634</td>
+<td align="right">0.0000634</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0489108</td>
+<td align="right">0.0489108</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">12.987013</td>
+<td align="right">11.940651</td>
+<td align="right">11.940651</td>
 </tr>
 <tr class="odd">
-<td align="left">2856</td>
-<td align="left">VGGV</td>
+<td align="left">734</td>
+<td align="left">GDIQ</td>
 <td align="left">TRUE</td>
 <td align="left">FALSE</td>
 <td align="left">FALSE</td>
-<td align="right">0</td>
-<td align="right">0.0019509</td>
-<td align="right">0.0019458</td>
-<td align="right">0</td>
-<td align="right">0.3181375</td>
-<td align="right">0.3183412</td>
+<td align="right">0.000</td>
+<td align="right">0.0051216</td>
+<td align="right">0.0051216</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3359062</td>
+<td align="right">0.3359062</td>
 <td align="right">3</td>
 <td align="right">3</td>
 <td align="right">3</td>
-<td align="right">21.73913</td>
-<td align="right">19.952581</td>
-<td align="right">19.971869</td>
+<td align="right">12.552301</td>
+<td align="right">11.934968</td>
+<td align="right">11.934968</td>
+</tr>
+<tr class="even">
+<td align="left">946</td>
+<td align="left">GNSN</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.000</td>
+<td align="right">0.0051216</td>
+<td align="right">0.0051216</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3359062</td>
+<td align="right">0.3359062</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">13.574661</td>
+<td align="right">11.934968</td>
+<td align="right">11.934968</td>
+</tr>
+<tr class="odd">
+<td align="left">1808</td>
+<td align="left">QWWD</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.000</td>
+<td align="right">0.0001097</td>
+<td align="right">0.0001097</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0564013</td>
+<td align="right">0.0564013</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">1832</td>
+<td align="left">RAQE</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.001</td>
+<td align="right">0.0051216</td>
+<td align="right">0.0051216</td>
+<td align="right">0.0489683</td>
+<td align="right">0.3359062</td>
+<td align="right">0.3359062</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">12.605042</td>
+<td align="right">11.934968</td>
+<td align="right">11.934968</td>
+</tr>
+<tr class="odd">
+<td align="left">2019</td>
+<td align="left">RVGL</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.000</td>
+<td align="right">0.0019666</td>
+<td align="right">0.0019666</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3359062</td>
+<td align="right">0.3359062</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">19.867550</td>
+<td align="right">19.895688</td>
+<td align="right">19.895688</td>
+</tr>
+<tr class="even">
+<td align="left">2378</td>
+<td align="left">SQTS</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.001</td>
+<td align="right">0.0074102</td>
+<td align="right">0.0074102</td>
+<td align="right">0.0489683</td>
+<td align="right">0.3359062</td>
+<td align="right">0.3359062</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">9.202454</td>
+<td align="right">9.947568</td>
+<td align="right">9.947568</td>
+</tr>
+<tr class="odd">
+<td align="left">2464</td>
+<td align="left">SSGK</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.001</td>
+<td align="right">0.0074102</td>
+<td align="right">0.0074102</td>
+<td align="right">0.0489683</td>
+<td align="right">0.3359062</td>
+<td align="right">0.3359062</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">10.563380</td>
+<td align="right">9.947568</td>
+<td align="right">9.947568</td>
+</tr>
+<tr class="even">
+<td align="left">3007</td>
+<td align="left">WTEA</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.000</td>
+<td align="right">0.0003494</td>
+<td align="right">0.0003494</td>
+<td align="right">0.0000000</td>
+<td align="right">0.1539858</td>
+<td align="right">0.1539858</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">7.802341</td>
+<td align="right">7.962904</td>
+<td align="right">7.962904</td>
+</tr>
+<tr class="odd">
+<td align="left">3022</td>
+<td align="left">WWDT</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.000</td>
+<td align="right">0.0001097</td>
+<td align="right">0.0001097</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0564013</td>
+<td align="right">0.0564013</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+</tbody>
+</table>
+<table style="width:100%;">
+<caption>p-value / fdr comparison - expanded</caption>
+<colgroup>
+<col width="2%" />
+<col width="3%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="3%" />
+<col width="7%" />
+<col width="7%" />
+<col width="5%" />
+<col width="5%" />
+<col width="5%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="5%" />
+<col width="5%" />
+<col width="6%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">motif</th>
+<th align="left">pass_v1_e</th>
+<th align="left">pass_v2_e</th>
+<th align="left">pass_v3_e</th>
+<th align="right">p_v1_e</th>
+<th align="right">p_value_v2_e</th>
+<th align="right">p_value_v3_e</th>
+<th align="right">fdr_v1_e</th>
+<th align="right">fdr_v2_e</th>
+<th align="right">fdr_v3_e</th>
+<th align="right">f_sample_v1_e</th>
+<th align="right">f_sample_v2_e</th>
+<th align="right">f_sample_v3_e</th>
+<th align="right">ove_v1_e</th>
+<th align="right">ove_v2_e</th>
+<th align="right">ove_v3_e</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000192</td>
+<td align="right">0.0000029</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">1808</td>
+<td align="left">QWWD</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0001115</td>
+<td align="right">0.0001391</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0576007</td>
+<td align="right">0.0172475</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">1810</td>
+<td align="left">QWWG</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0000054</td>
+<td align="right">0.0000072</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0055433</td>
+<td align="right">0.0010153</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">4</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">1982</td>
+<td align="left">RQWW</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">20</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">2266</td>
+<td align="left">SLRQ</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0000654</td>
+<td align="right">0.0000985</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0506643</td>
+<td align="right">0.0132757</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">11.131725</td>
+<td align="right">11.870693</td>
+<td align="right">10.986120</td>
+</tr>
+<tr class="even">
+<td align="left">3022</td>
+<td align="left">WWDT</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0001115</td>
+<td align="right">0.0001391</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0576007</td>
+<td align="right">0.0172475</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">8</td>
+<td align="left">AAKP</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0067287</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">43.478261</td>
+<td align="right">39.552803</td>
+<td align="right">559.785350</td>
+</tr>
+<tr class="even">
+<td align="left">10</td>
+<td align="left">AALE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.056</td>
+<td align="right">0.0939664</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2443195</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">15</td>
+<td align="right">17.857143</td>
+<td align="right">19.776495</td>
+<td align="right">275.113324</td>
+</tr>
+<tr class="odd">
+<td align="left">11</td>
+<td align="left">AALS</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0481418</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">15</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">97</td>
+<td align="left">AKPD</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0023173</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">102</td>
+<td align="left">ALET</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.236</td>
+<td align="right">0.2562435</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3720061</td>
+<td align="right">0.3970493</td>
+<td align="right">0.0000000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">15</td>
+<td align="right">3.676471</td>
+<td align="right">3.955086</td>
+<td align="right">54.974440</td>
+</tr>
+<tr class="even">
+<td align="left">106</td>
+<td align="left">ALST</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.046</td>
+<td align="right">0.0939664</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2443195</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">15</td>
+<td align="right">21.739130</td>
+<td align="right">19.776495</td>
+<td align="right">275.113324</td>
+</tr>
+<tr class="odd">
+<td align="left">250</td>
+<td align="left">ATSR</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.099</td>
+<td align="right">0.1188312</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2717504</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">13</td>
+<td align="right">13</td>
+<td align="right">41</td>
+<td align="right">1.478449</td>
+<td align="right">1.478242</td>
+<td align="right">4.332360</td>
+</tr>
+<tr class="even">
+<td align="left">310</td>
+<td align="left">CATS</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.225</td>
+<td align="right">0.2357904</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3669868</td>
+<td align="right">0.3970493</td>
+<td align="right">0.0000008</td>
+<td align="right">19</td>
+<td align="right">19</td>
+<td align="right">47</td>
+<td align="right">1.215533</td>
+<td align="right">1.216445</td>
+<td align="right">2.796000</td>
+</tr>
+<tr class="odd">
+<td align="left">368</td>
+<td align="left">DGLA</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.044</td>
+<td align="right">0.0665893</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2443195</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">5.952381</td>
+<td align="right">5.650541</td>
+<td align="right">78.915316</td>
+</tr>
+<tr class="even">
+<td align="left">890</td>
+<td align="left">GLAA</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.067</td>
+<td align="right">0.0964669</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2645006</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">31</td>
+<td align="right">2.982107</td>
+<td align="right">2.966734</td>
+<td align="right">28.478640</td>
+</tr>
+<tr class="odd">
+<td align="left">1267</td>
+<td align="left">KPDG</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0023173</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="even">
+<td align="left">1279</td>
+<td align="left">LAAL</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.005</td>
+<td align="right">0.0130275</td>
+<td align="right">0.0000000</td>
+<td align="right">0.1666129</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">17.094017</td>
+<td align="right">19.779631</td>
+<td align="right">275.762251</td>
+</tr>
+<tr class="odd">
+<td align="left">1333</td>
+<td align="left">LETQ</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.471</td>
+<td align="right">0.4761374</td>
+<td align="right">0.0000000</td>
+<td align="right">0.5579622</td>
+<td align="right">0.5627574</td>
+<td align="right">0.0000001</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">16</td>
+<td align="right">1.277955</td>
+<td align="right">1.275699</td>
+<td align="right">9.464073</td>
+</tr>
+<tr class="even">
+<td align="left">1430</td>
+<td align="left">LSTQ</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.058</td>
+<td align="right">0.0939664</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2448801</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">15</td>
+<td align="right">17.241379</td>
+<td align="right">19.776495</td>
+<td align="right">275.113324</td>
+</tr>
+<tr class="odd">
+<td align="left">1550</td>
+<td align="left">PDGL</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.003</td>
+<td align="right">0.0130275</td>
+<td align="right">0.0000000</td>
+<td align="right">0.1093765</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">21.739130</td>
+<td align="right">19.779631</td>
+<td align="right">275.762251</td>
+</tr>
+<tr class="even">
+<td align="left">1823</td>
+<td align="left">RAAK</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.000</td>
+<td align="right">0.0023173</td>
+<td align="right">0.0000000</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+</tr>
+<tr class="odd">
+<td align="left">2383</td>
+<td align="left">SRAA</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.005</td>
+<td align="right">0.0210217</td>
+<td align="right">0.0000000</td>
+<td align="right">0.1666129</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">2</td>
+<td align="right">2</td>
+<td align="right">30</td>
+<td align="right">13.793103</td>
+<td align="right">13.179978</td>
+<td align="right">183.791103</td>
+</tr>
+<tr class="even">
+<td align="left">2583</td>
+<td align="left">STQY</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.378</td>
+<td align="right">0.3894597</td>
+<td align="right">0.0000000</td>
+<td align="right">0.4844591</td>
+<td align="right">0.4978265</td>
+<td align="right">0.0000000</td>
+<td align="right">1</td>
+<td align="right">1</td>
+<td align="right">15</td>
+<td align="right">2.202643</td>
+<td align="right">2.196988</td>
+<td align="right">30.559174</td>
+</tr>
+<tr class="odd">
+<td align="left">2781</td>
+<td align="left">TSRA</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="left">TRUE</td>
+<td align="right">0.029</td>
+<td align="right">0.0457285</td>
+<td align="right">0.0000000</td>
+<td align="right">0.2443195</td>
+<td align="right">0.3354655</td>
+<td align="right">0.0000000</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">31</td>
+<td align="right">4.341534</td>
+<td align="right">4.238452</td>
+<td align="right">40.716915</td>
+</tr>
+<tr class="even">
+<td align="left">734</td>
+<td align="left">GDIQ</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.001</td>
+<td align="right">0.0052016</td>
+<td align="right">0.0063982</td>
+<td align="right">0.0455735</td>
+<td align="right">0.3354655</td>
+<td align="right">0.3603549</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">12.000000</td>
+<td align="right">11.865060</td>
+<td align="right">10.981418</td>
+</tr>
+<tr class="odd">
+<td align="left">1832</td>
+<td align="left">RAQE</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.001</td>
+<td align="right">0.0052016</td>
+<td align="right">0.0063982</td>
+<td align="right">0.0455735</td>
+<td align="right">0.3354655</td>
+<td align="right">0.3603549</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">10.309278</td>
+<td align="right">11.865060</td>
+<td align="right">10.981418</td>
+</tr>
+<tr class="even">
+<td align="left">2019</td>
+<td align="left">RVGL</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.000</td>
+<td align="right">0.0019981</td>
+<td align="right">0.0024716</td>
+<td align="right">0.0000000</td>
+<td align="right">0.3354655</td>
+<td align="right">0.2447764</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">22.556391</td>
+<td align="right">19.782767</td>
+<td align="right">18.297188</td>
+</tr>
+<tr class="odd">
+<td align="left">2378</td>
+<td align="left">SQTS</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.001</td>
+<td align="right">0.0075244</td>
+<td align="right">0.0092296</td>
+<td align="right">0.0455735</td>
+<td align="right">0.3354655</td>
+<td align="right">0.3603549</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">10.204082</td>
+<td align="right">9.890223</td>
+<td align="right">9.151774</td>
+</tr>
+<tr class="even">
+<td align="left">2969</td>
+<td align="left">WDTQ</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.001</td>
+<td align="right">0.0052016</td>
+<td align="right">0.0063982</td>
+<td align="right">0.0455735</td>
+<td align="right">0.3354655</td>
+<td align="right">0.3603549</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">3</td>
+<td align="right">11.494253</td>
+<td align="right">11.865060</td>
+<td align="right">10.981418</td>
+</tr>
+<tr class="odd">
+<td align="left">3007</td>
+<td align="left">WTEA</td>
+<td align="left">TRUE</td>
+<td align="left">FALSE</td>
+<td align="left">FALSE</td>
+<td align="right">0.000</td>
+<td align="right">0.0003599</td>
+<td align="right">0.0005336</td>
+<td align="right">0.0000000</td>
+<td align="right">0.1593225</td>
+<td align="right">0.0635973</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">6</td>
+<td align="right">7.884363</td>
+<td align="right">7.917002</td>
+<td align="right">7.324895</td>
 </tr>
 </tbody>
 </table>
 </div>
-<div id="check-if-global-sequences-catsraakpdglaaletqyf-and-catsraakpdglaalstqyf-are-found" class="section level2">
-<h2>Check if global sequences “CATSRAAKPDGLAALETQYF” and
-“CATSRAAKPDGLAALSTQYF” are found</h2>
-<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># inspect which CDR3bs are globally similar</span></span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">version =</span> <span class="fu">c</span>(<span class="st">&quot;1&quot;</span>,<span class="st">&quot;2&quot;</span>,<span class="st">&quot;3&quot;</span>),</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>                 <span class="at">no_exp =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(m_v1), <span class="fu">nrow</span>(m_v2), <span class="fu">nrow</span>(m_v3)),</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>                 <span class="at">exp =</span> <span class="fu">c</span>(<span class="fu">nrow</span>(m_v1_e), <span class="fu">nrow</span>(m_v2_e), </span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>                                      <span class="fu">nrow</span>(m_v3_e)))</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(out_v3<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>global, <span class="at">caption=</span><span class="st">&quot;without clonal expansion&quot;</span>)</span></code></pre></div>
+<div id="investigate-ove-values" class="section level2">
+<h2>Investigate OvE values</h2>
+<p>For found motifs of version 1 against ground truth, OvE values look
+reasonably comparable.</p>
 <table>
-<caption>without clonal expansion</caption>
+<caption>v1 found motifs OvE vs gt OvE</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">motif</th>
+<th align="right">ove_gt</th>
+<th align="right">ove_v1</th>
+<th align="right">delta_ove_v1</th>
+<th align="left">pass_v1</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td align="left">CASSPGMGTEAFF</td>
-<td align="left">CASSPGGGTEAFF</td>
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">CASGWAGPNGYAF</td>
-<td align="left">CASSWAGPNGYAF</td>
+<td align="left">1808</td>
+<td align="left">QWWD</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">CASSIGRGDNEQFF</td>
-<td align="left">CASSQGRGDNEQFF</td>
+<td align="left">1810</td>
+<td align="left">QWWG</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1982</td>
+<td align="left">RQWW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">3022</td>
+<td align="left">WWDT</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2019</td>
+<td align="left">RVGL</td>
+<td align="right">19.886596</td>
+<td align="right">19.867550</td>
+<td align="right">-0.0190465</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">946</td>
+<td align="left">GNSN</td>
+<td align="right">11.931958</td>
+<td align="right">13.574661</td>
+<td align="right">1.6427029</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2266</td>
+<td align="left">SLRQ</td>
+<td align="right">11.931958</td>
+<td align="right">12.987013</td>
+<td align="right">1.0550553</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1832</td>
+<td align="left">RAQE</td>
+<td align="right">11.931958</td>
+<td align="right">12.605042</td>
+<td align="right">0.6730843</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">734</td>
+<td align="left">GDIQ</td>
+<td align="right">11.931958</td>
+<td align="right">12.552301</td>
+<td align="right">0.6203435</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">2464</td>
+<td align="left">SSGK</td>
+<td align="right">9.943298</td>
+<td align="right">10.563380</td>
+<td align="right">0.6200822</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2378</td>
+<td align="left">SQTS</td>
+<td align="right">9.943298</td>
+<td align="right">9.202454</td>
+<td align="right">-0.7408441</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">3007</td>
+<td align="left">WTEA</td>
+<td align="right">7.954638</td>
+<td align="right">7.802341</td>
+<td align="right">-0.1522978</td>
+<td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>knitr<span class="sc">::</span><span class="fu">kable</span>(out_v3_e<span class="sc">$</span>clust<span class="sc">$</span>CDR3b<span class="sc">$</span>global, <span class="at">caption=</span><span class="st">&quot;with clonal expansion&quot;</span>)</span></code></pre></div>
 <table>
-<caption>with clonal expansion</caption>
+<caption>v1 found motifs OvE vs gt OvE - with clonal expansion</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">motif</th>
+<th align="right">ove_gt_e_u</th>
+<th align="right">ove_v1_e</th>
+<th align="right">delta_ove_v1_e_u</th>
+<th align="left">pass_v1_e</th>
+</tr>
+</thead>
 <tbody>
 <tr class="odd">
-<td align="left">CASSPGMGTEAFF</td>
-<td align="left">CASSPGGGTEAFF</td>
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">CASGWAGPNGYAF</td>
-<td align="left">CASSWAGPNGYAF</td>
+<td align="left">1808</td>
+<td align="left">QWWD</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="odd">
-<td align="left">CATSRAAKPDGLAALSTQYF</td>
-<td align="left">CATSRAAKPDGLAALETQYF</td>
+<td align="left">1810</td>
+<td align="left">QWWG</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
 </tr>
 <tr class="even">
-<td align="left">CASSIGRGDNEQFF</td>
-<td align="left">CASSQGRGDNEQFF</td>
+<td align="left">1982</td>
+<td align="left">RQWW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">3022</td>
+<td align="left">WWDT</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2019</td>
+<td align="left">RVGL</td>
+<td align="right">19.771957</td>
+<td align="right">22.556391</td>
+<td align="right">2.7844344</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">734</td>
+<td align="left">GDIQ</td>
+<td align="right">11.863174</td>
+<td align="right">12.000000</td>
+<td align="right">0.1368260</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2969</td>
+<td align="left">WDTQ</td>
+<td align="right">11.863174</td>
+<td align="right">11.494253</td>
+<td align="right">-0.3689211</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">2266</td>
+<td align="left">SLRQ</td>
+<td align="right">11.863174</td>
+<td align="right">11.131725</td>
+<td align="right">-0.7314485</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1832</td>
+<td align="left">RAQE</td>
+<td align="right">11.863174</td>
+<td align="right">10.309278</td>
+<td align="right">-1.5538956</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">2378</td>
+<td align="left">SQTS</td>
+<td align="right">9.885978</td>
+<td align="right">10.204082</td>
+<td align="right">0.3181033</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">3007</td>
+<td align="left">WTEA</td>
+<td align="right">7.908783</td>
+<td align="right">7.884363</td>
+<td align="right">-0.0244200</td>
+<td align="left">TRUE</td>
 </tr>
 </tbody>
 </table>
-<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(df, fr_v1, fr_v1e, fr_v2, fr_v2e, fr_v3, fr_v3e,</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>   fs_v1, fs_v1e, fs_v2, fs_v2e, fs_v3, fs_v3e,</span>
-<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>   m_v1, m_v2, m_v3, m_v1_e, m_v2_e, m_v3_e,</span>
-<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>   nr_v2, nr_v2e, nr_v3, nr_v3e,</span>
-<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>   ns_v2, ns_v2e, ns_v3, ns_v3e,</span>
-<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>   ove_v1, ove_v1e, ove_v2, ove_v2e, ove_v3, ove_v3e)</span></code></pre></div>
+<p>For found motifs of version 2 against ground truth, OvE values look
+comparable (only one value to be seen, though).</p>
+<table>
+<caption>v2 found motifs OvE vs gt OvE</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">motif</th>
+<th align="right">ove_gt</th>
+<th align="right">ove_v2</th>
+<th align="right">delta_ove_v2</th>
+<th align="left">pass_v2</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1810</td>
+<td align="left">QWWG</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1982</td>
+<td align="left">RQWW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2266</td>
+<td align="left">SLRQ</td>
+<td align="right">11.93196</td>
+<td align="right">11.94065</td>
+<td align="right">0.008693</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>v2 found motifs OvE vs gt OvE - with clonal expansion</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">motif</th>
+<th align="right">ove_gt_e_u</th>
+<th align="right">ove_v2_e</th>
+<th align="right">delta_ove_v2_e_u</th>
+<th align="left">pass_v2_e</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1810</td>
+<td align="left">QWWG</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1982</td>
+<td align="left">RQWW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<p>For found motifs of version 3 against ground truth, OvE values look
+different in some values (if <strong>Inf</strong>) -&gt; to be
+investigated.</p>
+<table>
+<caption>v3 found motifs OvE vs gt OvE</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">motif</th>
+<th align="right">ove_gt</th>
+<th align="right">ove_v3</th>
+<th align="right">delta_ove_v3</th>
+<th align="left">pass_v3</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1810</td>
+<td align="left">QWWG</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1982</td>
+<td align="left">RQWW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2266</td>
+<td align="left">SLRQ</td>
+<td align="right">11.93196</td>
+<td align="right">11.94065</td>
+<td align="right">0.008693</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+<table>
+<caption>v3 found motifs OvE vs gt OvE - with clonal expansion</caption>
+<thead>
+<tr class="header">
+<th align="left"></th>
+<th align="left">motif</th>
+<th align="right">ove_gt_e</th>
+<th align="right">ove_v3_e</th>
+<th align="right">delta_ove_v3_e</th>
+<th align="left">pass_v3_e</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">11</td>
+<td align="left">AALS</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">97</td>
+<td align="left">AKPD</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1267</td>
+<td align="left">KPDG</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1420</td>
+<td align="left">LRQW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1808</td>
+<td align="left">QWWD</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1810</td>
+<td align="left">QWWG</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1823</td>
+<td align="left">RAAK</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1982</td>
+<td align="left">RQWW</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">3022</td>
+<td align="left">WWDT</td>
+<td align="right">Inf</td>
+<td align="right">Inf</td>
+<td align="right">NaN</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">8</td>
+<td align="left">AAKP</td>
+<td align="right">Inf</td>
+<td align="right">559.785350</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1279</td>
+<td align="left">LAAL</td>
+<td align="right">Inf</td>
+<td align="right">275.762251</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">1550</td>
+<td align="left">PDGL</td>
+<td align="right">Inf</td>
+<td align="right">275.762251</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">10</td>
+<td align="left">AALE</td>
+<td align="right">Inf</td>
+<td align="right">275.113324</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">106</td>
+<td align="left">ALST</td>
+<td align="right">Inf</td>
+<td align="right">275.113324</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1430</td>
+<td align="left">LSTQ</td>
+<td align="right">Inf</td>
+<td align="right">275.113324</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2383</td>
+<td align="left">SRAA</td>
+<td align="right">Inf</td>
+<td align="right">183.791103</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">368</td>
+<td align="left">DGLA</td>
+<td align="right">Inf</td>
+<td align="right">78.915316</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">102</td>
+<td align="left">ALET</td>
+<td align="right">Inf</td>
+<td align="right">54.974440</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">2781</td>
+<td align="left">TSRA</td>
+<td align="right">40.511285</td>
+<td align="right">40.716915</td>
+<td align="right">0.2056298</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2583</td>
+<td align="left">STQY</td>
+<td align="right">Inf</td>
+<td align="right">30.559174</td>
+<td align="right">-Inf</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">890</td>
+<td align="left">GLAA</td>
+<td align="right">28.357899</td>
+<td align="right">28.478640</td>
+<td align="right">0.1207408</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">2266</td>
+<td align="left">SLRQ</td>
+<td align="right">10.977251</td>
+<td align="right">10.986120</td>
+<td align="right">0.0088684</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">1333</td>
+<td align="left">LETQ</td>
+<td align="right">9.442797</td>
+<td align="right">9.464073</td>
+<td align="right">0.0212763</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="even">
+<td align="left">250</td>
+<td align="left">ATSR</td>
+<td align="right">4.310989</td>
+<td align="right">4.332360</td>
+<td align="right">0.0213701</td>
+<td align="left">TRUE</td>
+</tr>
+<tr class="odd">
+<td align="left">310</td>
+<td align="left">CATS</td>
+<td align="right">2.782798</td>
+<td align="right">2.796000</td>
+<td align="right">0.0132015</td>
+<td align="left">TRUE</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="check-delta-counts-sanity-check-for-ground-truth-comparability" class="section level2">
+<h2>Check Delta Counts (sanity check for ground truth
+comparability)</h2>
+<p>Comparing delta between versions and ground truth versions. <br></p>
+<p>Suffix _e: compared with ground truth expanded <br> Suffix _e_u:
+compared with ground truth expanded and reduced to unique values. <br>
+<br></p>
+<p>Version 1 has no <strong>n_sample</strong> / <strong>n_ref</strong>
+output, <strong>OvE</strong> computed with bootstrapping results.
+<br></p>
+<p><strong>OvE</strong> different to GT in all versions, but mostly
+small deviations (see <strong>OvE</strong> section). <br></p>
+<p>For data_sample without clonal expansion in all versions
+<strong>f_sample</strong>, <strong>n_sample</strong> and
+<strong>n_ref</strong> no difference to ground truth.<br></p>
+<table>
+<caption>number of rows that are different from ground truth computed
+with data_sample</caption>
+<thead>
+<tr class="header">
+<th align="left">version</th>
+<th align="right">ove</th>
+<th align="right">f_sample</th>
+<th align="right">n_sample</th>
+<th align="right">n_ref</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="right">3032</td>
+<td align="right">0</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="right">3032</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="right">3032</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>As expected, for data_sample with clonal expansion and ground truth
+computed without reduction to unique sequences,
+<strong>f_sample_e</strong> and <strong>n_sample_e</strong> are
+different between ground truth and version 1/2, but not version 3.
+<br></p>
+<table>
+<caption>number of rows that are different from ground truth computed
+with expanded data_sample</caption>
+<thead>
+<tr class="header">
+<th align="left">version</th>
+<th align="right">ove_e</th>
+<th align="right">f_sample_e</th>
+<th align="right">n_sample_e</th>
+<th align="right">n_ref_e</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="right">3042</td>
+<td align="right">21</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="right">3042</td>
+<td align="right">21</td>
+<td align="right">3099</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="right">3042</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p>Also as expected, when using the ground truth calculated for
+data_sample with clonal expansion and reduction to unique sequences,
+<strong>f_sample</strong> and <strong>n_sample</strong> match between
+version 1/2 and ground truth, but not version 3.</p>
+<table>
+<caption>number of rows that are different from ground truth computed
+with expanded data_sample, reduced to unique sequences</caption>
+<thead>
+<tr class="header">
+<th align="left">version</th>
+<th align="right">ove_e_u</th>
+<th align="right">f_sample_e_u</th>
+<th align="right">n_sample_e_u</th>
+<th align="right">n_ref_e_u</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">1</td>
+<td align="right">3042</td>
+<td align="right">0</td>
+<td align="right">NA</td>
+<td align="right">NA</td>
+</tr>
+<tr class="even">
+<td align="left">2</td>
+<td align="right">3042</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">3</td>
+<td align="right">3042</td>
+<td align="right">21</td>
+<td align="right">3099</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 
