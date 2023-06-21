@@ -20,19 +20,18 @@ require(patchwork)
 
 # TL;DR
 
-## Confirmed
-
 - Motifs successfully detected accross all versions
+
 - Global similarites also found (same algorithm for all versions)
+
 - OvE values for all versions roughly comparable to ground truth
   - Small deviations caused by difference in ground truth calculation formula against FET in v2/3
   - Noisy motifs in v1 supposedly caused by bootstrapping vs gt calculation
-
-## To be investigated
-
-- p-value of v1 seems to be lacking precision compared to v2/3 (4 zeros instead of 8)
+  
+- p-value of v1 seems to be lacking precision compared to v2/3
   - leads to fdr of version 1 being lower than v2/3
   - leads to v1 detecting more motifs than v2/3 (effectively lowered detection threshold)
+  - after some testing seems to be related to formula of version 1
 
 
 ```{r create_input, echo=FALSE}

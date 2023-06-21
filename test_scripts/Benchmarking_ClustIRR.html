@@ -342,32 +342,26 @@ code > span.er { color: #a61717; background-color: #e3d2d2; }
 
 <div id="tldr" class="section level1">
 <h1>TL;DR</h1>
-<div id="confirmed" class="section level2">
-<h2>Confirmed</h2>
 <ul>
-<li>Motifs successfully detected accross all versions</li>
-<li>Global similarites also found (same algorithm for all versions)</li>
-<li>OvE values for all versions roughly comparable to ground truth
+<li><p>Motifs successfully detected accross all versions</p></li>
+<li><p>Global similarites also found (same algorithm for all
+versions)</p></li>
+<li><p>OvE values for all versions roughly comparable to ground
+truth</p>
 <ul>
-<li>Deviations caused by gt calculation with raw formula against FET in
-v2/3</li>
+<li>Small deviations caused by difference in ground truth calculation
+formula against FET in v2/3</li>
 <li>Noisy motifs in v1 supposedly caused by bootstrapping vs gt
 calculation</li>
 </ul></li>
-</ul>
-</div>
-<div id="to-be-investigated" class="section level2">
-<h2>To be investigated</h2>
-<ul>
-<li>p-value of v1 seems to be lacking precision compared to v2/3 (4
-zeros instead of 8)
+<li><p>p-value of v1 seems to be lacking precision compared to v2/3</p>
 <ul>
 <li>leads to fdr of version 1 being lower than v2/3</li>
 <li>leads to v1 detecting more motifs than v2/3 (effectively lowered
 detection threshold)</li>
+<li>after some testing seems to be related to formula of version 1</li>
 </ul></li>
 </ul>
-</div>
 <div id="input-parameters" class="section level2">
 <h2>Input parameters</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># v1 + v2 + v3</span></span>
@@ -420,7 +414,7 @@ being calculated differently</p>
 </tr>
 </tbody>
 </table>
-<table>
+<table style="width:100%;">
 <caption>v1</caption>
 <colgroup>
 <col width="5%" />
@@ -429,8 +423,8 @@ being calculated differently</p>
 <col width="11%" />
 <col width="10%" />
 <col width="11%" />
-<col width="7%" />
-<col width="7%" />
+<col width="9%" />
+<col width="6%" />
 <col width="11%" />
 <col width="3%" />
 <col width="5%" />
@@ -443,7 +437,7 @@ being calculated differently</p>
 <th align="right">max_f_ref</th>
 <th align="right">f_sample</th>
 <th align="right">ove</th>
-<th align="right">p</th>
+<th align="right">p_value</th>
 <th align="left">motif</th>
 <th align="right">fdr</th>
 <th align="right">k</th>
@@ -816,7 +810,7 @@ being calculated differently</p>
 </tr>
 </tbody>
 </table>
-<table>
+<table style="width:100%;">
 <caption>v1 exp</caption>
 <colgroup>
 <col width="5%" />
@@ -825,8 +819,8 @@ being calculated differently</p>
 <col width="11%" />
 <col width="10%" />
 <col width="11%" />
-<col width="7%" />
-<col width="7%" />
+<col width="9%" />
+<col width="6%" />
 <col width="11%" />
 <col width="3%" />
 <col width="5%" />
@@ -839,7 +833,7 @@ being calculated differently</p>
 <th align="right">max_f_ref</th>
 <th align="right">f_sample</th>
 <th align="right">ove</th>
-<th align="right">p</th>
+<th align="right">p_value</th>
 <th align="left">motif</th>
 <th align="right">fdr</th>
 <th align="right">k</th>
@@ -1576,15 +1570,15 @@ comparable between versions. <br></p>
 </tr>
 </tbody>
 </table>
-<table style="width:100%;">
+<table>
 <caption>p-value / fdr comparison</caption>
 <colgroup>
 <col width="3%" />
 <col width="3%" />
-<col width="5%" />
-<col width="5%" />
-<col width="5%" />
-<col width="3%" />
+<col width="4%" />
+<col width="4%" />
+<col width="4%" />
+<col width="6%" />
 <col width="6%" />
 <col width="6%" />
 <col width="6%" />
@@ -1604,7 +1598,7 @@ comparable between versions. <br></p>
 <th align="left">pass_v1</th>
 <th align="left">pass_v2</th>
 <th align="left">pass_v3</th>
-<th align="right">p_v1</th>
+<th align="right">p_value_v1</th>
 <th align="right">p_value_v2</th>
 <th align="right">p_value_v3</th>
 <th align="right">fdr_v1</th>
@@ -1876,7 +1870,7 @@ comparable between versions. <br></p>
 <col width="5%" />
 <col width="5%" />
 <col width="5%" />
-<col width="3%" />
+<col width="7%" />
 <col width="7%" />
 <col width="7%" />
 <col width="5%" />
@@ -1896,7 +1890,7 @@ comparable between versions. <br></p>
 <th align="left">pass_v1_e</th>
 <th align="left">pass_v2_e</th>
 <th align="left">pass_v3_e</th>
-<th align="right">p_v1_e</th>
+<th align="right">p_value_v1_e</th>
 <th align="right">p_value_v2_e</th>
 <th align="right">p_value_v3_e</th>
 <th align="right">fdr_v1_e</th>
