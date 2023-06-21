@@ -24,16 +24,15 @@ require(patchwork)
 
 - Motifs successfully detected accross all versions
 - Global similarites also found (same algorithm for all versions)
-- OvE values for found motifs of v1/2 roughly comparable to ground truth
+- OvE values for all versions roughly comparable to ground truth
+  - Small deviations caused by difference in ground truth calculation formula against FET in v2/3
+  - Noisy motifs in v1 supposedly caused by bootstrapping vs gt calculation
 
 ## To be investigated
 
-- p-value of v1 seems to be lacking accuracy compared to v2/3
+- p-value of v1 seems to be lacking precision compared to v2/3 (4 zeros instead of 8)
   - leads to fdr of version 1 being lower than v2/3
   - leads to v1 detecting more motifs than v2/3 (effectively lowered detection threshold)
-- OvE values for found motifs of v3 partially different than ground truth
-  - high value in v3 (i.e. 275.762251) against infinity in gt
-  - maybe caused by FET implementation vs formula used for GT
 
 
 ```{r create_input, echo=FALSE}
@@ -132,9 +131,10 @@ f_sample_e$n_sample   <- sum(f_sample_e$f_sample)
 f_sample_e_u$n_sample <- sum(f_sample_e_u$f_sample)
 
 # consolidate to motifs found in samples
-f_ref     <- f_ref[f_ref$motif %in% f_sample$motif,     ]
-f_ref_e   <- f_ref[f_ref$motif %in% f_sample_e$motif,   ]
-f_ref_e_u <- f_ref[f_ref$motif %in% f_sample_e_u$motif, ]
+f_ref_buf <- f_ref
+f_ref     <- f_ref_buf[f_ref_buf$motif %in% f_sample$motif,     ]
+f_ref_e   <- f_ref_buf[f_ref_buf$motif %in% f_sample_e$motif,   ]
+f_ref_e_u <- f_ref_buf[f_ref_buf$motif %in% f_sample_e_u$motif, ]
 
 gt_motifs     <- merge(f_sample,     f_ref,     by = "motif", all = TRUE)
 gt_motifs_e   <- merge(f_sample_e,   f_ref_e,   by = "motif", all = TRUE)
@@ -160,7 +160,7 @@ gt_motifs_e$ove <- (gt_motifs_e$f_sample / gt_motifs_e$n_sample) /
 gt_motifs_e_u$ove <- (gt_motifs_e_u$f_sample / gt_motifs_e_u$n_sample) / 
   (gt_motifs_e_u$f_ref / gt_motifs_e_u$n_ref)
 
-rm(f_ref, f_ref_e, f_ref_e_u, f_sample, f_sample_e, f_sample_e_u)
+rm(f_ref, f_ref_e, f_ref_e_u, f_sample, f_sample_e, f_sample_e_u, f_ref_buf)
 
 ```
 
@@ -463,7 +463,7 @@ rm(df)
 
 ```
 
-For found motifs of version 3 against ground truth, OvE values look different in some values (if **Inf**) -> to be investigated.
+For found motifs of version 3 against ground truth, OvE values look comparable except the highest value.
 
 ```{r ove_comparison_v3, echo=FALSE}
 
@@ -477,6 +477,46 @@ knitr::kable(df[order(-df$ove_v3_e),], caption="v3 found motifs OvE vs gt OvE - 
 
 
 rm(df)
+
+```
+
+When visualized all motifs against Ground Truth, all versions seem to be comparable. <br>
+Version 1 shows some noise variations, supposedly caused by different OvE calculation based on bootstrapping.
+
+```{r ove_comparison_all, fig.width=10, fig.height=10, fig.align='center', echo=FALSE}
+g1a <- ggplot(res) + 
+  geom_point(aes(x = ove_v1, y = ove_gt)) +
+  geom_abline(intercept = 0, slope = 1) +
+  labs(x = "ClustIRR v1", y = "Groundtruth", title = "OvE v1 vs GT")
+g2a <- ggplot(res) + 
+  geom_point(aes(x = ove_v2, y = ove_gt)) +
+  geom_abline(intercept = 0, slope = 1) +
+  labs(x = "ClustIRR v2", y = "Groundtruth", title = "OvE v2 vs GT")
+g3a <- ggplot(res) + 
+  geom_point(aes(x = ove_v3, y = ove_gt)) +
+  geom_abline(intercept = 0, slope = 1) +
+  labs(x = "ClustIRR v3", y = "Groundtruth", title = "OvE v3 vs GT")
+g1b <- ggplot(res) + 
+  geom_point(aes(x = ove_v1_e, y = ove_gt_e_u)) +
+  geom_abline(intercept = 0, slope = 1) +
+  labs(x = "ClustIRR v1", y = "Groundtruth", title = "OvE v1 vs GT - with clonal expansion")
+g2b <- ggplot(res) + 
+  geom_point(aes(x = ove_v2_e, y = ove_gt_e_u)) +
+  geom_abline(intercept = 0, slope = 1) +
+  labs(x = "ClustIRR v2", y = "Groundtruth", title = "OvE v2 vs GT - with clonal expansion")
+g3b <- ggplot(res) + 
+  geom_point(aes(x = ove_v3_e, y = ove_gt_e)) +
+  geom_abline(intercept = 0, slope = 1) +
+  labs(x = "ClustIRR v3", y = "Groundtruth", title = "OvE v3 vs GT - with clonal expansion") 
+
+
+(g1a + g2a + g3a)  / (g1b + g2b + g3b)
+
+# f_ref     <- f_ref[f_ref$motif %in% f_sample$motif,     ]
+
+# knitr::kable(df[order(-df$ove_v1),], caption="v1 found motifs OvE vs gt OvE")
+
+rm(g1a, g1b, g2a, g2b, g3a, g3b)
 
 ```
 
