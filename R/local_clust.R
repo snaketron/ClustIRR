@@ -327,12 +327,12 @@ get_motif_enrichment_boot <- function(x,
         e_min <- base::min(e)
         e_max <- base::max(e)
 
-        # OvE = /e
+        # OvE = o/e
         ove <- o / e_mean
         # prob e>=o
-        p <- sum(e >= o) / B
+        p_value <- sum(e >= o) / B
         # return
-        return(c(e_mean, e_min, e_max, o, ove, p))
+        return(c(e_mean, e_min, e_max, o, ove, p_value))
     }
 
     motif_sample <- m[[as.character(x)]]$motif_sample[[1]]
@@ -352,11 +352,11 @@ get_motif_enrichment_boot <- function(x,
     # format output
     e <- data.frame(e)
     colnames(e) <- c("mean_f_ref", "min_f_ref", "max_f_ref",
-                     "f_sample", "ove", "p")
+                     "f_sample", "ove", "p_value")
     e$motif <- rownames(e)
     e$fdr <- stats::p.adjust(p = e$p, method = "fdr")
     e$k <- x
     e[, c("motif", "k", "f_sample", "mean_f_ref", "min_f_ref", "max_f_ref",
-          "ove", "p", "fdr")]
+          "ove", "p_value", "fdr")]
     return(e)
 }

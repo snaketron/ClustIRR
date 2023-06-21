@@ -398,7 +398,7 @@ r <- res[(res$pass_v1==TRUE & !is.na(res$pass_v1) ) |
            (res$pass_v2==TRUE & !is.na(res$pass_v2) ) |
            (res$pass_v3==TRUE & !is.na(res$pass_v3) ),
          c("motif", "pass_v1", "pass_v2", "pass_v3",
-           "p_v1", "p_value_v2", "p_value_v3", 
+           "p_value_v1", "p_value_v2", "p_value_v3", 
            "fdr_v1", "fdr_v2",   "fdr_v3", 
            #"mean_f_ref_v1", "f_ref_v2", "f_ref_v3", 
            "f_sample_v1", "f_sample_v2", "f_sample_v3",
@@ -414,7 +414,7 @@ r <- res[(res$pass_v1_e==TRUE & !is.na(res$pass_v1_e) ) |
            (res$pass_v2_e==TRUE & !is.na(res$pass_v2_e) ) |
            (res$pass_v3_e==TRUE & !is.na(res$pass_v3_e) ),
          c("motif", "pass_v1_e", "pass_v2_e", "pass_v3_e",
-           "p_v1_e", "p_value_v2_e", "p_value_v3_e", 
+           "p_value_v1_e", "p_value_v2_e", "p_value_v3_e", 
            "fdr_v1_e", "fdr_v2_e",   "fdr_v3_e", 
            #"mean_f_ref_v1", "f_ref_v2", "f_ref_v3", 
            "f_sample_v1_e", "f_sample_v2_e", "f_sample_v3_e",
