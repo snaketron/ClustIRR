@@ -5,6 +5,7 @@
 #
 # SK: here we need two paragraphs of how each algorithm (local vs. global)
 # works, as well as *key* differences between v=1, 2 and 3
+# KK: you mean in the actual man-file, right?
 #'
 #' @param data_sample
 #' @param data_ref
