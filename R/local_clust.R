@@ -354,7 +354,7 @@ get_motif_enrichment_boot <- function(x,
     colnames(e) <- c("mean_f_ref", "min_f_ref", "max_f_ref",
                      "f_sample", "ove", "p_value")
     e$motif <- rownames(e)
-    e$fdr <- stats::p.adjust(p = e$p, method = "fdr")
+    e$fdr <- stats::p.adjust(p = e$p_value, method = "fdr")
     e$k <- x
     e[, c("motif", "k", "f_sample", "mean_f_ref", "min_f_ref", "max_f_ref",
           "ove", "p_value", "fdr")]
