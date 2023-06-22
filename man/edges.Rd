@@ -3,20 +3,21 @@
 \title{Get cluster edges data.frame}
 \usage{get_edges(clust_irr)}
 \arguments{
-\item{clust_irr}{clust_irr object, result of clust_irr function, formed by
-two sublists \itemize{
-\item {clust}, list,  clustering results
-\item {inputs}, list, original user inputs
+\item{clust_irr}{object of type \code{clust_irr}, result of \code{clust_irr} 
+function, formed by two sublists \itemize{
+\item \code{clust} - list,  clustering results
+\item \code{inputs} - list, original user inputs
 }
 }
 }
 \value{
 The output is an data.frame of the local and global edges, that can be
-used as input for visualization, for example with igraph.
+used as input for visualization, for example with \emph{igraph}.
 }
 
 \description{
-This is a helper function for visualization preparation of an clustIRR object.
+This is a helper function for visualization preparation of an \code{clustIRR}
+object.
 }
 
 \examples{
