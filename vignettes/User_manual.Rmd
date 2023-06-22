@@ -70,10 +70,10 @@ In short, the algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR
 sequences in a given IR repertoire, to find groups of IRs with similar
 specificity. It then employs a quantitative model to compare the abundances 
 of the identified IR clusters between the provided input CDR3 sequences and a
-reference dataset of CDR3 sequences. In the following each step is explained
+reference dataset of CDR3 sequences. Each step of the algorithm is explained
 using real TCR-seq data as reference.
 
-To run this vignette we need to load a few R-packages:
+To run this vignette the following R-packages are used:
 
 ```{r}
 library(ClustIRR)
@@ -84,70 +84,112 @@ library(patchwork)
 
 # Data
 
-SK: Here we talk about the data that we will analyze. 
+Two datasets consisting of CDR3 sequences in amino acid code are needed 
+as input:
+
+* one **sample dataset** that should be tested
+* one naive **reference dataset** to test the sample dataset against
+
+As example reference dataset, the package provided \code{CD8} dataset is loaded. 
+This set of 10000 \eqn{\beta}-chains is derived from the T cell receptors of 
+human naive CD8+ T cells was published as part of the GLIPH 2\(^2\) algorithm.
+
+As sample dataset a randomly sampled part of the reference dataset will be used.
+To test the algorithm against ground truth, the sample dataset will be
+artificially enriched with the motif *RQWW* and clonal expanded with the two
+sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF*.
 
 
+```{r input_data}
+# load package input data
+data("CD8")
+
+# sample 500 sequences from the reference dataset as sample dataset
+data_sample <- data.frame(CDR3b = CD8[sample(x = 1:nrow(CD8), 
+                                             size = 500, 
+                                             replace = FALSE),])
+
+# artificially enrich motif 'RQWW' inside sample dataset
+substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+
+# add artificial clonal expansion of two sequences to sample dataset
+clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
+                                       "CATSRAAKPDGLAALSTQYF"),
+                                 times = 15))
+data_sample <- rbind(data_sample, clones)
+
+```
 
 # ClustIRR workflow
 
-
-
-## 1. Clustering
-
-
-
-
-## 2. ...
-
-
-
-Includes a low memory mode to reduce memory usage for large input files. 
-(SK: I would mention this later on)
-
-A completely revised version of the 
-[**turboGliph**](https://github.com/HetzDra/turboGliph) package focused on the 
-clustering part of the **Gliph** algorithm. Input parameters are reduced to
-a minimum for user convenience. The first edition of **ClustIRR** implements the 
-clustering part of the algorithm. Scoring and plotting parts are planned to be
-added in future package versions.
-
-Includes implementations of the 
+`r Biocpkg("ClustIRR")` includes implementations of the 
 [**Gliph**](https://github.com/immunoengineer/gliph) and 
-[**Gliph2**](http://50.255.35.37:8080) clustering algorithms.
-Introduces a new version of the **Gliph** algorithm called `gliph3`,
+[**Gliph2**](http://50.255.35.37:8080) clustering algorithms and
+introduces a new version of the **Gliph** algorithm called `gliph3`,
 designed for single-cell sequencing input data.
 
+The first version of `r Biocpkg("ClustIRR")` is focused on the clustering part 
+of the **Gliph** algorithms. Input parameters are reduced to a minimum for user 
+convenience. A low memory mode to reduce memory usage for large input files
+is included. Scoring and plotting parts are planned to be added in future 
+versions.
 
-# Input
+## Clustering
 
-Let's use the included **hs_CD8_ref** as reference and **gliph_input_data** 
-as sample. This datasets were published with GLIPH.\(^1\)
+Two strategies are used to cluster the CDR3 sequences:
 
-```{r input_data}
-# # load package input data
-# data("hs_CD8_ref")
-# data("gliph_input_data")
-# 
-# # detect cores
-# cores <- parallel::detectCores()
-```
+* Local motif clustering
+* Global CDR3 sequence clustering
 
-# Clustering
+### Local clustering
 
-To run **ClustIRR** with default parameters, we provide the columns **CDR3b**,
-**TRBV** and **TRBJ** of the data sets (first 3 columns each).
+CDR3 sequences can be segmented into **motifs** of a certain length. Significant 
+abundance of similar motifs inside a sample can indicate specificity to 
+matching pMHC or antigens. To cluster the sequences the following steps are 
+performed:
+
+1. CDR3 pre-processing
+  * Get set of non-redundant CDR3s *(only in version = 1 or 2)*
+  * Trim CDR3 ends, that are typically non-binding
+  
+2. Motif processing
+  * count motif frequencies in sample *f_sample* and reference *f_ref*
+  * count total number of motifs in sample *n_sample* and reference *n_ref*
+  * compute ratio of observed vs. expected motif counts using the following 
+  formula:
+    * *OvE* = (*f_sample* / *n_sample* ) / ( *f_ref* / *n_ref* )
+  * In version 2 and 3, probability *p_i* of finding the observed or a larger 
+  *OvE* for motif *i* given that the null hypothesis is true is computed with 
+  the Fisher's exact test
+  * In version 1, *p_i* is computed by bootstrapping
+  * classify motif *i* as passed, if the motif passes all filters specified in 
+  the user-provided control list
+
+### Global clustering
+
+`r Biocpkg("ClustIRR")` provides two possible approaches for global clustering:
+
+1. For equal-length CDR3 sequences *i* and *j* compute their Hamming distance *d_ij*. Sequences with *d_ij* *global_max_dist*
+(user-defined input) are considered globally similar
+
+2. Alternatively, the user can provide a matrix of globally similar CDR3 sequences computed by a complementary approach (e.g. *tcrdist*)
+
+## Case study
 
 ```{r clustering}
-# run gliph with default parameters
-# gliph_output <- cluster_irr(
-# data_sample = gliph_input_data[,1:3],
-# data_ref = hs_CD8_ref[,1:3]
-# )
+# detect cores of the executing computer 
+cores <- parallel::detectCores()
+
+out <- cluster_irr(data_sample = data_sample,
+                   data_ref = CD8,
+                   ks = 4,
+                   cores = cores,
+                   version = 3)
+
+
 ```
 
-
-# Output
-
+## Output
 **ClustIRR** returns a list of the following elements:
 
 - **clust** _list_: local + global clusters
@@ -176,7 +218,6 @@ We can for example inspect local clusters:
 - **p_value**: p-value of the Fisher's Exact Test
 - **fdr**: random generation probability
 - **pass**: selected or not selected motif
-
 
 # References
 
