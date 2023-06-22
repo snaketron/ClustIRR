@@ -22,31 +22,56 @@ set.seed(987)
 # Introduction
 The T-cell receptor (TCR) is a protein complex found on the surface of T cells 
 that is responsible for recognizing antigenic peptides (p) presented in the 
-context of the major histocompatibility complex (MHC). B cell receptors (BCRs),
-on the other hand, are protein complexes expressed on B cells that bind 
-directly to antigens. In the following we will refer to BCRs and TCRs using
-the general term immune receptors (IRs).
+context of the major histocompatibility complex (MHC). Different types of MHCs 
+are expressed inside cells and antigen presenting cells (APC), combined with 
+antigen peptides to form pMHC complexes, and presented at the cell surface.
+If a TCR and pMHC match, complex cell signal interactions can trigger immune
+reactions. While MHCs can each bind to a rather broad array of different 
+peptides to form pMHCs, TCRs are highly specific to a matching pMHC 
+combination. 
 
+B cell receptors (BCRs), on the other hand, are protein complexes 
+expressed on B cells that bind directly to antigens. Through immune signalling,
+activated B cells can also secrete these receptors as antibodies into the 
+blood. Secreted antibodies help the immune system in various ways by binding 
+directly to pathogen antigens. In the following we will refer to BCRs 
+and TCRs using the general term immune receptors (IRs).
+
+The maturation of B cells and T cells is unique in the human body, in the way 
+that partially random recombination of V, D and J genes leads to permanent 
+mutations inside the genome of each individual B and T cell.
 Owing to VDJ recombination, virtually every B/T cell expresses its own unique 
-IR, and hence has a unique specificity. Understanding the relationship between 
-the IR sequence and antigens is essential for the development of e.g. cancer 
-immunotherapies, vaccines and antiviral drugs. Advances in bulk and more 
-currently single cell high-throughput sequencing (HT-seq) technologies now 
-enable the analysis of entire repertoires of IRs in a single experiment, but 
-the currently available methods for 1) organizing clusters of IR sequences 
-according to their likely antigen specificities; and 2) quantitative comparison 
-of the abundance of the specificity groups between biological conditions or 
-time points, have crucial drawbacks or are not available.
+IR, and hence has a unique specificity. Once a BCR matches to an antigen or a 
+TCR to a pMHC structure, an immune reaction can be triggered in form of clonal 
+expansion of the matched clonotype, effectively amplifying the number of 
+needed pathogen antigen/pMHC specific cells. This diversity is a key element of
+the adaptive immune system to deal with constantly evolving pathogens.
+
+Understanding the relationship between the IR sequence and antigens is 
+essential for the development of e.g. cancer immunotherapies, vaccines and 
+antiviral drugs. By sequencing the VDJ genes of immune cells, expressed IR can 
+be reconstructed as amino acid sequences. Certain regions of the receptors
+called complementarity determining regions 3 (CDR3) are known to possess high
+pMHC binding probability and are therefore mainly focused in specificity 
+analysis. Advances in bulk and more currently single cell high-throughput 
+sequencing (HT-seq) technologies now enable the analysis of entire repertoires 
+of IRs in a single experiment.
+
+Currently available methods for organizing clusters of IR sequences according 
+to their likely antigen specificities and quantitative comparison of the 
+abundance of the specificity groups between biological conditions or time 
+points have crucial drawbacks, or are not available.
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a transparent workflow for 
 quantitative exploration of single cell RNA-seq data. 
 
 # ClustIRR algorithm
-In short, the algorithm of `r Biocpkg("ClustIRR")` performs clustering of TCR 
-sequences in a given TCR repertoire, to find groups of TCRs with similar
+In short, the algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR 
+sequences in a given IR repertoire, to find groups of IRs with similar
 specificity. It then employs a quantitative model to compare the abundances 
-of the identified TCR clusters between biological conditions. We explain each 
-step in the following using real TCR-seq data.
+of the identified IR clusters between the provided input CDR3 sequences and a
+reference dataset of CDR3 sequences. In the following each step is explained
+using real TCR-seq data as reference.
 
 To run this vignette we need to load a few R-packages:
 

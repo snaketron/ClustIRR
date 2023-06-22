@@ -49,8 +49,7 @@ same structure (number of columns and column names) as \code{data_sample}}
 \item{cores}{integer, number of CPU cores, \code{cores} = 1 (default).}
 \item{control}{list, a named list of auxiliary parameters
 to control algorithm's behavior. See the details below:
-\itemize{
-  \item \code{B} - integer, number of bootstrap samples. Only used by
+\itemize{\item \code{B} - integer, number of bootstrap samples. Only used by
   version = 1. \code{B} = 1000 (default)
   \item \code{global_max_dist} - number, Hamming distance (HD) threshold to 
   consider two CDR3s as globally clustered. CDR3s are globally clustered if 
@@ -167,8 +166,6 @@ two sublists:
 \item \code{control} - other control parameters, details see \bold{Arguments})
 }
 }
-
-
 
 }
 
