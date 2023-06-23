@@ -71,7 +71,7 @@ get_global_clust_mem <- function(cdr3, global_max_dist) {
         if(base::is.null(hd)) {
             return(hd)
         }
-        return(cbind(cdr3[is[hd[,1]]], cdr3[is[hd[,2]]]))
+        return(base::cbind(cdr3[is[hd[,1]]], cdr3[is[hd[,2]]]))
     }
 
     cdr3_len <- base::nchar(cdr3)
