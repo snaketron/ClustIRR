@@ -16,93 +16,274 @@ knitr::opts_chunk$set(collapse = TRUE,
                       fig.height = 5,
                       fig.width = 5,
                       fig.align = "center")
-set.seed(987)
 ```
 
 # Introduction
-The T-cell receptor (TCR) is a protein complex found on the surface of T cells 
+
+This short introduction gives an overview of the biological background of the 
+clustering algorithm.
+
+## T cells
+The T cell receptor (TCR) is a protein complex found on the surface of T cells 
 that is responsible for recognizing antigenic peptides (p) presented in the 
 context of the major histocompatibility complex (MHC). Different types of MHCs 
-are expressed inside cells and antigen presenting cells (APC), combined with 
-antigen peptides to form pMHC complexes, and presented at the cell surface.
-If a TCR and pMHC match, complex cell signal interactions can trigger immune
-reactions. While MHCs can each bind to a rather broad array of different 
+are expressed inside cells and antigen-presenting cells (APC), combined with 
+antigen peptides to form pMHC complexes and presented at the cell surface.
+If a TCR and a pMHC match, complex cell signal interactions can trigger immune
+reactions. While MHCs can each bind to a broad array of different 
 peptides to form pMHCs, TCRs are highly specific to a matching pMHC 
 combination. 
 
-B cell receptors (BCRs), on the other hand, are protein complexes 
-expressed on B cells that bind directly to antigens. Through immune signalling,
+## B cells
+On the other hand, B cell receptors (BCRs) are protein complexes 
+expressed on B cells that bind directly to antigens. Through immune signaling,
 activated B cells can also secrete these receptors as antibodies into the 
-blood. Secreted antibodies help the immune system in various ways by binding 
-directly to pathogen antigens. In the following we will refer to BCRs 
+blood. Secreted antibodies help the immune system by binding 
+directly to pathogen antigens. In the following, we will refer to BCRs 
 and TCRs using the general term immune receptors (IRs).
 
-The maturation of B cells and T cells is unique in the human body, in the way 
-that partially random recombination of V, D and J genes leads to permanent 
-mutations inside the genome of each individual B and T cell.
-Owing to VDJ recombination, virtually every B/T cell expresses its own unique 
-IR, and hence has a unique specificity. Once a BCR matches to an antigen or a 
-TCR to a pMHC structure, an immune reaction can be triggered in form of clonal 
-expansion of the matched clonotype, effectively amplifying the number of 
-needed pathogen antigen/pMHC specific cells. This diversity is a key element of
-the adaptive immune system to deal with constantly evolving pathogens.
+## V(D)J genes
+The maturation of B cells and T cells is unique in the human body in the way 
+that partially random recombination of variable (V), diversifying (D), and 
+joining (J) gene region with a constant (C) region leads to permanent mutations
+inside the genome of each B and T cell. Due to V(D)J recombination, 
+virtually every B/T cell expresses its own unique IR and has a unique 
+specificity. Once a BCR matches an antigen or a TCR to a pMHC structure, an 
+immune reaction can be triggered in the form of clonal expansion of the matched 
+clonotype, effectively amplifying the number of pathogen antigen/pMHC-specific 
+cells. This diversity is a critical element of the adaptive immune system to 
+deal with constantly evolving pathogens.
 
+## IR sequencing
 Understanding the relationship between the IR sequence and antigens is 
-essential for the development of e.g. cancer immunotherapies, vaccines and 
+essential for developing, e.g., cancer immunotherapies, vaccines, and 
 antiviral drugs. By sequencing the VDJ genes of immune cells, expressed IR can 
 be reconstructed as amino acid sequences. Certain regions of the receptors
 called complementarity determining regions 3 (CDR3) are known to possess high
-pMHC binding probability and are therefore mainly focused in specificity 
-analysis. Advances in bulk and more currently single cell high-throughput 
+pMHC binding probability and are therefore mainly focused on in specificity 
+analysis. Advances in bulk and more currently single-cell high-throughput 
 sequencing (HT-seq) technologies now enable the analysis of entire repertoires 
 of IRs in a single experiment.
 
-Currently available methods for organizing clusters of IR sequences according 
-to their likely antigen specificities and quantitative comparison of the 
-abundance of the specificity groups between biological conditions or time 
-points have crucial drawbacks, or are not available.
+## Clustering
+Amino acid sequences fold to hypervariable threedimensional structures that 
+bind to matching pMHC or antigens. The idea behind clustering is that similar
+protein sequences lead to similar protein structures that bind to similar
+pMHCs or antigens. Currently, available methods for organizing clusters of IR 
+sequences according to their likely antigen specificities and quantitative 
+comparison of the abundance of the specificity groups between biological 
+conditions or time points have crucial drawbacks or are unavailable.
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a transparent workflow for 
-quantitative exploration of single cell RNA-seq data. 
+quantitative exploration of single-cell RNA-seq data. 
 
 # ClustIRR algorithm
-In short, the algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR 
-sequences in a given IR repertoire, to find groups of IRs with similar
+
+The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR 
+sequences in a given IR repertoire to find groups of IRs with similar
 specificity. It then employs a quantitative model to compare the abundances 
 of the identified IR clusters between the provided input CDR3 sequences and a
-reference dataset of CDR3 sequences. Each step of the algorithm is explained
-using real TCR-seq data as reference.
+reference dataset of CDR3 sequences. Each algorithm step is explained in
+this vignette using real TCR-seq data as a reference.
 
-To run this vignette the following R-packages are used:
+This first package version focuses on the Gliph algorithms' clustering part. 
+Input parameters are reduced to a minimum for user convenience.
+Scoring and plotting parts are planned to be added in future versions.
 
-```{r}
+`r Biocpkg("ClustIRR")` includes implementations of the Gliph\(^1\) and 
+Gliph2\(^2\) clustering algorithms and introduces a new version of the 
+Gliph algorithm called *gliph3*, designed for single-cell sequencing 
+input data. The version can be chosen via the `version` input parameter.
+
+To optimize the execution speed of the algorithm, the input parameter 
+`cores` (default: 1) can be adjusted to the executing machine (for example 
+detectable via `parallel::detectCores()`).
+
+## Input data
+
+Two datasets consisting of CDR3 sequences in amino acid code are required 
+as input. 
+
+The **sample dataset** has to contain the sequences that should be tested, for 
+example, TCR-seq results of a human patient.
+
+The **reference dataset** should be significantly bigger than the sample 
+dataset and contain so-called *naive* sequences that are suspected to be 
+present in a healthy condition.
+
+Both input datasets should be of type `data.frame` and have to contain one 
+column named *CDR3b* or *CDR3a* with amino acid sequences of type character 
+(for example, *CASSPVGLYGYTF*). If both columns are supplied within one 
+dataset, an additional reference dataset has to be provided containing both 
+*CDR3b* and *CDR3a* columns and two runs of the algorithm will 
+cluster the sequences separately.
+
+To cluster TCR CDR3δ, TCR CDR3γ, BCR heavy chain, or BCR light chain sequences,
+the to be analyzed sequences can be provided in columns named *CDR3b* and 
+*CDR3a* to get accepted as input.
+
+The *CD8* dataset that is provided with the package contains 10.000 TCR CDR3β 
+chains. It is derived from the T cell receptors of human naive CD8+ T cells and 
+was originally published as part of the Gliph2\(^2\) algorithm.
+
+## Pre-processing
+
+## Clustering
+
+Two strategies called *local motif clustering* and 
+*global CDR3 sequence clustering* are used inside `r Biocpkg("ClustIRR")`.
+
+In short, the goal of local clustering is to find motifs in the data sample 
+that are enriched in contrast to the naive reference dataset, while global 
+clustering compares CDR3 sequences within the sample dataset for similarity.
+
+In the following subsections motivation and implementation of both 
+strategies will get explained.
+
+### Local clustering
+
+CDR3 sequences can be segmented into **motifs** of different lengths. An 
+example of a motif of length 4 (also called 4mer) could be the sequence 
+*TGTG*, which would be contained by, for example, the sequences *CASSLTGTGYTF*, 
+*CASSTTTGTGELFF*, *CSGVTGTGYTF* and many others. A significant abundance of 
+similar motifs inside a sample can indicate specificity to similar matching 
+pMHC or antigens. To be examined, motif length(s) can be selected via the input
+parameter `ks` (default: c(2,3,4)).
+
+As a pre-processing step before local clustering, *version 1* and *version 2* 
+of the algorithm reduce both the sample dataset and the reference dataset to 
+unique sequences to reduce the examined clonally expanded sequences to only 
+clonotypes. Neither the Gliph\(^1\) nor the Gliph2\(^2\) paper contains 
+the reasoning behind this. Information about clonal 
+expansion was only considered in the algorithm's later scoring stage. One 
+possible explanation could be that clonal expansion counts 
+were suspected to be biased, induced by the predominantly used 
+bulk sequencing techniques at the time. As a result, this possibly leads to a 
+systematic negative bias against the motifs in clonally expanded sequences, 
+which could be the most important ones for specificity analysis.
+
+*Version 3* of the algorithm takes the complete set of sequences as input for 
+local clustering, taking into account that newer single-cell high-throughput 
+sequencing techniques are less biased regarding clonal expansion counts.
+
+Therefore, *version 1* and *version 2* of the algorithm could be used when 
+analyzing bulk sequencing data, while *version 3* should be better at single 
+cell sequencing data analysis.
+
+CDR3 ends at both sides of the IRs are typically found to be non-binding and 
+could therefore be excluded from the analysis. The input parameter 
+`control$trim_flank_aa` (default: 0) can trim all compared sequences 
+by *n* amino acids at both sides. For example, an input sequence *CASSLTGTGYTF* 
+and `control$trim_flank_aa = 1` would result in *ASSLTGTGYT*, trimmed by *C* at
+the start and *F* at the end. If the trim parameter is set too high, a runtime 
+warning is produced that shorter sequences were completely trimmed.
+
+A motif is marked as enriched if it passes three filters specified in the input
+parameters:
+
+The number of the specific motif found in the sample must be bigger than the
+minimum local observation `control$local_min_o` (default: 1). It gets computed
+by calculating the frequency of a particular motif in the dataset.
+For example, the motif *TGTG* is contained 40 times in the package provided
+`CD8` reference dataset.
+
+Furthermore, the Observed vs. Expected (OvE) value must be higher than the 
+minimal local OvE threshold `control$local_min_ove` (default: 2).
+The OvE is calculated with Fisher's exact test (*version 2 & 3*) using the 
+following formula:
+
+$$ OvE = \frac{\frac{f_{sample}}{n_{sample}}}{\frac{f_{ref}}{n_{ref}}} $$
+
+`f_sample` is motif frequency in the sample, `n_sample` is the count of all 
+possible distinct motifs in the data sample of the same length, and `f_ref` as 
+well as `n_ref` are the same frequencies in the reference dataset.
+In *version 1*, the OvE is computed by bootstrapping, i.e., repeated sampling of
+the reference dataset with a sample size equal to the sample dataset. Sampling 
+depth can be configured for higher precision by changing the input parameter 
+`control$B` (default: 1000) to higher values, which only affects *version 1*.
+
+Finally, the False Discovery Rate (FDR) of the motif should not exceed the 
+maximal local FDR `control$local_max_fdr` (default: 0.05).
+It is calculated by first computing the probability *p* of finding the 
+observed or larger OvE of the motif by change using bootstrapping (*version 1*)
+or Fisher's exact test (*version 2/3*), and then adjusting the p-values using
+the Benjamini & Hochberg (1995) method.
+
+If at least one of these three filters is not passed, the motif is considered 
+as not being enriched in the data sample compared to the reference dataset.
+
+### Global clustering
+
+Global clustering compares the similarity of complete CDR3 sequences of the 
+same length.
+
+As a pre-processing step before global clustering, all versions reduce the 
+sample dataset to unique CDR3 sequences to prevent self-reference.
+
+For equal-length CDR3 sequences *i* and *j*, the Hamming distance 
+*d_ij* can get computed. Sequences with *d_ij* exceeding the global maximal
+distance threshold input parameter `control$global_max_dist` (default: 1) are 
+considered globally similar. For large input files, a low memory mode can be 
+turned on via the `control$low_mem` (default: FALSE) input parameter, which
+reduces memory usage using pairwise comparisons instead of matrix 
+computations at the cost of increased computation time.
+
+Alternatively, the user can provide a matrix of globally similar CDR3 
+sequences computed by a complementary approach (e.g., *tcrdist*) to save 
+computation time. This matrix should contain pairs of CDR3s of the data sample 
+set and can be provided via the `control$global_pairs` input parameter.
+
+
+## Output data
+`r Biocpkg("ClustIRR")` returns an object of type clust_irr that contains 
+lists of all found local and global clusters and local edges, as well as 
+information about the provided user input. For a detailed list of all values, 
+see the manual files.
+
+The local motif clustering list contains the motif names and length, a `pass` 
+flag, as well as details about computed values inside the algorithm. See the 
+manual files for a comprehensive list of all listed values.
+If, for example, the output was saved as `out` and CDR3b sequences were 
+clustered, the motif list can be found under `out$clust$CDR3b$local$m`, and the
+local edges list under `out$clust$CDR3b$local$lp`.
+
+The global CDR3 sequence clustering list contains pairs of all sequences marked
+as similar, either computer by Hamming Distance or provided either by the user 
+as a `global_pairs` input parameter, which at the same time keeps the global
+edges between the sequences.
+If, for example, the output was saved as `out` and CDR3b sequences were 
+clustered, the CDR3 sequence pairs can be found under `out$clust$CDR3b$global`.
+
+# Case study
+
+To demonstrate the package workflow and the advantages of *version 3* of the 
+algorithm, a short case study is executed.
+
+We start by loading the `r Biocpkg("ClustIRR")` and the *knitr* package.
+
+```{r case_study}
+# load packages
 library(ClustIRR)
-library(ggplot2)
-library(patchwork)
+library(knitr)
 ```
 
-
-# Data
-
-Two datasets consisting of CDR3 sequences in amino acid code are needed 
-as input:
-
-* one **sample dataset** that should be tested
-* one naive **reference dataset** to test the sample dataset against
-
-As example reference dataset, the package provided \code{CD8} dataset is loaded. 
-This set of 10000 \eqn{\beta}-chains is derived from the T cell receptors of 
-human naive CD8+ T cells was published as part of the GLIPH 2\(^2\) algorithm.
-
-As sample dataset a randomly sampled part of the reference dataset will be used.
-To test the algorithm against ground truth, the sample dataset will be
-artificially enriched with the motif *RQWW* and clonal expanded with the two
+## Input data
+A randomly sampled part of the reference dataset will be used as a sample 
+dataset. To test the algorithm against ground truth, the sample dataset will be
+artificially enriched with the motif *RQWW* and clonally expanded with the two
 sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF*.
+
+The package provided `CD8` dataset is loaded as an example reference dataset. 
+This set of 10.000 β-chains is derived from the T cell receptors of human naive
+CD8+ T cells was published as part of the Gliph 2\(^2\) algorithm.
 
 
 ```{r input_data}
 # load package input data
 data("CD8")
+
+# set the random seed for sampling reproducibility
+set.seed(987)
 
 # sample 500 sequences from the reference dataset as sample dataset
 data_sample <- data.frame(CDR3b = CD8[sample(x = 1:nrow(CD8), 
@@ -112,7 +293,7 @@ data_sample <- data.frame(CDR3b = CD8[sample(x = 1:nrow(CD8),
 # artificially enrich motif 'RQWW' inside sample dataset
 substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
-# add artificial clonal expansion of two sequences to sample dataset
+# add the artificial clonal expansion of two sequences to the sample dataset
 clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
                                        "CATSRAAKPDGLAALSTQYF"),
                                  times = 15))
@@ -120,104 +301,118 @@ data_sample <- rbind(data_sample, clones)
 
 ```
 
-# ClustIRR workflow
-
-`r Biocpkg("ClustIRR")` includes implementations of the 
-[**Gliph**](https://github.com/immunoengineer/gliph) and 
-[**Gliph2**](http://50.255.35.37:8080) clustering algorithms and
-introduces a new version of the **Gliph** algorithm called `gliph3`,
-designed for single-cell sequencing input data.
-
-The first version of `r Biocpkg("ClustIRR")` is focused on the clustering part 
-of the **Gliph** algorithms. Input parameters are reduced to a minimum for user 
-convenience. A low memory mode to reduce memory usage for large input files
-is included. Scoring and plotting parts are planned to be added in future 
-versions.
-
 ## Clustering
 
-Two strategies are used to cluster the CDR3 sequences:
-
-* Local motif clustering
-* Global CDR3 sequence clustering
-
-### Local clustering
-
-CDR3 sequences can be segmented into **motifs** of a certain length. Significant 
-abundance of similar motifs inside a sample can indicate specificity to 
-matching pMHC or antigens. To cluster the sequences the following steps are 
-performed:
-
-1. CDR3 pre-processing
-  * Get set of non-redundant CDR3s *(only in version = 1 or 2)*
-  * Trim CDR3 ends, that are typically non-binding
-  
-2. Motif processing
-  * count motif frequencies in sample *f_sample* and reference *f_ref*
-  * count total number of motifs in sample *n_sample* and reference *n_ref*
-  * compute ratio of observed vs. expected motif counts using the following 
-  formula:
-    * *OvE* = (*f_sample* / *n_sample* ) / ( *f_ref* / *n_ref* )
-  * In version 2 and 3, probability *p_i* of finding the observed or a larger 
-  *OvE* for motif *i* given that the null hypothesis is true is computed with 
-  the Fisher's exact test
-  * In version 1, *p_i* is computed by bootstrapping
-  * classify motif *i* as passed, if the motif passes all filters specified in 
-  the user-provided control list
-
-### Global clustering
-
-`r Biocpkg("ClustIRR")` provides two possible approaches for global clustering:
-
-1. For equal-length CDR3 sequences *i* and *j* compute their Hamming distance *d_ij*. Sequences with *d_ij* *global_max_dist*
-(user-defined input) are considered globally similar
-
-2. Alternatively, the user can provide a matrix of globally similar CDR3 sequences computed by a complementary approach (e.g. *tcrdist*)
-
-## Case study
+Only the sample and reference
+dataset must be provided as input to perform clustering with the default values.
+For demonstration purposes, we will only look for motifs of length `ks` = 4 and 
+compute two outputs for *version 2* and *version 3*, trimming the flank amino 
+acids by three on each side.
 
 ```{r clustering}
-# detect cores of the executing computer 
-cores <- parallel::detectCores()
+# ClustIRR version 2
+clustirr_output_v2 <- cluster_irr(data_sample = data_sample,  
+                                  data_ref = CD8,
+                                  version = 2,
+                                  ks = 4,
+                                  cores = 1,
+                                  control = list(
+                                    B = 1000,
+                                    global_max_dist = 1,
+                                    local_max_fdr = 0.05,
+                                    local_min_ove = 2,
+                                    local_min_o = 3,
+                                    trim_flank_aa = 3,
+                                    low_mem = FALSE,
+                                    global_pairs = NULL))
 
-out <- cluster_irr(data_sample = data_sample,
-                   data_ref = CD8,
-                   ks = 4,
-                   cores = cores,
-                   version = 3)
-
+# ClustIRR version 3
+clustirr_output_v3 <- cluster_irr(data_sample = data_sample,  
+                                  data_ref = CD8,
+                                  version = 3,
+                                  ks = 4,
+                                  cores = 1,
+                                  control = list(
+                                    B = 1000,
+                                    global_max_dist = 1,
+                                    local_max_fdr = 0.05,
+                                    local_min_ove = 2,
+                                    local_min_o = 3,
+                                    trim_flank_aa = 3,
+                                    low_mem = FALSE,
+                                    global_pairs = NULL))
 
 ```
 
-## Output
-**ClustIRR** returns a list of the following elements:
+## Output data
 
-- **clust** _list_: local + global clusters
-- **edges** _list_: local + global edges
-- **data_sample** _data.frame_: examined data sample
-- **version** _integer_: used gliph version
-- **ks** _integer vector_: used motif lengths
-- **cores** _integer_: number of used CPU cores
-- **control** _list_: used auxiliary input parameters
+### Local motif clustering output
 
-We can for example inspect local clusters:
+Inspecting the local motif clustering of *version 2* shows that, in total, 6 
+motifs were marked as enriched. The 20 times inserted motif *RQWW* gets found 
+20 times. The other five motifs are all combinations of the first three 
+(*RQW* <-> *QRQW*, *YRQW*) or last three (*QWW* <-> *QWWA*, *QWWG*, *QWWS*) 
+amino acids of the inserted motif with the respective sequences it was inserted 
+in.
 
-```{r output}
-# inspect output
-# head(gliph_output$clust$CDR3b$local$m)
+Because of the redundancy reduction performed in *version 2*, no motifs of the 
+2 clonal expanded sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* 
+are found, which both were inserted 15 times into the sample data.
+
+
+```{r local_motifs_output_version_2}
+# extract local motifs version 2
+local_motifs_v2 <- clustirr_output_v2$clust$CDR3b$local$m
+
+# display only passed motifs
+kable(local_motifs_v2[local_motifs_v2$pass == TRUE,])
+```
+
+Inspecting the local motif clustering of *version 3*, however, shows that in 
+total of 20 motifs was marked as enriched. In addition to all inserted motifs 
+found by *version 2*, also 15 motifs of the clonally expanded sequences 
+*CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* are found. Some of them are 
+found in both sequences (for example *AAKP*, found 30 times), some of them only
+in one of the two (for example *AALE*, found 15 times). Notice that several of 
+the newly found motifs were also present in the reference dataset as parts of 
+other sequences (`f_ref` > 0), and in this case, by chance, one of them (*GLAA*) 
+was contained in the sample before the artificial enhancement, leading
+to a count of 31. 
+
+If the random seed value changed, slightly different motif counts 
+could appear through interaction with sampled motifs of the reference set. 
+In any case, the inserted motifs and the motifs found in the clonally 
+expanded sequences are guaranteed to be detected by the algorithm *version 3*.
+
+
+```{r local_motifs_output_version_3, width = 5}
+# extract local motifs version 3
+local_motifs_v3 <- clustirr_output_v3$clust$CDR3b$local$m
+
+# display only passed motifs
+kable(local_motifs_v3[local_motifs_v3$pass == TRUE,])
 
 ```
 
-- **motif**: found motif
-- **f_sample**: motif frequency in the sample set
-- **n_sample**: total frequency in the sample set
-- **f_ref**: motif frequency in the reference set
-- **n_ref**: total motif frequency in the reference set
-- **k**: kmer length
-- **ove**: motif fold enrichment in the sample set compared to the reference set
-- **p_value**: p-value of the Fisher's Exact Test
-- **fdr**: random generation probability
-- **pass**: selected or not selected motif
+### Global CDR3 sequence clustering output
+
+Inspecting the global motif clustering shows the same output for both versions.
+The first pair of CDR3b sequences (*CASSYVLRAADGYTF* and *CASSYVLRAADGDTF*) 
+were present in the reference dataset and were randomly sampled into the example
+dataset, while the second pair (*CATSRAAKPDGLAALSTQYF* and 
+*CATSRAAKPDGLAALETQYF*) represents the artificially enhanced clonal expansion.
+
+Again, if the sampling were repeated with a different seed, other random 
+pairs of the reference dataset could be sampled, but the two added sequences
+are guaranteed to be found by the algorithm.
+
+
+```{r global_motifs_output}
+# global motifs version 2
+kable(clustirr_output_v2$clust$CDR3b$global)
+# global motifs version 3
+kable(clustirr_output_v3$clust$CDR3b$global)
+```
 
 # References
 
