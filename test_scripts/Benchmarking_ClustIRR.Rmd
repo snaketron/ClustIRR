@@ -351,7 +351,7 @@ knitr::kable(m_v2_e[order(-m_v2_e$f_sample),], caption="v2 exp")
 knitr::kable(m_v3_e[order(-m_v3_e$f_sample),], caption="v3 exp")
 
 
-
+rm(df, m_v1, m_v2, m_v3, m_v1_e, m_v2_e, m_v3_e)
 ```
 ## Check global sequences
 
@@ -359,16 +359,8 @@ Inserted sequences **CATSRAAKPDGLAALETQYF** and **CATSRAAKPDGLAALSTQYF** are fou
 
 ```{r global_motifs, echo=FALSE}
 # inspect which CDR3bs are globally similar
-
-df <- data.frame(version = c("1","2","3"),
-                 no_exp = c(nrow(m_v1), nrow(m_v2), nrow(m_v3)),
-                 exp = c(nrow(m_v1_e), nrow(m_v2_e), 
-                                      nrow(m_v3_e)))
-
 knitr::kable(out_v3$clust$CDR3b$global, caption="without clonal expansion")
 knitr::kable(out_v3_e$clust$CDR3b$global, caption="with clonal expansion")
-
-rm(df, m_v1, m_v2, m_v3, m_v1_e, m_v2_e, m_v3_e)
 
 ```
 
