@@ -1,3 +1,5 @@
+# Description:
+# Check user provided input and generate errors and warnings, if necessary
 input_check <- function(data_sample,
                         data_ref,
                         version,
@@ -35,7 +37,6 @@ check_data_sample <- function(data_sample) {
     }
     check_dataframe_na(data_sample)
     check_dataframe_empty(data_sample)
-    # checks for optional v-gene / j-gene columns tba if necessary
 }
 
 check_data_ref <- function(data_ref) {
@@ -53,7 +54,6 @@ check_data_ref <- function(data_ref) {
     }
     check_dataframe_na(data_ref)
     check_dataframe_empty(data_ref)
-    # checks for optional v-gene / j-gene columns tba if necessary
 }
 
 check_data_sample_and_ref <- function(data_sample, data_ref) {
@@ -144,22 +144,6 @@ check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size
 }
 
 check_global_pairs <- function(global_pairs, data_sample) {
-    # global_pairs has to be integer matrix with two columns and u rows.
-    # In each entry global_pairs will store an index (integer) i = 1, ..., n,
-    # pointing to a specific CDR3 sequence from data_sample which is a
-    # data.frame with nrow = n.
-    # row in global pairs gives us the indices of two CDR3s that are globally
-    # similar (e.g. Hamming dist < 1 or distance computed using external tool)
-
-    # SK: on 21. May. 2023 I changed the definition of global_pairs in
-    # the following way:
-    # global_pairs has to be a character matrix or with three columns. In each
-    # row we have a pair of globally similar CDR3s (e.g. they have Hamming
-    # dist <= 1 or another distance computed using external tool) and the
-    # third column give us the chain ID: TRA vs. TRB. There should be
-    # no duplicate rows. The CDR3s in column 1 or 2 should be found at least
-    # once in data_sample.
-    # TODO: this part has to be tested extensively
     if(!base::is.null(global_pairs)) {
         check_rowcount(global_pairs)
         check_matrix(global_pairs)
@@ -172,7 +156,6 @@ check_global_pairs <- function(global_pairs, data_sample) {
 }
 
 check_low_mem <- function(low_mem) {
-    # check_missing(x = low_mem) # already checked by get_control
     check_singlevalue(x = low_mem)
     check_logical(x = low_mem)
 }
