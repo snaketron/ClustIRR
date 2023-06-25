@@ -268,6 +268,8 @@ library(ClustIRR)
 library(knitr)
 library(ggplot2)
 library(ggrepel)
+library(dplyr)
+library(visNetwork)
 ```
 
 ## Input data
@@ -443,6 +445,120 @@ are guaranteed to be found by the algorithm.
 kable(clustirr_output_v2$clust$CDR3b$global)
 # global motifs version 3
 kable(clustirr_output_v3$clust$CDR3b$global)
+```
+## Graph output
+
+This is a quick and dirty solution, could maybe be cleaned and extended.
+
+```{r global_graph_v2}
+
+# quick and dirty
+gl_v2 <- data.frame(cdr3=c("CASSYVLRAADGYTF", "CASSYVLRAADGDTF",
+                           "CATSRAAKPDGLAALSTQYF", "CATSRAAKPDGLAALETQYF"),
+                    type="global", 
+                    group=c(7,7,8,8))
+
+lc_v2 <- clustirr_output_v2$clust$CDR3b$local$lp
+lc_v2$group <- as.numeric(factor(lc_v2$motif))
+lc_v2$type <- "local"
+nodes <- bind_rows(lc_v2, gl_v2)
+nodes$id <- seq.int(nrow(nodes))
+#nodes$color <- "green"
+nodes$title <- nodes$cdr3
+
+edges <- subset(nodes, select = c(id, type, group))
+edges <- transform(edges, color = ifelse(type=="local", "#E5E5E5", "#4D4D4D"))
+edges$from <- edges$id
+edges$to <- 0
+edges$width <- 10
+
+j = 0
+for(i in 1:nrow(edges)){
+  if (j == 0){
+    first <- i
+    }
+  j = i+1
+  if(isTRUE(edges$group[i] == edges$group[j])){
+    edges$to[i] <- j
+    
+  } else {
+    edges$to[i] <- first
+    j = 0
+  }
+}
+
+# fix circle / self ref
+for(i in 1:nrow(edges)){
+  dst <- edges$to[i]
+  if(!dst == 0){
+    if(edges$to[dst] == i){
+      edges$to[dst] <- 0
+    }
+  }
+  if (edges$from[i] == edges$to[i])
+  {
+    edges$to[i] = 0
+  }
+}
+
+visNetwork(nodes, edges) 
+
+```
+
+```{r global_graph_v3}
+library(dplyr)
+# quick and dirty
+gl_v3 <- data.frame(cdr3=c("CASSYVLRAADGYTF", "CASSYVLRAADGDTF",
+                           "CATSRAAKPDGLAALSTQYF", "CATSRAAKPDGLAALETQYF"),
+                    type="global", 
+                    group=c(20,20,21,21))
+
+lc_v3 <- clustirr_output_v3$clust$CDR3b$local$lp
+lc_v3$group <- as.numeric(factor(lc_v3$motif))
+lc_v3$type <- "local"
+nodes <- bind_rows(lc_v3, gl_v3)
+nodes$id <- seq.int(nrow(nodes))
+#nodes$color <- "green"
+nodes$title <- nodes$cdr3
+
+edges <- subset(nodes, select = c(id, type, group))
+edges <- transform(edges, color = ifelse(type=="local", "#E5E5E5", "#4D4D4D"))
+edges$from <- edges$id
+edges$to <- 0
+edges$width <- 10
+
+j = 0
+for(i in 1:nrow(edges)){
+  if (j == 0){
+    first <- i
+    }
+  j = i+1
+  if(isTRUE(edges$group[i] == edges$group[j])){
+    edges$to[i] <- j
+    
+  } else {
+    edges$to[i] <- first
+    j = 0
+  }
+}
+
+# fix circle / self ref
+for(i in 1:nrow(edges)){
+  dst <- edges$to[i]
+  if(!dst == 0){
+    if(edges$to[dst] == i){
+      edges$to[dst] <- 0
+    }
+  }
+  if (edges$from[i] == edges$to[i])
+  {
+    edges$to[i] = 0
+  }
+}
+
+visNetwork(nodes, edges) 
+
+
 ```
 
 # References
