@@ -259,12 +259,15 @@ clustered, the CDR3 sequence pairs can be found under `out$clust$CDR3b$global`.
 To demonstrate the package workflow and the advantages of *version 3* of the 
 algorithm, a short case study is executed.
 
-We start by loading the `r Biocpkg("ClustIRR")` and the *knitr* package.
+We start by loading the needed packages. *knitr*, *ggplot2* and *ggrepel* are
+used to display the results.
 
 ```{r case_study}
 # load packages
 library(ClustIRR)
 library(knitr)
+library(ggplot2)
+library(ggrepel)
 ```
 
 ## Input data
@@ -370,7 +373,7 @@ kable(local_motifs_v2[local_motifs_v2$pass == TRUE,])
 
 Inspecting the local motif clustering of *version 3*, however, shows that in 
 total of 20 motifs was marked as enriched. In addition to all inserted motifs 
-found by *version 2*, also 15 motifs of the clonally expanded sequences 
+found by *version 2*, also 14 motifs of the clonally expanded sequences 
 *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* are found. Some of them are 
 found in both sequences (for example *AAKP*, found 30 times), some of them only
 in one of the two (for example *AALE*, found 15 times). Notice that several of 
@@ -385,12 +388,40 @@ In any case, the inserted motifs and the motifs found in the clonally
 expanded sequences are guaranteed to be detected by the algorithm *version 3*.
 
 
-```{r local_motifs_output_version_3, width = 5}
+```{r local_motifs_output_version_3}
 # extract local motifs version 3
 local_motifs_v3 <- clustirr_output_v3$clust$CDR3b$local$m
 
 # display only passed motifs
 kable(local_motifs_v3[local_motifs_v3$pass == TRUE,])
+
+```
+
+We can also compare the found motifs between the versions by p-value.
+
+```{r local_motifs_output_graph, fig.height=5, fig.width=7}
+
+
+# combine output of v2 and v3
+local_motifs_v2_v3 <- merge(local_motifs_v2, 
+                            local_motifs_v3, 
+                            by="motif",
+                            all=TRUE,
+                            suffixes = c("_v2","_v3"))
+
+# get all motifs that are passed in v3 (includes all passes of v2)
+local_motifs_v2_v3 <- local_motifs_v2_v3[local_motifs_v2_v3$pass_v3 == TRUE,]
+
+ggplot(local_motifs_v2_v3, aes(-log10(p_value_v3),
+                               -log10(p_value_v2),
+                               label = motif,
+                               color = pass_v2)) +
+  geom_point(size=3) +
+  geom_label_repel(nudge_y = 1.5, show.legend = FALSE) +
+  scale_colour_discrete(name="Found motifs",
+                         label=c("by v3 only (14)", "by v2 and v3 (6)")) +
+  labs(x="-log10(p-value v3)", y = "-log10(p-value v2)")
+
 
 ```
 
@@ -424,11 +455,11 @@ screening." Nature Biotechnology 38.10 (2020): 1194-1202.<br>
 
 # Session Info
 
-```{r}
+```{r package_version}
 packageVersion("ClustIRR")
 ```
 
 
-```{r}
+```{r session_info}
 sessionInfo()
 ```
