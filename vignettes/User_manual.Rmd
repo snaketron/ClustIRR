@@ -511,7 +511,7 @@ library(dplyr)
 gl_v3 <- data.frame(cdr3=c("CASSYVLRAADGYTF", "CASSYVLRAADGDTF",
                            "CATSRAAKPDGLAALSTQYF", "CATSRAAKPDGLAALETQYF"),
                     type="global", 
-                    group=c(20,20,21,21))
+                    group=c(21,21,22,22))
 
 lc_v3 <- clustirr_output_v3$clust$CDR3b$local$lp
 lc_v3$group <- as.numeric(factor(lc_v3$motif))
