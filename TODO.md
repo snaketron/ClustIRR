@@ -7,7 +7,9 @@ Bioconductor to keep track of applied changes.
 
 Initial goals:
 
-- Make sure the package fulfills all relevant [Bioconductor Package Guidelines](https://bioconductor.org/developers/package-guidelines/)
+- Make sure the package fulfills all relevant 
+[Bioconductor Package Guidelines]
+(https://bioconductor.org/developers/package-guidelines/)
 
 - Refactor the code into smaller functions/units
 

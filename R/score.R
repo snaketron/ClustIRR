@@ -17,7 +17,7 @@
 #         chains <- unlist(strsplit(x = chain_type, split = "\\+"))
 #         edges <- unlist(strsplit(x = edge_type, split = "\\+"))
 #
-#         # gliph_output$edges = list over chains, rbind chain-spec. data.frames
+#         # gliph_output$edges = list over chains, rbind chain-spec.data.frames
 #         edge_data <- do.call(rbind, gliph_output$edges)
 #
 #         # make selection

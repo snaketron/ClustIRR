@@ -81,8 +81,8 @@ to control algorithm's behavior. See the details below:
 }
 }
 \value{
-The output is an object with \code{clust_irr} structure. This object is formed by
-two sublists:
+The output is an object with \code{clust_irr} structure. This object is formed 
+by two sublists:
 \item{clust}{list, contains clustering results
 \itemize{
       \item \code{CDR3b} - list, contains global+local clustering results for 
@@ -110,8 +110,8 @@ two sublists:
             \item \code{fdr} - false discovery rate, i.e. adjusted p-value by 
             Benjamini & Hochberg correction
             \item \code{pass} - logical value indicating whether a motifs are 
-            enriched (\code{pass=TRUE}) given the user-defined thresholds in control
-            }
+            enriched (\code{pass=TRUE}) given the user-defined thresholds in 
+            control}
             
             For version = 1, \code{m} has the following columns:
             \itemize{

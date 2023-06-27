@@ -182,7 +182,7 @@ get_control <- function(control_in) {
     if(base::is.list(control_in) == FALSE) {
         base::stop("control must be a list")
     }
-    if(base::all(base::names(control_in) %in% base::names(control)) == FALSE) {
+    if(base::all(base::names(control_in) %in% base::names(control)) == FALSE){
         base::stop("unrecognized elements found in control")
     }
 

@@ -120,7 +120,8 @@ get_clust_v1 <- function(cdr3,
     else {
         if(control$low_mem) {
             g <- get_global_clust_mem(cdr3 = base::unique(cdr3),
-                                      global_max_dist = control$global_max_dist)
+                                      global_max_dist = 
+                                        control$global_max_dist)
         }
         else {
             g <- get_global_clust(cdr3 = base::unique(cdr3),
@@ -156,7 +157,8 @@ get_clust_v23 <- function(cdr3,
     else {
         if(control$low_mem) {
             g <- get_global_clust_mem(cdr3 = base::unique(cdr3),
-                                      global_max_dist = control$global_max_dist)
+                                      global_max_dist = 
+                                        control$global_max_dist)
 
         }
         else {

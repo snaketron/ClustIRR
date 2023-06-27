@@ -4,7 +4,7 @@
 #' @export
 get_edges <- function(clust_irr) {
 
-    if(!base::class(clust_irr) == "clust_irr"){
+    if(!methods::is(clust_irr, 'clust_irr')){
         base::stop("Input has to be object of class clust_irr")
     }
     
@@ -33,7 +33,7 @@ get_edges <- function(clust_irr) {
     if(base::is.null(me)==FALSE && base::nrow(me)!=0) {
         me$from_ID <- me$ID.x
         me$to_ID <- me$ID.y
-        me <- me[,c("from_ID", "to_ID", "from", "to", "motif", "type", "chain")]
+        me <- me[,c("from_ID", "to_ID", "from","to", "motif", "type", "chain")]
         return(me)
     }
     return(NULL)

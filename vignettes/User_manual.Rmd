@@ -81,7 +81,7 @@ quantitative exploration of single-cell RNA-seq data.
 # ClustIRR algorithm
 
 ```{r graphic, echo = FALSE, fig.align="left", out.width='90%'}
-knitr::include_graphics("workflow.png")
+knitr::include_graphics("../inst/extdata/logo.png")
 ```
 
 The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR 
@@ -200,10 +200,11 @@ $$ OvE = \frac{\frac{f_{sample}}{n_{sample}}}{\frac{f_{ref}}{n_{ref}}} $$
 `f_sample` is motif frequency in the sample, `n_sample` is the count of all 
 possible distinct motifs in the data sample of the same length, and `f_ref` as 
 well as `n_ref` are the same frequencies in the reference dataset.
-In *version 1*, the OvE is computed by bootstrapping, i.e., repeated sampling of
-the reference dataset with a sample size equal to the sample dataset. Sampling 
-depth can be configured for higher precision by changing the input parameter 
-`control$B` (default: 1000) to higher values, which only affects *version 1*.
+In *version 1*, the OvE is computed by bootstrapping, i.e., repeated sampling 
+of the reference dataset with a sample size equal to the sample dataset. 
+Sampling depth can be configured for higher precision by changing the input 
+parameter `control$B` (default: 1000) to higher values, which only affects 
+*version 1*.
 
 Finally, the False Discovery Rate (FDR) of the motif should not exceed the 
 maximal local FDR `control$local_max_fdr` (default: 0.05).
@@ -314,10 +315,10 @@ data_sample <- rbind(data_sample, clones)
 ## Clustering
 
 Only the sample and reference
-dataset must be provided as input to perform clustering with the default values.
-For demonstration purposes, we will only look for motifs of length `ks` = 4 and 
-compute two outputs for *version 2* and *version 3*, trimming the flank amino 
-acids by three on each side.
+dataset must be provided as input to perform clustering with the default 
+values. For demonstration purposes, we will only look for motifs of length 
+`ks` = 4 and compute two outputs for *version 2* and *version 3*, trimming the 
+flank amino acids by three on each side.
 
 ```{r clustering}
 # ClustIRR version 2
@@ -385,8 +386,8 @@ found by *version 2*, also 14 motifs of the clonally expanded sequences
 found in both sequences (for example *AAKP*, found 30 times), some of them only
 in one of the two (for example *AALE*, found 15 times). Notice that several of 
 the newly found motifs were also present in the reference dataset as parts of 
-other sequences (`f_ref` > 0), and in this case, by chance, one of them (*GLAA*) 
-was contained in the sample before the artificial enhancement, leading
+other sequences (`f_ref` > 0), and in this case, by chance, one of them 
+(*GLAA*) was contained in the sample before the artificial enhancement, leading
 to a count of 31. 
 
 If the random seed value changed, slightly different motif counts 
@@ -437,8 +438,8 @@ ggplot(local_motifs_v2_v3, aes(-log10(p_value_v3),
 
 Inspecting the global motif clustering shows the same output for both versions.
 The first pair of CDR3b sequences (*CASSYVLRAADGYTF* and *CASSYVLRAADGDTF*) 
-were present in the reference dataset and were randomly sampled into the example
-dataset, while the second pair (*CATSRAAKPDGLAALSTQYF* and 
+were present in the reference dataset and were randomly sampled into the 
+example dataset, while the second pair (*CATSRAAKPDGLAALSTQYF* and 
 *CATSRAAKPDGLAALETQYF*) represents the artificially enhanced clonal expansion.
 
 Again, if the sampling were repeated with a different seed, other random 

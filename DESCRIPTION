@@ -31,7 +31,8 @@ Suggests:
     knitr,
     testthat,
     ggplot2,
-    patchwork
+    patchwork,
+    ggrepel
 Encoding: UTF-8
 NeedsCompilation: no
 biocViews: Clustering, ImmunoOncology, SingleCell, Software, Classification
