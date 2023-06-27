@@ -28,5 +28,5 @@ Case studies are provided in the directory /vignettes
 
 ## Workflow & output 
 
-![clustirr workflow](vignettes/workflow.png)
+![clustirr workflow](/inst/extdata/logo.png)
 
