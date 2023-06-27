@@ -18,6 +18,7 @@ knitr::opts_chunk$set(collapse = TRUE,
                       fig.align = "center")
 ```
 
+
 # Introduction
 
 This short introduction gives an overview of the biological background of the 
@@ -79,6 +80,10 @@ quantitative exploration of single-cell RNA-seq data.
 
 # ClustIRR algorithm
 
+```{r graphic, echo = FALSE, fig.align="left", out.width='90%'}
+knitr::include_graphics("workflow.png")
+```
+
 The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR 
 sequences in a given IR repertoire to find groups of IRs with similar
 specificity. It then employs a quantitative model to compare the abundances 
@@ -99,7 +104,7 @@ To optimize the execution speed of the algorithm, the input parameter
 `cores` (default: 1) can be adjusted to the executing machine (for example 
 detectable via `parallel::detectCores()`).
 
-## Input data
+## Input
 
 Two datasets consisting of CDR3 sequences in amino acid code are required 
 as input. 
@@ -125,8 +130,6 @@ the to be analyzed sequences can be provided in columns named *CDR3b* and
 The *CD8* dataset that is provided with the package contains 10.000 TCR CDR3β 
 chains. It is derived from the T cell receptors of human naive CD8+ T cells and 
 was originally published as part of the Gliph2\(^2\) algorithm.
-
-## Pre-processing
 
 ## Clustering
 
@@ -234,11 +237,13 @@ computation time. This matrix should contain pairs of CDR3s of the data sample
 set and can be provided via the `control$global_pairs` input parameter.
 
 
-## Output data
+## Output
 `r Biocpkg("ClustIRR")` returns an object of type clust_irr that contains 
 lists of all found local and global clusters and local edges, as well as 
 information about the provided user input. For a detailed list of all values, 
 see the manual files.
+
+### Clustering output
 
 The local motif clustering list contains the motif names and length, a `pass` 
 flag, as well as details about computed values inside the algorithm. See the 
@@ -254,6 +259,8 @@ edges between the sequences.
 If, for example, the output was saved as `out` and CDR3b sequences were 
 clustered, the CDR3 sequence pairs can be found under `out$clust$CDR3b$global`.
 
+### Graph output
+
 # Case study
 
 To demonstrate the package workflow and the advantages of *version 3* of the 
@@ -268,8 +275,6 @@ library(ClustIRR)
 library(knitr)
 library(ggplot2)
 library(ggrepel)
-library(dplyr)
-library(visNetwork)
 ```
 
 ## Input data
@@ -349,7 +354,7 @@ clustirr_output_v3 <- cluster_irr(data_sample = data_sample,
 
 ```
 
-## Output data
+## Output
 
 ### Local motif clustering output
 
@@ -400,10 +405,11 @@ kable(local_motifs_v3[local_motifs_v3$pass == TRUE,])
 ```
 
 We can also compare the found motifs between the versions by p-value.
+*Version 2* marks six motifs as enriched, while *version 3* finds 20 - the same
+6 that *version 2* finds plus 14 additional motifs between the clonally 
+expanded sequences.
 
 ```{r local_motifs_output_graph, fig.height=5, fig.width=7}
-
-
 # combine output of v2 and v3
 local_motifs_v2_v3 <- merge(local_motifs_v2, 
                             local_motifs_v3, 
@@ -414,6 +420,7 @@ local_motifs_v2_v3 <- merge(local_motifs_v2,
 # get all motifs that are passed in v3 (includes all passes of v2)
 local_motifs_v2_v3 <- local_motifs_v2_v3[local_motifs_v2_v3$pass_v3 == TRUE,]
 
+# display with ggplot
 ggplot(local_motifs_v2_v3, aes(-log10(p_value_v3),
                                -log10(p_value_v2),
                                label = motif,
@@ -423,7 +430,6 @@ ggplot(local_motifs_v2_v3, aes(-log10(p_value_v3),
   scale_colour_discrete(name="Found motifs",
                          label=c("by v3 only (14)", "by v2 and v3 (6)")) +
   labs(x="-log10(p-value v3)", y = "-log10(p-value v2)")
-
 
 ```
 
@@ -446,118 +452,17 @@ kable(clustirr_output_v2$clust$CDR3b$global)
 # global motifs version 3
 kable(clustirr_output_v3$clust$CDR3b$global)
 ```
-## Graph output
+### Graph output
 
-This is a quick and dirty solution, could maybe be cleaned and extended.
+#### Local edges output
 
-```{r global_graph_v2}
+CDR3 sequences sharing enriched local motifs are listed as data.frame with 
+columns .
 
-# quick and dirty
-gl_v2 <- data.frame(cdr3=c("CASSYVLRAADGYTF", "CASSYVLRAADGDTF",
-                           "CATSRAAKPDGLAALSTQYF", "CATSRAAKPDGLAALETQYF"),
-                    type="global", 
-                    group=c(7,7,8,8))
 
-lc_v2 <- clustirr_output_v2$clust$CDR3b$local$lp
-lc_v2$group <- as.numeric(factor(lc_v2$motif))
-lc_v2$type <- "local"
-nodes <- bind_rows(lc_v2, gl_v2)
-nodes$id <- seq.int(nrow(nodes))
-#nodes$color <- "green"
-nodes$title <- nodes$cdr3
-
-edges <- subset(nodes, select = c(id, type, group))
-edges <- transform(edges, color = ifelse(type=="local", "#E5E5E5", "#4D4D4D"))
-edges$from <- edges$id
-edges$to <- 0
-edges$width <- 10
-
-j = 0
-for(i in 1:nrow(edges)){
-  if (j == 0){
-    first <- i
-    }
-  j = i+1
-  if(isTRUE(edges$group[i] == edges$group[j])){
-    edges$to[i] <- j
-    
-  } else {
-    edges$to[i] <- first
-    j = 0
-  }
-}
-
-# fix circle / self ref
-for(i in 1:nrow(edges)){
-  dst <- edges$to[i]
-  if(!dst == 0){
-    if(edges$to[dst] == i){
-      edges$to[dst] <- 0
-    }
-  }
-  if (edges$from[i] == edges$to[i])
-  {
-    edges$to[i] = 0
-  }
-}
-
-visNetwork(nodes, edges) 
-
-```
-
-```{r global_graph_v3}
-library(dplyr)
-# quick and dirty
-gl_v3 <- data.frame(cdr3=c("CASSYVLRAADGYTF", "CASSYVLRAADGDTF",
-                           "CATSRAAKPDGLAALSTQYF", "CATSRAAKPDGLAALETQYF"),
-                    type="global", 
-                    group=c(21,21,22,22))
-
-lc_v3 <- clustirr_output_v3$clust$CDR3b$local$lp
-lc_v3$group <- as.numeric(factor(lc_v3$motif))
-lc_v3$type <- "local"
-nodes <- bind_rows(lc_v3, gl_v3)
-nodes$id <- seq.int(nrow(nodes))
-#nodes$color <- "green"
-nodes$title <- nodes$cdr3
-
-edges <- subset(nodes, select = c(id, type, group))
-edges <- transform(edges, color = ifelse(type=="local", "#E5E5E5", "#4D4D4D"))
-edges$from <- edges$id
-edges$to <- 0
-edges$width <- 10
-
-j = 0
-for(i in 1:nrow(edges)){
-  if (j == 0){
-    first <- i
-    }
-  j = i+1
-  if(isTRUE(edges$group[i] == edges$group[j])){
-    edges$to[i] <- j
-    
-  } else {
-    edges$to[i] <- first
-    j = 0
-  }
-}
-
-# fix circle / self ref
-for(i in 1:nrow(edges)){
-  dst <- edges$to[i]
-  if(!dst == 0){
-    if(edges$to[dst] == i){
-      edges$to[dst] <- 0
-    }
-  }
-  if (edges$from[i] == edges$to[i])
-  {
-    edges$to[i] = 0
-  }
-}
-
-visNetwork(nodes, edges) 
-
+```{r local_edges_output}
+# global motifs version 2
+e <- get_edges(clustirr_output_v2)
 
 ```
 
