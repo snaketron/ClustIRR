@@ -4,8 +4,10 @@
 #' @export
 get_edges <- function(clust_irr) {
 
-    # TODO: check input is clust_irr object
-
+    if(!base::class(clust_irr) == "clust_irr"){
+        base::stop("Input has to be object of class clust_irr")
+    }
+    
     le <- get_local_edges(clust_irr = clust_irr)
     ge <- get_global_edges(clust_irr = clust_irr)
     e <- base::rbind(le, ge)
