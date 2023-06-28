@@ -163,7 +163,7 @@ by two sublists:
 \item \code{version} - \emph{ClustIRR} version that was used
 \item \code{ks} - kmer-count to be searched for 
 \item \code{cores} - used CPU cores
-\item \code{control} - other control parameters, details see \bold{Arguments})
+\item \code{control} - other control parameters, details see \bold{Arguments}
 }
 }
 

@@ -13,7 +13,19 @@ function, formed by two sublists \itemize{
 \value{
 The output is an data.frame of the local and global edges, that can be
 used as input for visualization, for example with \emph{igraph}.
+\itemize{
+\item \code{from_ID} - ID of the source CDR3 sequence in the sample dataset
+\item \code{to_ID} - ID of the target CDR3 sequence in the sample dataset
+\item \code{from} - AA of the source CDR3 sequence in the sample dataset
+\item \code{to} - AA of the target CDR3 sequence in the sample dataset
+\item \code{motif} - If type \emph{local}, shared motif between sequences. 
+\code{NA}, if type \emph{global}
+\item \code{type} - Type of connection, \emph{global} for globally clustered
+or \emph{local} for locally clustered
+\item \code{chain} - Chain the sequence belongs to, e.g., \emph{CDR3b}
 }
+}
+
 
 \description{
 This is a helper function for visualization preparation of an \code{clustIRR}
@@ -57,6 +69,6 @@ knitr::kable(head(out$clust$CDR3b$global))
 # create data.frame
 out_df <- get_edges(out)
 
-# TODO visualize data with igraph
+# TODO visualize data with igraph/visNetwork
 
 }

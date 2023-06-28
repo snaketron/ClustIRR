@@ -1,0 +1,113 @@
+---
+title: "Comparison test"
+output: html_notebook
+---
+
+```{r input_data}
+# load package input data
+data("CD8")
+
+# set the random seed for sampling reproducibility
+set.seed(987)
+
+# sample 500 sequences from the reference dataset as sample dataset
+data_sample <- data.frame(CDR3b = CD8[sample(x = 1:nrow(CD8), 
+                                             size = 500, 
+                                             replace = FALSE),])
+
+# artificially enrich motif 'RQWW' inside sample dataset
+substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+
+# add the artificial clonal expansion of two sequences to the sample dataset
+clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
+                                       "CATSRAAKPDGLAALSTQYF"),
+                                 times = 15))
+data_sample <- rbind(data_sample, clones)
+
+```
+
+## Clustering
+
+```{r clustering}
+# ClustIRR version 3
+clustirr_output_v3 <- cluster_irr(data_sample = data_sample,  
+                                  data_ref = CD8,
+                                  version = 3,
+                                  ks = 4,
+                                  cores = 1,
+                                  control = list(
+                                    B = 1000,
+                                    global_max_dist = 1,
+                                    local_max_fdr = 0.05,
+                                    local_min_ove = 2,
+                                    local_min_o = 3,
+                                    trim_flank_aa = 3,
+                                    low_mem = FALSE,
+                                    global_pairs = NULL))
+# ClustIRR version 2
+clustirr_output_v2 <- cluster_irr(data_sample = data_sample,  
+                                  data_ref = CD8,
+                                  version = 2,
+                                  ks = 4,
+                                  cores = 1,
+                                  control = list(
+                                    B = 1000,
+                                    global_max_dist = 1,
+                                    local_max_fdr = 0.05,
+                                    local_min_ove = 2,
+                                    local_min_o = 3,
+                                    trim_flank_aa = 3,
+                                    low_mem = FALSE,
+                                    global_pairs = NULL))
+# ClustIRR version 1
+clustirr_output_v1 <- cluster_irr(data_sample = data_sample,  
+                                  data_ref = CD8,
+                                  version = 1,
+                                  ks = 4,
+                                  cores = 1,
+                                  control = list(
+                                    B = 1000,
+                                    global_max_dist = 1,
+                                    local_max_fdr = 0.05,
+                                    local_min_ove = 2,
+                                    local_min_o = 3,
+                                    trim_flank_aa = 3,
+                                    low_mem = FALSE,
+                                    global_pairs = NULL))
+
+
+```
+
+
+
+```{r local_motifs_output_graph, fig.height=5, fig.width=7}
+# extract local motifs version 1, 2 and 3
+local_motifs_v1 <- clustirr_output_v1$clust$CDR3b$local$m
+local_motifs_v2 <- clustirr_output_v2$clust$CDR3b$local$m
+local_motifs_v3 <- clustirr_output_v3$clust$CDR3b$local$m
+
+
+# combine output
+local_motifs <- Reduce(function (...) { 
+  merge(..., by = "motif", all = TRUE, suffixes = c("_v1","_v2", "_v3")) },
+  list(local_motifs_v1, 
+       local_motifs_v2, 
+       local_motifs_v3)) 
+
+# select all motifs that are passed in at least one version
+local_motifs <- local_motifs[(local_motifs$pass_v1 == TRUE |
+                                local_motifs$pass_v2 == TRUE |
+                                local_motifs$pass == TRUE) ,]
+
+# display with ggplot
+ggplot(local_motifs, aes(-log10(p_value),
+                         -log10(p_value_v2),
+                         label = motif,
+                         color = pass)) +
+  geom_point(size=3) +
+  geom_label_repel(nudge_y = 1.5, show.legend = FALSE) +
+  scale_colour_discrete(name="Found motifs",
+                        label=c("by v3 only (14)", "by v2 and v3 (6)")) +
+  labs(x="-log10(p-value v3)", y = "-log10(p-value v2)")
+
+```

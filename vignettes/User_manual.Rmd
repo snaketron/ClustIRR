@@ -97,7 +97,7 @@ Scoring and plotting parts are planned to be added in future versions.
 
 `r Biocpkg("ClustIRR")` includes implementations of the Gliph\(^1\) and 
 Gliph2\(^2\) clustering algorithms and introduces a new version of the 
-Gliph algorithm called *gliph3*, designed for single-cell sequencing 
+Gliph algorithm called *Gliph3*, designed for single-cell sequencing 
 input data. The version can be chosen via the `version` input parameter.
 
 To optimize the execution speed of the algorithm, the input parameter 
@@ -195,7 +195,7 @@ minimal local OvE threshold `control$local_min_ove` (default: 2).
 The OvE is calculated with Fisher's exact test (*version 2 & 3*) using the 
 following formula:
 
-$$ OvE = \frac{\frac{f_{sample}}{n_{sample}}}{\frac{f_{ref}}{n_{ref}}} $$
+$$ OvE = \frac{f_{sample}}{n_{sample}}/\frac{f_{ref}}{n_{ref}} $$
 
 `f_sample` is motif frequency in the sample, `n_sample` is the count of all 
 possible distinct motifs in the data sample of the same length, and `f_ref` as 
@@ -262,20 +262,25 @@ clustered, the CDR3 sequence pairs can be found under `out$clust$CDR3b$global`.
 
 ### Graph output
 
+A function to plot a graph directly is planned to be added in future package 
+versions.
+
+The `get_edges()` function can be used to extract a list of local and global
+connections between the CDR3 sequences of the sample dataset. 
+
 # Case study
 
-To demonstrate the package workflow and the advantages of *version 3* of the 
-algorithm, a short case study is executed.
+To demonstrate the `r Biocpkg("ClustIRR")` workflow, a short case study is 
+conducted. The newest *version 3* will be used. For a comparison of the 
+different algorithm versions, see the "version comparison" vignette.
 
-We start by loading the needed packages. *knitr*, *ggplot2* and *ggrepel* are
-used to display the results.
+We start by loading the needed packages. *knitr* will be used to display the 
+results in tabular form.
 
 ```{r case_study}
 # load packages
 library(ClustIRR)
 library(knitr)
-library(ggplot2)
-library(ggrepel)
 ```
 
 ## Input data
@@ -317,155 +322,106 @@ data_sample <- rbind(data_sample, clones)
 Only the sample and reference
 dataset must be provided as input to perform clustering with the default 
 values. For demonstration purposes, we will only look for motifs of length 
-`ks` = 4 and compute two outputs for *version 2* and *version 3*, trimming the 
-flank amino acids by three on each side.
+`ks` = 4 and trim the flank amino acids by three on each side.
 
 ```{r clustering}
-# ClustIRR version 2
-clustirr_output_v2 <- cluster_irr(data_sample = data_sample,  
-                                  data_ref = CD8,
-                                  version = 2,
-                                  ks = 4,
-                                  cores = 1,
-                                  control = list(
-                                    B = 1000,
-                                    global_max_dist = 1,
-                                    local_max_fdr = 0.05,
-                                    local_min_ove = 2,
-                                    local_min_o = 3,
-                                    trim_flank_aa = 3,
-                                    low_mem = FALSE,
-                                    global_pairs = NULL))
-
-# ClustIRR version 3
-clustirr_output_v3 <- cluster_irr(data_sample = data_sample,  
-                                  data_ref = CD8,
-                                  version = 3,
-                                  ks = 4,
-                                  cores = 1,
-                                  control = list(
-                                    B = 1000,
-                                    global_max_dist = 1,
-                                    local_max_fdr = 0.05,
-                                    local_min_ove = 2,
-                                    local_min_o = 3,
-                                    trim_flank_aa = 3,
-                                    low_mem = FALSE,
-                                    global_pairs = NULL))
+# perform clustering
+clustirr_output <- cluster_irr(data_sample = data_sample,  
+                               data_ref = CD8,
+                               version = 3,
+                               ks = 4,
+                               cores = 1,
+                               control = list(
+                                 B = 1000,
+                                 global_max_dist = 1,
+                                 local_max_fdr = 0.05,
+                                 local_min_ove = 2,
+                                 local_min_o = 3,
+                                 trim_flank_aa = 3,
+                                 low_mem = FALSE,
+                                 global_pairs = NULL))
 
 ```
+
+A warning tells us that CDR3 sequences of the reference dataset shorter than 
+6 amino acids were trimmed completely before local clustering was performed.
+This happens, because we set the `trim_flank_aa` parameter to 3, so at each 
+side of all CDR3 sequences 3 aa got cut off, effectively trimming sequences 
+shorter than 6 aa completely. As long as our sample dataset is not cut, this 
+should be fine.
 
 ## Output
 
 ### Local motif clustering output
 
-Inspecting the local motif clustering of *version 2* shows that, in total, 6 
-motifs were marked as enriched. The 20 times inserted motif *RQWW* gets found 
-20 times. The other five motifs are all combinations of the first three 
-(*RQW* <-> *QRQW*, *YRQW*) or last three (*QWW* <-> *QWWA*, *QWWG*, *QWWS*) 
-amino acids of the inserted motif with the respective sequences it was inserted 
-in.
-
-Because of the redundancy reduction performed in *version 2*, no motifs of the 
-2 clonal expanded sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* 
-are found, which both were inserted 15 times into the sample data.
-
-
-```{r local_motifs_output_version_2}
-# extract local motifs version 2
-local_motifs_v2 <- clustirr_output_v2$clust$CDR3b$local$m
-
-# display only passed motifs
-kable(local_motifs_v2[local_motifs_v2$pass == TRUE,])
-```
-
-Inspecting the local motif clustering of *version 3*, however, shows that in 
-total of 20 motifs was marked as enriched. In addition to all inserted motifs 
-found by *version 2*, also 14 motifs of the clonally expanded sequences 
-*CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* are found. Some of them are 
-found in both sequences (for example *AAKP*, found 30 times), some of them only
-in one of the two (for example *AALE*, found 15 times). Notice that several of 
-the newly found motifs were also present in the reference dataset as parts of 
-other sequences (`f_ref` > 0), and in this case, by chance, one of them 
-(*GLAA*) was contained in the sample before the artificial enhancement, leading
-to a count of 31. 
+Inspecting the local motif clustering shows that, in total, 20 motifs were 
+marked as enriched. The 20 times inserted motif *RQWW* gets found 
+20 times (to be seen in the column `f_sample`). Five other motifs are 
+combinations of the first three (*RQW* <-> *QRQW*, *YRQW*) or last three 
+(*QWW* <-> *QWWA*, *QWWG*, *QWWS*) amino acids of the inserted motif with the 
+respective sequences it was inserted in. 14 motifs of the clonally expanded 
+sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* are found. Some of 
+them are found in both sequences (for example *AAKP*, found 30 times), some of 
+them only in one of the two (for example *AALE*, found 15 times). Notice that 
+motifs can also present in the reference dataset as parts of other sequences 
+(`f_ref` > 0). In our case, for example, the enriched motif *GLAA* was 
+contained in the sample before the artificial enhancement, leading to a count 
+of 31. 
 
 If the random seed value changed, slightly different motif counts 
 could appear through interaction with sampled motifs of the reference set. 
 In any case, the inserted motifs and the motifs found in the clonally 
-expanded sequences are guaranteed to be detected by the algorithm *version 3*.
+expanded sequences are guaranteed to be detected by the algorithm 
+(*version 3*).
 
-
-```{r local_motifs_output_version_3}
-# extract local motifs version 3
-local_motifs_v3 <- clustirr_output_v3$clust$CDR3b$local$m
+```{r local_motifs_output}
+# extract local motifs
+local_motifs <- clustirr_output$clust$CDR3b$local$m
 
 # display only passed motifs
-kable(local_motifs_v3[local_motifs_v3$pass == TRUE,])
+kable(local_motifs[local_motifs$pass == TRUE,])
 
 ```
 
-We can also compare the found motifs between the versions by p-value.
-*Version 2* marks six motifs as enriched, while *version 3* finds 20 - the same
-6 that *version 2* finds plus 14 additional motifs between the clonally 
-expanded sequences.
-
-```{r local_motifs_output_graph, fig.height=5, fig.width=7}
-# combine output of v2 and v3
-local_motifs_v2_v3 <- merge(local_motifs_v2, 
-                            local_motifs_v3, 
-                            by="motif",
-                            all=TRUE,
-                            suffixes = c("_v2","_v3"))
-
-# get all motifs that are passed in v3 (includes all passes of v2)
-local_motifs_v2_v3 <- local_motifs_v2_v3[local_motifs_v2_v3$pass_v3 == TRUE,]
-
-# display with ggplot
-ggplot(local_motifs_v2_v3, aes(-log10(p_value_v3),
-                               -log10(p_value_v2),
-                               label = motif,
-                               color = pass_v2)) +
-  geom_point(size=3) +
-  geom_label_repel(nudge_y = 1.5, show.legend = FALSE) +
-  scale_colour_discrete(name="Found motifs",
-                         label=c("by v3 only (14)", "by v2 and v3 (6)")) +
-  labs(x="-log10(p-value v3)", y = "-log10(p-value v2)")
-
-```
 
 ### Global CDR3 sequence clustering output
 
-Inspecting the global motif clustering shows the same output for both versions.
-The first pair of CDR3b sequences (*CASSYVLRAADGYTF* and *CASSYVLRAADGDTF*) 
-were present in the reference dataset and were randomly sampled into the 
-example dataset, while the second pair (*CATSRAAKPDGLAALSTQYF* and 
-*CATSRAAKPDGLAALETQYF*) represents the artificially enhanced clonal expansion.
+Inspecting the global motif clustering reveals two found sequence pairs of 
+CDR3 sequences.
+
+The first pair *CASSYVLRAADGYTF* and *CASSYVLRAADGDTF* was present in the 
+reference dataset and were randomly sampled into the example dataset.
+
+The second pair *CATSRAAKPDGLAALSTQYF* and *CATSRAAKPDGLAALETQYF* represents 
+the artificially enhanced clonal expansion.
 
 Again, if the sampling were repeated with a different seed, other random 
 pairs of the reference dataset could be sampled, but the two added sequences
-are guaranteed to be found by the algorithm.
+are guaranteed to be found.
 
 
 ```{r global_motifs_output}
-# global motifs version 2
-kable(clustirr_output_v2$clust$CDR3b$global)
-# global motifs version 3
-kable(clustirr_output_v3$clust$CDR3b$global)
+# global motifs
+kable(clustirr_output$clust$CDR3b$global)
 ```
 ### Graph output
 
-#### Local edges output
+#### Extract edges
 
-CDR3 sequences sharing enriched local motifs are listed as data.frame with 
-columns .
+To extract the edges for a visualisation, the `get_edges()` function can be 
+called on our output file of class `clust_irr`.
 
 
 ```{r local_edges_output}
-# global motifs version 2
-e <- get_edges(clustirr_output_v2)
+# extract edges
+edges <- get_edges(clustirr_output)
 
 ```
+
+#### Graph output
+
+As mentioned earlier, an integrated plotting function is planned for future
+`r Biocpkg("ClustIRR")` versions.
 
 # References
 
