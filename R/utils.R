@@ -18,11 +18,13 @@ get_chains <- function(x) {
 get_trimmed_flanks <- function(x,
                                flank_size) {
   
-  n <- base::deparse(base::substitute(x))
+  n <- base::ifelse(test = base::deparse(base::substitute(x)) == "cdr3",
+                    yes = "sample",
+                    no = "reference")
   t <- flank_size*2
   l <- base::nchar(x)
 
-    if(base::max(l) < t){
+    if(base::max(l) <= t){
     s <- "trim_flank_aa too high, no sequences left to cluster after trimming"
     base::stop(s)
   }
@@ -40,7 +42,7 @@ get_trimmed_flanks <- function(x,
         "cdr3 sequences shorter than ",
         t, 
         " (trim_flank_aa*2) of the ",
-        base::deparse(base::substitute(n)),
+        n,
         " dataset \n were trimmed completely before local clustering \n \n"
       )
       base::warning(w)

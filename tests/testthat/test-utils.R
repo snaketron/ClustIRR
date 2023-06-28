@@ -9,13 +9,20 @@ test_that("get_trimmed_flanks() leaves sequences to analyse after trimming", {
   
   # trim by 2 aa from each side to trim all sequences <= 4 completely
   t <- 2
-  w <- base::paste0(
-    "cdr3 sequences shorter than ",
-    t*2, 
-    " (trim_flank_aa*2) of the ",
-    base::deparse(base::substitute(n)),
-    " dataset \n were trimmed completely before local clustering \n \n"
-  )
-  expect_warning(get_trimmed_flanks(s, t), regexp = "w")
+  
+  # check warning for trimmed sample dataset
+  cdr3 <- s
+  n <- "sample"
+  ws <- base::paste0(
+    "cdr3 sequences shorter than 4 (trim_flank_aa*2) of the ",
+    "sample dataset \n were trimmed completely before local clustering")
+  expect_warning(get_trimmed_flanks(cdr3, t), regexp = ws, fixed = TRUE)
+  
+  # check warning for trimmed reference dataset
+  cdr3_ref <- s
+  wr <- base::paste0(
+    "cdr3 sequences shorter than 4 (trim_flank_aa*2) of the ",
+    "reference dataset \n were trimmed completely before local clustering")
+  expect_warning(get_trimmed_flanks(cdr3_ref, t), regexp = wr, fixed = TRUE)
   
 })
