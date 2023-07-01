@@ -48,7 +48,7 @@ The maturation of B cells and T cells is unique in the human body in the way
 that partially random recombination of variable (V), diversifying (D), and 
 joining (J) gene region with a constant (C) region leads to permanent mutations
 inside the genome of each B and T cell. Due to V(D)J recombination, 
-virtually every B/T cell expresses its own unique IR and has a unique 
+virtually every B/T cell expresses a unique IR and has a unique 
 specificity. Once a BCR matches an antigen or a TCR to a pMHC structure, an 
 immune reaction can be triggered in the form of clonal expansion of the matched 
 clonotype, effectively amplifying the number of pathogen antigen/pMHC-specific 
@@ -91,17 +91,20 @@ of the identified IR clusters between the provided input CDR3 sequences and a
 reference dataset of CDR3 sequences. Each algorithm step is explained in
 this vignette using real TCR-seq data as a reference.
 
-This first package version focuses on the Gliph algorithms' clustering part. 
-Input parameters are reduced to a minimum for user convenience.
-Scoring and plotting parts are planned to be added in future versions.
-
 `r Biocpkg("ClustIRR")` includes implementations of the Gliph\(^1\) and 
-Gliph2\(^2\) clustering algorithms and introduces a new version of the 
-Gliph algorithm called *Gliph3*, designed for single-cell sequencing 
-input data. The version can be chosen via the `version` input parameter.
+Gliph2\(^2\) clustering algorithms and introduces a third version of the 
+Gliph algorithm, designed for single-cell sequencing input data. The version 
+can be chosen via the `version` input parameter, default is *version 3*.
+See the *version comparison vignette* for details about implementation 
+differences. The rest of this vignette will be focused on *version 3* of the 
+algorithm.
+
+This first package version focuses on clustering. Input parameters are reduced 
+to a minimum for user convenience. Scoring and plotting are planned to be 
+added in future versions.
 
 To optimize the execution speed of the algorithm, the input parameter 
-`cores` (default: 1) can be adjusted to the executing machine (for example 
+`cores` (*default: 1*) can be adjusted to the executing machine (for example 
 detectable via `parallel::detectCores()`).
 
 ## Input
@@ -131,6 +134,8 @@ The *CD8* dataset that is provided with the package contains 10.000 TCR CDR3β
 chains. It is derived from the T cell receptors of human naive CD8+ T cells and 
 was originally published as part of the Gliph2\(^2\) algorithm.
 
+The complete set of sequences is taken as input for clustering.
+
 ## Clustering
 
 Two strategies called *local motif clustering* and 
@@ -151,31 +156,11 @@ example of a motif of length 4 (also called 4mer) could be the sequence
 *CASSTTTGTGELFF*, *CSGVTGTGYTF* and many others. A significant abundance of 
 similar motifs inside a sample can indicate specificity to similar matching 
 pMHC or antigens. To be examined, motif length(s) can be selected via the input
-parameter `ks` (default: c(2,3,4)).
-
-As a pre-processing step before local clustering, *version 1* and *version 2* 
-of the algorithm reduce both the sample dataset and the reference dataset to 
-unique sequences to reduce the examined clonally expanded sequences to only 
-clonotypes. Neither the Gliph\(^1\) nor the Gliph2\(^2\) paper contains 
-the reasoning behind this. Information about clonal 
-expansion was only considered in the algorithm's later scoring stage. One 
-possible explanation could be that clonal expansion counts 
-were suspected to be biased, induced by the predominantly used 
-bulk sequencing techniques at the time. As a result, this possibly leads to a 
-systematic negative bias against the motifs in clonally expanded sequences, 
-which could be the most important ones for specificity analysis.
-
-*Version 3* of the algorithm takes the complete set of sequences as input for 
-local clustering, taking into account that newer single-cell high-throughput 
-sequencing techniques are less biased regarding clonal expansion counts.
-
-Therefore, *version 1* and *version 2* of the algorithm could be used when 
-analyzing bulk sequencing data, while *version 3* should be better at single 
-cell sequencing data analysis.
+parameter `ks` (*default: c(2,3,4)*).
 
 CDR3 ends at both sides of the IRs are typically found to be non-binding and 
 could therefore be excluded from the analysis. The input parameter 
-`control$trim_flank_aa` (default: 0) can trim all compared sequences 
+`control$trim_flank_aa` (*default: 0*) can trim all compared sequences 
 by *n* amino acids at both sides. For example, an input sequence *CASSLTGTGYTF* 
 and `control$trim_flank_aa = 1` would result in *ASSLTGTGYT*, trimmed by *C* at
 the start and *F* at the end. If the trim parameter is set too high, a runtime 
@@ -185,33 +170,26 @@ A motif is marked as enriched if it passes three filters specified in the input
 parameters:
 
 The number of the specific motif found in the sample must be bigger than the
-minimum local observation `control$local_min_o` (default: 1). It gets computed
-by calculating the frequency of a particular motif in the dataset.
+minimum local observation `control$local_min_o` (*default: 1*). It gets 
+computed by calculating the frequency of a particular motif in the dataset.
 For example, the motif *TGTG* is contained 40 times in the package provided
 `CD8` reference dataset.
 
 Furthermore, the Observed vs. Expected (OvE) value must be higher than the 
-minimal local OvE threshold `control$local_min_ove` (default: 2).
-The OvE is calculated with Fisher's exact test (*version 2 & 3*) using the 
-following formula:
+minimal local OvE threshold `control$local_min_ove` (*default: 2*).
+The OvE is calculated with Fisher's exact test using the following formula:
 
 $$ OvE = \frac{f_{sample}}{n_{sample}}/\frac{f_{ref}}{n_{ref}} $$
 
 `f_sample` is motif frequency in the sample, `n_sample` is the count of all 
 possible distinct motifs in the data sample of the same length, and `f_ref` as 
 well as `n_ref` are the same frequencies in the reference dataset.
-In *version 1*, the OvE is computed by bootstrapping, i.e., repeated sampling 
-of the reference dataset with a sample size equal to the sample dataset. 
-Sampling depth can be configured for higher precision by changing the input 
-parameter `control$B` (default: 1000) to higher values, which only affects 
-*version 1*.
 
 Finally, the False Discovery Rate (FDR) of the motif should not exceed the 
-maximal local FDR `control$local_max_fdr` (default: 0.05).
+maximal local FDR `control$local_max_fdr` (*default: 0.05*).
 It is calculated by first computing the probability *p* of finding the 
-observed or larger OvE of the motif by change using bootstrapping (*version 1*)
-or Fisher's exact test (*version 2/3*), and then adjusting the p-values using
-the Benjamini & Hochberg (1995) method.
+observed or larger OvE of the motif by change using Fisher's exact test, and 
+then adjusting the p-values using the Benjamini & Hochberg (1995) method.
 
 If at least one of these three filters is not passed, the motif is considered 
 as not being enriched in the data sample compared to the reference dataset.
@@ -221,14 +199,14 @@ as not being enriched in the data sample compared to the reference dataset.
 Global clustering compares the similarity of complete CDR3 sequences of the 
 same length.
 
-As a pre-processing step before global clustering, all versions reduce the 
-sample dataset to unique CDR3 sequences to prevent self-reference.
+As a pre-processing step before global clustering, the sample dataset is 
+reduced to unique CDR3 sequences to prevent self-reference.
 
 For equal-length CDR3 sequences *i* and *j*, the Hamming distance 
 *d_ij* can get computed. Sequences with *d_ij* exceeding the global maximal
-distance threshold input parameter `control$global_max_dist` (default: 1) are 
+distance threshold input parameter `control$global_max_dist` (*default: 1*) are 
 considered globally similar. For large input files, a low memory mode can be 
-turned on via the `control$low_mem` (default: FALSE) input parameter, which
+turned on via the `control$low_mem` (*default: FALSE*) input parameter, which
 reduces memory usage using pairwise comparisons instead of matrix 
 computations at the cost of increased computation time.
 
@@ -239,16 +217,17 @@ set and can be provided via the `control$global_pairs` input parameter.
 
 
 ## Output
-`r Biocpkg("ClustIRR")` returns an object of type clust_irr that contains 
-lists of all found local and global clusters and local edges, as well as 
+
+`r Biocpkg("ClustIRR")` returns an object of type `clust_irr` that contains 
+lists of all found local and global clusters and local edges and 
 information about the provided user input. For a detailed list of all values, 
-see the manual files.
+see the *clust_irr manual file*.
 
 ### Clustering output
 
 The local motif clustering list contains the motif names and length, a `pass` 
 flag, as well as details about computed values inside the algorithm. See the 
-manual files for a comprehensive list of all listed values.
+*cluster_irr manual file* for a comprehensive list of all listed values.
 If, for example, the output was saved as `out` and CDR3b sequences were 
 clustered, the motif list can be found under `out$clust$CDR3b$local$m`, and the
 local edges list under `out$clust$CDR3b$local$lp`.
@@ -256,13 +235,13 @@ local edges list under `out$clust$CDR3b$local$lp`.
 The global CDR3 sequence clustering list contains pairs of all sequences marked
 as similar, either computer by Hamming Distance or provided either by the user 
 as a `global_pairs` input parameter, which at the same time keeps the global
-edges between the sequences.
-If, for example, the output was saved as `out` and CDR3b sequences were 
-clustered, the CDR3 sequence pairs can be found under `out$clust$CDR3b$global`.
+edges between the sequences. If, for example, the output was saved as `out` and
+CDR3b sequences were clustered, the CDR3 sequence pairs can be found under 
+`out$clust$CDR3b$global`.
 
 ### Graph output
 
-A function to plot a graph directly is planned to be added in future package 
+A function to plot a graph directly is planned to be added to future package 
 versions.
 
 The `get_edges()` function can be used to extract a list of local and global
@@ -270,9 +249,9 @@ connections between the CDR3 sequences of the sample dataset.
 
 # Case study
 
-To demonstrate the `r Biocpkg("ClustIRR")` workflow, a short case study is 
-conducted. The newest *version 3* will be used. For a comparison of the 
-different algorithm versions, see the "version comparison" vignette.
+A short case study is conducted to demonstrate the `r Biocpkg("ClustIRR") 
+workflow. The newest *version 3* will be used. For a comparison of the 
+different algorithm versions, see the *version comparison vignette*.
 
 We start by loading the needed packages. *knitr* will be used to display the 
 results in tabular form.
@@ -286,8 +265,9 @@ library(knitr)
 ## Input data
 A randomly sampled part of the reference dataset will be used as a sample 
 dataset. To test the algorithm against ground truth, the sample dataset will be
-artificially enriched with the motif *RQWW* and clonally expanded with the two
-sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF*.
+artificially enriched with the motif *RQWW* and with the two through copying 
+simulated clonal expanded sequences *CATSRAAKPDGLAALETQYF* and 
+*CATSRAAKPDGLAALSTQYF*.
 
 The package provided `CD8` dataset is loaded as an example reference dataset. 
 This set of 10.000 β-chains is derived from the T cell receptors of human naive
@@ -344,11 +324,11 @@ clustirr_output <- cluster_irr(data_sample = data_sample,
 ```
 
 A warning tells us that CDR3 sequences of the reference dataset shorter than 
-6 amino acids were trimmed completely before local clustering was performed.
-This happens, because we set the `trim_flank_aa` parameter to 3, so at each 
-side of all CDR3 sequences 3 aa got cut off, effectively trimming sequences 
-shorter than 6 aa completely. As long as our sample dataset is not cut, this 
-should be fine.
+six amino acids were trimmed completely before local clustering was performed.
+This happens because we set the `trim_flank_aa` parameter to 3, so at each 
+side of all CDR3 sequences, three aa got cut off, effectively trimming 
+sequences $\leq 6$ aa completely. This should be fine as long as our sample 
+dataset is not cut.
 
 ## Output
 
@@ -356,23 +336,22 @@ should be fine.
 
 Inspecting the local motif clustering shows that, in total, 20 motifs were 
 marked as enriched. The 20 times inserted motif *RQWW* gets found 
-20 times (to be seen in the column `f_sample`). Five other motifs are 
+twenty times (to be seen in the column `f_sample`). Five other motifs are 
 combinations of the first three (*RQW* <-> *QRQW*, *YRQW*) or last three 
 (*QWW* <-> *QWWA*, *QWWG*, *QWWS*) amino acids of the inserted motif with the 
 respective sequences it was inserted in. 14 motifs of the clonally expanded 
-sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* are found. Some of 
-them are found in both sequences (for example *AAKP*, found 30 times), some of 
-them only in one of the two (for example *AALE*, found 15 times). Notice that 
-motifs can also present in the reference dataset as parts of other sequences 
-(`f_ref` > 0). In our case, for example, the enriched motif *GLAA* was 
+sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* are found. Some are
+found in both sequences (for example, *AAKP*, found 30 times), and others only 
+in one of the two (for example, *AALE*, found 15 times). Notice that 
+motifs can also be present in the reference dataset as parts of other sequences 
+(`f_ref` > 0). For example, the enriched motif *GLAA* was 
 contained in the sample before the artificial enhancement, leading to a count 
 of 31. 
 
 If the random seed value changed, slightly different motif counts 
 could appear through interaction with sampled motifs of the reference set. 
-In any case, the inserted motifs and the motifs found in the clonally 
-expanded sequences are guaranteed to be detected by the algorithm 
-(*version 3*).
+All inserted motifs and shared motifs between the 
+clonally expanded sequences are detected as enriched.
 
 ```{r local_motifs_output}
 # extract local motifs
@@ -383,21 +362,20 @@ kable(local_motifs[local_motifs$pass == TRUE,])
 
 ```
 
-
 ### Global CDR3 sequence clustering output
 
 Inspecting the global motif clustering reveals two found sequence pairs of 
 CDR3 sequences.
 
-The first pair *CASSYVLRAADGYTF* and *CASSYVLRAADGDTF* was present in the 
+The first pair, *CASSYVLRAADGYTF* and *CASSYVLRAADGDTF*, was present in the 
 reference dataset and were randomly sampled into the example dataset.
 
 The second pair *CATSRAAKPDGLAALSTQYF* and *CATSRAAKPDGLAALETQYF* represents 
 the artificially enhanced clonal expansion.
 
-Again, if the sampling were repeated with a different seed, other random 
-pairs of the reference dataset could be sampled, but the two added sequences
-are guaranteed to be found.
+Again, if the sampling was repeated with a different seed, other randomly 
+similar pairs of the reference dataset could be sampled. The two added 
+sequences are guaranteed to be found.
 
 
 ```{r global_motifs_output}
@@ -408,7 +386,7 @@ kable(clustirr_output$clust$CDR3b$global)
 
 #### Extract edges
 
-To extract the edges for a visualisation, the `get_edges()` function can be 
+To extract the edges for a visualization, the `get_edges()` function can be 
 called on our output file of class `clust_irr`.
 
 

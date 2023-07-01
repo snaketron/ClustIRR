@@ -107,7 +107,35 @@ ggplot(local_motifs, aes(-log10(p_value),
   geom_point(size=3) +
   geom_label_repel(nudge_y = 1.5, show.legend = FALSE) +
   scale_colour_discrete(name="Found motifs",
-                        label=c("by v3 only (14)", "by v2 and v3 (6)")) +
+                        label=c("v3 only (14)", "both v2 & v3 (6)")) +
   labs(x="-log10(p-value v3)", y = "-log10(p-value v2)")
+
+```
+
+
+```{r local_motifs_output_graph_v1_v3, fig.height=5, fig.width=7}
+# calculate pass_v1_v3 parameter for visualization
+local_motifs$pass_v1_v3 <- "both"
+local_motifs$pass_v1_v3 <- base::ifelse(test = local_motifs$pass, 
+                                        yes = "v3", 
+                                        no = local_motifs$pass_v1_v3)
+local_motifs$pass_v1_v3 <- base::ifelse(test = local_motifs$pass_v1, 
+                                        yes = "v1", 
+                                        no = local_motifs$pass_v1_v3)
+local_motifs$pass_v1_v3 <- base::ifelse(test = local_motifs$pass & 
+                                          local_motifs$pass_v1, 
+                                        yes = "both", 
+                                        no = local_motifs$pass_v1_v3)
+
+# display with ggplot
+ggplot(local_motifs, aes(-log10(p_value),
+                         -log10(p_value_v1),
+                         label = motif,
+                         color = pass_v1_v3)) +
+  geom_point(size=3) +
+  geom_label_repel(nudge_x = 3, show.legend = FALSE) +
+  scale_colour_discrete(name="Found motifs",
+                        label=c("both v1 & v3 (7)", "v1 only (5)", "v3 only (20)")) +
+  labs(x="-log10(p-value v3)", y = "-log10(p-value v1)")
 
 ```
