@@ -25,15 +25,16 @@ get_edges <- function(clust_irr) {
         if(base::nrow(tmp_e)!=0 & base::nrow(tmp_d)!=0) {
             base::colnames(tmp_d) <- c("CDR3", "ID")
             me[[chain]] <- base::merge(x = base::merge(
-                x = tmp_e, y = tmp_d, by.x = "from", by.y = "CDR3"),
-                y = tmp_d, by.x = "to", by.y = "CDR3")
+                x = tmp_e, y = tmp_d, by.x = "from_cdr3", by.y = "CDR3"),
+                y = tmp_d, by.x = "to_cdr3", by.y = "CDR3")
         }
     }
     me <- base::do.call(base::rbind, me)
     if(base::is.null(me)==FALSE && base::nrow(me)!=0) {
-        me$from_ID <- me$ID.x
-        me$to_ID <- me$ID.y
-        me <- me[,c("from_ID", "to_ID", "from","to", "motif", "type", "chain")]
+        me$from <- me$ID.x
+        me$to <- me$ID.y
+        me <- me[,c("from", "to", "from_cdr3","to_cdr3", 
+                    "motif", "type", "chain")]
         return(me)
     }
     return(NULL)
@@ -44,7 +45,7 @@ get_local_edges <- function(clust_irr) {
     get_lp <- function(x, lp, chain) {
         if(base::sum(lp$motif == x)>1) {
             p <- base::t(utils::combn(x = lp$cdr3[lp$motif == x], m = 2))
-            return(base::data.frame(from = p[,1], to = p[,2],
+            return(base::data.frame(from_cdr3 = p[,1], to_cdr3 = p[,2],
                                     motif = x, type = "local",
                                     chain = chain))
         }
@@ -75,7 +76,7 @@ get_global_edges <- function(clust_irr) {
     }
     
     get_gp <- function(gp, chain) {
-        return(base::data.frame(from = gp[,1], to = gp[,2],
+        return(base::data.frame(from_cdr3 = gp[,1], to_cdr3 = gp[,2],
                                 motif = apply(gp, 1, get_diff_str), 
                                 type = "global",
                                 chain = chain))
