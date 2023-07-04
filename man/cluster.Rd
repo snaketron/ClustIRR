@@ -41,7 +41,7 @@ one column or two columns:
 }
 
 }
-\item{r}{data.frame, reference (or control) database of CDR3 sequences. Must
+\item{r}{data.frame, reference (or control) repertoire of CDR3 sequences. Must
 have the same structure (number of columns and column names) as \code{s}}
 \item{version}{integer, version of the algorithm: \code{version} = 1, 2 or
 3 (default)}
