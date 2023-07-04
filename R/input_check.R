@@ -1,14 +1,14 @@
 # Description:
 # Check user provided input and generate errors and warnings, if necessary
-input_check <- function(data_sample,
-                        data_ref,
+input_check <- function(s,
+                        r,
                         version,
                         ks,
                         cores,
                         control) {
-    check_data_sample(data_sample)
-    check_data_ref(data_ref)
-    check_data_sample_and_ref(data_sample, data_ref)
+    check_s(s)
+    check_r(r)
+    check_s_and_r(s, r)
     check_version(version)
     check_ks(ks)
     check_local_min_ove(control$local_min_ove)
@@ -19,59 +19,59 @@ input_check <- function(data_sample,
     check_local_min_o(control$local_min_o)
     check_trim_flank_aa(control$trim_flank_aa)
     check_low_mem(control$low_mem)
-    check_global_pairs(control$global_pairs, data_sample)
+    check_global_pairs(control$global_pairs, s)
 }
 
-check_data_sample <- function(data_sample) {
-    check_missing(data_sample)
-    check_dataframe(data_sample)
-    check_rowcount(data_sample)
-    check_dataframe_colnames(data_sample, base::c("CDR3a", "CDR3b"))
-    if(base::any(base::colnames(data_sample) %in% "CDR3a") &&
-        !base::is.character(data_sample$CDR3a)) {
+check_s <- function(s) {
+    check_missing(s)
+    check_dataframe(s)
+    check_rowcount(s)
+    check_dataframe_colnames(s, base::c("CDR3a", "CDR3b"))
+    if(base::any(base::colnames(s) %in% "CDR3a") &&
+        !base::is.character(s$CDR3a)) {
         base::stop("CDR3a column has to of type character")
     }
-    if(base::any(base::colnames(data_sample) %in% "CDR3b") &&
-        !base::is.character(data_sample$CDR3b)) {
+    if(base::any(base::colnames(s) %in% "CDR3b") &&
+        !base::is.character(s$CDR3b)) {
         base::stop("CDR3b column has to of type character")
     }
-    check_dataframe_na(data_sample)
-    check_dataframe_empty(data_sample)
+    check_dataframe_na(s)
+    check_dataframe_empty(s)
 }
 
-check_data_ref <- function(data_ref) {
-    check_missing(data_ref)
-    check_dataframe(data_ref)
-    check_rowcount(data_ref)
-    check_dataframe_colnames(data_ref, base::c("CDR3a", "CDR3b"))
-    if(base::any(base::colnames(data_ref) %in% "CDR3a") &&
-        !base::is.character(data_ref$CDR3a)) {
+check_r <- function(r) {
+    check_missing(r)
+    check_dataframe(r)
+    check_rowcount(r)
+    check_dataframe_colnames(r, base::c("CDR3a", "CDR3b"))
+    if(base::any(base::colnames(r) %in% "CDR3a") &&
+        !base::is.character(r$CDR3a)) {
         base::stop("CDR3a column has to of type character")
     }
-    if(base::any(base::colnames(data_ref) %in% "CDR3b") &&
-        !base::is.character(data_ref$CDR3b)) {
+    if(base::any(base::colnames(r) %in% "CDR3b") &&
+        !base::is.character(r$CDR3b)) {
         base::stop("CDR3b column has to of type character")
     }
-    check_dataframe_na(data_ref)
-    check_dataframe_empty(data_ref)
+    check_dataframe_na(r)
+    check_dataframe_empty(r)
 }
 
-check_data_sample_and_ref <- function(data_sample, data_ref) {
-    if(base::any(base::colnames(data_sample) %in% base::c("CDR3a")) &&
-        !base::any(base::colnames(data_ref) %in% base::c("CDR3a"))) {
-        base::stop("data_sample contains CDR3a column, but data_ref does not")
+check_s_and_r <- function(s, r) {
+    if(base::any(base::colnames(s) %in% base::c("CDR3a")) &&
+        !base::any(base::colnames(r) %in% base::c("CDR3a"))) {
+        base::stop("s contains CDR3a column, but r does not")
     }
-    if(base::any(base::colnames(data_ref) %in% base::c("CDR3a")) &&
-        !base::any(base::colnames(data_sample) %in% base::c("CDR3a"))) {
-        base::stop("data_ref contains CDR3a column, but data_sample does not")
+    if(base::any(base::colnames(r) %in% base::c("CDR3a")) &&
+        !base::any(base::colnames(s) %in% base::c("CDR3a"))) {
+        base::stop("r contains CDR3a column, but s does not")
     }
-    if(base::any(base::colnames(data_sample) %in% base::c("CDR3b")) &&
-        !base::any(base::colnames(data_ref) %in% base::c("CDR3b"))) {
-        base::stop("data_sample contains CDR3b column, but data_ref does not")
+    if(base::any(base::colnames(s) %in% base::c("CDR3b")) &&
+        !base::any(base::colnames(r) %in% base::c("CDR3b"))) {
+        base::stop("s contains CDR3b column, but r does not")
     }
-    if(base::any(base::colnames(data_ref) %in% base::c("CDR3b")) &&
-        !base::any(base::colnames(data_sample) %in% base::c("CDR3b"))) {
-        base::stop("data_ref contains CDR3b column, but data_sample does not")
+    if(base::any(base::colnames(r) %in% base::c("CDR3b")) &&
+        !base::any(base::colnames(s) %in% base::c("CDR3b"))) {
+        base::stop("r contains CDR3b column, but s does not")
     }
 }
 
@@ -143,14 +143,14 @@ check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size
     check_positive(trim_flank_aa)
 }
 
-check_global_pairs <- function(global_pairs, data_sample) {
+check_global_pairs <- function(global_pairs, s) {
     if(!base::is.null(global_pairs)) {
         check_rowcount(global_pairs)
         check_matrix(global_pairs)
         check_matrix_type(global_pairs, type = "character")
         check_matrix_column_count(global_pairs, 3)
-        if(all(global_pairs[, c(1,2)] %in% data_sample)==FALSE) {
-            stop("not all CDR3s from global_pair are found in data_sample")
+        if(all(global_pairs[, c(1,2)] %in% s)==FALSE) {
+            stop("not all CDR3s from global_pair are found in s")
         }
     }
 }

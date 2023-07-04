@@ -3,7 +3,7 @@
 \title{Get cluster edges data.frame}
 \usage{get_edges(clust_irr)}
 \arguments{
-\item{clust_irr}{object of type \code{clust_irr}, result of \code{clust_irr} 
+\item{clust_irr}{object of type \code{clust_irr}, result of \code{clust_irr}
 function, formed by two sublists \itemize{
 \item \code{clust} - list,  clustering results
 \item \code{inputs} - list, original user inputs
@@ -18,7 +18,7 @@ used as input for visualization, for example with \emph{igraph}.
 \item \code{to_ID} - ID of the target CDR3 sequence in the sample dataset
 \item \code{from} - AA of the source CDR3 sequence in the sample dataset
 \item \code{to} - AA of the target CDR3 sequence in the sample dataset
-\item \code{motif} - If type \emph{local}, shared motif between sequences. 
+\item \code{motif} - If type \emph{local}, shared motif between sequences.
 \code{NA}, if type \emph{global}
 \item \code{type} - Type of connection, \emph{global} for globally clustered
 or \emph{local} for locally clustered
@@ -34,13 +34,13 @@ object.
 
 \examples{
 # load package input data
-data("CD8")
-data_sample <- data.frame(CDR3b = CD8[1:5000, "CDR3b"])
-data_ref <- CD8
+data("CDR3ab")
+d <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
+r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 
 # run analysis
-out <- cluster_irr(data_sample = data_sample,
-                   data_ref = data_ref,
+out <- cluster_irr(d = d,
+                   r = r,
                    version = 3,
                    ks = 4,
                    cores = 1,

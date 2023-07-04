@@ -7,7 +7,7 @@ Authors@R: c(
     role = c("aut", "cre"), comment=c(ORCID="0000-0003-2909-5376")),
     person("Kai", "Wollek", email = "kai.wollek@uni-duisburg-essen.de", 
     role = c("aut"), comment=c(ORCID="0009-0008-5941-9160")))
-Description: ClustIRR is a quantitative method for clustering of immune cell 
+Description: ClustIRR is a quantitative method for clustering of immune  
     receptor repertoires (IRRs). The algorithm of ClustIRR finds groups of 
     T or B cell receptors (TCRs or BCRs) that likely have similar specificity. 
     This is achieved by comparing the global and local sequence features of 
@@ -32,11 +32,12 @@ Suggests:
     testthat,
     ggplot2,
     patchwork,
-    ggrepel
+    ggrepel,
+    stringdist
 Encoding: UTF-8
 NeedsCompilation: no
 biocViews: Clustering, ImmunoOncology, SingleCell, Software, Classification
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
-URL: https://github.com/snaketron/gliphR
-BugReports: https://github.com/snaketron/gliphR/issues
+URL: https://github.com/snaketron/ClustIRR
+BugReports: https://github.com/snaketron/ClustIRR/issues
