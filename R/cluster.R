@@ -7,8 +7,8 @@
 # works, as well as *key* differences between v=1, 2 and 3
 # KK: you mean in the actual man-file, right?
 #'
-#' @param data_sample
-#' @param data_ref
+#' @param s
+#' @param r
 #' @param version
 #' @param ks
 #' @param cores
@@ -23,10 +23,10 @@
 #'
 #' @return list(clust = clust, inputs)
 #' @export
-cluster_irr <- function(data_sample,
-                        data_ref,
+cluster_irr <- function(s,
+                        r,
                         version = 3,
-                        ks = c(2, 3, 4),
+                        ks = 4,
                         cores = 1,
                         control = list(
                             B = 1000,
@@ -41,18 +41,18 @@ cluster_irr <- function(data_sample,
     control <- get_control(control_in = control)
 
     # 1. input check
-    input_check(data_sample = data_sample,
-                data_ref = data_ref,
+    input_check(s = s,
+                r = r,
                 version = version,
                 ks = ks,
                 cores = cores,
                 control = control)
 
     # get chains to be analyzed
-    chains <- get_chains(base::colnames(data_sample))
+    chains <- get_chains(base::colnames(s))
 
     # add ID to data
-    data_sample$ID <- base::seq_len(length.out = base::nrow(data_sample))
+    s$ID <- base::seq_len(length.out = base::nrow(s))
 
     # run analysis for each chain (if available)
     clust <- base::vector(mode = "list", length = base::length(chains))
@@ -60,12 +60,12 @@ cluster_irr <- function(data_sample,
 
     for(chain in chains) {
         if(version==3) {
-            cdr3 <- data_sample[, chain]
-            cdr3_ref <- data_ref[, chain]
+            cdr3 <- s[, chain]
+            cdr3_ref <- r[, chain]
         }
         else {
-            cdr3 <- base::unique(data_sample[, chain])
-            cdr3_ref <- base::unique(data_ref[, chain])
+            cdr3 <- base::unique(s[, chain])
+            cdr3_ref <- base::unique(r[, chain])
         }
         if(version==1) {
             clust[[chain]] <- get_clust_v1(cdr3 = cdr3,
@@ -86,7 +86,8 @@ cluster_irr <- function(data_sample,
     return(base::structure(class = "clust_irr",
                            base::list(clust = clust,
                                       inputs = base::list(
-                                          data_sample = data_sample,
+                                          s = s,
+                                          r = r,
                                           version = version,
                                           ks = ks,
                                           cores = cores,
@@ -120,8 +121,7 @@ get_clust_v1 <- function(cdr3,
     else {
         if(control$low_mem) {
             g <- get_global_clust_mem(cdr3 = base::unique(cdr3),
-                                      global_max_dist = 
-                                        control$global_max_dist)
+                                      global_max_dist = control$global_max_dist)
         }
         else {
             g <- get_global_clust(cdr3 = base::unique(cdr3),
@@ -157,8 +157,7 @@ get_clust_v23 <- function(cdr3,
     else {
         if(control$low_mem) {
             g <- get_global_clust_mem(cdr3 = base::unique(cdr3),
-                                      global_max_dist = 
-                                        control$global_max_dist)
+                                      global_max_dist = control$global_max_dist)
 
         }
         else {

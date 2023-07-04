@@ -7,7 +7,7 @@ get_edges <- function(clust_irr) {
     if(!methods::is(clust_irr, 'clust_irr')){
         base::stop("Input has to be object of class clust_irr")
     }
-    
+
     le <- get_local_edges(clust_irr = clust_irr)
     ge <- get_global_edges(clust_irr = clust_irr)
     e <- base::rbind(le, ge)
@@ -19,7 +19,7 @@ get_edges <- function(clust_irr) {
     me <- base::vector(mode = "list", length = base::length(clust_irr$clust))
     base::names(me) <- base::names(clust_irr$clust)
     for(chain in base::names(clust_irr$clust)) {
-        tmp_d <- clust_irr$inputs$data_sample[, c(chain, "ID")]
+        tmp_d <- clust_irr$inputs$s[, c(chain, "ID")]
         tmp_e <- e[e$chain == chain, ]
 
         if(base::nrow(tmp_e)!=0 & base::nrow(tmp_d)!=0) {

@@ -15,7 +15,7 @@ get_localclust_v1 <- function(cdr3,
         cdr3_core <- cdr3
         cdr3_ref_core <- cdr3_ref
     }
-    
+
     # 2. local clustering: get local motifs
     motifs <- base::lapply(X = ks,
                            FUN = get_motifs_v1,
@@ -42,7 +42,7 @@ get_localclust_v1 <- function(cdr3,
     me$pass <- FALSE
     me$pass[me$fdr <= control$local_max_fdr &
                 me$ove >= control$local_min_ove &
-                me$f_sample >= control$local_min_o] <- TRUE
+                me$f_s >= control$local_min_o] <- TRUE
 
     # 5. find motifs in input CDR3
     lp <- get_motif_in_seq(cdr3 = cdr3,
@@ -81,7 +81,7 @@ get_localclust_v23 <- function(cdr3,
     m <- base::do.call(base::rbind, m)
 
     # 3. compute enrichment by fisher's exact test
-    ms <- t(apply(X = m[, c("f_sample", "f_ref", "n_sample", "n_ref")],
+    ms <- t(apply(X = m[, c("f_s", "f_r", "n_s", "n_r")],
                   MARGIN = 1, FUN = get_motif_enrichment_fet))
     m$ove <- ms[,1]
     m$ove_ci_l95 <- ms[,2]
@@ -95,7 +95,7 @@ get_localclust_v23 <- function(cdr3,
     m$pass <- FALSE
     m$pass[m$fdr <= control$local_max_fdr &
                m$ove >= control$local_min_ove &
-               m$f_sample >= control$local_min_o] <- TRUE
+               m$f_s >= control$local_min_o] <- TRUE
 
     # 5. find motifs in input CDR3
     lp <- get_motif_in_seq(cdr3 = cdr3,
@@ -173,22 +173,22 @@ get_motifs_v23 <- function(x,
 
     # convert table to data.frame
     kmers_s <- base::data.frame(motif = base::names(kmers_s),
-                                f_sample = base::as.numeric(kmers_s))
-    kmers_s$n_sample <- base::sum(kmers_s$f_sample)
+                                f_s = base::as.numeric(kmers_s))
+    kmers_s$n_s <- base::sum(kmers_s$f_s)
     kmers_r <- base::data.frame(motif = base::names(kmers_r),
-                                f_ref = base::as.numeric(kmers_r))
-    kmers_r$n_ref <- base::sum(kmers_r$f_ref)
+                                f_r = base::as.numeric(kmers_r))
+    kmers_r$n_r <- base::sum(kmers_r$f_r)
 
     # we are only interested in enrichment of motifs in sample relative to
     # reference. Remove all motifs from reference not found in sample.
-    # Important: n_ref must be sum of all motifs in pop!
+    # Important: n_r must be sum of all motifs in pop!
     kmers_r <- kmers_r[kmers_r$motif %in% kmers_s$motif, ]
 
     m <- base::merge(x = kmers_s, y = kmers_r, by = "motif", all = TRUE)
-    m[is.na(m[, "f_sample"]), "f_sample"] <- 0
-    m[is.na(m[, "f_ref"]), "f_ref"] <- 0
-    m[is.na(m[, "n_ref"]), "n_ref"] <- kmers_r$n_ref[1]
-    m[is.na(m[, "n_sample"]), "n_sample"] <- kmers_s$n_sample[1]
+    m[is.na(m[, "f_s"]), "f_s"] <- 0
+    m[is.na(m[, "f_r"]), "f_r"] <- 0
+    m[is.na(m[, "n_r"]), "n_r"] <- kmers_r$n_r[1]
+    m[is.na(m[, "n_s"]), "n_s"] <- kmers_s$n_s[1]
 
     m$k <- x
 
@@ -203,15 +203,15 @@ get_motifs_v23 <- function(x,
 # collected by function get_motifs_v2
 get_motif_enrichment_fet <- function(x) {
     # Description of parameters used in hypergeometric test (below)
-    # f_sample = x[1]
-    # f_ref = x[2]
-    # n_sample = x[3]
-    # n_ref = x[4]
+    # f_s = x[1]
+    # f_r = x[2]
+    # n_s = x[3]
+    # n_r = x[4]
     #
-    # q = f_sample,
-    # m = f_ref+f_sample,
-    # n = n_ref+n_sample-(f_ref+f_sample),
-    # k = n_ref+n_sample
+    # q = f_s,
+    # m = f_r+f_s,
+    # n = n_r+n_s-(f_r+f_s),
+    # k = n_r+n_s
 
     # ove <- (x[1] / x[3]) / ((x[2] / x[4]))
     # or use OvE provided by fisher.test
@@ -291,13 +291,13 @@ get_motifs_v1 <- function(cdr3, cdr3_ref, B, ks, cores, min_o) {
     }
 
     # find motifs in sample
-    motif_sample <- base::lapply(X = ks,
+    motif_s <- base::lapply(X = ks,
                                  FUN = get_kmers_freq_sample,
                                  cdr3 = cdr3,
                                  min_o = min_o)
-    base::names(motif_sample) <- ks
+    base::names(motif_s) <- ks
     found_kmers <- base::as.vector(base::unlist(
-        base::lapply(X = motif_sample, FUN = base::names)
+        base::lapply(X = motif_s, FUN = base::names)
     ))
     motif_ref <- base::lapply(X = ks,
                               FUN = get_kmers_freq_ref,
@@ -307,7 +307,7 @@ get_motifs_v1 <- function(cdr3, cdr3_ref, B, ks, cores, min_o) {
                               relevant_motifs = found_kmers,
                               cores = cores)
     base::names(motif_ref) <- ks
-    return(base::list(motif_sample = motif_sample, motif_ref = motif_ref))
+    return(base::list(motif_s = motif_s, motif_ref = motif_ref))
 }
 
 
@@ -335,13 +335,13 @@ get_motif_enrichment_boot <- function(x,
         return(c(e_mean, e_min, e_max, o, ove, p_value))
     }
 
-    motif_sample <- m[[as.character(x)]]$motif_sample[[1]]
+    motif_s <- m[[as.character(x)]]$motif_s[[1]]
     motif_ref <- m[[as.character(x)]]$motif_ref[[1]]
 
     # matrix of k-mer counts
-    f_m <- matrix(data = 0, ncol = B + 1, nrow = length(motif_sample))
-    rownames(f_m) <- names(motif_sample)
-    f_m[names(motif_sample), 1] <- motif_sample
+    f_m <- matrix(data = 0, ncol = B + 1, nrow = length(motif_s))
+    rownames(f_m) <- names(motif_s)
+    f_m[names(motif_s), 1] <- motif_s
     for (i in seq_len(length(motif_ref))) {
         s <- motif_ref[[i]]
         f_m[names(s), i + 1] <- s
@@ -351,12 +351,12 @@ get_motif_enrichment_boot <- function(x,
 
     # format output
     e <- data.frame(e)
-    colnames(e) <- c("mean_f_ref", "min_f_ref", "max_f_ref",
-                     "f_sample", "ove", "p_value")
+    colnames(e) <- c("mean_f_r", "min_f_r", "max_f_r",
+                     "f_s", "ove", "p_value")
     e$motif <- rownames(e)
     e$fdr <- stats::p.adjust(p = e$p_value, method = "fdr")
     e$k <- x
-    e[, c("motif", "k", "f_sample", "mean_f_ref", "min_f_ref", "max_f_ref",
+    e[, c("motif", "k", "f_s", "mean_f_r", "min_f_r", "max_f_r",
           "ove", "p_value", "fdr")]
     return(e)
 }
