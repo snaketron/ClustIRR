@@ -67,9 +67,8 @@ for *global CDR3 sequence clustering* is identical for all versions.
 
 ### Local clustering
 
-In *version 2 & 3*, the OvE is calculated with Fisher's exact test:
-
-$$ OvE = \frac{f_{sample}}{n_{sample}}/\frac{f_{ref}}{n_{ref}} $$
+In *version 2 & 3*, the OvE is calculated with Fisher's exact test: 
+OvE$=\frac{f_{s}}{n_{s}}/\frac{f_{r}}{n_{r}}$
 
 In *version 1*, the OvE is computed by bootstrapping, i.e., repeated sampling 
 of the reference dataset with a sample size equal to the sample dataset. 
@@ -133,28 +132,31 @@ ground truth, the sample dataset will be artificially enriched with the motif
 *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF*, which will be added 15 times
 each to simulate clonal expansion.
 
-The package provided `CD8` dataset is loaded as an example reference dataset.
+The package provided `CDR3ab` dataset is loaded as an example reference dataset.
 
 ```{r input_data}
 # load package input data
-data("CD8")
+data("CDR3ab")
+
+# reference
+r <- data.frame(CDR3b = CDR3ab$CDR3b)
 
 # set the random seed for sampling reproducibility
 set.seed(987)
 
 # sample 500 sequences from the reference dataset as sample dataset
-data_sample <- data.frame(CDR3b = CD8[sample(x = 1:nrow(CD8), 
+s <- data.frame(CDR3b = CDR3ab$CDR3b[sample(x = 1:nrow(CDR3ab), 
                                              size = 500, 
-                                             replace = FALSE),])
+                                             replace = FALSE)])
 
 # artificially enrich motif 'RQWW' inside sample dataset
-substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
 # add the artificial clonal expansion of two sequences to the sample dataset
 clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
                                        "CATSRAAKPDGLAALSTQYF"),
                                  times = 15))
-data_sample <- rbind(data_sample, clones)
+s <- rbind(s, clones)
 
 ```
 
@@ -167,8 +169,8 @@ to identical values.
 
 ```{r clustering}
 # ClustIRR version 3
-clustirr_output_v3 <- cluster_irr(data_sample = data_sample,  
-                                  data_ref = CD8,
+clustirr_output_v3 <- cluster_irr(s = s,  
+                                  r = r,
                                   version = 3,
                                   ks = 4,
                                   cores = 1,
@@ -182,8 +184,8 @@ clustirr_output_v3 <- cluster_irr(data_sample = data_sample,
                                     low_mem = FALSE,
                                     global_pairs = NULL))
 # ClustIRR version 2
-clustirr_output_v2 <- cluster_irr(data_sample = data_sample,  
-                                  data_ref = CD8,
+clustirr_output_v2 <- cluster_irr(s = s,  
+                                  r = r,
                                   version = 2,
                                   ks = 4,
                                   cores = 1,
@@ -197,8 +199,8 @@ clustirr_output_v2 <- cluster_irr(data_sample = data_sample,
                                     low_mem = FALSE,
                                     global_pairs = NULL))
 # ClustIRR version 1
-clustirr_output_v1 <- cluster_irr(data_sample = data_sample,  
-                                  data_ref = CD8,
+clustirr_output_v1 <- cluster_irr(s = s,  
+                                  r = r,
                                   version = 1,
                                   ks = 4,
                                   cores = 1,
@@ -241,7 +243,7 @@ Inspecting the local motif clustering of *version 3* shows that, in total, 20
 motifs were marked as enriched. 
 
 Seven motifs relating to the 20 times inserted motif get found. The inserted 
-motif *RQWW* gets found 20 times (`f_sample` column). Five other motifs are 
+motif *RQWW* gets found 20 times (`f_s` column). Five other motifs are 
 combinations of the first three (*RQW* <-> *QRQW*, *YRQW*) or last three 
 (*QWW* <-> *QWWA*, *QWWG*, *QWWS*) amino acids of the inserted motif with the 
 respective sequences it was inserted in. The motif *SYRQ* comprises the 
@@ -253,7 +255,7 @@ and *CATSRAAKPDGLAALSTQYF* are found. Some are found in both sequences
 (for example, *AAKP*, found 30 times), and some only in one of the two (for
 example, *AALE*, found 15 times). Notice that several of the newly found motifs 
 were also present in the reference dataset as parts of other sequences 
-(`f_ref` > 0), and in this case, by chance, one of them (*GLAA*) was contained 
+(`f_r` > 0), and in this case, by chance, one of them (*GLAA*) was contained 
 in the sample before the artificial enhancement, leading to a count of 31. 
 
 If the random seed value changed, slightly different motif counts 
@@ -275,7 +277,7 @@ kable(local_motifs_v3[local_motifs_v3$pass == TRUE,])
 
 Inspecting the local motif clustering of *version 2* shows that, in total, 6 
 motifs were marked as enriched. The 20 times inserted motif *RQWW* gets found 
-20 times(`f_sample` column). The other five motifs are all combinations of the 
+20 times(`f_s` column). The other five motifs are all combinations of the 
 first three (*RQW* <-> *QRQW*, *YRQW*) or the last three (*QWW* <-> *QWWA*, 
 *QWWG*, *QWWS*) amino acids of the inserted motif with the respective sequences
 it was inserted in.
@@ -297,7 +299,7 @@ kable(local_motifs_v2[local_motifs_v2$pass == TRUE,])
 
 Inspecting the local motif clustering of *version 1* shows that, in total, 12 
 motifs were marked as enriched. The 20 times inserted motif *RQWW* gets found 
-twenty times (`f_sample` column). Five other motifs are combinations of the 
+twenty times (`f_s` column). Five other motifs are combinations of the 
 first three amino acids (*RQW* <-> *QRQW*, *YRQW*) or the last three amino 
 acids (*QWW* <-> *QWWA*, *QWWG*, *QWWS*) amino acids of the inserted motif with
 the respective sequences it was inserted in. The motif *SYRQ* comprises the 
@@ -447,7 +449,7 @@ The inserted motif *RQWW* gets detected with a high p-value by both versions,
 as well as the related motifs *QWWA*, *QWWG*, *QWWS*, *QRQW* and *YRQW* 
 and the motif *SYRQ* (marked black in the graph). This is in case of 
 *version 1* caused by underestimation of the number of found motifs in the 
-reference dataset (`mean_f_ref`), which is calculated as the mean of repeated 
+reference dataset (`mean_f_r`), which is calculated as the mean of repeated 
 bootstrapping, leading in effect to a "happy accident" in which *SYRQ* is found 
 by chance.
 
@@ -508,7 +510,7 @@ The inserted motif *RQWW* gets detected with a high p-value by both versions
 (marked black in the graph), as well as the related motifs *QWWA*, *QWWG*, 
 *QWWS*, *QRQW* and *YRQW*. Motif *SYRQ* gets only found by *version 1*. This is
 caused by underestimation of the number of found motifs in the reference 
-(`mean_f_ref`) by *version 1*, which is calculated as the mean of repeated 
+(`mean_f_r`) by *version 1*, which is calculated as the mean of repeated 
 bootstrapping, leading in effect to a "happy accident" in which *SYRQ* is found 
 by chance. Also *version 2* calculates a slightly higher false discovery rate 
 value (*0.05268845*) than the cutoff of *0.05*. Reducing the sequences to a 
