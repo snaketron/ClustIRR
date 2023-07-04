@@ -67,12 +67,20 @@ get_local_edges <- function(clust_irr) {
 
 get_global_edges <- function(clust_irr) {
 
+    get_diff_str <- function(m) {
+        c1 <- strsplit(m[1], "")[[1]]
+        c2 <- strsplit(m[2], "")[[1]]
+        c1[c1 != c2] <- "-"
+        return(paste(c1, collapse = ""))
+    }
+    
     get_gp <- function(gp, chain) {
         return(base::data.frame(from = gp[,1], to = gp[,2],
-                                motif = NA, type = "global",
+                                motif = apply(gp, 1, get_diff_str), 
+                                type = "global",
                                 chain = chain))
     }
-
+    
     edges_global <- vector(mode = "list", length = length(clust_irr$clust))
     names(edges_global) <- names(clust_irr$clust)
     for(chain in names(clust_irr$clust)) {
@@ -84,3 +92,4 @@ get_global_edges <- function(clust_irr) {
     edges_global <- base::do.call(base::rbind, edges_global)
     return(edges_global)
 }
+

@@ -1,5 +1,11 @@
-# tests with graphs (just a collection of code. not necessarily working)
+---
+title: "Graph experiments"
+output: BiocStyle::html_document
+---
 
+# Preparation
+
+```{r load_packages, echo=FALSE}
 library(ClustIRR)
 library(knitr)
 library(ggplot2)
@@ -8,7 +14,10 @@ library(dplyr)
 library(visNetwork)
 library(turboGliph)
 library(igraph)
+```
 
+
+```{r prepare_data, echo=FALSE}
 # load package input data
 data("CD8")
 
@@ -17,11 +26,11 @@ set.seed(987)
 
 # sample 500 sequences from the reference dataset as sample dataset
 data_sample <- data.frame(CDR3b = CD8[sample(x = 1:nrow(CD8), 
-                                             size = 100, 
+                                             size = 500, 
                                              replace = FALSE),])
 
 # artificially enrich motif 'RQWW' inside sample dataset
-substr(x = data_sample$CDR3b[1:5], start = 6, stop = 9) <- "RQWW"
+substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
 # add the artificial clonal expansion of two sequences to the sample dataset
 clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
@@ -29,9 +38,11 @@ clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
                                  times = 15))
 data_sample <- rbind(data_sample, clones)
 
+```
 
-## clustirr
 
+
+```{r clustirr, echo=FALSE}
 # ClustIRR version 2
 clustirr_output_v2 <- cluster_irr(data_sample = data_sample,  
                                   data_ref = CD8,
@@ -64,9 +75,19 @@ clustirr_output_v3 <- cluster_irr(data_sample = data_sample,
                                    low_mem = FALSE,
                                    global_pairs = NULL))
 
+```
 
-## v2 visualisation
 
+
+
+# Quick and dirty visualization
+
+Fastly coded variant without even using get_edges, contains errors but looks
+nice
+
+## v2
+
+```{r v2_prep, echo=FALSE}
 # quick and dirty
 gl_v2 <- data.frame(cdr3=c("CASSYVLRAADGYTF", "CASSYVLRAADGDTF",
                            "CATSRAAKPDGLAALSTQYF", "CATSRAAKPDGLAALETQYF"),
@@ -115,11 +136,16 @@ for(i in 1:nrow(edges)){
  }
 }
 
+```
+
+```{r v3_visN}
 visNetwork(nodes, edges) 
+```
 
 
 ## v3
 
+```{r v3_prep, echo=FALSE}
 # quick and dirty
 gl_v3 <- data.frame(cdr3=c("CASSYVLRAADGYTF", "CASSYVLRAADGDTF",
                            "CATSRAAKPDGLAALSTQYF", "CATSRAAKPDGLAALETQYF"),
@@ -167,36 +193,26 @@ for(i in 1:nrow(edges)){
   edges$to[i] = 0
  }
 }
+```
 
+```{r v2_visN}
 visNetwork(nodes, edges) 
+```
 
-## test get edges
+# get_edges test
 
+```{r ge_visN}
 gv2 <- get_edges(clustirr_output_v2)
 nodes <- data.frame(id = 1:5)
 nodes$title <- nodes$id
 edges <- data.frame(from = gv2$from_ID, to = gv2$to_ID)
 
 visNetwork(nodes, edges)
+```
 
-## try with igraph
-# out_df$color <- ifelse(test = out_df$type == "global", 
-#                        yes = "grey30", no = "grey90")
-# 
-# g <- graph_from_data_frame(out_df)
-# 
-# plot(g,
-#      edge.width = 2,
-#      edge.arrow.size = 0.1,
-#      vertex.label = V(g)$counts,
-#      vertex.label.cex = 1,
-#      edge.color = get.edge.attribute(graph = g, name = "color"),
-#      main = paste0("test"))
+# turboGliph tests
 
-
-
-
-## turboGliph tests
+```{r tg_exec, echo=FALSE}
 tg <- turbo_gliph(cdr3_sequences = data_sample, 
                   refdb_beta = CD8, 
                   lcminove = 10, 
@@ -208,13 +224,23 @@ g2 <- gliph2(cdr3_sequences = data_sample,
              lcminove = 1000, 
              motif_length = 4)
 
+g3 <- gliph_combined(cdr3_sequences = data_sample, 
+             refdb_beta = CD8, 
+             lcminove = 1000, 
+             motif_length = 4)
+
+```
+
+
+```{r tg_plot}
 plot_network(tg)
-
 plot_network(g2)
+plot_network(g3)
+```
 
 
-
-## igraph
+# iGraph tests
+```{r prepare_data_igraph_test, echo=FALSE}
 data_sample <- data.frame(CDR3b = CD8[1:5000, "CDR3b"])
 data_ref <- CD8
 
@@ -233,18 +259,22 @@ out <- cluster_irr(data_sample = data_sample,
                      trim_flank_aa = 3,
                      global_pairs = NULL,
                      low_mem = FALSE))
+```
 
+
+```{r transform_output_igraph, echo=FALSE}
 # create data.frame
 out_df <- get_edges(out)
 
 out_df$color <- ifelse(test = out_df$type == "global", 
                      yes = "grey30", no = "grey90")
-
 # visualize data with igraph
 g <- graph_from_data_frame(out_df)
 
+```
 
 
+```{r visualize_igraph}
 plot(g,
      edge.width = 2,
      edge.arrow.size = 0.1,
@@ -254,3 +284,14 @@ plot(g,
      main = paste0("test"))
 
 plot(g)
+
+```
+
+
+
+
+
+
+
+
+
