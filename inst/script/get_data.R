@@ -19,10 +19,21 @@ utils::unzip(zipfile = "temp_folder/human_v2.0.zip", exdir = "temp_folder/")
 # human (hs) CD8
 CD8 <- read.csv(file = "temp_folder/human_v2.0/ref_CD8_v2.0.txt", sep = "\t",
                 header = FALSE)
+
 set.seed(seed = 1234321)
-CD8 <- CD8[sample(x = 1:nrow(CD8), size = 10^4, replace = FALSE), ]
-colnames(CD8) <- c("CDR3b", "TRBV", "TRBJ")
-CD8$TRBV <- NULL
-CD8$TRBJ <- NULL
-save(CD8, file = "data/CD8.RData", compress = "xz")
+CDR3b <- CD8[sample(x = 1:nrow(CD8), size = 10^4, replace = FALSE), ]
+colnames(CDR3b) <- c("CDR3b", "TRBV", "TRBJ")
+CDR3b$TRBV <- NULL
+CDR3b$TRBJ <- NULL
+
+set.seed(seed = 1245421)
+CDR3a <- CD8[sample(x = 1:nrow(CD8), size = 10^4, replace = FALSE), ]
+colnames(CDR3a) <- c("CDR3a", "TRBV", "TRBJ")
+CDR3a$TRBV <- NULL
+CDR3a$TRBJ <- NULL
+
+# create dummy CDR3ab
+CDR3ab <- data.frame(CDR3a = CDR3a$CDR3a,
+                     CDR3b = CDR3b$CDR3b)
+save(CDR3ab, file = "data/CDR3ab.RData", compress = "xz")
 
