@@ -11,7 +11,8 @@ function, formed by two sublists \itemize{
 }
 }
 \value{
-The output is an \code{igraph} object, that can be used to visualize the graph, for example using \emph{visNetwork} or \emph{cytoscape}.
+The output is an \code{igraph} object, that can be used to visualize the graph,
+for example using \emph{visNetwork} or \emph{cytoscape}.
 
 The graph consists of the following edge attributes:
 \itemize{
@@ -35,13 +36,22 @@ object.
 
 \examples{
 # load package input data
-data("CD8")
-data_sample <- data.frame(CDR3b = CD8[1:5000, "CDR3b"])
-data_ref <- CD8
+data("CDR3ab")
+s <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
+r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
+
+# artificially enrich motif 'RQWW' inside sample dataset
+substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+
+# add the artificial clonal expansion of two sequences to the sample dataset
+clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
+                                       "CATSRAAKPDGLAALSTQYF"),
+                                 times = 15))
+s <- rbind(s, clones)
 
 # run analysis
-out <- cluster_irr(data_sample = data_sample,
-                   data_ref = data_ref,
+out <- cluster_irr(s = s,
+                   r = r,
                    version = 3,
                    ks = 4,
                    cores = 1,
@@ -62,9 +72,9 @@ out_ig <- get_graph(out)
 class(out_ig)
 
 # extract edges
-head(igraph::as_data_frame(test, what = "edges"))
+head(igraph::as_data_frame(out_ig, what = "edges"))
 
 # extract nodes
-head(igraph::as_data_frame(test, what = "vertices"))
+head(igraph::as_data_frame(out_ig, what = "vertices"))
 
 }

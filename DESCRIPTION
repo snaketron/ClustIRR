@@ -25,15 +25,15 @@ Imports:
     future.apply,
     methods,
     stats,
-    utils
+    utils,
+    igraph
 Suggests:
     BiocStyle,
     knitr,
     testthat,
     ggplot2,
     patchwork,
-    ggrepel,
-    stringdist
+    ggrepel
 Encoding: UTF-8
 NeedsCompilation: no
 biocViews: Clustering, ImmunoOncology, SingleCell, Software, Classification

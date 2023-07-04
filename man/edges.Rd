@@ -35,11 +35,11 @@ object.
 \examples{
 # load package input data
 data("CDR3ab")
-d <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
+s <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
 r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 
 # run analysis
-out <- cluster_irr(d = d,
+out <- cluster_irr(s = s,
                    r = r,
                    version = 3,
                    ks = 4,

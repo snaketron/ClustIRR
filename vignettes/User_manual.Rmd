@@ -276,15 +276,16 @@ CD8+ T cells was published as part of the Gliph 2\(^2\) algorithm.
 
 ```{r input_data}
 # load package input data
-data("CD8")
+data("CDR3ab")
+CDR3ab$CDR3a <- NULL
 
 # set the random seed for sampling reproducibility
 set.seed(987)
 
 # sample 500 sequences from the reference dataset as sample dataset
-data_sample <- data.frame(CDR3b = CD8[sample(x = 1:nrow(CD8), 
-                                             size = 500, 
-                                             replace = FALSE),])
+data_sample <- data.frame(CDR3b = CDR3ab[sample(x = 1:nrow(CDR3ab), 
+                                                size = 500, 
+                                                replace = FALSE),])
 
 # artificially enrich motif 'RQWW' inside sample dataset
 substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
@@ -306,8 +307,8 @@ values. For demonstration purposes, we will only look for motifs of length
 
 ```{r clustering}
 # perform clustering
-clustirr_output <- cluster_irr(data_sample = data_sample,  
-                               data_ref = CD8,
+clustirr_output <- cluster_irr(s = data_sample,  
+                               r = CDR3ab,
                                version = 3,
                                ks = 4,
                                cores = 1,

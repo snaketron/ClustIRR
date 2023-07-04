@@ -1,11 +1,11 @@
 ---
-title: "Introduction to ClustIRR"
+title: "Introduction to ClustIRR SK"
 author: "S. Kitanovski, K. Wollek"
 date: "`r Sys.Date()`"
 output:
   BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Introduction to ClustIRR}
+  %\VignetteIndexEntry{Introduction to ClustIRR SK}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -213,7 +213,7 @@ local_motifs <- clustirr_output$clust$CDR3b$local$m
 
 # display only passed motifs
 kable(local_motifs[local_motifs$pass == TRUE,], 
-      row.names = F)
+      row.names = FALSE)
 ```
 
 ## global clustering results
@@ -226,7 +226,7 @@ acid at position 4:
 # display globally similar pairs
 e <- get_edges(clust_irr = clustirr_output)
 
-kable(clustirr_output$clust$CDR3b$global, row.names = F)
+kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
 ```
 
 ## graph
@@ -278,7 +278,7 @@ local_motifs <- clustirr_output$clust$CDR3b$local$m
 
 # display only passed motifs
 kable(local_motifs[local_motifs$pass == TRUE,], 
-      row.names = F)
+      row.names = FALSE)
 ```
 
 ## global clustering results
@@ -291,7 +291,7 @@ acid at position 4:
 
 ```{r}
 # display globally similar pairs
-kable(clustirr_output$clust$CDR3b$global, row.names = F)
+kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
 
 e <- get_edges(clust_irr = clustirr_output)
 ```
