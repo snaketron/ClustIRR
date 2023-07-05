@@ -1,7 +1,7 @@
-\name{get_graph}
-\alias{get_graph}
+\name{plot_graph}
+\alias{plot_graph}
 \title{Get graph object}
-\usage{get_graph(clust_irr)}
+\usage{plot_graph(clust_irr)}
 \arguments{
 \item{clust_irr}{object of type \code{clust_irr}, result of \code{clust_irr} 
 function, formed by two sublists \itemize{
@@ -11,27 +11,14 @@ function, formed by two sublists \itemize{
 }
 }
 \value{
-The output is an \code{igraph} object, that can be used to visualize the graph,
-for example using \emph{visNetwork} or \emph{cytoscape}.
-
-The graph consists of the following edge attributes:
-\itemize{
-\item \code{from} - ID of the source CDR3 sequence in the sample dataset
-\item \code{to} - ID of the target CDR3 sequence in the sample dataset
-\item \code{from_cdr3} - AA of the source CDR3 sequence in the sample dataset
-\item \code{to_cdr3} - AA of the target CDR3 sequence in the sample dataset
-\item \code{motif} - If type \emph{local}, shared motif between sequences. 
-\code{NA}, if type \emph{global}
-\item \code{type} - Type of connection, \emph{global} for globally clustered
-or \emph{local} for locally clustered
-\item \code{chain} - Chain the sequence belongs to, e.g., \emph{CDR3b}
-}
+The output is an interactive \emph{visNetwork} graph.
 }
 
 
 \description{
-This is a helper function for visualization preparation of an \code{clustIRR}
-object.
+This is a helper function for visualization of an \code{clustIRR} object. As 
+long as scalability for larger networks can't be guaranteed, this is an 
+experimental feature.
 }
 
 \examples{
@@ -65,17 +52,8 @@ out <- cluster_irr(s = s,
                       global_pairs = NULL,
                       low_mem = FALSE))
 
-# create igraph object
-out_ig <- get_graph(out)
 
-# output class
-class(out_ig)
-
-# extract edges
-head(igraph::as_data_frame(out_ig, what = "edges"))
-
-# extract nodes
-head(igraph::as_data_frame(out_ig, what = "vertices"))
-
+# plot graph
+plot_graph(out)
 
 }

@@ -26,7 +26,8 @@ Imports:
     methods,
     stats,
     utils,
-    igraph
+    igraph,
+    visNetwork
 Suggests:
     BiocStyle,
     knitr,

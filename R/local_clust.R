@@ -1,5 +1,3 @@
-
-
 get_localclust_v1 <- function(cdr3,
                               cdr3_ref,
                               ks,

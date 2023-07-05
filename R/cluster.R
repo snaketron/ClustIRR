@@ -1,28 +1,3 @@
-# Description:
-# This algorithm finds groups of TCRs that likely have similar peptide:MHC
-# specificity. This is done with two strategies: local motif clustering and
-# global CDR3 sequence clustering.
-#
-# SK: here we need two paragraphs of how each algorithm (local vs. global)
-# works, as well as *key* differences between v=1, 2 and 3
-# KK: you mean in the actual man-file, right?
-#'
-#' @param s
-#' @param r
-#' @param version
-#' @param ks
-#' @param cores
-#' @param control
-#'
-#' @import stringdist
-#' @import future
-#' @import future.apply
-#' @import methods
-#' @import stats
-#' @import utils
-#'
-#' @return list(clust = clust, inputs)
-#' @export
 cluster_irr <- function(s,
                         r,
                         version = 3,

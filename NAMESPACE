@@ -1,6 +1,7 @@
 export(cluster_irr)
 export(get_graph)
 export(get_edges)
+export(plot_graph)
 import(future)
 import(future.apply)
 import(methods)
