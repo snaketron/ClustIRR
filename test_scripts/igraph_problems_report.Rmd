@@ -1,0 +1,272 @@
+---
+title: "igraph problems report"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r lib}
+library(ClustIRR)
+library(igraph)
+```
+
+
+# Summary
+
+Found a potential problem in igraph, that leads to wrong ID <-> CDR3 connection.
+
+Somehow linking the edge-attributes with from/to would be better,
+but no clue how to do that in igraph (tried it with no success).
+
+Can be fixed by extracting a directed graph, but no clue if that leads to other
+problems, considering our graphs edges are not directed.
+
+Directly using cdr3 sequences without ID as input produces a reduced amount of
+vertices (unique sequences).
+
+Conclusion: use directed igraph object for now
+
+# Prepare input
+
+Using our usual input data:
+
+```{r input_data}
+data("CDR3ab")
+CDR3ab$CDR3a <- NULL
+
+# set the random seed for sampling reproducibility
+set.seed(987)
+
+# sample 500 sequences from the reference dataset as sample dataset
+data_sample <- data.frame(CDR3b = CDR3ab[sample(x = 1:nrow(CDR3ab), 
+                                                size = 500, 
+                                                replace = FALSE),])
+
+# artificially enrich motif 'RQWW' inside sample dataset
+substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+
+# add the artificial clonal expansion of two sequences to the sample dataset
+clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
+                                       "CATSRAAKPDGLAALSTQYF"),
+                                 times = 15))
+data_sample <- rbind(data_sample, clones)
+
+# perform clustering
+out <- cluster_irr(s = data_sample,  
+                   r = CDR3ab,
+                   version = 3,
+                   ks = 4,
+                   cores = 1,
+                   control = list(
+                     B = 1000,
+                     global_max_dist = 1,
+                     local_max_fdr = 0.05,
+                     local_min_ove = 2,
+                     local_min_o = 3,
+                     trim_flank_aa = 3,
+                     low_mem = FALSE,
+                     global_pairs = NULL))
+```
+
+# Use get_edges() to extract edges
+
+get_edges() function puts out the following edges.
+
+```{r get_edges}
+ge <- get_edges(out)
+
+# inspect head
+head(ge)
+
+# 53 distinct nodes
+length(unique(c(unique(ge$from), unique(ge$to))))
+
+# ID 3 <-> CASSLRQWWPHGYTF
+ID3_from <- unique(ge$from_cdr3[ge$from == 3])
+ID3_to <- unique(ge$to_cdr3[ge$to == 3])
+
+# CASSLRQWWPHGYTF
+ID3_from
+
+# CASSLRQWWPHGYTF
+ID3_to
+
+# TRUE
+ID3_from == ID3_to
+
+```
+
+# Demonstrating igraph problem with switched indices
+
+When converting the edges output to a dataframe with directed flag set to FALSE,
+some edge attributes (that will be important for later visualisation) get
+confused. For example ID = 3 suddenly is assigned to two different CDR3 
+sequences "CASSLRQWWPHGYTF" and "CASGQRQWWSSYNEQFF" at one row.
+
+Inspecting the row where this happens shows that indices are "flipped" for the
+"from" and "to" columns, but the "from_cdr3" and "to_cdr3" attributes stay the 
+same. Presumably because edge attributes are just connected to edges as such
+and when using undirected igraph, algorithm underneath does not keep "from" and
+"to" connections.
+
+```{r igraph}
+# create igraph object from get_edges return
+ig <- igraph::graph_from_data_frame(ge, directed = FALSE)
+
+# extract nodes
+i_n <- igraph::as_data_frame(ig, what = "vertices")
+
+# 53 distinct nodes (as before)
+nrow(i_n)
+
+# extract edges
+i_e <- igraph::as_data_frame(ig, what = "edges")
+
+# inspect head
+head(i_e)
+
+# ID 3 should be CASSLRQWWPHGYTF
+
+# ID 3 <-> CASSLRQWWPHGYTF
+ID3_from_i <- unique(i_e$from_cdr3[i_e$from == 3])
+ID3_to_i <- unique(i_e$to_cdr3[i_e$to == 3])
+
+# CASSLRQWWPHGYTF
+ID3_from_i
+
+# CASSLRQWWPHGYTF CASGQRQWWSSYNEQFF     XXXX
+ID3_to_i
+
+# TRUE FALSE
+ID3_from_i == ID3_to_i
+
+# inspect all lines with ID 3
+i_e[(i_e$from == 3) | (i_e$to == 3),]
+
+# line  3 - from = 3, from_cdr3 = CASSLRQWWPHGYTF, to_cdr3 = CASNIRQWWHEQYF
+# line 65 - from = 3,   to_cdr3 = CASSLRQWWPHGYTF, from_cdr3 = CASGQRQWWSSYNEQFF 
+# switched index !
+i_e[c(3,65),] 
+```
+
+# Converting with directed flag = no problem
+
+But our graph is not directed, no clue if this could lead to other problems
+down the road.
+
+```{r igraph_dir}
+
+# create igraph object from get_edges return
+ig <- igraph::graph_from_data_frame(ge, directed = TRUE)
+
+# extract nodes
+i_n <- igraph::as_data_frame(ig, what = "vertices")
+
+# 53 distinct nodes (as before)
+nrow(i_n)
+
+# extract edges
+i_e <- igraph::as_data_frame(ig, what = "edges")
+
+# inspect head
+head(i_e)
+
+# ID 3 should be CASSLRQWWPHGYTF
+
+# ID 3 <-> CASSLRQWWPHGYTF
+ID3_from_i <- unique(i_e$from_cdr3[i_e$from == 3])
+ID3_to_i <- unique(i_e$to_cdr3[i_e$to == 3])
+
+# CASSLRQWWPHGYTF
+ID3_from_i
+
+# CASSLRQWWPHGYTF CASGQRQWWSSYNEQFF     XXXX
+ID3_to_i
+
+# TRUE FALSE
+ID3_from_i == ID3_to_i
+
+# inspect all lines with ID 3
+i_e[(i_e$from == 3) | (i_e$to == 3),]
+
+# line  3 - from = 3, from_cdr3 = CASSLRQWWPHGYTF,   to_cdr3 = CASNIRQWWHEQYF
+# line 65 - from = 3,   to_cdr3 = CASSLRQWWPHGYTF, from_cdr3 = CASGQRQWWSSYNEQFF 
+# switched index !
+i_e[c(3,65),] 
+
+```
+# Linking test
+
+Trying to link the attributes directly also does not work.
+
+```{r link_test}
+# create igraph object from get_edges return
+ig_2 <- igraph::graph_from_data_frame(ge, directed = FALSE)
+
+# this time try to link the attributes with IDs
+E(ig_2)$from_cdr3 <- ge$from_cdr3
+E(ig_2)$to_cdr3   <- ge$to_cdr3
+
+# extract nodes
+i_n_2 <- igraph::as_data_frame(ig_2, what = "vertices")
+
+# 53 distinct nodes (as before)
+nrow(i_n_2)
+
+# extract edges
+i_e_2 <- igraph::as_data_frame(ig_2, what = "edges")
+
+# inspect head
+head(i_e_2)
+
+# ID 3 should be CASSLRQWWPHGYTF
+
+# ID 3 <-> CASSLRQWWPHGYTF
+ID3_from_i_2 <- unique(i_e_2$from_cdr3[i_e_2$from == 3])
+ID3_to_i_2 <- unique(i_e_2$to_cdr3[i_e_2$to == 3])
+
+# CASSLRQWWPHGYTF CASGQRQWWSSYNEQFF  XXXX
+ID3_from_i_2
+
+# CASSLRQWWPHGYTF     
+ID3_to_i_2
+
+# TRUE FALSE
+ID3_from_i_2 == ID3_to_i_2
+
+# inspect all lines with ID 3
+i_e_2[(i_e_2$from == 3) | (i_e_2$to == 3),]
+
+# line  3 - from = 3, from_cdr3 = CASSLRQWWPHGYTF,   to_cdr3 = CASNIRQWWHEQYF	
+# line 65 - from = 3,   to_cdr3 = CASSLRQWWPHGYTF, from_cdr3 = CASGQRQWWSSYNEQFF 
+# switched index !
+i_e_2[c(3,65),] 
+
+```
+# Use cdr3 as input
+
+This does produce a lower number of nodes in the graph object
+
+```{r link_test_3}
+# get rid of ID column
+
+ge_2 <- data.frame(from = ge$from_cdr3,
+                   to = ge$to_cdr3,
+                   motif = ge$motif,
+                   type = ge$type,
+                   chain = ge$chain)
+
+# create igraph object from get_edges return
+ig_3 <- igraph::graph_from_data_frame(ge_2, directed = FALSE)
+
+# extract nodes
+i_n_3 <- igraph::as_data_frame(ig_3, what = "vertices")
+
+# 25 distinct nodes -> XXX
+nrow(i_n_3)
+
+
+
+```
+
+
