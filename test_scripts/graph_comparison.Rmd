@@ -1,0 +1,244 @@
+---
+title: "Graph comparison"
+output:
+  html_document:
+    df_print: paged
+---
+
+Comparison of turboGliph and ClustIRR graphs using ground truth data and
+turboGliphs input data for two experiments.
+
+```{r libs, echo = FALSE}
+library(ClustIRR)
+library(turboGliph)
+```
+
+
+```{r input_data}
+# data
+data("gliph_input_data")
+data("CDR3ab")
+CDR3ab$CDR3a <- NULL
+
+# set the random seed for sampling reproducibility
+set.seed(987)
+
+# sample 500 sequences from the reference dataset as sample dataset
+data_sample <- data.frame(CDR3b = CDR3ab[sample(x = 1:nrow(CDR3ab), 
+                                                size = 500, 
+                                                replace = FALSE),])
+
+# artificially enrich motif 'RQWW' inside sample dataset
+substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+
+# add the artificial clonal expansion of two sequences to the sample dataset
+clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
+                                       "CATSRAAKPDGLAALSTQYF"),
+                                 times = 15))
+data_sample <- rbind(data_sample, clones)
+
+```
+
+```{r input_param}
+s = data_sample
+r = CDR3ab
+ks = 4
+cores = parallel::detectCores()
+control = list(
+  B = 1000,
+  global_max_dist = 1,
+  local_max_fdr = 0.01,
+  local_min_ove = 2,
+  local_min_o = 3,
+  trim_flank_aa = 3,
+  low_mem = FALSE,
+  global_pairs = NULL
+  )
+```
+
+```{r cluster_c1_gt, include = FALSE}
+out_c1_gt <- cluster_irr(s=s,r=r,version=1,ks=ks,cores=cores,control=control)
+```
+
+```{r cluster_c2_gt, include = FALSE}
+out_c2_gt <- cluster_irr(s=s,r=r,version=2,ks=ks,cores=cores,control=control)
+```
+
+```{r cluster_c3_gt, include = FALSE}
+out_c3_gt <- cluster_irr(s=s,r=r,version=3,ks=ks,cores=cores,control=control)
+```
+
+
+```{r cluster_tg1_gt, include = FALSE}
+out_tg1_gt <- turbo_gliph(cdr3_sequences = s,
+                          result_folder = "",
+                          refdb_beta = CDR3ab,
+                          v_usage_freq = NULL,
+                          cdr3_length_freq = NULL,
+                          ref_cluster_size = "original",
+                          sim_depth = control$B,
+                          lcminp = control$local_max_fdr,
+                          lcminove = control$local_min_ove,
+                          kmer_mindepth = control$local_min_o,
+                          accept_sequences_with_C_F_start_end = TRUE,
+                          min_seq_length = 6,
+                          gccutoff = control$global_max_dist,
+                          structboundaries = TRUE,
+                          boundary_size = control$trim_flank_aa,
+                          motif_length = ks,
+                          discontinuous = FALSE,
+                          make_depth_fig = FALSE,
+                          local_similarities = TRUE,
+                          global_similarities = TRUE,
+                          global_vgene = FALSE,
+                          positional_motifs = FALSE,
+                          cdr3_len_stratify = FALSE,
+                          vgene_stratify = FALSE,
+                          public_tcrs = TRUE,
+                          cluster_min_size = 1,
+                          hla_cutoff = 0.1,
+                          n_cores = 1
+                          )
+```
+
+```{r cluster_tg2_gt, include = FALSE}
+out_tg2_gt <- gliph2(cdr3_sequences = s,
+                     result_folder = "",
+                     refdb_beta = CDR3ab,
+                     v_usage_freq = NULL,
+                     cdr3_length_freq = NULL,
+                     ref_cluster_size = "original",
+                     sim_depth = control$B,
+                     lcminp = control$local_max_fdr,
+                     lcminove = control$local_min_ove,
+                     motif_distance_cutoff = control$global_max_dist,
+                     kmer_mindepth = control$local_min_o,
+                     accept_sequences_with_C_F_start_end = TRUE,
+                     min_seq_length = 0,
+                     structboundaries = TRUE,
+                     boundary_size = control$trim_flank_aa,
+                     motif_length = ks,
+                     discontinuous_motifs = FALSE,
+                     local_similarities = TRUE,
+                     global_similarities = TRUE,
+                     global_vgene = FALSE,
+                     all_aa_interchangeable = FALSE,
+                     boost_local_significance = FALSE,
+                     cluster_min_size = 1,
+                     hla_cutoff = 0.1,
+                     n_cores = 1
+                     )
+```
+
+
+```{r cluster_c1_gliph, include = FALSE}
+s = data.frame(CDR3b = gliph_input_data$CDR3b)
+
+out_c1_gliph <-cluster_irr(s=s,r=r,version=1,ks=ks,cores=cores,control=control)
+```
+
+```{r cluster_c2_gliph, include = FALSE}
+out_c2_gliph <-cluster_irr(s=s,r=r,version=2,ks=ks,cores=cores,control=control)
+```
+
+```{r cluster_c3_gliph, include = FALSE}
+out_c3_gliph <-cluster_irr(s=s,r=r,version=3,ks=ks,cores=cores,control=control)
+```
+
+
+```{r cluster_tg1_gliph, include = FALSE}
+s = gliph_input_data
+
+out_tg1_gliph <- turbo_gliph(cdr3_sequences = s,
+                             result_folder = "",
+                             refdb_beta = CDR3ab,
+                             v_usage_freq = NULL,
+                             cdr3_length_freq = NULL,
+                             ref_cluster_size = "original",
+                             sim_depth = control$B,
+                             lcminp = control$local_max_fdr,
+                             lcminove = control$local_min_ove,
+                             kmer_mindepth = control$local_min_o,
+                             accept_sequences_with_C_F_start_end = TRUE,
+                             min_seq_length = 6,
+                             gccutoff = control$global_max_dist,
+                             structboundaries = TRUE,
+                             boundary_size = control$trim_flank_aa,
+                             motif_length = ks,
+                             discontinuous = FALSE,
+                             make_depth_fig = FALSE,
+                             local_similarities = TRUE,
+                             global_similarities = TRUE,
+                             global_vgene = FALSE,
+                             positional_motifs = FALSE,
+                             cdr3_len_stratify = FALSE,
+                             vgene_stratify = FALSE,
+                             public_tcrs = TRUE,
+                             cluster_min_size = 1,
+                             hla_cutoff = 0.1,
+                             n_cores = 1
+)
+```
+
+
+```{r cluster_tg2_gliph, include = FALSE}
+out_tg2_gliph <- gliph2(cdr3_sequences = s,
+                        result_folder = "",
+                        refdb_beta = CDR3ab,
+                        v_usage_freq = NULL,
+                        cdr3_length_freq = NULL,
+                        ref_cluster_size = "original",
+                        sim_depth = control$B,
+                        lcminp = control$local_max_fdr,
+                        lcminove = control$local_min_ove,
+                        motif_distance_cutoff = control$global_max_dist,
+                        kmer_mindepth = control$local_min_o,
+                        accept_sequences_with_C_F_start_end = TRUE,
+                        min_seq_length = 0,
+                        structboundaries = TRUE,
+                        boundary_size = control$trim_flank_aa,
+                        motif_length = ks,
+                        discontinuous_motifs = FALSE,
+                        local_similarities = TRUE,
+                        global_similarities = TRUE,
+                        global_vgene = FALSE,
+                        all_aa_interchangeable = FALSE,
+                        boost_local_significance = FALSE,
+                        cluster_min_size = 1,
+                        hla_cutoff = 0.1,
+                        n_cores = 1)
+
+```
+
+
+# Ground truth graphs
+
+* Reference set: CDR3ab set
+* Data sample: Ground truth expansion
+
+```{r plot_gt}
+plot_network(out_tg1_gt) # turbogliph 1 - ground truth expansion
+plot_network(out_tg2_gt) # turbogliph 2 - ground truth expansion
+
+plot_graph(out_c1_gt) # clustirr 1 - ground truth expansion
+plot_graph(out_c2_gt) # clustirr 2 - ground truth expansion
+plot_graph(out_c3_gt) # clustirr 3 - ground truth expansion
+
+```
+
+
+
+# Gliph input graphs
+
+* Reference set: CDR3ab set
+* Data sample: Gliph input data from turboGliph package
+
+```{r plot_gliph}
+plot_network(out_tg1_gliph) # turbogliph 1 - gliph input data
+plot_network(out_tg2_gliph) # turbogliph 2 - gliph input data
+
+plot_graph(out_c1_gliph) # clustirr 1 - gliph input data
+plot_graph(out_c2_gliph) # clustirr 2 - gliph input data
+plot_graph(out_c3_gliph) # clustirr 3 - gliph input data
+
+```
