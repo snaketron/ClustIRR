@@ -22,6 +22,7 @@ knitr::opts_chunk$set(collapse = TRUE,
 ```{r}
 library(ClustIRR)
 library(knitr)
+library(visNetwork)
 ```
 
 
@@ -178,7 +179,7 @@ input parameter `control$global_pairs`.
   2. graph (igraph object) 
 
 
-# Case study 1: detecting enriched motifs
+# Case study 1: Detecting enriched motifs
 
 In this study we will insert the motif 'LEAR' in the first 20 CDR3 sequences 
 of `s`, simulating enrichment of this motif. This motif is not enriched in
@@ -201,7 +202,7 @@ clustirr_output <- cluster_irr(s = s,
                                control = list(trim_flank_aa = 3))
 ```
 
-## local clustering results
+## Local clustering results
 ClustIRR detects 'LEAR' as enriched. One additional motifs was detected, 
 probably because it contains 'LEA' (substring of 'LEAR'). 'LEAR' was detected
 20 times in the `s` and 2 only times in `r` leading to OvE$\approx 100$ 
@@ -216,7 +217,7 @@ kable(local_motifs[local_motifs$pass == TRUE,],
       row.names = FALSE)
 ```
 
-## global clustering results
+## Global clustering results
 
 Only one pair of globally similar CDR3 sequences was found in our mock data.
 The CDR3 sequences CAS**S**PLEARGYTF and CAS**R**PLEARGYTF differ by one amino 
@@ -229,15 +230,18 @@ e <- get_edges(clust_irr = clustirr_output)
 kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
 ```
 
-## graph
+## Graph
+
+Let's plot the graph:
 
 ```{r}
-
+# plot the clust_irr object 
+plot_graph(clust_irr = clustirr_output)
 ```
 
 
 
-# Case study 2: detecting enriched motifs in clonally expanded IRs
+# Case study 2: Detecting enriched motifs in clonally expanded IRs
 
 In this case study we assume that the data contains a clone that represents 2% 
 (10 T-cells) of the studied repertoire. All T-cells in the expanded clone share 
@@ -267,7 +271,7 @@ clustirr_output <- cluster_irr(s = s,
                                control = list(trim_flank_aa = 3))
 ```
 
-## local clustering results
+## Local clustering results
 ClustIRR once again reports enrichment of LEAR, but also of many additional 
 motifs that are part of the core of `CATSRPDGLAQYF`, such as DGLA, PDGL, RPDG, 
 SRPG, etc.
@@ -281,7 +285,7 @@ kable(local_motifs[local_motifs$pass == TRUE,],
       row.names = FALSE)
 ```
 
-## global clustering results
+## Global clustering results
 
 Once again, ClustIRR finds the same pair of globally similar CDR3 sequences.
 However, remember that this time our repertoire `s` contains 10 identical CDR3s 
@@ -297,7 +301,14 @@ e <- get_edges(clust_irr = clustirr_output)
 ```
 
 
-## graph output
+## Graph output
+
+Lets plot the clustering results:
+
+```{r}
+# plot the clust_irr object 
+plot_graph(clust_irr = clustirr_output)
+```
 
 
 ```{r session_info}

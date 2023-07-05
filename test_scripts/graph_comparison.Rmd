@@ -11,6 +11,7 @@ turboGliphs input data for two experiments.
 ```{r libs, echo = FALSE}
 library(ClustIRR)
 library(turboGliph)
+library(visNetwork)
 ```
 
 

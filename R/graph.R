@@ -91,7 +91,6 @@ get_global_edges <- function(clust_irr) {
 }
 
 
-
 get_graph <- function(clust_irr) {
     
     edges <- get_edges(clust_irr)
@@ -101,19 +100,19 @@ get_graph <- function(clust_irr) {
     return(ig)
 }
 
+
 plot_graph <- function(clust_irr) {
   ig <- get_graph(clust_irr)
   nodes <- igraph::as_data_frame(ig, what = "vertices")
   edges <- igraph::as_data_frame(ig, what = "edges")
-  
   names(nodes) <- "id"
   nodes$color.background <- "green"
   nodes$color.border <- "black"
   nodes$color.highlight <- "red"
   nodes$size <- 20
-  id_cdr3 <- data.frame(id = c(edges$from, edges$to),
-                        label = c(edges$from_cdr3, edges$to_cdr3))
-  nodes <- merge(nodes, unique(id_cdr3), by = "id")
+  id_cdr3 <- data.frame(id = base::c(edges$from, edges$to),
+                        label = base::c(edges$from_cdr3, edges$to_cdr3))
+  nodes <- merge(nodes, base::unique(id_cdr3), by = "id")
   nodes$title <- paste("<p><b>", nodes$label, "</b></p>")
   nodes$group <- nodes$label
   nodes$shape <- "dot"
@@ -127,26 +126,28 @@ plot_graph <- function(clust_irr) {
   edges$arrows <- ""
   edges$dashes <- FALSE
   edges$title <- edges$motif
-  edges$smooth <- FALSE
+  edges$smooth <- ifelse(test = edges$type == "global", yes = TRUE, no = FALSE)
   edges$shadow <- FALSE
-  
-  ledges <- data.frame(color = c("orange", "gray"), 
-                       label = c("global", "local"),
+  ledges <- data.frame(color = base::unique(edges$color), 
+                       label = base::unique(edges$type),
                        arrows = "", width = 4)
-  lenodes <- data.frame(label = "tba",  color = "green", 
-                        shape = "dot", size = 10)
-  
-  res <- visNetwork::visLegend(
-    visNetwork::visOptions(
-      visNetwork::visIgraphLayout(
-        visNetwork::visNetwork(nodes = nodes, edges = edges), 
-        layout = "layout_components"),
-      highlightNearest = base::list(enabled = TRUE, degree = 1,
-                                    algorithm = "hierarchical"),
-      selectedBy = base::list(variable = "group", multiple = TRUE), 
-      manipulation = TRUE),
-    addEdges = ledges, addNodes = lenodes, useGroups = FALSE, 
-    position = "right", width=0.15, zoom = FALSE)
-  
+  lenodes <- data.frame(label = base::unique(edges$chain), 
+                        color = "", shape = "dot", size = 10)
+  lenodes$color <- ifelse(test = lenodes$label == "CDR3b",
+                          yes = "green",
+                          no = "blue")
+  res <- visNetwork::visNetwork(nodes = nodes, edges = edges) %>%
+    visNetwork::visIgraphLayout(layout = "layout_components", 
+                                randomSeed = 1234) %>%
+    visNetwork::visOptions(highlightNearest = 
+                             base::list(enabled = TRUE, 
+                                        degree = 1,
+                                        algorithm = "hierarchical"),
+                           selectedBy = base::list(variable = "group", 
+                                                   multiple = TRUE), 
+                           manipulation = FALSE) %>%
+    visNetwork::visLegend(addEdges = ledges, addNodes = lenodes, 
+                          useGroups = FALSE, position = "right", 
+                          width=0.15, zoom = FALSE)
   return(res)
 }

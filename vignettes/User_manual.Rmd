@@ -253,13 +253,14 @@ A short case study is conducted to demonstrate the `r Biocpkg("ClustIRR")
 workflow. The newest *version 3* will be used. For a comparison of the 
 different algorithm versions, see the *version comparison vignette*.
 
-We start by loading the needed packages. *knitr* will be used to display the 
-results in tabular form.
+We start by loading the needed packages. *knitr* and *visNetwork* will be used
+to display the results.
 
 ```{r case_study}
 # load packages
 library(ClustIRR)
 library(knitr)
+library(visNetwork)
 ```
 
 ## Input data
@@ -390,17 +391,57 @@ kable(clustirr_output$clust$CDR3b$global)
 To extract the edges for a visualization, the `get_edges()` function can be 
 called on our output file of class `clust_irr`.
 
+The extracted edges contain informations about local and global connections
+between cdr3 sequences as well as the shared motif and source chain.
 
-```{r local_edges_output}
+```{r edges_output}
 # extract edges
 edges <- get_edges(clustirr_output)
 
+head(edges)
+
 ```
 
-#### Graph output
+#### Extract igraph object
 
-As mentioned earlier, an integrated plotting function is planned for future
-`r Biocpkg("ClustIRR")` versions.
+To extract the edges as *igraph* object for analysis or visualization with 
+other packages, the `get_graph()` function can be called on our output file of 
+class `clust_irr`.
+
+For more information about *igraph*, consult the packages manual.
+
+```{r igraph_output}
+# extract edges
+ig <- get_graph(clustirr_output)
+
+# get clusters
+igraph::clusters(ig)
+
+```
+
+#### Graph output *(experimental)*
+
+Plotting `clust_irr` objects can be done by calling the `plot_graph()` 
+function. Because of potential scaling issues when using larger graphs,
+this function is marked as *experimental* for now.
+
+Inside the graph, nodes represent cells. *CDR3b* sequences are colored green, 
+*CDR3a* sequences blue.
+
+Groups represent unique sequences, that can be present in form of multiple 
+cells / nodes in the graph if these cells are clonally expanded.
+
+Gray edges represent local motif connections, orange edges represent global
+connections. 
+
+By hovering over nodes, the sequence is shown. Hovering over edges shows the
+shared motif or in case of global connections the shared part of the sequence.
+
+```{r plot_graph}
+# plot the graph
+plot_graph(clustirr_output)
+
+```
 
 # References
 

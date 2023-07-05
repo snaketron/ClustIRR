@@ -113,8 +113,8 @@ which should be kept in mind before building graphs.
 To demonstrate the differences, we will conduct the same case 
 study as integrated into the *user manual vignette* with all three versions.
 
-We start by loading the needed packages. *knitr*, *ggplot2* and *ggrepel* are
-used to display the results.
+We start by loading the needed packages. *knitr*, *ggplot2*, *ggrepel*, and
+*visNetwork* are used to display the results.
 
 ```{r case_study}
 # load packages
@@ -122,6 +122,7 @@ library(ClustIRR)
 library(knitr)
 library(ggplot2)
 library(ggrepel)
+library(visNetwork)
 ```
 
 ## Input data
@@ -556,12 +557,37 @@ kable(clustirr_output_v2$clust$CDR3b$global)
 # global motifs version 3
 kable(clustirr_output_v3$clust$CDR3b$global)
 ```
-### Graph output
 
-TBA
+#### Graph output *(experimental)*
 
-As mentioned in the *user manual vignette*, graph output is planned to be added
-in future `r Biocpkg("ClustIRR")` versions.
+Plotting `clust_irr` objects can be done by calling the `plot_graph()` 
+function. Because of potential scaling issues when using larger graphs,
+this function is marked as *experimental* for now.
+
+Inside the graph, nodes represent cells. *CDR3b* sequences are colored green, 
+*CDR3a* sequences blue.
+
+Groups represent unique sequences, that can be present in form of multiple 
+cells / nodes in the graph if these cells are clonally expanded.
+
+Gray edges represent local motif connections, orange edges represent global
+connections. 
+
+By hovering over nodes, the sequence is shown. Hovering over edges shows the
+shared motif or in case of global connections the shared part of the sequence.
+
+
+```{r graph_output}
+# plot graph of version 1
+plot_graph(clustirr_output_v1)
+
+# plot graph of version 2
+plot_graph(clustirr_output_v2)
+
+# plot graph of version 3
+plot_graph(clustirr_output_v3)
+
+```
 
 # References
 
