@@ -169,7 +169,7 @@ configure_edges <- function(edges) {
                                     (edges$to == edges$to[i])) |
                                    ((edges$to == edges$from[i]) &
                                       (edges$from == edges$to[i]))])
-    if(base::length(t) == 2){
+    if(base::length(t) > 1){
       edges$color[i] <- "#9A0000"
       edges$type[i] <- "local & global"
     }
