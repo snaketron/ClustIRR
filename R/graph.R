@@ -93,7 +93,7 @@ get_global_edges <- function(clust_irr) {
 
 get_graph <- function(clust_irr) {
     
-    edges <- get_edges(clust_irr)
+    edges <- get_edges(clust_irr = clust_irr)
     
     ig <- igraph::graph_from_data_frame(edges, 
                                         directed = TRUE)
@@ -102,41 +102,25 @@ get_graph <- function(clust_irr) {
 
 
 plot_graph <- function(clust_irr) {
-  ig <- get_graph(clust_irr)
+  
+  ig <- get_graph(clust_irr = clust_irr)
   nodes <- igraph::as_data_frame(ig, what = "vertices")
   edges <- igraph::as_data_frame(ig, what = "edges")
-  names(nodes) <- "id"
-  nodes$color.background <- "green"
-  nodes$color.border <- "black"
-  nodes$color.highlight <- "red"
-  nodes$size <- 20
-  id_cdr3 <- data.frame(id = base::c(edges$from, edges$to),
-                        label = base::c(edges$from_cdr3, edges$to_cdr3))
-  nodes <- merge(nodes, base::unique(id_cdr3), by = "id")
-  nodes$title <- paste("<p><b>", nodes$label, "</b></p>")
-  nodes$group <- nodes$label
-  nodes$shape <- "dot"
-  nodes$shadow <- FALSE
   
-  edges$length <- 15
-  edges$width <- 10
-  edges$color <- ifelse(test = edges$type == "local",
-                        yes = "gray",
-                        no = "orange")
-  edges$arrows <- ""
-  edges$dashes <- FALSE
-  edges$title <- edges$motif
-  edges$smooth <- ifelse(test = edges$type == "global", yes = TRUE, no = FALSE)
-  edges$shadow <- FALSE
-  ledges <- data.frame(color = base::unique(edges$color), 
-                       label = base::unique(edges$type),
-                       arrows = "", width = 4)
-  lenodes <- data.frame(label = base::unique(edges$chain), 
-                        color = "", shape = "dot", size = 10)
-  lenodes$color <- ifelse(test = lenodes$label == "CDR3b",
-                          yes = "green",
-                          no = "blue")
-  res <- visNetwork::visNetwork(nodes = nodes, edges = edges) %>%
+  nodes <- configure_nodes(nodes = nodes, edges = edges)
+  edges <- configure_edges(edges = edges)
+  
+  ledges <- base::data.frame(color = base::unique(edges$color), 
+                             label = base::unique(edges$type),
+                             arrows = "", width = 4)
+  lenodes <- base::data.frame(label = base::unique(edges$chain), 
+                              color = "", shape = "dot", size = 10)
+  lenodes$color <- base::ifelse(test = lenodes$label == "CDR3b",
+                                yes = "green",
+                                no = "blue")
+  
+  return(
+    visNetwork::visNetwork(nodes = nodes, edges = edges) %>%
     visNetwork::visIgraphLayout(layout = "layout_components", 
                                 randomSeed = 1234) %>%
     visNetwork::visOptions(highlightNearest = 
@@ -149,5 +133,49 @@ plot_graph <- function(clust_irr) {
     visNetwork::visLegend(addEdges = ledges, addNodes = lenodes, 
                           useGroups = FALSE, position = "right", 
                           width=0.15, zoom = FALSE)
-  return(res)
+    )
+}
+
+
+configure_nodes <- function(nodes, edges) {
+  
+  names(nodes) <- "id"
+  nodes$color.background <- "green"
+  nodes$color.border <- "black"
+  nodes$color.highlight <- "red"
+  nodes$size <- 20
+  id_cdr3 <- base::data.frame(id = base::c(edges$from, edges$to),
+                              label = base::c(edges$from_cdr3, edges$to_cdr3))
+  nodes <- base::merge(nodes, base::unique(id_cdr3), by = "id")
+  nodes$title <- base::paste("<p><b>", nodes$label, "</b></p>")
+  nodes$group <- nodes$label
+  nodes$shape <- "dot"
+  nodes$shadow <- FALSE
+  return(nodes)
+}
+
+
+configure_edges <- function(edges) {
+  
+  edges$length <- 15
+  edges$width <- 10
+  edges$color <- base::ifelse(test = (edges$type == "local"),
+                              yes = "gray",
+                              no = "orange")
+  for(i in 1:base::nrow(edges)){
+    t <- base::unique(edges$type[((edges$from == edges$from[i]) & 
+                                    (edges$to == edges$to[i])) |
+                                   ((edges$to == edges$from[i]) &
+                                      (edges$from == edges$to[i]))])
+    if(base::length(t) == 2){
+      edges$color[i] <- "#9A0000"
+      edges$type[i] <- "local & global"
+    }
+  }
+  edges$arrows <- ""
+  edges$dashes <- FALSE
+  edges$title <- edges$motif
+  edges$smooth <- FALSE
+  edges$shadow <- FALSE
+  return(edges)
 }
