@@ -38,6 +38,9 @@ data("CDR3ab")
 s <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
 r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 
+# artificially enrich motif 'RQWW' inside sample dataset
+substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+
 # run analysis
 out <- cluster_irr(s = s,
                    r = r,
@@ -68,7 +71,5 @@ knitr::kable(head(out$clust$CDR3b$global))
 
 # create data.frame
 out_df <- get_edges(out)
-
-# TODO visualize data with igraph/visNetwork
 
 }

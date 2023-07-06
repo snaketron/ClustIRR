@@ -1,15 +1,13 @@
 get_edges <- function(clust_irr) {
   
-  if(!methods::is(clust_irr, 'clust_irr')){
-    base::stop("Input has to be object of class clust_irr")
-  }
+  check_clustirr(clust_irr = clust_irr)
   
   le <- get_local_edges(clust_irr = clust_irr)
   ge <- get_global_edges(clust_irr = clust_irr)
   e <- base::rbind(le, ge)
   
   if(base::is.null(e) || base::nrow(e)==0) {
-    return(NULL)
+    base::stop("No local or global edges found")
   }
   
   me <- base::vector(mode = "list", length = base::length(clust_irr$clust))
@@ -33,7 +31,7 @@ get_edges <- function(clust_irr) {
                 "motif", "type", "chain")]
     return(me)
   }
-  return(NULL)
+  base::stop("No local or global edges found")
 }
 
 get_local_edges <- function(clust_irr) {
@@ -92,16 +90,20 @@ get_global_edges <- function(clust_irr) {
 
 
 get_graph <- function(clust_irr) {
-    
-    edges <- get_edges(clust_irr = clust_irr)
-    
-    ig <- igraph::graph_from_data_frame(edges, 
-                                        directed = TRUE)
-    return(ig)
+  
+  check_clustirr(clust_irr = clust_irr)
+  
+  edges <- get_edges(clust_irr = clust_irr)
+
+  ig <- igraph::graph_from_data_frame(edges, 
+                                      directed = TRUE)
+  return(ig)
 }
 
 
 plot_graph <- function(clust_irr) {
+  
+  check_clustirr(clust_irr = clust_irr)
   
   ig <- get_graph(clust_irr = clust_irr)
   nodes <- igraph::as_data_frame(ig, what = "vertices")
@@ -178,4 +180,11 @@ configure_edges <- function(edges) {
   edges$smooth <- FALSE
   edges$shadow <- FALSE
   return(edges)
+}
+
+
+check_clustirr <- function(clust_irr){
+  if(!methods::is(clust_irr, 'clust_irr')){
+    base::stop("Input has to be object of class clust_irr")
+  }
 }
