@@ -30,6 +30,8 @@ get_edges <- function(clust_irr) {
     me$to <- me$ID.y
     me <- me[,c("from", "to", "from_cdr3","to_cdr3", 
                 "motif", "type", "chain")]
+    # remove self-reference of global connections to prevent circles
+    me <- me[!( (me$from == me$to) & (me$type =="global") ),]
     return(me)
   }
   base::warning("No local or global edges found \n")
