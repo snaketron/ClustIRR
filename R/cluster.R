@@ -12,20 +12,14 @@ cluster_irr <- function(s,
                             trim_flank_aa = 0,
                             global_pairs = NULL,
                             low_mem = FALSE)) {
+  
     # 0. control check
     control <- get_control(control_in = control)
-
     # 1. input check
-    input_check(s = s,
-                r = r,
-                version = version,
-                ks = ks,
-                cores = cores,
-                control = control)
-
+    input_check(s = s, r = r, version = version, ks = ks, 
+                cores = cores, control = control)
     # get chains to be analyzed
     chains <- get_chains(base::colnames(s))
-
     # add ID to data
     s$ID <- base::seq_len(length.out = base::nrow(s))
 
@@ -57,7 +51,6 @@ cluster_irr <- function(s,
                                             control = control)
         }
     }
-
     return(base::structure(class = "clust_irr",
                            base::list(clust = clust,
                                       inputs = base::list(
@@ -131,14 +124,14 @@ get_clust_v23 <- function(cdr3,
     }
     else {
         if(control$low_mem) {
-            g <- get_global_clust_mem(cdr3 = base::unique(cdr3),
+            g <- get_global_clust_mem(cdr3 = cdr3,
                                       global_max_dist = control$global_max_dist)
 
         }
         else {
-            g <- get_global_clust(cdr3 = base::unique(cdr3),
+            g <- get_global_clust(cdr3 = cdr3,
                                   global_max_dist = control$global_max_dist)
         }
     }
-    return(base::list(local = l, global = g))
+    return(base::list(local = l, global = base::unique(g)))
 }
