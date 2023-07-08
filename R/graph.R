@@ -15,6 +15,10 @@ get_edges <- function(clust_irr) {
   base::names(me) <- base::names(clust_irr$clust)
   for(chain in base::names(clust_irr$clust)) {
     tmp_d <- clust_irr$inputs$s[, c(chain, "ID")]
+    # remove clonal expanded cdr3s for version 1 and 2
+    if(clust_irr$inputs$version != 3) {
+      tmp_d <- tmp_d[!base::duplicated(tmp_d$CDR3b), ]
+    }
     tmp_e <- e[e$chain == chain, ]
     
     if(base::nrow(tmp_e)!=0 & base::nrow(tmp_d)!=0) {

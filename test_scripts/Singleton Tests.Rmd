@@ -1,0 +1,188 @@
+---
+title: "Singleton Tests"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r load_libs, include=FALSE}
+library(turboGliph)
+library(ClustIRR)
+```
+
+```{r load_devtool, include=FALSE}
+#devtools::load_all(".")
+```
+
+# Test data
+
+CDR3b sequences, two different clones inserted and a motif inserted.
+
+* **Clone 1**: 13 times *CATSRLEFAQYF* 
+  * Global and local enrichment
+* **Clone 2**: 7 times *CATSRLEARATYF* 
+  * Global and local enrichment and motif *LEAR*
+* **Clone 2**: 2 times *CATSEEEFAQYF* 
+  * only global, no local enrichment
+* **Motif**: 5 times *LEAR* 
+  * Also to be found in **Clone 2**
+
+```{r prepare_data, include=FALSE}
+data("CDR3ab")
+s <- CDR3ab[1:500,]
+s$CDR3a <- NULL
+r <- CDR3ab[501:5500,]
+r$CDR3a <- NULL
+```
+
+```{r insert_clone}
+clone <- data.frame(CDR3b = rep("CATSRLEFAQYF", times = 13))
+s <- rbind(s, clone)
+```
+
+```{r insert_second_clone}
+clone2 <- data.frame(CDR3b = rep("CATSRLEARATYF", times = 7))
+s <- rbind(s, clone2)
+```
+
+```{r third_clone}
+clone <- data.frame(CDR3b = rep("CATSEEEFAQYF", times = 2))
+s <- rbind(s, clone)
+```
+
+```{r insert_motifs}
+substr(x = s$CDR3b[1:5], start = 6, stop = 9) <- "LEAR"
+```
+
+
+```{r run_clustirr1, include=FALSE}
+out1 <- cluster_irr(s = s,
+                   r = r,
+                   version = 1,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+```
+
+```{r run_clustirr2, include=FALSE}
+out2 <- cluster_irr(s = s,
+                   r = r,
+                   version = 2,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+```
+
+
+```{r run_clustirr3, include=FALSE}
+out3 <- cluster_irr(s = s,  
+                    r = r,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+# ClustIRR V1
+
+V1 finds inserted motifs (hexagon in the middle), but no global connections, 
+because sequences are reduced to unique sequences before clustering. 
+Also lots of false positive noise in form of not enriched motifs.
+
+```{r check_clustirr_v1}
+out1$clust$CDR3b$local$m[out1$clust$CDR3b$local$m$pass,]
+out1$clust$CDR3b$global
+e1 <- get_edges(out1)
+plot_graph(out1)
+
+```
+
+# ClustIRR V2
+
+Same as V1, but without the noise.
+
+```{r check_clustirr_v2}
+out2$clust$CDR3b$local$m[out2$clust$CDR3b$local$m$pass,]
+out2$clust$CDR3b$global
+e2 <- get_edges(out2)
+plot_graph(out2)
+
+```
+
+# ClustIRR V3
+
+Finds inserted motifs as well as clonally expanded sequences and motifs 
+between them.
+
+Also, the global connection between the only two times present sequence 
+*CATSEEEFAQYF* is found.
+
+```{r check_clustirr_v3}
+out3$clust$CDR3b$local$m[out3$clust$CDR3b$local$m$pass,]
+out3$clust$CDR3b$global
+e3 <- get_edges(out3)
+plot_graph(out3)
+
+```
+
+
+
+
+```{r run_tg1, include=FALSE}
+tg1 <- turbo_gliph(cdr3_sequences = s,
+                   refdb_beta = r,
+                   lcminp = 0.05,
+                   lcminove = 2,
+                   kmer_mindepth = 1,
+                   min_seq_length = 5,
+                   gccutoff = 1,
+                   boundary_size = 3,
+                   motif_length = 4,
+                   cluster_min_size = 1)
+```
+
+```{r run_tg2, include=FALSE}
+tg2 <- gliph2(cdr3_sequences = s,
+              refdb_beta = r,
+              lcminp = 0.05,
+              lcminove = 2,
+              motif_distance_cutoff = 30,
+              kmer_mindepth = 2,
+              min_seq_length = 0,
+              boundary_size = 3,
+              motif_length = 4,
+              all_aa_interchangeable = TRUE,
+              boost_local_significance = FALSE,
+              cluster_min_size = 1)
+```
+
+# turboGliph - Gliph 1
+
+Gliph1 does not find any global connections. Surprisingly, in the graph 
+there are local connections between clonal expanded sequences displayed as 
+seperate nodes (like in ClustIRR 3) marked as local connections.
+
+See the "star" in the middle, the 7 inner nodes are all *CATSRLEARATYF*,
+the outer 13 nodes are *CATSRLEFAQYF* and the 5 nodes connected to the middle 
+are the sequences enriched with the motif *LEAR*. 
+
+```{r check_tg1}
+tg1$motif_enrichment$selected_motifs
+plot_network(tg1)
+```
+
+# turboGliph - Gliph 2
+
+Gliph 2 also does not find any global connections.
+
+See the "star" in the middle, the 7 inner nodes are all *CATSRLEARATYF*, and 
+the 5 nodes connected them are the sequences enriched with the motif *LEAR*.
+
+13 nodes of *CATSRLEFAQYF* are nowhere to be found.
+
+```{r check_tg2}
+tg2$motif_enrichment$selected_motifs
+plot_network(tg2)
+```
+
+
