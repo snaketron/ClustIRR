@@ -7,7 +7,8 @@ get_edges <- function(clust_irr) {
   e <- base::rbind(le, ge)
   
   if(base::is.null(e) || base::nrow(e)==0) {
-    base::stop("No local or global edges found")
+    base::warning("No local or global edges found \n")
+    return(NULL)
   }
   
   me <- base::vector(mode = "list", length = base::length(clust_irr$clust))
@@ -31,7 +32,8 @@ get_edges <- function(clust_irr) {
                 "motif", "type", "chain")]
     return(me)
   }
-  base::stop("No local or global edges found")
+  base::warning("No local or global edges found \n")
+  return(NULL)
 }
 
 get_local_edges <- function(clust_irr) {
@@ -95,6 +97,11 @@ get_graph <- function(clust_irr) {
   
   edges <- get_edges(clust_irr = clust_irr)
 
+  if(base::is.null(edges)) {
+    base::warning("No local or global edges to build igraph from \n")
+    return(NULL)
+  }
+  
   ig <- igraph::graph_from_data_frame(edges, 
                                       directed = TRUE)
   return(ig)
@@ -106,6 +113,12 @@ plot_graph <- function(clust_irr) {
   check_clustirr(clust_irr = clust_irr)
   
   ig <- get_graph(clust_irr = clust_irr)
+  
+  if(base::is.null(ig)) {
+    base::warning("No graph to plot \n")
+    return(NULL)
+  }
+  
   nodes <- igraph::as_data_frame(ig, what = "vertices")
   edges <- igraph::as_data_frame(ig, what = "edges")
   
