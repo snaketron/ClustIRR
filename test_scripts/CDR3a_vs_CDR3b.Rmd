@@ -1,0 +1,136 @@
+---
+title: "CDR3a vs CDR3b"
+output: html_notebook
+---
+
+---
+title: "Singleton Tests"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r load, include=FALSE}
+#library(ClustIRR)
+devtools::load_all(".")
+
+```
+
+# Test data
+
+CDR3b sequences, two different clones inserted and a motif inserted.
+
+* **Clone 1**: 13 times *CATSRLEFAQYF* 
+  * Global and local enrichment
+* **Clone 2**: 7 times *CATSRLEARATYF* 
+  * Global and local enrichment and motif *LEAR*
+* **Clone 2**: 2 times *CATSEEEFAQYF* 
+  * only global, no local enrichment
+* **Motif**: 5 times *LEAR* 
+  * Also to be found in **Clone 2**
+
+```{r prepare, include=FALSE}
+data("CDR3ab")
+
+# CDR3a
+s_a <- CDR3ab[4500:5000,]
+s_a$CDR3b <- NULL
+r_a <- CDR3ab[5001:10000,]
+r_a$CDR3b <- NULL
+
+# # CDR3b
+# s_b <- CDR3ab[1:500,]
+# s_b$CDR3a <- NULL
+# r_b <- CDR3ab[501:5500,]
+# r_b$CDR3a <- NULL
+
+# alpha clones + motifs
+clone1_a <- data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 13))
+clone2_a <- data.frame(CDR3a = rep("CAWNQEETRTYEQYF", times = 7))
+clone3_a <- data.frame(CDR3a = rep("CASSSLYNETTYF", times = 2)) 
+s_a <- rbind(s_a, clone1_a)
+s_a <- rbind(s_a, clone2_a)
+s_a <- rbind(s_a, clone3_a)
+substr(x = s_a$CDR3a[1:10], start = 6, stop = 9) <- "GPPN"
+
+# # beta clones + motifs
+# clone1_b <- data.frame(CDR3b = rep("CATSRLEFAQYF", times = 13))
+# clone2_b <- data.frame(CDR3b = rep("CATSRLEARATYF", times = 7))
+# clone3_b <- data.frame(CDR3b = rep("CATSEEEFAQYF", times = 2))
+# s_b <- rbind(s_b, clone1_b)
+# s_b <- rbind(s_b, clone2_b)
+# s_b <- rbind(s_b, clone3_b)
+# substr(x = s_b$CDR3b[1:5], start = 6, stop = 9) <- "LEAR"
+
+rm(clone1_a, clone2_a, clone3_a)#, clone1_b, clone2_b, clone3_b)
+
+```
+
+
+```{r run_clustirr_alpha, include=FALSE}
+out1_a <- cluster_irr(s = s_a,
+                   r = r_a,
+                   version = 1,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out2_a <- cluster_irr(s = s_a,
+                   r = r_a,
+                   version = 2,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out3_a <- cluster_irr(s = s_a,
+                    r = r_a,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+
+```{r run_clustirr_beta, include=FALSE}
+# out1_b <- cluster_irr(s = s_b,
+#                    r = r_b,
+#                    version = 1,
+#                    ks = 4,
+#                    cores = 8,
+#                    control = list(trim_flank_aa = 3))
+# 
+# out2_b <- cluster_irr(s = s_b,
+#                    r = r_b,
+#                    version = 2,
+#                    ks = 4,
+#                    cores = 8,
+#                    control = list(trim_flank_aa = 3))
+# 
+# out3_b <- cluster_irr(s = s_b,
+#                     r = r_b,
+#                     version = 3,
+#                     ks = 4,
+#                     cores = 8,
+#                     control = list(trim_flank_aa = 3))
+```
+
+# Alpha chain
+
+
+```{r check_clustirr_alpha}
+plot_graph(out1_a)
+plot_graph(out2_a)
+plot_graph(out3_a)
+```
+
+# Beta chain
+
+
+```{r check_clustirr_beta}
+# plot_graph(out1_b)
+# plot_graph(out2_b)
+# plot_graph(out3_b)
+```
+
+
+

@@ -17,7 +17,7 @@ get_edges <- function(clust_irr) {
     tmp_d <- clust_irr$inputs$s[, c(chain, "ID")]
     # remove clonal expanded cdr3s for version 1 and 2
     if(clust_irr$inputs$version != 3) {
-      tmp_d <- tmp_d[!base::duplicated(tmp_d$CDR3b), ]
+      tmp_d <- tmp_d[!base::duplicated(tmp_d[[chain]]), ]
     }
     tmp_e <- e[e$chain == chain, ]
     
