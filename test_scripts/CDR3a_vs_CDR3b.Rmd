@@ -33,16 +33,16 @@ CDR3b sequences, two different clones inserted and a motif inserted.
 data("CDR3ab")
 
 # CDR3a
-s_a <- CDR3ab[4500:5000,]
+s_a <- CDR3ab[4501:5000,]
 s_a$CDR3b <- NULL
 r_a <- CDR3ab[5001:10000,]
 r_a$CDR3b <- NULL
 
-# # CDR3b
-# s_b <- CDR3ab[1:500,]
-# s_b$CDR3a <- NULL
-# r_b <- CDR3ab[501:5500,]
-# r_b$CDR3a <- NULL
+# CDR3b
+s_b <- CDR3ab[4501:5000,]
+s_b$CDR3a <- NULL
+r_b <- CDR3ab[5001:10000,]
+r_b$CDR3a <- NULL
 
 # alpha clones + motifs
 clone1_a <- data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 13))
@@ -53,41 +53,69 @@ s_a <- rbind(s_a, clone2_a)
 s_a <- rbind(s_a, clone3_a)
 substr(x = s_a$CDR3a[1:10], start = 6, stop = 9) <- "GPPN"
 
-# # beta clones + motifs
-# clone1_b <- data.frame(CDR3b = rep("CATSRLEFAQYF", times = 13))
-# clone2_b <- data.frame(CDR3b = rep("CATSRLEARATYF", times = 7))
-# clone3_b <- data.frame(CDR3b = rep("CATSEEEFAQYF", times = 2))
-# s_b <- rbind(s_b, clone1_b)
-# s_b <- rbind(s_b, clone2_b)
-# s_b <- rbind(s_b, clone3_b)
-# substr(x = s_b$CDR3b[1:5], start = 6, stop = 9) <- "LEAR"
+# beta clones + motifs
+clone1_b <- data.frame(CDR3b = rep("CATSRLEFAQYF", times = 13))
+clone2_b <- data.frame(CDR3b = rep("CATSRLEARATYF", times = 7))
+clone3_b <- data.frame(CDR3b = rep("CATSEEEFAQYF", times = 2))
+s_b <- rbind(s_b, clone1_b)
+s_b <- rbind(s_b, clone2_b)
+s_b <- rbind(s_b, clone3_b)
+substr(x = s_b$CDR3b[1:10], start = 6, stop = 9) <- "LEAR"
 
-rm(clone1_a, clone2_a, clone3_a)#, clone1_b, clone2_b, clone3_b)
+
+# alpha & beta combined
+s <- cbind(s_a, s_b)
+r <- cbind(r_a, r_b)
+
+rm(clone1_a, clone2_a, clone3_a, clone1_b, clone2_b, clone3_b)
 
 ```
 
 
-```{r run_clustirr_alpha, include=FALSE}
-out1_a <- cluster_irr(s = s_a,
-                   r = r_a,
+```{r run_clustirr, include=FALSE}
+out1 <- cluster_irr(s = s,
+                   r = r,
                    version = 1,
                    ks = 4,
                    cores = 8,
                    control = list(trim_flank_aa = 3))
 
-out2_a <- cluster_irr(s = s_a,
-                   r = r_a,
+out2 <- cluster_irr(s = s,
+                   r = r,
                    version = 2,
                    ks = 4,
                    cores = 8,
                    control = list(trim_flank_aa = 3))
 
-out3_a <- cluster_irr(s = s_a,
-                    r = r_a,
+out3 <- cluster_irr(s = s,
+                    r = r,
                     version = 3,
                     ks = 4,
                     cores = 8,
                     control = list(trim_flank_aa = 3))
+```
+
+```{r run_clustirr_alpha, include=FALSE}
+# out1_a <- cluster_irr(s = s_a,
+#                    r = r_a,
+#                    version = 1,
+#                    ks = 4,
+#                    cores = 8,
+#                    control = list(trim_flank_aa = 3))
+# 
+# out2_a <- cluster_irr(s = s_a,
+#                    r = r_a,
+#                    version = 2,
+#                    ks = 4,
+#                    cores = 8,
+#                    control = list(trim_flank_aa = 3))
+# 
+# out3_a <- cluster_irr(s = s_a,
+#                     r = r_a,
+#                     version = 3,
+#                     ks = 4,
+#                     cores = 8,
+#                     control = list(trim_flank_aa = 3))
 ```
 
 
@@ -114,13 +142,20 @@ out3_a <- cluster_irr(s = s_a,
 #                     control = list(trim_flank_aa = 3))
 ```
 
+# Alpha and beta chain
+
+```{r check_clustirr}
+plot_graph(out1)
+plot_graph(out2)
+plot_graph(out3)
+```
+
 # Alpha chain
 
-
 ```{r check_clustirr_alpha}
-plot_graph(out1_a)
-plot_graph(out2_a)
-plot_graph(out3_a)
+# plot_graph(out1_a)
+# plot_graph(out2_a)
+# plot_graph(out3_a)
 ```
 
 # Beta chain
