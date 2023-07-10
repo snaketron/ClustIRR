@@ -32,11 +32,21 @@ data_sample <- data.frame(CDR3b = CDR3ab[sample(x = 1:nrow(CDR3ab),
 # artificially enrich motif 'RQWW' inside sample dataset
 substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
-# add the artificial clonal expansion of two sequences to the sample dataset
-clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
-                                       "CATSRAAKPDGLAALSTQYF"),
-                                 times = 15))
-data_sample <- rbind(data_sample, clones)
+# add the artificial clonal expansion
+clone <- data.frame(CDR3b = rep("CATSRLEFAQYF", times = 13))
+data_sample <- rbind(data_sample, clone)
+
+clone2 <- data.frame(CDR3b = rep("CATSRLEARATYF", times = 7))
+data_sample <- rbind(data_sample, clone2)
+
+clone3 <- data.frame(CDR3b = rep("CATSEEEFAQYF", times = 2))
+data_sample <- rbind(data_sample, clone3)
+
+# # add the artificial clonal expansion of two sequences to the sample dataset
+# clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
+#                                        "CATSRAAKPDGLAALSTQYF"),
+#                                  times = 15))
+# data_sample <- rbind(data_sample, clones)
 
 ```
 

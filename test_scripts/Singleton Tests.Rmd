@@ -75,7 +75,7 @@ out2 <- cluster_irr(s = s,
 
 
 ```{r run_clustirr3, include=FALSE}
-out3 <- cluster_irr(s = s,  
+out3 <- cluster_irr(s = s,
                     r = r,
                     version = 3,
                     ks = 4,
@@ -114,8 +114,12 @@ plot_graph(out2)
 Finds inserted motifs as well as clonally expanded sequences and motifs 
 between them.
 
-Also, the global connection between the only two times present sequence 
-*CATSEEEFAQYF* is found.
+Globally similar sequences *CATSRLEARATYF* (7 times) and *CATSRLEARATYF* 
+(13 times) are also marked as locally connected because of motif enrichment.
+
+Global connection between the only two times present sequence 
+*CATSEEEFAQYF* is found - but as it is only two times abundant, no local 
+enrichment is marked.
 
 ```{r check_clustirr_v3}
 out3$clust$CDR3b$local$m[out3$clust$CDR3b$local$m$pass,]
