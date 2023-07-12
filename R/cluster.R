@@ -21,7 +21,7 @@ cluster_irr <- function(s,
     # get chains to be analyzed
     chains <- get_chains(base::colnames(s))
     # add ID to data
-    s$ID <- base::seq_len(length.out = base::nrow(s))
+    s$id <- base::seq_len(length.out = base::nrow(s))
 
     # run analysis for each chain (if available)
     clust <- base::vector(mode = "list", length = base::length(chains))

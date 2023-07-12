@@ -68,8 +68,8 @@ substr(x = s_b$CDR3b[20:25], start = 5, stop = 8) <- "REAL"
 
 
 # alpha & beta combined
-s <- cbind(s_a, s_b)
-r <- cbind(r_a, r_b)
+s_ab <- cbind(s_a, s_b)
+r_ab <- cbind(r_a, r_b)
 
 rm(clone1_a, clone2_a, clone3_a, clone1_b, clone2_b, clone3_b)
 
@@ -77,22 +77,22 @@ rm(clone1_a, clone2_a, clone3_a, clone1_b, clone2_b, clone3_b)
 
 
 ```{r run_clustirr, include=FALSE}
-out1 <- cluster_irr(s = s,
-                   r = r,
+out1 <- cluster_irr(s = s_ab,
+                   r = r_ab,
                    version = 1,
                    ks = 4,
                    cores = 8,
                    control = list(trim_flank_aa = 3))
 
-out2 <- cluster_irr(s = s,
-                   r = r,
+out2 <- cluster_irr(s = s_ab,
+                   r = r_ab,
                    version = 2,
                    ks = 4,
                    cores = 8,
                    control = list(trim_flank_aa = 3))
 
-out3 <- cluster_irr(s = s,
-                    r = r,
+out3 <- cluster_irr(s = s_ab,
+                    r = r_ab,
                     version = 3,
                     ks = 4,
                     cores = 8,
@@ -151,7 +151,7 @@ out3_b <- cluster_irr(s = s_b,
 ```{r check_clustirr_v3}
 # beta chain
 plot_graph(out3_b)
-# aöpha chain
+# alpha chain
 plot_graph(out3_a)
 # beta & alpha chain
 plot_graph(out3)
@@ -162,7 +162,7 @@ plot_graph(out3)
 ```{r check_clustirr_v2}
 # beta chain
 plot_graph(out2_b)
-# aöpha chain
+# alpha chain
 plot_graph(out2_a)
 # beta & alpha chain
 plot_graph(out2)
@@ -173,7 +173,7 @@ plot_graph(out2)
 ```{r check_clustirr_v1}
 # beta chain
 plot_graph(out1_b)
-# aöpha chain
+# alpha chain
 plot_graph(out1_a)
 # beta & alpha chain
 plot_graph(out1)

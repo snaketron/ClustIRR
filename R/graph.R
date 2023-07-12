@@ -14,7 +14,7 @@ get_edges <- function(clust_irr) {
   me <- base::vector(mode = "list", length = base::length(clust_irr$clust))
   base::names(me) <- base::names(clust_irr$clust)
   for(chain in base::names(clust_irr$clust)) {
-    tmp_d <- clust_irr$inputs$s[, c(chain, "ID")]
+    tmp_d <- clust_irr$inputs$s[, c(chain, "id")]
     # remove clonal expanded cdr3s for version 1 and 2
     if(clust_irr$inputs$version != 3) {
       tmp_d <- tmp_d[!base::duplicated(tmp_d[[chain]]), ]
@@ -22,7 +22,7 @@ get_edges <- function(clust_irr) {
     tmp_e <- e[e$chain == chain, ]
     
     if(base::nrow(tmp_e)!=0 & base::nrow(tmp_d)!=0) {
-      base::colnames(tmp_d) <- c("CDR3", "ID")
+      base::colnames(tmp_d) <- c("CDR3", "id")
       me[[chain]] <- base::merge(x = base::merge(
         x = tmp_e, y = tmp_d, by.x = "from_cdr3", by.y = "CDR3"),
         y = tmp_d, by.x = "to_cdr3", by.y = "CDR3")
@@ -30,8 +30,8 @@ get_edges <- function(clust_irr) {
   }
   me <- base::do.call(base::rbind, me)
   if(base::is.null(me)==FALSE && base::nrow(me)!=0) {
-    me$from <- me$ID.x
-    me$to <- me$ID.y
+    me$from <- me$id.x
+    me$to <- me$id.y
     me <- me[,c("from", "to", "from_cdr3","to_cdr3", 
                 "motif", "type", "chain")]
     # remove self-reference connections to prevent circles (only v3)
@@ -126,41 +126,78 @@ plot_graph <- function(clust_irr) {
     return(NULL)
   }
   
-  nodes <- igraph::as_data_frame(ig, what = "vertices")
   edges <- igraph::as_data_frame(ig, what = "edges")
+  nodes <- igraph::as_data_frame(ig, what = "vertices")
 
-  nodes <- configure_nodes(nodes = nodes, edges = edges)
   edges <- configure_edges(edges = edges)
+  nodes <- configure_nodes(nodes = nodes, edges = edges, 
+                           s = clust_irr$inputs$s)
   
   ledges <- base::data.frame(color = base::unique(edges$color), 
                              label = base::unique(edges$type),
                              arrows = "", width = 4)
-  lnodes <- base::data.frame(label = base::unique(edges$chain), 
+  
+  chains <- base::unique(edges$chain)
+  if(base::length(chains)>1) { chains <- base::append(chains, "CDR3a+b") }
+  lnodes <- base::data.frame(label = chains, 
                               color = "", shape = "dot", size = 10)
   lnodes$color <- base::ifelse(test = lnodes$label == "CDR3b",
-                                yes = "green",
-                                no = "blue")
+                                yes = "blue",
+                                no = "yellow")
+  lnodes$color <- base::ifelse(test = lnodes$label == "CDR3a+b",
+                               yes = "green",
+                               no = lnodes$color)
   
   return(configure_network(nodes = nodes, edges = edges,
                            lnodes = lnodes, ledges = ledges))
 }
 
 
-configure_nodes <- function(nodes, edges) {
+configure_nodes <- function(nodes, edges, s) {
   
-  names(nodes) <- "id"
-  id_cdr3 <- base::data.frame(id = base::c(edges$from, edges$to),
-                              label = base::c(edges$from_cdr3, edges$to_cdr3))
-  id_cdr3 <- stats::aggregate(label ~ id, 
-                              base::unique(id_cdr3), 
-                              paste, 
-                              collapse = "-")
-  nodes <- base::merge(nodes, id_cdr3, by = "id")
-  nodes$color.background <- "green"
+  base::names(nodes) <- "id"
+  nodes <- base::merge(nodes, s, by = "id")
+  chains <- base::names(nodes)[base::names(nodes)!="id"]
+  size_factor <- 3
+  size_add <- 19
+  if(base::length(chains)>1){
+    get_color <- function(x){
+      id <- x['id']
+      chains <- unique(edges[edges$from == id | edges$to == id, c("chain")])
+      if(base::length(chains)>1) { 
+        return("green") 
+        }
+      if(chains == "CDR3b"){ 
+        return("blue") 
+        }
+      return("yellow")
+    }
+    nodes$label <- base::paste(nodes$CDR3a, nodes$CDR3b, sep = " - ")
+    nodes$color.background <- apply(X = nodes, MARGIN = 1, FUN = get_color)
+    nodes$size <- apply(X = nodes, MARGIN = 1, function(x) 
+      sum(s$CDR3a == x['CDR3a'] & s$CDR3b == x['CDR3b'])
+      *size_factor+size_add)
+  }
+  else {
+    if (chains == "CDR3a"){
+      nodes$label <- nodes$CDR3a
+      nodes$color.background <- "yellow"
+      nodes$size <- apply(X = nodes, MARGIN = 1, function(x) 
+        sum(s$CDR3a == x['CDR3a'])*size_factor+size_add)
+    }
+    if (chains == "CDR3b"){
+      nodes$label <- nodes$CDR3b
+      nodes$color.background <- "blue"
+      nodes$size <- apply(X = nodes, MARGIN = 1, function(x) 
+        sum(s$CDR3b == x['CDR3b'])*size_factor+size_add)
+    }
+  }
+  nodes$clone_count <- (nodes$size-size_add)/size_factor
   nodes$color.border <- "black"
   nodes$color.highlight <- "red"
-  nodes$size <- 20
-  nodes$title <- base::paste("<p><b>", nodes$label, "</b></p>")
+  nodes$title <- base::paste("<p><b>", nodes$label, "</b>", "<br>", 
+                             "<b> Clone count:", nodes$clone_count, "</b>", 
+                             "</p>")
   nodes$group <- nodes$label
   nodes$shape <- "dot"
   nodes$shadow <- FALSE
@@ -175,12 +212,12 @@ configure_edges <- function(edges) {
   edges$color <- base::ifelse(test = (edges$type == "local"),
                               yes = "gray",
                               no = "orange")
-  for(i in 1:base::nrow(edges)){
-    t <- base::unique(edges$type[((edges$from == edges$from[i]) & 
-                                    (edges$to == edges$to[i])) |
-                                   ((edges$to == edges$from[i]) &
-                                      (edges$from == edges$to[i]))])
-    if(base::length(t) > 1){
+  for(i in base::seq_len(base::nrow(edges))){
+    tmp <- base::unique(edges$type[((edges$from == edges$from[i]) & 
+                                      (edges$to == edges$to[i])) |
+                                     ((edges$to == edges$from[i]) &
+                                        (edges$from == edges$to[i]))])
+    if(base::length(tmp) > 1){
       edges$color[i] <- "#9A0000"
       edges$type[i] <- "local & global"
     }
@@ -194,6 +231,9 @@ configure_edges <- function(edges) {
 }
 
 configure_network <- function(nodes, edges, ledges, lnodes){
+  id_style <- base::paste("'width: ", 
+                          base::max(base::nchar(nodes$label))*7.5,
+                          "px;'")
   return(
     visNetwork::visNetwork(nodes = nodes, edges = edges) %>%
     visNetwork::visIgraphLayout(layout = "layout_components", 
@@ -204,7 +244,10 @@ configure_network <- function(nodes, edges, ledges, lnodes){
                                         algorithm = "hierarchical"),
                            selectedBy = base::list(variable = "group", 
                                                    multiple = TRUE), 
-                           manipulation = FALSE) %>%
+                           manipulation = FALSE,
+                           nodesIdSelection = base::list(
+                             enabled = TRUE,
+                             style = id_style)) %>%
     visNetwork::visLegend(addEdges = ledges, addNodes = lnodes, 
                           useGroups = FALSE, position = "right", 
                           width=0.15, zoom = FALSE)
@@ -217,3 +260,36 @@ check_clustirr <- function(clust_irr){
     base::stop("Input has to be object of class clust_irr")
   }
 }
+
+
+# 
+# # tests
+# 
+# nod <- data.frame(id = 1:15, 
+#                   label = paste("Label", 1:15),
+#                   group = sample(LETTERS[1:3], 
+#                                  15, 
+#                                  replace = TRUE), 
+#                   stringsAsFactors = F)
+# 
+# edg <- data.frame(from = trunc(runif(15)*(15-1))+1,
+#                     to = trunc(runif(15)*(15-1))+1)
+# 
+# # and with multiple groups
+# nod$group <- sample(c("group 1", "group 2", "group 1, group 2, group 3"),
+#                     nrow(nod), 
+#                     replace = TRUE)
+# 
+# visNetwork(nod, edg) %>% 
+#   visOptions(highlightNearest = TRUE, nodesIdSelection = TRUE, 
+#              selectedBy = list(multiple = TRUE, variable = "group"))
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+# 
+
