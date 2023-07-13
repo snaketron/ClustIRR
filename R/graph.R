@@ -158,8 +158,8 @@ configure_nodes <- function(nodes, edges, s) {
   base::names(nodes) <- "id"
   nodes <- base::merge(nodes, s, by = "id")
   chains <- base::names(nodes)[base::names(nodes)!="id"]
-  size_factor <- 3
-  size_add <- 19
+  min_size <- 20
+  clone_boost <- 10
   if(base::length(chains)>1){
     get_color <- function(x){
       id <- x['id']
@@ -173,33 +173,35 @@ configure_nodes <- function(nodes, edges, s) {
       return("yellow")
     }
     nodes$label <- base::paste(nodes$CDR3a, nodes$CDR3b, sep = " - ")
-    nodes$color.background <- apply(X = nodes, MARGIN = 1, FUN = get_color)
-    nodes$size <- apply(X = nodes, MARGIN = 1, function(x) 
-      sum(s$CDR3a == x['CDR3a'] & s$CDR3b == x['CDR3b'])
-      *size_factor+size_add)
+    nodes$color.background <- 
+      base::apply(X = nodes, MARGIN = 1, FUN = get_color)
+    nodes$clone_count <- base::apply(X = nodes, MARGIN = 1, function(x) 
+      sum(s$CDR3a == x['CDR3a'] & s$CDR3b == x['CDR3b']))
   }
   else {
     if (chains == "CDR3a"){
       nodes$label <- nodes$CDR3a
       nodes$color.background <- "yellow"
-      nodes$size <- apply(X = nodes, MARGIN = 1, function(x) 
-        sum(s$CDR3a == x['CDR3a'])*size_factor+size_add)
+      nodes$clone_count <- apply(X = nodes, MARGIN = 1, function(x) 
+        sum(s$CDR3a == x['CDR3a']))
     }
     if (chains == "CDR3b"){
       nodes$label <- nodes$CDR3b
       nodes$color.background <- "blue"
-      nodes$size <- apply(X = nodes, MARGIN = 1, function(x) 
-        sum(s$CDR3b == x['CDR3b'])*size_factor+size_add)
+      nodes$clone_count <- apply(X = nodes, MARGIN = 1, function(x) 
+        sum(s$CDR3b == x['CDR3b']))
     }
   }
-  nodes$clone_count <- (nodes$size-size_add)/size_factor
+  nodes$size <- base::log2(nodes$clone_count)*clone_boost+min_size
   nodes$color.border <- "black"
   nodes$color.highlight <- "red"
   nodes$title <- base::paste("<p><b>", nodes$label, "</b>", "<br>", 
                              "<b> Clone count:", nodes$clone_count, "</b>", 
                              "</p>")
   nodes$group <- nodes$label
-  nodes$shape <- "dot"
+  nodes$shape <- base::ifelse(test = nodes$clone_count > 1,
+                              yes = "dot", no = "diamond")
+  
   nodes$shadow <- FALSE
   return(nodes)
 }
@@ -207,13 +209,21 @@ configure_nodes <- function(nodes, edges, s) {
 
 configure_edges <- function(edges) {
   
+  get_all_motifs <- function(x){
+    x_from <- base::as.numeric(x[['from']])
+    x_to <- base::as.numeric(x[['to']])
+    tmp <- base::unique(edges$motif[
+       ((edges$from == x_from) & (edges$to == x_to)) |
+         ((edges$to == x_from) & (edges$from == x_to))])
+    return(tmp)
+  }
   edges$length <- 15
-  edges$width <- 10
+  edges$width <- 1
   edges$color <- base::ifelse(test = (edges$type == "local"),
                               yes = "gray",
                               no = "orange")
   for(i in base::seq_len(base::nrow(edges))){
-    tmp <- base::unique(edges$type[((edges$from == edges$from[i]) & 
+    tmp <- base::unique(edges$type[((edges$from == edges$from[i]) &
                                       (edges$to == edges$to[i])) |
                                      ((edges$to == edges$from[i]) &
                                         (edges$from == edges$to[i]))])
@@ -222,9 +232,12 @@ configure_edges <- function(edges) {
       edges$type[i] <- "local & global"
     }
   }
+  
+  edges$title <- base::apply(X = edges, MARGIN = 1, FUN = get_all_motifs)
+  edges$title <- base::apply(X = edges, MARGIN = 1, function(x) 
+    base::paste(base::unlist(x['title']), collapse = ", "))
   edges$arrows <- ""
   edges$dashes <- FALSE
-  edges$title <- edges$motif
   edges$smooth <- FALSE
   edges$shadow <- FALSE
   return(edges)

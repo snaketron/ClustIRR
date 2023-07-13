@@ -124,9 +124,11 @@ get_clust_v23 <- function(cdr3,
     }
     else {
         if(control$low_mem) {
-            g <- get_global_clust_mem(cdr3 = cdr3,
+            g <- get_global_clust_mem(cdr3 = cdr3, # try unique again for v3
                                       global_max_dist = control$global_max_dist)
-
+            # check in function (or here) before computation for clone sum
+            # reduce to unique, compute
+            # add clonally expanded back in afterwards / merge here with g
         }
         else {
             g <- get_global_clust(cdr3 = cdr3,
