@@ -46,6 +46,7 @@ cluster_irr <- function(s,
         if(version==2|version==3) {
             clust[[chain]] <- get_clust_v23(cdr3 = cdr3,
                                             cdr3_ref = cdr3_ref,
+                                            version = version,
                                             ks = ks,
                                             cores = cores,
                                             control = control)
@@ -106,6 +107,7 @@ get_clust_v1 <- function(cdr3,
 # (if available)
 get_clust_v23 <- function(cdr3,
                           cdr3_ref,
+                          version,
                           ks,
                           cores,
                           control) {
@@ -124,16 +126,24 @@ get_clust_v23 <- function(cdr3,
     }
     else {
         if(control$low_mem) {
-            g <- get_global_clust_mem(cdr3 = cdr3, # try unique again for v3
+            g <- get_global_clust_mem(cdr3 = base::unique(cdr3),
                                       global_max_dist = control$global_max_dist)
-            # check in function (or here) before computation for clone sum
-            # reduce to unique, compute
-            # add clonally expanded back in afterwards / merge here with g
         }
         else {
-            g <- get_global_clust(cdr3 = cdr3,
+            g <- get_global_clust(cdr3 = base::unique(cdr3),
                                   global_max_dist = control$global_max_dist)
         }
+        if(version == 3){
+          clones <- base::unique(cdr3[base::duplicated(cdr3)])
+          clones <- base::matrix(base::rep(clones, 2), 
+                                 nrow = base::length(clones), ncol = 2)
+          if(base::is.null(g)){
+            g <- clones
+          } else {
+            g <- base::rbind(clones, g)
+          }
+          
+        }
     }
-    return(base::list(local = l, global = base::unique(g)))
+    return(base::list(local = l, global = g))
 }

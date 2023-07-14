@@ -48,7 +48,7 @@ r_b$CDR3a <- NULL
 
 # alpha clones + motifs
 clone1_a <- data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 20))
-clone2_a <- data.frame(CDR3a = rep("CAWNQEETRTYEQYF", times = 5))
+clone2_a <- data.frame(CDR3a = rep("CAWNQEETTYEQYF", times = 5)) #CAWNQEETRTYEQYF
 clone3_a <- data.frame(CDR3a = rep("CASSSLYNETTYF", times = 2)) 
 s_a <- rbind(s_a, clone1_a)
 s_a <- rbind(s_a, clone2_a)
@@ -149,7 +149,7 @@ out3_b <- cluster_irr(s = s_b,
 # ClustIRR v3
 
 ```{r check_clustirr_v3}
-devtools::load_all(".")
+#devtools::load_all(".")
 # beta chain
 plot_graph(out3_b)
 # alpha chain
