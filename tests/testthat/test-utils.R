@@ -1,6 +1,6 @@
 test_that("get_trimmed_flanks() leaves sequences to analyse after trimming", {
   # input sequences. min(nchar(s)) = 3, max(nchar(s)) = 15
-  s <- c("CDRCDRCDRCDR", "CDRCDRCDRCDRCDR", "CDRCDR", "CDRC")
+  s <- base::c("CDRCDRCDRCDR", "CDRCDRCDRCDRCDR", "CDRCDR", "CDRC")
 
   # trim by 8 aa from each side to trim all sequences completely
   t <- 8

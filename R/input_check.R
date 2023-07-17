@@ -6,8 +6,8 @@ input_check <- function(s,
                         ks,
                         cores,
                         control) {
-    check_s(s)
-    check_r(r)
+    check_input_df(s)
+    check_input_df(r)
     check_s_and_r(s, r)
     check_version(version)
     check_ks(ks)
@@ -22,56 +22,19 @@ input_check <- function(s,
     check_global_pairs(control$global_pairs, s)
 }
 
-check_s <- function(s) {
-    check_missing(s)
-    check_dataframe(s)
-    check_rowcount(s)
-    check_dataframe_colnames(s, base::c("CDR3a", "CDR3b"))
-    if(base::any(base::colnames(s) %in% "CDR3a") &&
-        !base::is.character(s$CDR3a)) {
-        base::stop("CDR3a column has to of type character")
-    }
-    if(base::any(base::colnames(s) %in% "CDR3b") &&
-        !base::is.character(s$CDR3b)) {
-        base::stop("CDR3b column has to of type character")
-    }
-    check_dataframe_na(s)
-    check_dataframe_empty(s)
-}
-
-check_r <- function(r) {
-    check_missing(r)
-    check_dataframe(r)
-    check_rowcount(r)
-    check_dataframe_colnames(r, base::c("CDR3a", "CDR3b"))
-    if(base::any(base::colnames(r) %in% "CDR3a") &&
-        !base::is.character(r$CDR3a)) {
-        base::stop("CDR3a column has to of type character")
-    }
-    if(base::any(base::colnames(r) %in% "CDR3b") &&
-        !base::is.character(r$CDR3b)) {
-        base::stop("CDR3b column has to of type character")
-    }
-    check_dataframe_na(r)
-    check_dataframe_empty(r)
+check_input_df <- function(i) {
+    check_missing(i)
+    check_dataframe(i)
+    check_rowcount(i)
+    check_dataframe_colnames(i)
+    check_dataframe_na(i)
+    check_dataframe_empty(i)
 }
 
 check_s_and_r <- function(s, r) {
-    if(base::any(base::colnames(s) %in% base::c("CDR3a")) &&
-        !base::any(base::colnames(r) %in% base::c("CDR3a"))) {
-        base::stop("s contains CDR3a column, but r does not")
-    }
-    if(base::any(base::colnames(r) %in% base::c("CDR3a")) &&
-        !base::any(base::colnames(s) %in% base::c("CDR3a"))) {
-        base::stop("r contains CDR3a column, but s does not")
-    }
-    if(base::any(base::colnames(s) %in% base::c("CDR3b")) &&
-        !base::any(base::colnames(r) %in% base::c("CDR3b"))) {
-        base::stop("s contains CDR3b column, but r does not")
-    }
-    if(base::any(base::colnames(r) %in% base::c("CDR3b")) &&
-        !base::any(base::colnames(s) %in% base::c("CDR3b"))) {
-        base::stop("r contains CDR3b column, but s does not")
+    if(!base::all(base::sort(base::colnames(s)) == 
+                  base::sort(base::colnames(r)))){
+      base::stop("s has to contain the same columns as r")
     }
 }
 
@@ -206,16 +169,26 @@ check_dataframe <- function(x) {
     }
 }
 
-check_dataframe_colnames <- function(x, c) {
+check_dataframe_colnames <- function(x) {
+    c <- base::c("CDR3a", "CDR3b", "CDR3d", "CDR3g")
     w <- base::paste0(
         base::paste0(
             base::deparse(base::substitute(x)),
-            " has to contain the following columns: "
+            " has to contain at least one of the following columns: "
         ),
-        base::paste0(c, collapse = " or ")
+        "CDR3a and/or CDR3b or CDR3d and/or CDR3g"
     )
     if(!base::any(base::colnames(x) %in% c)) {
         base::stop(w)
+    }
+    for(n in base::colnames(x)){
+      if(!base::is.character(x[[n]])){
+        base::stop(base::paste0(n, " column has to of type character"))
+      }
+    }
+    if(base::any(base::colnames(x) %in% base::c("CDR3a", "CDR3b")) &
+       base::any(base::colnames(x) %in% base::c("CDR3d", "CDR3g"))) {
+      base::stop("CDR3a/b can't be mixed with CDR3d/g columns")
     }
 }
 

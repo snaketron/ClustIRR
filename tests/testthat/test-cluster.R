@@ -1,7 +1,7 @@
 # load minimal input data
 data("CDR3ab")
-s <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
-r <- data.frame(CDR3b = CDR3ab[1:10000, "CDR3b"])
+s <- base::data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
+r <- base::data.frame(CDR3b = CDR3ab[1:10000, "CDR3b"])
 
 # detect cores
 cores <- future::availableCores()
@@ -552,7 +552,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input_tmp
         ), regexp = "global_pairs contains zero rows")
-        control_input_tmp$global_pairs <- data.frame(c(1, 2)) # rowcount zero
+        control_input_tmp$global_pairs <- base::data.frame(c(1, 2)) #rowcount 0
         expect_error(cluster_irr(
             s = s,
             r = r,
