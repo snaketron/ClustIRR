@@ -6,8 +6,8 @@ input_check <- function(s,
                         ks,
                         cores,
                         control) {
-    check_input_df(s)
-    check_input_df(r)
+    check_s(s)
+    check_r(r)
     check_s_and_r(s, r)
     check_version(version)
     check_ks(ks)
@@ -22,13 +22,22 @@ input_check <- function(s,
     check_global_pairs(control$global_pairs, s)
 }
 
-check_input_df <- function(i) {
-    check_missing(i)
-    check_dataframe(i)
-    check_rowcount(i)
-    check_dataframe_colnames(i)
-    check_dataframe_na(i)
-    check_dataframe_empty(i)
+check_s <- function(s) {
+    check_missing(s)
+    check_dataframe(s)
+    check_rowcount(s)
+    check_dataframe_colnames(s)
+    check_dataframe_na(s)
+    check_dataframe_empty(s)
+}
+
+check_r <- function(r) {
+  check_missing(r)
+  check_dataframe(r)
+  check_rowcount(r)
+  check_dataframe_colnames(r)
+  check_dataframe_na(r)
+  check_dataframe_empty(r)
 }
 
 check_s_and_r <- function(s, r) {

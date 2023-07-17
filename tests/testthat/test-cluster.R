@@ -124,24 +124,24 @@ for (version in c(1, 2, 3)) {
         expect_error(check_s_and_r(
             s_cdr3a,
             r
-        ), regexp = "s contains CDR3a column, but r does not")
+        ), regexp = "s has to contain the same columns as r")
         # cdr3a column only in r
         expect_error(check_s_and_r(
             s,
             r_cdr3a
-        ), regexp = "r contains CDR3a column, but s does not")
+        ), regexp = "s has to contain the same columns as r")
         colnames(r_cdr3a)[1] <- "CDR3c"
         # cdr3b column only in s
         expect_error(check_s_and_r(
             s,
             r_cdr3a
-        ), regexp = "s contains CDR3b column, but r does not")
+        ), regexp = "s has to contain the same columns as r")
         colnames(s_cdr3a)[1] <- "CDR3c"
         # cdr3b column only in s
         expect_error(check_s_and_r(
             s_cdr3a,
             r
-        ), regexp = "r contains CDR3b column, but s does not")
+        ), regexp = "s has to contain the same columns as r")
     })
 
     test_that("version parameter takes only valid input", {
@@ -606,13 +606,15 @@ for (version in c(1, 2, 3)) {
 
     # test all versions with correct input
     test_that("cluster_irr works with correct input", {
+      control_input_tmp <- control_input
+      control_input_tmp$trim_flank_aa <- 0
         expect_no_error(cluster_irr(
             s = s,
             r = r,
             ks = ks,
             cores = cores,
             version = version,
-            control = control_input
+            control = control_input_tmp
         ))
     })
 
@@ -620,6 +622,7 @@ for (version in c(1, 2, 3)) {
     test_that("cluster_irr works with correct input in low_mem mode", {
         control_input_tmp <- control_input
         control_input_tmp$low_mem <- TRUE
+        control_input_tmp$trim_flank_aa <- 0
         expect_no_error(cluster_irr(
             s = s,
             r = r,
@@ -635,6 +638,7 @@ for (version in c(1, 2, 3)) {
 test_that("get_clust functions works with global_pairs input", {
     control_input_tmp <- control_input
     control_input_tmp$global_pairs <- matrix(data = 17L, nrow = 10, ncol = 2)
+    control_input_tmp$trim_flank_aa <- 0
     expect_no_error(get_clust_v1(
         cdr3 = s,
         cdr3_r = r,
