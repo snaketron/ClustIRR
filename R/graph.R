@@ -146,7 +146,8 @@ plot_graph <- function(clust_irr) {
   lnodes <- base::data.frame(label = chains, 
                               color = "", shape = "dot", size = 8)
   lnodes$color <- base::ifelse(test = lnodes$label == "CDR3b" | 
-                                 lnodes$label == "CDR3g",
+                                 lnodes$label == "CDR3g" | 
+                                 lnodes$label == "CDR3h",
                                 yes = "blue",
                                 no = "yellow")
   lnodes$color <- base::ifelse(test = lnodes$label == "Both chains",
@@ -255,7 +256,7 @@ get_motif_list <- function(x, chains) {
   for(c in chains){
     gl <- lo <- FALSE
     m <- m_b
-    if(c %in% c("CDR3a", "CDR3d")) { m <- m_y }
+    if(c %in% base::c("CDR3a", "CDR3d", "CDR3l")) { m <- m_y }
     g <- base::paste(c, "global", sep = "_")
     l <- base::paste(c, "local", sep = "_")
     if(g %in% base::names(x)){
@@ -271,18 +272,20 @@ get_motif_list <- function(x, chains) {
       }
     }
     if(gl | lo) {
-      if(c %in% c("CDR3b", "CDR3g")) {
+      if(c %in% base::c("CDR3b", "CDR3g", "CDR3h")) {
         tbg_g <- t_gl
         tbg_l <- t_lo
         if(c == "CDR3b"){ tbg <- "<b>CDR3-&beta;</b><br>" }
         if(c == "CDR3g"){ tbg <- "<b>CDR3-&gamma;</b><br>" }
+        if(c == "CDR3h"){ tbg <- "<b>CDR3-H</b><br>" }
         bg <- TRUE 
       }
-      if(c %in% c("CDR3a", "CDR3d")){
+      if(c %in% base::c("CDR3a", "CDR3d", "CDR3l")){
         tad_g <- t_gl
         tad_l <- t_lo
         if(c == "CDR3a"){ tad <- "<b>CDR3-&alpha;</b><br>" }
         if(c == "CDR3d"){ tad <- "<b>CDR3-&delta;</b><br>" }
+        if(c == "CDR3l"){ tad <- "<b>CDR3-L</b><br>" }
         ad <- TRUE 
       }
     }
@@ -301,7 +304,9 @@ configure_nodes <- function(nodes, edges, chains, types, s) {
   min_size <- 20
   clone_boost <- 10
   if(base::length(chains)>1){
-    chains <- base::sort(chains, decreasing = TRUE)
+    dec = TRUE
+    if(base::any(chains %in% base::c("CDR3h", "CDR3l"))){ dec = FALSE}
+    chains <- base::sort(chains, decreasing = dec)
     bg <- substr(chains[1], 5, 5)
     ad <- substr(chains[2], 5, 5)
     nodes$label <- base::paste(nodes[[chains[1]]], " (", bg, ") - ", 
@@ -368,10 +373,12 @@ get_color <- function(x, l){
   }
   
   bg <- "CDR3b_global" %in% t | "CDR3b_local" %in% t | 
-    "CDR3g_global" %in% t | "CDR3g_local" %in% t 
+    "CDR3g_global" %in% t | "CDR3g_local" %in% t |
+    "CDR3h_global" %in% t | "CDR3h_local" %in% t
   
   ad <- "CDR3a_global" %in% t | "CDR3a_local" %in% t | 
-    "CDR3d_global" %in% t | "CDR3d_local" %in% t 
+    "CDR3d_global" %in% t | "CDR3d_local" %in% t | 
+    "CDR3l_global" %in% t | "CDR3l_local" %in% t 
   
   if(ad&bg) { 
     return("green") 
@@ -392,12 +399,16 @@ set_node_title <- function(x, chains) {
   my_a <- base::paste(my, "<i>(&alpha;)</i>", m)
   mb_g <- base::paste(mb, "<i>(&gamma;)</i><br>", m)
   my_d <- base::paste(my, "<i>(&delta;)</i>", m)
+  mb_h <- base::paste(mb, "<i>(H)</i><br>", m)
+  my_l <- base::paste(my, "<i>(L)</i>", m)
   
   l <- x[["label"]]
   l <- base::gsub(pattern = " \\(b\\) - ", replacement = mb_b, x = l) 
   l <- base::gsub(pattern = " \\(a\\)", replacement = my_a, x = l)
   l <- base::gsub(pattern = " \\(g\\) - ", replacement = mb_g, x = l) 
   l <- base::gsub(pattern = " \\(d\\)", replacement = my_d, x = l)
+  l <- base::gsub(pattern = " \\(h\\) - ", replacement = mb_h, x = l) 
+  l <- base::gsub(pattern = " \\(l\\)", replacement = my_l, x = l)
   l <- base::paste(m, "<b>", l, "</b></mark><br><br>")
   
   cc <- x[["clone_count"]]

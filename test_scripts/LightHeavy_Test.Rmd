@@ -1,0 +1,179 @@
+---
+title: "CDR3h vs CDR3l"
+output:
+  html_document:
+    df_print: paged
+---
+
+---
+title: "CDR3h vs CDR3l"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r load, include=FALSE}
+library(ClustIRR)
+#devtools::load_all(".")
+
+```
+
+# Test data
+
+CDR3h and CDR3l sequences, two different clones inserted and a motif inserted.
+
+* **Clone 1**: 13 times *CATSRLEFAQYF* 
+  * Global and local enrichment
+* **Clone 2**: 7 times *CATSRLEARATYF* 
+  * Global and local enrichment and motif *LEAR*
+* **Clone 2**: 2 times *CATSEEEFAQYF* 
+  * only global, no local enrichment
+* **Motif**: 5 times *LEAR* 
+  * Also to be found in **Clone 2**
+  
+
+```{r prepare, include=FALSE}
+data("CDR3ab")
+
+# CDR3h
+s_h <- data.frame(CDR3h = CDR3ab$CDR3b[4501:5000])
+r_h <- data.frame(CDR3h = CDR3ab$CDR3b[5001:10000])
+
+# CDR3l
+s_l <- data.frame(CDR3l = CDR3ab$CDR3a[4501:5000])
+r_l <- data.frame(CDR3l = CDR3ab$CDR3a[5001:10000])
+
+# heavy clones + motifs
+clone1_h <- data.frame(CDR3h = rep("CATSRLEFAQYF", times = 10))
+clone2_h <- data.frame(CDR3h = rep("CATSRLEARATYF", times = 15))
+clone3_h <- data.frame(CDR3h = rep("CATSEEEFAQYF", times = 2))
+s_h <- rbind(s_h, clone1_h)
+s_h <- rbind(s_h, clone2_h)
+s_h <- rbind(s_h, clone3_h)
+substr(x = s_h$CDR3h[1:10], start = 4, stop = 7) <- "LEAR"
+substr(x = s_h$CDR3h[20:25], start = 5, stop = 8) <- "REAL"
+
+# light clones + motifs
+clone1_l <- data.frame(CDR3l = rep("CAWNQEEETYEQYF", times = 20))
+clone2_l <- data.frame(CDR3l = rep("CAWNQEETTYEQYF", times = 5)) #CAWNQEETRTYEQYF
+clone3_l <- data.frame(CDR3l = rep("CASSSLYNETTYF", times = 2)) 
+s_l <- rbind(s_l, clone1_l)
+s_l <- rbind(s_l, clone2_l)
+s_l <- rbind(s_l, clone3_l)
+substr(x = s_l$CDR3l[51:60], start = 6, stop = 9) <- "GPPN"
+substr(x = s_l$CDR3l[20:25], start = 5, stop = 8) <- "REAL"
+
+# heavy & light combined
+s_hl <- cbind(s_h, s_l)
+r_hl <- cbind(r_h, r_l)
+
+
+rm(clone1_h, clone2_h, clone3_h, clone1_l, clone2_l, clone3_l)
+
+```
+
+
+```{r run_clustirr, include=FALSE}
+out1 <- cluster_irr(s = s_hl,
+                   r = r_hl,
+                   version = 1,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out2 <- cluster_irr(s = s_hl,
+                   r = r_hl,
+                   version = 2,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out3 <- cluster_irr(s = s_hl,
+                    r = r_hl,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+```{r run_clustirr_heavy, include=FALSE}
+out1_h <- cluster_irr(s = s_h,
+                   r = r_h,
+                   version = 1,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out2_h <- cluster_irr(s = s_h,
+                   r = r_h,
+                   version = 2,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out3_h <- cluster_irr(s = s_h,
+                    r = r_h,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+
+```{r run_clustirr_light, include=FALSE}
+out1_l <- cluster_irr(s = s_l,
+                   r = r_l,
+                   version = 1,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out2_l <- cluster_irr(s = s_l,
+                   r = r_l,
+                   version = 2,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out3_l <- cluster_irr(s = s_l,
+                    r = r_l,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+# ClustIRR v3
+
+```{r check_clustirr_v3}
+# heavy chain
+plot_graph(out3_h)
+# light chain
+plot_graph(out3_l)
+# heavy & light chain
+plot_graph(out3)
+```
+
+# ClustIRR v2
+
+```{r check_clustirr_v2}
+# heavy chain
+plot_graph(out2_h)
+# light chain
+plot_graph(out2_l)
+# heavy & light chain
+plot_graph(out2)
+```
+
+# ClustIRR v1
+
+```{r check_clustirr_v1}
+# heavy chain
+plot_graph(out1_h)
+# light chain
+plot_graph(out1_l)
+# heavy & light chain
+plot_graph(out1)
+```
+
+

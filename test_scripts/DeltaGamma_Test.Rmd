@@ -1,12 +1,12 @@
 ---
-title: "CDR3a vs CDR3b"
+title: "CDR3g vs CDR3d"
 output:
   html_document:
     df_print: paged
 ---
 
 ---
-title: "Singleton Tests"
+title: "CDR3g vs CDR3d"
 output:
   html_document:
     df_print: paged
@@ -20,7 +20,7 @@ library(ClustIRR)
 
 # Test data
 
-CDR3b sequences, two different clones inserted and a motif inserted.
+CDR3g and CDR3d sequences, two different clones inserted and a motif inserted.
 
 * **Clone 1**: 13 times *CATSRLEFAQYF* 
   * Global and local enrichment
@@ -31,7 +31,6 @@ CDR3b sequences, two different clones inserted and a motif inserted.
 * **Motif**: 5 times *LEAR* 
   * Also to be found in **Clone 2**
   
-  Renamed to delta gamma for testing
 
 ```{r prepare, include=FALSE}
 data("CDR3ab")

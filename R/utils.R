@@ -6,8 +6,10 @@ get_chains <- function(x) {
     js <- c(
         base::which(base::regexpr(pattern = "CDR3b", text = x) != -1),
         base::which(base::regexpr(pattern = "CDR3a", text = x) != -1),
+        base::which(base::regexpr(pattern = "CDR3g", text = x) != -1),
         base::which(base::regexpr(pattern = "CDR3d", text = x) != -1),
-        base::which(base::regexpr(pattern = "CDR3g", text = x) != -1)
+        base::which(base::regexpr(pattern = "CDR3h", text = x) != -1),
+        base::which(base::regexpr(pattern = "CDR3l", text = x) != -1)
     )
     return(x[js])
 }

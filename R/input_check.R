@@ -179,13 +179,13 @@ check_dataframe <- function(x) {
 }
 
 check_dataframe_colnames <- function(x) {
-    c <- base::c("CDR3a", "CDR3b", "CDR3d", "CDR3g")
+    c <- base::c("CDR3a", "CDR3b", "CDR3d", "CDR3g", "CDR3l", "CDR3h")
     w <- base::paste0(
         base::paste0(
             base::deparse(base::substitute(x)),
             " has to contain at least one of the following columns: "
         ),
-        "CDR3a and/or CDR3b or CDR3d and/or CDR3g"
+        "CDR3a and/or CDR3b or CDR3d and/or CDR3g or CDR3h and/or CDR3l"
     )
     if(!base::any(base::colnames(x) %in% c)) {
         base::stop(w)
@@ -198,6 +198,14 @@ check_dataframe_colnames <- function(x) {
     if(base::any(base::colnames(x) %in% base::c("CDR3a", "CDR3b")) &
        base::any(base::colnames(x) %in% base::c("CDR3d", "CDR3g"))) {
       base::stop("CDR3a/b can't be mixed with CDR3d/g columns")
+    }
+    if(base::any(base::colnames(x) %in% base::c("CDR3a", "CDR3b")) &
+       base::any(base::colnames(x) %in% base::c("CDR3h", "CDR3l"))) {
+      base::stop("CDR3a/b can't be mixed with CDR3l/h columns")
+    }
+    if(base::any(base::colnames(x) %in% base::c("CDR3d", "CDR3g")) &
+       base::any(base::colnames(x) %in% base::c("CDR3h", "CDR3l"))) {
+      base::stop("CDR3d/g can't be mixed with CDR3l/h columns")
     }
 }
 
