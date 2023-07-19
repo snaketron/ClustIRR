@@ -117,26 +117,25 @@ get_graph <- function(clust_irr) {
 }
 
 
-plot_graph <- function(clust_irr) {
+plot_graph <- function(clust_irr, expand_clones = FALSE) {
   
   check_clustirr(clust_irr = clust_irr)
-  
   ig <- get_graph(clust_irr = clust_irr)
-  
   if(base::is.null(ig)) {
     base::warning("No graph to plot \n")
     return(NULL)
   }
-  
   edges <- igraph::as_data_frame(ig, what = "edges")
   nodes <- igraph::as_data_frame(ig, what = "vertices")
   chains <- base::unique(edges$chain)
   types <- base::unique(edges$type)
-  
   edges <- configure_edges(edges = edges, chains = chains, types = types)
   nodes <- configure_nodes(nodes = nodes, edges = edges, chains = chains,
                            types = types, s = clust_irr$inputs$s)
-  
+  if (!expand_clones) {
+    nodes <- nodes[!base::duplicated(nodes$label), ]
+    edges <- edges[edges$from %in% nodes$id & edges$to %in% nodes$id, ]
+  }
   ledges <- base::data.frame(color = base::unique(edges$color), 
                              label = base::unique(edges$type),
                              arrows = "", width = 4)
@@ -409,7 +408,7 @@ set_node_title <- function(x, chains) {
   l <- base::gsub(pattern = " \\(d\\)", replacement = my_d, x = l)
   l <- base::gsub(pattern = " \\(h\\) - ", replacement = mb_h, x = l) 
   l <- base::gsub(pattern = " \\(l\\)", replacement = my_l, x = l)
-  l <- base::paste(m, "<b>", l, "</b></mark><br><br>")
+  l <- base::paste(m, "<b>", l, "</b><br></mark><br>")
   
   cc <- x[["clone_count"]]
   cc <- base::paste("<b> Clone count:", cc, "</b><br>")

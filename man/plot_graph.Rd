@@ -1,13 +1,17 @@
 \name{plot_graph}
 \alias{plot_graph}
 \title{Get graph object}
-\usage{plot_graph(clust_irr)}
+\usage{plot_graph(clust_irr, expand_clones = FALSE)}
 \arguments{
 \item{clust_irr}{object of type \code{clust_irr}, result of \code{clust_irr} 
 function, formed by two sublists \itemize{
 \item \code{clust} - list,  clustering results
 \item \code{inputs} - list, original user inputs
 }
+}
+\item{expand_clones}{logical, show clonally expanded cells as distinct nodes
+in the graph, including connections between them. 
+\code{expand_clones} = \code{FALSE} (default)
 }
 }
 \value{
@@ -16,9 +20,7 @@ The output is an interactive \emph{visNetwork} graph.
 
 
 \description{
-This is a helper function for visualization of an \code{clustIRR} object. As 
-long as scalability for larger networks can't be guaranteed, this is an 
-experimental feature.
+This is a helper function for visualization of an \code{clustIRR} object.
 }
 
 \examples{

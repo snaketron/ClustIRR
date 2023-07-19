@@ -125,7 +125,8 @@ enrichment is marked.
 out3$clust$CDR3b$local$m[out3$clust$CDR3b$local$m$pass,]
 out3$clust$CDR3b$global
 e3 <- get_edges(out3)
-plot_graph(out3)
+plot_graph(out3, expand_clones = FALSE)
+plot_graph(out3, expand_clones = TRUE)
 
 ```
 
