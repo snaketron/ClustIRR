@@ -19,445 +19,548 @@ knitr::opts_chunk$set(collapse = TRUE,
 ```
 
 
-# Introduction
-
-This short introduction gives an overview of the biological background of the 
-clustering algorithm.
-
-## T cells
-The T cell receptor (TCR) is a protein complex found on the surface of T cells 
-that is responsible for recognizing antigenic peptides (p) presented in the 
-context of the major histocompatibility complex (MHC). Different types of MHCs 
-are expressed inside cells and antigen-presenting cells (APC), combined with 
-antigen peptides to form pMHC complexes and presented at the cell surface.
-If a TCR and a pMHC match, complex cell signal interactions can trigger immune
-reactions. While MHCs can each bind to a broad array of different 
-peptides to form pMHCs, TCRs are highly specific to a matching pMHC 
-combination. 
-
-## B cells
-On the other hand, B cell receptors (BCRs) are protein complexes 
-expressed on B cells that bind directly to antigens. Through immune signaling,
-activated B cells can also secrete these receptors as antibodies into the 
-blood. Secreted antibodies help the immune system by binding 
-directly to pathogen antigens. In the following, we will refer to BCRs 
-and TCRs using the general term immune receptors (IRs).
-
-## V(D)J genes
-The maturation of B cells and T cells is unique in the human body in the way 
-that partially random recombination of variable (V), diversifying (D), and 
-joining (J) gene region with a constant (C) region leads to permanent mutations
-inside the genome of each B and T cell. Due to V(D)J recombination, 
-virtually every B/T cell expresses a unique IR and has a unique 
-specificity. Once a BCR matches an antigen or a TCR to a pMHC structure, an 
-immune reaction can be triggered in the form of clonal expansion of the matched 
-clonotype, effectively amplifying the number of pathogen antigen/pMHC-specific 
-cells. This diversity is a critical element of the adaptive immune system to 
-deal with constantly evolving pathogens.
-
-## IR sequencing
-Understanding the relationship between the IR sequence and antigens is 
-essential for developing, e.g., cancer immunotherapies, vaccines, and 
-antiviral drugs. By sequencing the VDJ genes of immune cells, expressed IR can 
-be reconstructed as amino acid sequences. Certain regions of the receptors
-called complementarity determining regions 3 (CDR3) are known to possess high
-pMHC binding probability and are therefore mainly focused on in specificity 
-analysis. Advances in bulk and more currently single-cell high-throughput 
-sequencing (HT-seq) technologies now enable the analysis of entire repertoires 
-of IRs in a single experiment.
-
-## Clustering
-Amino acid sequences fold to hypervariable threedimensional structures that 
-bind to matching pMHC or antigens. The idea behind clustering is that similar
-protein sequences lead to similar protein structures that bind to similar
-pMHCs or antigens. Currently, available methods for organizing clusters of IR 
-sequences according to their likely antigen specificities and quantitative 
-comparison of the abundance of the specificity groups between biological 
-conditions or time points have crucial drawbacks or are unavailable.
-
-This vignette introduces `r Biocpkg("ClustIRR")`, a transparent workflow for 
-quantitative exploration of single-cell RNA-seq data. 
-
-# ClustIRR algorithm
-
-```{r graphic, echo = FALSE, fig.align="left", out.width='90%'}
-knitr::include_graphics("../inst/extdata/logo.png")
-```
-
-The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR 
-sequences in a given IR repertoire to find groups of IRs with similar
-specificity. It then employs a quantitative model to compare the abundances 
-of the identified IR clusters between the provided input CDR3 sequences and a
-reference dataset of CDR3 sequences. Each algorithm step is explained in
-this vignette using real TCR-seq data as a reference.
-
-`r Biocpkg("ClustIRR")` includes implementations of the Gliph\(^1\) and 
-Gliph2\(^2\) clustering algorithms and introduces a third version of the 
-Gliph algorithm, designed for single-cell sequencing input data. The version 
-can be chosen via the `version` input parameter, default is *version 3*.
-See the *version comparison vignette* for details about implementation 
-differences. The rest of this vignette will be focused on *version 3* of the 
-algorithm.
-
-This first package version focuses on clustering. Input parameters are reduced 
-to a minimum for user convenience. Scoring and plotting are planned to be 
-added in future versions.
-
-To optimize the execution speed of the algorithm, the input parameter 
-`cores` (*default: 1*) can be adjusted to the executing machine (for example 
-detectable via `parallel::detectCores()`).
-
-## Input
-
-Two datasets consisting of CDR3 sequences in amino acid code are required 
-as input. 
-
-The **sample dataset** has to contain the sequences that should be tested, for 
-example, TCR-seq results of a human patient.
-
-The **reference dataset** should be significantly bigger than the sample 
-dataset and contain so-called *naive* sequences that are suspected to be 
-present in a healthy condition.
-
-Both input datasets should be of type `data.frame` and have to contain one 
-column named *CDR3b* or *CDR3a* with amino acid sequences of type character 
-(for example, *CASSPVGLYGYTF*). If both columns are supplied within one 
-dataset, an additional reference dataset has to be provided containing both 
-*CDR3b* and *CDR3a* columns and two runs of the algorithm will 
-cluster the sequences separately.
-
-To cluster TCR CDR3δ, TCR CDR3γ, BCR heavy chain, or BCR light chain sequences,
-the to be analyzed sequences can be provided in columns named *CDR3b* and 
-*CDR3a* to get accepted as input.
-
-The *CD8* dataset that is provided with the package contains 10.000 TCR CDR3β 
-chains. It is derived from the T cell receptors of human naive CD8+ T cells and 
-was originally published as part of the Gliph2\(^2\) algorithm.
-
-The complete set of sequences is taken as input for clustering.
-
-## Clustering
-
-Two strategies called *local motif clustering* and 
-*global CDR3 sequence clustering* are used inside `r Biocpkg("ClustIRR")`.
-
-In short, the goal of local clustering is to find motifs in the data sample 
-that are enriched in contrast to the naive reference dataset, while global 
-clustering compares CDR3 sequences within the sample dataset for similarity.
-
-In the following subsections motivation and implementation of both 
-strategies will get explained.
-
-### Local clustering
-
-CDR3 sequences can be segmented into **motifs** of different lengths. An 
-example of a motif of length 4 (also called 4mer) could be the sequence 
-*TGTG*, which would be contained by, for example, the sequences *CASSLTGTGYTF*, 
-*CASSTTTGTGELFF*, *CSGVTGTGYTF* and many others. A significant abundance of 
-similar motifs inside a sample can indicate specificity to similar matching 
-pMHC or antigens. To be examined, motif length(s) can be selected via the input
-parameter `ks` (*default: c(2,3,4)*).
-
-CDR3 ends at both sides of the IRs are typically found to be non-binding and 
-could therefore be excluded from the analysis. The input parameter 
-`control$trim_flank_aa` (*default: 0*) can trim all compared sequences 
-by *n* amino acids at both sides. For example, an input sequence *CASSLTGTGYTF* 
-and `control$trim_flank_aa = 1` would result in *ASSLTGTGYT*, trimmed by *C* at
-the start and *F* at the end. If the trim parameter is set too high, a runtime 
-warning is produced that shorter sequences were completely trimmed.
-
-A motif is marked as enriched if it passes three filters specified in the input
-parameters:
-
-The number of the specific motif found in the sample must be bigger than the
-minimum local observation `control$local_min_o` (*default: 1*). It gets 
-computed by calculating the frequency of a particular motif in the dataset.
-For example, the motif *TGTG* is contained 40 times in the package provided
-`CD8` reference dataset.
-
-Furthermore, the Observed vs. Expected (OvE) value must be higher than the 
-minimal local OvE threshold `control$local_min_ove` (*default: 2*).
-The OvE is calculated with Fisher's exact test using the following formula:
-
-$$ OvE = \frac{f_{sample}}{n_{sample}}/\frac{f_{ref}}{n_{ref}} $$
-
-`f_sample` is motif frequency in the sample, `n_sample` is the count of all 
-possible distinct motifs in the data sample of the same length, and `f_ref` as 
-well as `n_ref` are the same frequencies in the reference dataset.
-
-Finally, the False Discovery Rate (FDR) of the motif should not exceed the 
-maximal local FDR `control$local_max_fdr` (*default: 0.05*).
-It is calculated by first computing the probability *p* of finding the 
-observed or larger OvE of the motif by change using Fisher's exact test, and 
-then adjusting the p-values using the Benjamini & Hochberg (1995) method.
-
-If at least one of these three filters is not passed, the motif is considered 
-as not being enriched in the data sample compared to the reference dataset.
-
-### Global clustering
-
-Global clustering compares the similarity of complete CDR3 sequences of the 
-same length.
-
-As a pre-processing step before global clustering, the sample dataset is 
-reduced to unique CDR3 sequences to prevent self-reference.
-
-For equal-length CDR3 sequences *i* and *j*, the Hamming distance 
-*d_ij* can get computed. Sequences with *d_ij* exceeding the global maximal
-distance threshold input parameter `control$global_max_dist` (*default: 1*) are 
-considered globally similar. For large input files, a low memory mode can be 
-turned on via the `control$low_mem` (*default: FALSE*) input parameter, which
-reduces memory usage using pairwise comparisons instead of matrix 
-computations at the cost of increased computation time.
-
-Alternatively, the user can provide a matrix of globally similar CDR3 
-sequences computed by a complementary approach (e.g., *tcrdist*) to save 
-computation time. This matrix should contain pairs of CDR3s of the data sample 
-set and can be provided via the `control$global_pairs` input parameter.
-
-
-## Output
-
-`r Biocpkg("ClustIRR")` returns an object of type `clust_irr` that contains 
-lists of all found local and global clusters and local edges and 
-information about the provided user input. For a detailed list of all values, 
-see the *clust_irr manual file*.
-
-### Clustering output
-
-The local motif clustering list contains the motif names and length, a `pass` 
-flag, as well as details about computed values inside the algorithm. See the 
-*cluster_irr manual file* for a comprehensive list of all listed values.
-If, for example, the output was saved as `out` and CDR3b sequences were 
-clustered, the motif list can be found under `out$clust$CDR3b$local$m`, and the
-local edges list under `out$clust$CDR3b$local$lp`.
-
-The global CDR3 sequence clustering list contains pairs of all sequences marked
-as similar, either computer by Hamming Distance or provided either by the user 
-as a `global_pairs` input parameter, which at the same time keeps the global
-edges between the sequences. If, for example, the output was saved as `out` and
-CDR3b sequences were clustered, the CDR3 sequence pairs can be found under 
-`out$clust$CDR3b$global`.
-
-### Graph output
-
-A function to plot a graph directly is planned to be added to future package 
-versions.
-
-The `get_edges()` function can be used to extract a list of local and global
-connections between the CDR3 sequences of the sample dataset. 
-
-# Case study
-
-A short case study is conducted to demonstrate the `r Biocpkg("ClustIRR") 
-workflow. The newest *version 3* will be used. For a comparison of the 
-different algorithm versions, see the *version comparison vignette*.
-
-We start by loading the needed packages. *knitr* and *visNetwork* will be used
-to display the results.
-
-```{r case_study}
-# load packages
+```{r}
 library(ClustIRR)
 library(knitr)
 library(visNetwork)
 ```
 
-## Input data
-A randomly sampled part of the reference dataset will be used as a sample 
-dataset. To test the algorithm against ground truth, the sample dataset will be
-artificially enriched with the motif *RQWW* and with the two through copying 
-simulated clonal expanded sequences *CATSRAAKPDGLAALETQYF* and 
-*CATSRAAKPDGLAALSTQYF*.
 
-The package provided `CD8` dataset is loaded as an example reference dataset. 
-This set of 10.000 β-chains is derived from the T cell receptors of human naive
-CD8+ T cells was published as part of the Gliph 2\(^2\) algorithm.
+# Introduction
+To protect the host against genetically diverse and rapidly evolving pathogens, 
+adaptive immunity relies on diverse repertoires of immune receptors (IRs), which
+includes B- and T-cell receptors (BCRs and TCRs). TCRs recognize peptide:MHC 
+complexes, whereas BCRs bind directly to antigens. Antigen recognition may lead 
+to immune cell activation. In such a case, the immune cells start to proliferate
+rapidly, forming clones of antigen-specific cells capable of mounting effective 
+immune response. Hence, decoding the relationship between IRs and antigens is 
+essential for developing cancer immunotherapies, vaccines, and antiviral drugs. 
+
+Owing to the advances in high-throughput sequencing technology, it is now 
+possible to sequence entire repertoires of IRs. By performing clustering of 
+the IR sequences, we can identify clusters of IRs with similar specificity.
+
+This vignette introduces `r Biocpkg("ClustIRR")`, a computational method 
+for clustering of immune receptor repertoires.
 
 
-```{r input_data}
-# load package input data
-data("CDR3ab")
-CDR3ab$CDR3a <- NULL
+# ClustIRR algorithm
+The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR sequences 
+to find groups of IRs with similar specificity. 
 
-# set the random seed for sampling reproducibility
-set.seed(987)
-
-# sample 500 sequences from the reference dataset as sample dataset
-data_sample <- data.frame(CDR3b = CDR3ab[sample(x = 1:nrow(CDR3ab), 
-                                                size = 500, 
-                                                replace = FALSE),])
-
-# artificially enrich motif 'RQWW' inside sample dataset
-substr(x = data_sample$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
-
-# add the artificial clonal expansion of two sequences to the sample dataset
-clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
-                                       "CATSRAAKPDGLAALSTQYF"),
-                                 times = 15))
-data_sample <- rbind(data_sample, clones)
-
+```{r graphic, echo = FALSE, fig.align="left", out.width='90%'}
+knitr::include_graphics("../inst/extdata/logo.png")
 ```
 
-## Clustering
 
-Only the sample and reference
-dataset must be provided as input to perform clustering with the default 
-values. For demonstration purposes, we will only look for motifs of length 
-`ks` = 4 and trim the flank amino acids by three on each side.
 
-```{r clustering}
-# perform clustering
-clustirr_output <- cluster_irr(s = data_sample,  
-                               r = CDR3ab,
+# Input
+
+The main input of ClustIRR are two sets of amino acid sequences of the 
+complementarity determining region 3 (CDR3). The CDR3s may come from one T 
+cell receptor chain (e.g.\ only CDR3$\alpha$s or only CDR3$\beta$s) or from 
+both chains (CDR3$\alpha\beta$). The two sets represent two repertoires:
+    
+  * `s` : IR repertoire to be analyzed (case sample)
+  * `r`: reference IR repertoire (control/reference sample)
+
+**Hint:** `s` and `r` may also consists of CDR3s from $\gamma\delta$ T-cells 
+($CDR3\gamma$ and CDR3$\delta$) or B-cells (CDR3H and CDR3L).
+
+Lets look at an example data, which we will use as input:
+
+```{r}
+data("CDR3ab")
+```
+
+```{r}
+# take the first 500 CDR3b sequences from the data -> s
+s <- base::data.frame(CDR3b = CDR3ab$CDR3b[1:500])
+
+# take 5000 CDR3b sequences 501:5500 from the data -> r
+r <- base::data.frame(CDR3b = CDR3ab$CDR3b[501:5500])
+```
+
+
+```{r}
+str(s)
+```
+
+
+```{r}
+str(r)
+```
+
+
+
+# Clustering
+
+`r Biocpkg("ClustIRR")` employs two clustering strategies:
+
+  * **local** clustering: detects enrichment of motifs in the data sample 
+    compared to the reference
+  * **global** clustering: identifies pairs of CDR3s that have similar
+    sequences
+
+The rationale behind these two clustering strategies is the following: two 
+identical CDR3 sequences have the same specificity. CDR3 sequences that are
+similar (e.g. share the same sequence but differ at only 1 position) likely 
+have similar specificity. Global clustering is designed to find such global 
+pairs. 
+
+Two CDR3s with significantly different sequences may still recognize the same
+peptide if they share a motif in their cores regions (e.g. identical 4-mer ). 
+Such "useful" motifs may be enriched in the sample but not in the reference 
+repertoire, and the purpose of local clustering is to identify them.
+
+
+
+## Local clustering
+
+CDR3 sequences are segmented into overlapping **motifs** ($k$-mers), where $k$ 
+is specified by setting the input $ks = 4$. 
+
+Example of segmenting CDR3 sequence into 4-mers:
+
+```{r}
+cdr3 <- "CASSTTTGTGELFF"
+k <- 4
+base::colnames(stringdist::qgrams(cdr3, q = k))
+```
+
+
+$k$-mers found in the core region of the CDR3 loop are more likely to establish 
+contact with the antigenic peptide than the $k$-mers found at the flanks of the 
+CDR3 sequence. Hence, the user is encouraged to remove few amino acids from the 
+flanks of each CDR3 sequence by setting e.g. `control$trim_flank_aa = 3`.
+
+Example of trimming CDR3 flans and segmenting the core of the CDR3 sequence 
+into 4-mers:
+
+```{r}
+t <- 3
+cdr3_trimmed <- base::substr(x = cdr3, start = t+1, stop = nchar(cdr3)-t)
+base::colnames(stringdist::qgrams(cdr3_trimmed, q = k))
+```
+ 
+
+A motif is enriched if it satisfies the the following criteria:
+
+  1. `control$local_min_o`: minimum motif frequency in `s`
+  2. `control$local_min_ove`: minimum ratio of observed vs. expected (OvE) 
+    relative motif frequency, with $OvE=\dfrac{f_s}{n_s}/\dfrac{f_r}{n_r}$
+    
+      * $f_{s}$ and $f_{r}$: motif frequencies in repertoires `s` and `r`
+      * $n_{s}$ and $n_{r}$: total number of motifs in repertoires `s` and `r`
+      
+  3. `control$local_max_fdr`: maximum false discovery rate (FDR) corrected 
+    p-value computed by Fisher's exact test
+
+
+## Global clustering
+
+For global clustering ClustIRR quantifies the difference between pairs of CDR3
+sequences using Hamming distances. Two CDR3 sequences with Hamming distance 
+$\leq x$ are considered globally similar, where $x$ is the user-defined 
+threshold `control$global_max_dist` (default = 1).
+
+Alternatively, the user can provide a matrix of globally similar CDR3 
+sequences computed by a complementary approach (e.g., *tcrdist*) via the 
+input parameter `control$global_pairs`.
+
+
+# Output
+
+`r Biocpkg("ClustIRR")` returns two types of output:
+
+  1. clustering results: tables and lists
+  2. graph (igraph object) 
+
+
+# Case study 1: Detecting enriched motifs
+
+In this study we will insert the motif *LEAR* in the first 20 CDR3 sequences 
+of `s`, simulating enrichment of this motif. This motif is not enriched in
+repertoire `s` compared to `r`, and ClustIRR should be able to detect *LEAR* 
+as enriched:
+
+```{r}
+base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
+```
+
+
+... and then we perform clustering with ClustIRR:
+
+```{r}
+clustirr_output <- cluster_irr(s = s,  
+                               r = r,
                                version = 3,
                                ks = 4,
                                cores = 1,
-                               control = list(
-                                 B = 1000,
-                                 global_max_dist = 1,
-                                 local_max_fdr = 0.05,
-                                 local_min_ove = 2,
-                                 local_min_o = 3,
-                                 trim_flank_aa = 3,
-                                 low_mem = FALSE,
-                                 global_pairs = NULL))
-
+                               control = list(trim_flank_aa = 3))
 ```
 
-A warning tells us that CDR3 sequences of the reference dataset shorter than 
-six amino acids were trimmed completely before local clustering was performed.
-This happens because we set the `trim_flank_aa` parameter to 3, so at each 
-side of all CDR3 sequences, three aa got cut off, effectively trimming 
-sequences $\leq 6$ aa completely. This should be fine as long as our sample 
-dataset is not cut.
+## Local clustering results
+ClustIRR detects *LEAR* as enriched. One additional motifs was detected, 
+probably because it contains *LEA* (substring of *LEAR*). *LEAR* was detected
+20 times in the `s` and 2 only times in `r` leading to OvE$\approx 100$ 
+and FDR$\approx0$.
 
-## Output
-
-### Local motif clustering output
-
-Inspecting the local motif clustering shows that, in total, 20 motifs were 
-marked as enriched. The 20 times inserted motif *RQWW* gets found 
-twenty times (to be seen in the column `f_sample`). Five other motifs are 
-combinations of the first three (*RQW* <-> *QRQW*, *YRQW*) or last three 
-(*QWW* <-> *QWWA*, *QWWG*, *QWWS*) amino acids of the inserted motif with the 
-respective sequences it was inserted in. 14 motifs of the clonally expanded 
-sequences *CATSRAAKPDGLAALETQYF* and *CATSRAAKPDGLAALSTQYF* are found. Some are
-found in both sequences (for example, *AAKP*, found 30 times), and others only 
-in one of the two (for example, *AALE*, found 15 times). Notice that 
-motifs can also be present in the reference dataset as parts of other sequences 
-(`f_ref` > 0). For example, the enriched motif *GLAA* was 
-contained in the sample before the artificial enhancement, leading to a count 
-of 31. 
-
-If the random seed value changed, slightly different motif counts 
-could appear through interaction with sampled motifs of the reference set. 
-All inserted motifs and shared motifs between the 
-clonally expanded sequences are detected as enriched.
-
-```{r local_motifs_output}
+```{r}
 # extract local motifs
 local_motifs <- clustirr_output$clust$CDR3b$local$m
 
 # display only passed motifs
-kable(local_motifs[local_motifs$pass == TRUE,])
+knitr::kable(local_motifs[local_motifs$pass == TRUE,], row.names = FALSE)
+```
+
+## Global clustering results
+
+Only one pair of globally similar CDR3 sequences was found in our mock data.
+The CDR3 sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* differ by one 
+amino acid at position 4:
+
+```{r}
+# display globally similar pairs
+knitr::kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
+```
+
+## Graph
+
+Let's plot the graph:
+
+```{r}
+# plot the clust_irr object 
+plot_graph(clust_irr = clustirr_output)
+```
+In this graph, enriched motifs *LEAR* and *LLEA* as well as the global connection
+*CAS-PLEARGYTF* between cells of the sample are visualized. <br>
+
+Nodes can be dragged to improve visibility, if needed. The overall view can be
+toggled by clicking and dragging anywhere in the graph outside of nodes. 
+Zooming in and out can be done with the mousewheel. <br>
+
+Nodes represent cells. Clicking on a node highlights it's connected edges and 
+the CDR3 sequence in the `Select by id` dropdown menu. Hovering over a node 
+reveals an information box with the sequence, clone count, and all enriched 
+motifs and global connections by chain. Text in the information box can be 
+marked for copy&paste. <br>
+
+Edges represent similarity between cells, in form of motifs or global 
+connections. Hovering over an edge reveals an information box containing all 
+enriched motifs and global connections by chain. Motifs or sequences in the 
+information box can be marked for copy&paste. Using the `Select by group` 
+dropdown menu, all nodes sharing a motif or globally shared sequence can be 
+highlighted. <br>
+
+The legend to the right explains all elements of the graph. In this case,
+cells sharing motifs between `CDR3b` sequences appear in blue.
+All cells are `Singletons` with a clone count of one and appear as diamonds.
+Shared motifs between cells are represented by gray `local edges`, cells sharing 
+motifs as well as global sequences are connected by red `local & global edges`
+edges. <br>
+
+To export a graph as for example `.png`-file, the `Export`-button of the Viewer
+window can be used after calling the `plot_graph()` function from within the 
+console.
+
+# Case study 2: Detecting enriched motifs in clonally expanded IRs
+
+In this case study we assume that the data contains a clone that represents 2% 
+(10 T-cells) of the studied repertoire. All T-cells in the expanded clone share 
+the CDR3b sequence *CATSRPDGLAQYF*, and bind the same antigenic peptides. 
+ClustIRR should detect enrichment of most motifs at the core of *CATSRPDGLAQYF*.
+
+Lets try this out:
+
+```{r}
+# create a clone of 10 T-cells 
+clone <- base::data.frame(CDR3b = rep("CATSRPDGLAQYF", times = 10))
+```
+
+```{r}
+# add to the data
+s <- base::rbind(s, clone)
+```
+
+we perform clustering
+
+```{r}
+clustirr_output <- cluster_irr(s = s,  
+                               r = r,
+                               version = 3,
+                               ks = 4,
+                               cores = 1,
+                               control = list(trim_flank_aa = 3))
+```
+
+## Local clustering results
+ClustIRR once again reports enrichment of *LEAR*, but also of many additional 
+motifs that are part of the core of *CATSRPDGLAQYF*, such as *DGLA*, *PDGL*, 
+*RPDG*, *SRPG*, etc.
+
+```{r, fig.align='center'}
+# extract local motifs
+local_motifs <- clustirr_output$clust$CDR3b$local$m
+
+# display only passed motifs
+knitr::kable(local_motifs[local_motifs$pass == TRUE,], row.names = FALSE)
+```
+
+## Global clustering results
+
+Once again, ClustIRR finds the same pair of globally similar CDR3 sequences.
+However, remember that this time our repertoire `s` contains 10 identical CDR3s 
+that belong to the expanded clone. These are also globally similar.
+The CDR3 sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* differ by one 
+amino acid at position 4:
+
+```{r}
+# display globally similar pairs
+knitr::kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
+```
+
+
+## Graph output
+
+Lets plot the clustering results:
+
+```{r}
+# plot the clust_irr object 
+plot_graph(clust_irr = clustirr_output)
+```
+This time, the legend shows a dot symbol for clonally `Expanded` cells.
+Expanded cells represent clones, i.e. cells that share sequences. <br>
+
+The clonally expanded sequence *CATSRPDGLAQYF* is visible as a big dot.
+Dot size represents clone size. Hovering over the big dot in the graph reveals 
+also enriched shared motifs between the clones. <br>
+
+To visualize the clone split into single cells (nodes), the `expand_clones`
+parameter can be set to `TRUE`:
+
+```{r}
+# plot the clust_irr object 
+plot_graph(clust_irr = clustirr_output, expand_clones = TRUE)
+```
+
+`expand_clones` is set to `FALSE` per default to achieve a more concise 
+graph.
+
+# Case study 3: Beta & alpha chains
+
+Example of CDR3$\beta$ and CDR3$\alpha$ sequences in combination. Each cell 
+possesses one CDR3$\beta$ and one CDR3$\alpha$ sequence. Shared motifs and 
+global similarities are only compared within chains.
+
+We first sample 500 CDR3$\beta$ and CDR3$\alpha$ sequences as input `s`, as well
+as 5000 CDR3$\beta$ and CDR3$\alpha$ sequences as reference `r`:
+
+```{r}
+data("CDR3ab")
+
+# CDR3a
+s_a <- base::data.frame(CDR3a = CDR3ab$CDR3b[4501:5000])
+r_a <- base::data.frame(CDR3a = CDR3ab$CDR3b[5001:10000])
+
+# CDR3b
+s_b <- base::data.frame(CDR3b = CDR3ab$CDR3b[4501:5000])
+r_b <- base::data.frame(CDR3b = CDR3ab$CDR3b[5001:10000])
 
 ```
 
-### Global CDR3 sequence clustering output
+We will insert three clones into each chain as well as two motifs, to 
+demonstrate some possible combinations that can occur.
 
-Inspecting the global motif clustering reveals two found sequence pairs of 
-CDR3 sequences.
+We start with the CDR3$\beta$ chain:
 
-The first pair, *CASSYVLRAADGYTF* and *CASSYVLRAADGDTF*, was present in the 
-reference dataset and were randomly sampled into the example dataset.
+* **Clone 1**: 10 times *CATSRLEFAQYF* 
+  * Test global and local edges
+* **Clone 2**: 15 times *CATSRLEARATYF* 
+  * Test global and local edges + shared motif *LEAR*
+* **Clone 2**: 2 times *CATSEEEFAQYF* 
+  * Test global edge only
+* **Motif 1**: 10 times *LEAR* 
+  * Test edge to **Clone 2**
+* **Motif 2**: 5 times *REAL* 
+  * Will also be CDR3$\alpha$ **Motif 2**, to demonstrate separate clustering
 
-The second pair *CATSRAAKPDGLAALSTQYF* and *CATSRAAKPDGLAALETQYF* represents 
-the artificially enhanced clonal expansion.
-
-Again, if the sampling was repeated with a different seed, other randomly 
-similar pairs of the reference dataset could be sampled. The two added 
-sequences are guaranteed to be found.
-
-
-```{r global_motifs_output}
-# global motifs
-kable(clustirr_output$clust$CDR3b$global)
-```
-### Graph output
-
-#### Extract edges
-
-To extract the edges for a visualization, the `get_edges()` function can be 
-called on our output file of class `clust_irr`.
-
-The extracted edges contain informations about local and global connections
-between cdr3 sequences as well as the shared motif and source chain.
-
-```{r edges_output}
-# extract edges
-edges <- get_edges(clustirr_output)
-
-head(edges)
-
+```{r}
+# beta clones + motifs
+s_b <- base::rbind(s_b, 
+                   base::data.frame(CDR3b = rep("CATSRLEFAQYF", times = 10)))
+s_b <- base::rbind(s_b, 
+                   base::data.frame(CDR3b = rep("CATSRLEARATYF", times = 15)))
+s_b <- base::rbind(s_b, 
+                   base::data.frame(CDR3b = rep("CATSEEEFAQYF", times = 2)))
+base::substr(x = s_b$CDR3b[1:10], start = 4, stop = 7) <- "LEAR"
+base::substr(x = s_b$CDR3b[20:25], start = 5, stop = 8) <- "REAL"
 ```
 
-#### Extract igraph object
+For the We start with the CDR3$\alpha$ chain we will use the following 
+sequences and motifs:
 
-To extract the edges as *igraph* object for analysis or visualization with 
-other packages, the `get_graph()` function can be called on our output file of 
-class `clust_irr`.
+* **Clone 1**: 20 times *CAWNQEEETYEQYF* 
+  * Test global and local edges
+* **Clone 2**: 5 times *CAWNQEEETYEQYF* 
+  * Test global and local edges + shared motif *LEAR*
+* **Clone 2**: 2 times *CASSSLYNETTYF* 
+  * Test global edge only
+* **Motif 1**: 10 times *GPPN* 
+  * Test local edges
+* **Motif 2**: 5 times *REAL* 
+  * Will also be CDR3$\beta$ **Motif 2**, to demonstrate separate clustering
 
-For more information about *igraph*, consult the packages manual.
-
-```{r igraph_output}
-# extract edges
-ig <- get_graph(clustirr_output)
-
-# get clusters
-igraph::clusters(ig)
-
-```
-
-#### Graph output *(experimental)*
-
-Plotting `clust_irr` objects can be done by calling the `plot_graph()` 
-function. Because of potential scaling issues when using larger graphs,
-this function is marked as *experimental* for now.
-
-Inside the graph, nodes represent cells. *CDR3b* sequences are colored green, 
-*CDR3a* sequences blue.
-
-Groups represent unique sequences, that can be present in form of multiple 
-cells / nodes in the graph if these cells are clonally expanded.
-
-Gray edges represent local motif connections, orange edges represent global
-connections. 
-
-By hovering over nodes, the sequence is shown. Hovering over edges shows the
-shared motif or in case of global connections the shared part of the sequence.
-
-```{r plot_graph}
-# plot the graph
-plot_graph(clustirr_output)
+```{r}
+# alpha clones + motifs
+s_a <- base::rbind(s_a, 
+                   base::data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 20)))
+s_a <- base::rbind(s_a, 
+                   base::data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 5)))
+s_a <- base::rbind(s_a, 
+                   base::data.frame(CDR3a = rep("CASSSLYNETTYF", times = 2)))
+base::substr(x = s_a$CDR3a[51:60], start = 6, stop = 9) <- "GPPN"
+base::substr(x = s_a$CDR3a[20:25], start = 5, stop = 8) <- "REAL"
 
 ```
 
-# References
+No we combine both chains:
 
-**1**: Glanville, Jacob, et al. "Identifying specificity groups in the 
-T cell receptor repertoire." Nature 547.7661 (2017): 94.<br>
-**2**: Huang, Huang, et al. "Analyzing the Mycobacterium tuberculosis immune 
-response by T-cell receptor clustering with GLIPH2 and genome-wide antigen 
-screening." Nature Biotechnology 38.10 (2020): 1194-1202.<br>
+```{r}
+# alpha & beta combined
+s_ab <- base::cbind(s_a, s_b)
+r_ab <- base::cbind(r_a, r_b)
 
-# Session Info
-
-```{r package_version}
-packageVersion("ClustIRR")
 ```
 
+And perform clustering:
+
+```{r}
+out3 <- cluster_irr(s = s_ab,
+                    r = r_ab,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+Let's plot the graph:
+
+```{r}
+# beta & alpha chain
+plot_graph(out3)
+```
+In this graph, cells that share local motifs and global sequences are connected with
+red edges. Blue nodes signify cells that share local motifs and/or global 
+sequences with CDR3$\beta$ sequences of other cells, yellow nodes share with 
+CDR3$\alpha$ sequences of other cells and green nodes share both. 
+
+# Case study 4: Gamma & delta chains
+
+A quick example of how CDR3-$\delta&\gamma$ chains can be represented.
+
+We first sample 500 CDR3$\beta$ and CDR3$\alpha$ sequences as input `s`, as well
+as 5000 CDR3$\beta$ and CDR3$\alpha$ sequences as reference `r`:
+
+```{r}
+data("CDR3ab")
+
+# CDR3g
+s_g <- base::data.frame(CDR3g = CDR3ab$CDR3b[4501:5000])
+r_g <- base::data.frame(CDR3g = CDR3ab$CDR3b[5001:10000])
+
+# CDR3d
+s_d <- base::data.frame(CDR3d = CDR3ab$CDR3a[4501:5000])
+r_d <- base::data.frame(CDR3d = CDR3ab$CDR3a[5001:10000])
+
+```
+
+We will again insert three clones into each chain as well as two motifs, to 
+demonstrate some possible combinations.
+
+We start with the CDR3$\gamma$ chain:
+
+* **Clone 1**: 4 times *CATSRLEFAQYF* 
+  * Test global and local edges
+* **Clone 2**: 15 times *CATSRLEARATYF* 
+  * Test global and local edges + shared motif *LEAR*
+* **Clone 2**: 2 times *CATSEEEFAQYF* 
+  * Test global edge only
+* **Motif 1**: 10 times *LEAR* 
+  * Test edge to **Clone 2**
+* **Motif 2**: 5 times *REAL* 
+  * Will also be CDR3$\delta$ **Motif 2**, to demonstrate separate clustering
+
+```{r}
+# gamma clones + motifs
+s_g <- base::rbind(s_g, 
+                   base::data.frame(CDR3g = rep("CATSRLEFAQYF", times = 4)))
+s_g <- base::rbind(s_g, 
+                   base::data.frame(CDR3g = rep("CATSRLEARATYF", times = 15)))
+s_g <- base::rbind(s_g, 
+                   base::data.frame(CDR3g = rep("CATSEEEFAQYF", times = 2)))
+base::substr(x = s_g$CDR3g[1:10], start = 4, stop = 7) <- "LEAR"
+base::substr(x = s_g$CDR3g[20:25], start = 5, stop = 8) <- "REAL"
+
+```
+
+Now the CDR3$\delta$ chain:
+
+* **Clone 1**: 4 times *CAWNQEEETYEQYF* 
+  * Test global and local edges
+* **Clone 2**: 15 times *CAWNQEETTYEQYF* 
+  * Test global and local edges + shared motif *LEAR*
+* **Clone 2**: 2 times *CASSSLYNETTYF* 
+  * Test global edge only
+* **Motif 1**: 10 times *GPPN* 
+  * Test edge to **Clone 2**
+* **Motif 2**: 5 times *REAL* 
+  * Will also be CDR3$\gamma$ **Motif 2**, to demonstrate separate clustering
+
+```{r}
+# delta clones + motifs
+s_d <- base::rbind(s_d, 
+                   base::data.frame(CDR3d = rep("CAWNQEEETYEQYF", times = 4)))
+s_d <- base::rbind(s_d, 
+                   base::data.frame(CDR3d = rep("CAWNQEETTYEQYF", times = 15)))
+s_d <- base::rbind(s_d, 
+                   base::data.frame(CDR3d = rep("CASSSLYNETTYF", times = 2)))
+base::substr(x = s_d$CDR3d[51:60], start = 6, stop = 9) <- "GPPN"
+base::substr(x = s_d$CDR3d[20:25], start = 5, stop = 8) <- "REAL"
+
+```
+
+Combine both chains:
+
+```{r}
+# gamma & delta combined
+s_gd <- base::cbind(s_g, s_d)
+r_gd <- base::cbind(r_g, r_d)
+```
+
+Perform clustering:
+
+```{r}
+out3 <- cluster_irr(s = s_gd,
+                    r = r_gd,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+And plot the graph:
+
+```{r}
+plot_graph(out3)
+```
+CDR3$\gamma$ and CDR3$\delta$ chains are marked as CDR3g and CDR3d in the 
+graph. <br>
+
+**Hint:** `s` and `r` may also consists of CDR3s from B-cells (CDR3h and 
+CDR3l) by providing *CDR3h* and/or *CDR3l* as input columns.
 
 ```{r session_info}
-sessionInfo()
+utils::sessionInfo()
 ```
+
+
