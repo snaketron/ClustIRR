@@ -260,13 +260,13 @@ get_motif_list <- function(x, chains) {
     l <- base::paste(c, "local", sep = "_")
     if(g %in% base::names(x)){
       if(x[g] != "-") {
-        t_gl <- base::paste("<b>Global:</b><br>", m, x[g], "</mark><br>")
+        t_gl <- base::paste0("<b>Global:</b><br>", m, x[g], "</mark><br>")
         gl <- TRUE 
       }
     }
     if (l %in% base::names(x)){
       if(x[l] != "-") {
-        t_lo <- base::paste("<b>Local:</b><br>", m, x[l], "</mark><br>")
+        t_lo <- base::paste0("<b>Local:</b><br>", m, x[l], "</mark><br>")
         lo <- TRUE 
       }
     }
@@ -289,9 +289,9 @@ get_motif_list <- function(x, chains) {
       }
     }
   }
-  if(bg&ad) {return(base::paste(tbg, tbg_g, tbg_l, "<br>", tad, tad_g, tad_l))}
-  if(bg&!ad) {return(base::paste(tbg, tbg_g, tbg_l))}
-  if(!bg & ad) {return(base::paste(tad, tad_g, tad_l))}
+  if(bg&ad) {return(base::paste0(tbg, tbg_g, tbg_l, "<br>", tad, tad_g, tad_l))}
+  if(bg&!ad) {return(base::paste0(tbg, tbg_g, tbg_l))}
+  if(!bg & ad) {return(base::paste0(tad, tad_g, tad_l))}
   return("")
 }
 
@@ -392,14 +392,14 @@ get_color <- function(x, l){
 set_node_title <- function(x, chains) {
   
   m <- "<mark style=\"background-color: white; color: black;\">"
-  mb <- " </mark><mark style=\"background-color: blue; color: white;\">"
-  my <- " </mark><mark style=\"background-color: yellow; color: black;\">"
-  mb_b <- base::paste(mb, "<i>(&beta;)</i></mark><br>", m)
-  my_a <- base::paste(my, "<i>(&alpha;)</i></mark>", m)
-  mb_g <- base::paste(mb, "<i>(&gamma;)</i></mark><br>", m)
-  my_d <- base::paste(my, "<i>(&delta;)</i></mark>", m)
-  mb_h <- base::paste(mb, "<i>(H)</i></mark><br>", m)
-  my_l <- base::paste(my, "<i>(L)</i></mark>", m)
+  mb <- "</mark><mark style=\"background-color: blue; color: white;\">"
+  my <- "</mark><mark style=\"background-color: yellow; color: black;\">"
+  mb_b <- base::paste0(mb, "<i>(&beta;)</i></mark><br>", m)
+  my_a <- base::paste0(my, "<i>(&alpha;)</i>")
+  mb_g <- base::paste0(mb, "<i>(&gamma;)</i></mark><br>", m)
+  my_d <- base::paste0(my, "<i>(&delta;)</i>")
+  mb_h <- base::paste0(mb, "<i>(H)</i></mark><br>", m)
+  my_l <- base::paste0(my, "<i>(L)</i>")
   
   l <- x[["label"]]
   l <- base::gsub(pattern = " \\(b\\) - ", replacement = mb_b, x = l) 
@@ -408,14 +408,14 @@ set_node_title <- function(x, chains) {
   l <- base::gsub(pattern = " \\(d\\)", replacement = my_d, x = l)
   l <- base::gsub(pattern = " \\(h\\) - ", replacement = mb_h, x = l) 
   l <- base::gsub(pattern = " \\(l\\)", replacement = my_l, x = l)
-  l <- base::paste(m, "<b>", l, "</b><br></mark><br>")
+  l <- base::paste0(m, "<b>", l, "</b></mark><br><br>")
   
   cc <- x[["clone_count"]]
-  cc <- base::paste("<b> Clone count:", cc, "</b><br>")
+  cc <- base::paste0("<b>Clone count:", cc, "</b><br>")
   
   m <- get_motif_list(x, chains)
   
-  return(base::paste(l, cc, "<br>", m))
+  return(base::paste0(l, cc, "<br>", m))
 }
 
 

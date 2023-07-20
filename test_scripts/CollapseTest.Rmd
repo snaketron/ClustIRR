@@ -1,0 +1,189 @@
+---
+title: "Collapse Test"
+output:
+  html_document:
+    df_print: paged
+---
+
+---
+title: "Test v3 collapse to one node"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r load, include=FALSE}
+library(ClustIRR)
+#devtools::load_all(".")
+
+```
+
+# Test data
+
+CDR3g and CDR3d sequences, two different clones inserted and a motif inserted.
+
+* **Clone 1**: 13 times *CATSRLEFAQYF* 
+  * Global and local enrichment
+* **Clone 2**: 7 times *CATSRLEARATYF* 
+  * Global and local enrichment and motif *LEAR*
+* **Clone 2**: 2 times *CATSEEEFAQYF* 
+  * only global, no local enrichment
+* **Motif**: 5 times *LEAR* 
+  * Also to be found in **Clone 2**
+  
+
+```{r prepare, include=FALSE}
+data("CDR3ab")
+
+# CDR3g
+s_g <- data.frame(CDR3g = CDR3ab$CDR3b[4501:5000])
+r_g <- data.frame(CDR3g = CDR3ab$CDR3b[5001:10000])
+
+# CDR3d
+s_d <- data.frame(CDR3d = CDR3ab$CDR3a[4501:5000])
+r_d <- data.frame(CDR3d = CDR3ab$CDR3a[5001:10000])
+
+# gamma clones + motifs
+clone1_g <- data.frame(CDR3g = rep("CATSRLEFAQYF", times = 2))
+clone2_g <- data.frame(CDR3g = rep("CATSRLEARATYF", times = 15))
+clone3_g <- data.frame(CDR3g = rep("CATSEEEFAQYF", times = 2))
+s_g <- rbind(s_g, clone1_g)
+s_g <- rbind(s_g, clone1_g)
+s_g <- rbind(s_g, clone2_g)
+s_g <- rbind(s_g, clone3_g)
+substr(x = s_g$CDR3g[1:10], start = 4, stop = 7) <- "LEAR"
+substr(x = s_g$CDR3g[20:25], start = 5, stop = 8) <- "REAL"
+
+# delta clones + motifs
+clone1_d <- data.frame(CDR3d = rep("CAWNQEEETYEQYF", times = 4))
+clone2_d <- data.frame(CDR3d = rep("CAWNQEETTYEQYF", times = 15)) #CAWNQEETRTYEQYF
+clone3_d <- data.frame(CDR3d = rep("CASSSLYNETTYF", times = 2))
+s_d <- rbind(s_d, clone1_d)
+s_d <- rbind(s_d, clone2_d)
+s_d <- rbind(s_d, clone3_d)
+substr(x = s_d$CDR3d[51:60], start = 6, stop = 9) <- "GPPN"
+substr(x = s_d$CDR3d[20:25], start = 5, stop = 8) <- "REAL"
+
+# gamma & delta combined
+s_gd <- cbind(s_g, s_d)
+r_gd <- cbind(r_g, r_d)
+
+
+rm(clone1_g, clone2_g, clone3_g, clone1_d, clone2_d, clone3_d)
+
+```
+
+
+```{r run_clustirr, include=FALSE}
+out1 <- cluster_irr(s = s_gd,
+                   r = r_gd,
+                   version = 1,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out2 <- cluster_irr(s = s_gd,
+                   r = r_gd,
+                   version = 2,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out3 <- cluster_irr(s = s_gd,
+                    r = r_gd,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+```{r run_clustirr_gamma, include=FALSE}
+out1_g <- cluster_irr(s = s_g,
+                   r = r_g,
+                   version = 1,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out2_g <- cluster_irr(s = s_g,
+                   r = r_g,
+                   version = 2,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out3_g <- cluster_irr(s = s_g,
+                    r = r_g,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+
+```{r run_clustirr_delta, include=FALSE}
+out1_d <- cluster_irr(s = s_d,
+                   r = r_d,
+                   version = 1,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out2_d <- cluster_irr(s = s_d,
+                   r = r_d,
+                   version = 2,
+                   ks = 4,
+                   cores = 8,
+                   control = list(trim_flank_aa = 3))
+
+out3_d <- cluster_irr(s = s_d,
+                    r = r_d,
+                    version = 3,
+                    ks = 4,
+                    cores = 8,
+                    control = list(trim_flank_aa = 3))
+```
+
+# ClustIRR v3
+
+```{r check_clustirr_v3}
+# gamma chain
+plot_graph(out3_g)
+plot_graph(out3_g, expand_clones = TRUE)
+# delta chain
+plot_graph(out3_d)
+plot_graph(out3_d, expand_clones = TRUE)
+# beta & alpha chain
+plot_graph(out3)
+plot_graph(out3, expand_clones = TRUE)
+```
+
+# ClustIRR v2
+
+```{r check_clustirr_v2}
+# gamma chain
+plot_graph(out2_g)
+plot_graph(out2_g, expand_clones = TRUE)
+# delta chain
+plot_graph(out2_d)
+plot_graph(out2_d, expand_clones = TRUE)
+# beta & alpha chain
+plot_graph(out2)
+plot_graph(out2, expand_clones = TRUE)
+```
+
+# ClustIRR v1
+
+```{r check_clustirr_v1}
+# gamma chain
+plot_graph(out1_g)
+plot_graph(out1_g, expand_clones = TRUE)
+# delta chain
+plot_graph(out1_d)
+plot_graph(out1_d, expand_clones = TRUE)
+# beta & alpha chain
+plot_graph(out1)
+plot_graph(out1, expand_clones = TRUE)
+```
+
+
