@@ -394,12 +394,12 @@ set_node_title <- function(x, chains) {
   m <- "<mark style=\"background-color: white; color: black;\">"
   mb <- " </mark><mark style=\"background-color: blue; color: white;\">"
   my <- " </mark><mark style=\"background-color: yellow; color: black;\">"
-  mb_b <- base::paste(mb, "<i>(&beta;)</i><br>", m)
-  my_a <- base::paste(my, "<i>(&alpha;)</i>", m)
-  mb_g <- base::paste(mb, "<i>(&gamma;)</i><br>", m)
-  my_d <- base::paste(my, "<i>(&delta;)</i>", m)
-  mb_h <- base::paste(mb, "<i>(H)</i><br>", m)
-  my_l <- base::paste(my, "<i>(L)</i>", m)
+  mb_b <- base::paste(mb, "<i>(&beta;)</i></mark><br>", m)
+  my_a <- base::paste(my, "<i>(&alpha;)</i></mark>", m)
+  mb_g <- base::paste(mb, "<i>(&gamma;)</i></mark><br>", m)
+  my_d <- base::paste(my, "<i>(&delta;)</i></mark>", m)
+  mb_h <- base::paste(mb, "<i>(H)</i></mark><br>", m)
+  my_l <- base::paste(my, "<i>(L)</i></mark>", m)
   
   l <- x[["label"]]
   l <- base::gsub(pattern = " \\(b\\) - ", replacement = mb_b, x = l) 
