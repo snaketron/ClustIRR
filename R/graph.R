@@ -220,7 +220,7 @@ configure_edges <- function(edges, chains, types) {
   edges$to <- base::as.numeric(base::apply(X = edges, MARGIN = 1, function(x)
     base::strsplit(x["edge_id"], " ")[[1]][2]))
   edges$length <- 15
-  edges$width <- edges$total_count
+  edges$width <- edges$global_count*5 + edges$local_count
   edges$type <- base::ifelse(test = (edges$global_count > 0),
                              yes = "global",
                              no = "local")
