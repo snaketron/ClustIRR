@@ -74,10 +74,11 @@ get_local_edges <- function(clust_irr) {
 get_global_edges <- function(clust_irr) {
   
   get_diff_str <- function(m) {
-    c1 <- strsplit(m[1], "")[[1]]
-    c2 <- strsplit(m[2], "")[[1]]
+    c1 <- base::strsplit(m[1], "")[[1]]
+    c2 <- base::strsplit(m[2], "")[[1]]
     c1[c1 != c2] <- "-"
-    return(paste(c1, collapse = ""))
+    ret <- base::paste(c1, collapse = "")
+    return(ret)
   }
   
   get_gp <- function(gp, chain) {
@@ -173,7 +174,8 @@ configure_edges <- function(edges, chains, types) {
   
   get_edge_id <- function(x){
     t <- base::c(base::as.numeric(x["from"]), base::as.numeric(x["to"]))
-    return(base::paste(base::min(t), base::max(t)))
+    ret <- base::paste(base::min(t), base::max(t))
+    return(ret)
   }
   edges$edge_id <- base::apply(X = edges, MARGIN = 1, FUN = get_edge_id)
   edges <- base::unique(edges[, c("edge_id", "motif", "type", "chain")])
@@ -185,14 +187,12 @@ configure_edges <- function(edges, chains, types) {
       t <- base::paste(chain, type, sep = "_")
       c <- base::paste(chain, type, "count", sep = "_")
       if(base::nrow(df)>0){
-        df <- base::do.call(base::cbind.data.frame, 
-                            stats::aggregate(motif ~ edge_id, data = df, 
-                                             FUN = function(x) { 
-                                               count <- base::length(x)
-                                               c(motifs = 
-                                                   base::paste(x, 
-                                                               collapse = ", "), 
-                                                 counts = count)}))
+        df <- base::do.call(
+          base::cbind.data.frame, 
+          stats::aggregate(motif ~ edge_id, data = df, 
+                           FUN = function(x) { count <- base::length(x)
+                           c(motifs = base::paste(x, collapse = ", "), 
+                             counts = count)}))
       } else {
         df <- data.frame(a = character(), b = character(), c = character())
       }
@@ -248,7 +248,7 @@ configure_edges <- function(edges, chains, types) {
 
 get_motif_list <- function(x, chains) {
 
-  tbg <- tbg_g <- tbg_l <- tad <- tad_g <- tad_l <- t_gl <- t_lo <- ""
+  tbg <- tbg_g <- tbg_l <- tad <- tad_g <- tad_l <- t_gl <- t_lo <- ret <- ""
   bg <- bg_g <- bg_l <- ad <- ad_g <- ad_l <- gl <- lo <- FALSE
   m_y <- "<mark style=\"background-color: yellow; color: black;\">"
   m_b <- "<mark style=\"background-color: blue; color: white;\">"
@@ -289,10 +289,10 @@ get_motif_list <- function(x, chains) {
       }
     }
   }
-  if(bg&ad) {return(base::paste0(tbg, tbg_g, tbg_l, "<br>", tad, tad_g, tad_l))}
-  if(bg&!ad) {return(base::paste0(tbg, tbg_g, tbg_l))}
-  if(!bg & ad) {return(base::paste0(tad, tad_g, tad_l))}
-  return("")
+  if(bg&ad) {ret <- base::paste0(tbg, tbg_g, tbg_l, "<br>", tad, tad_g, tad_l)}
+  if(bg&!ad) {ret <- base::paste0(tbg, tbg_g, tbg_l)}
+  if(!bg & ad) {ret <- base::paste0(tad, tad_g, tad_l)}
+  return(ret)
 }
 
 
@@ -303,8 +303,8 @@ configure_nodes <- function(nodes, edges, chains, types, s) {
   min_size <- 20
   clone_boost <- 10
   if(base::length(chains)>1){
-    dec = TRUE
-    if(base::any(chains %in% base::c("CDR3h", "CDR3l"))){ dec = FALSE}
+    dec <- TRUE
+    if(base::any(chains %in% base::c("CDR3h", "CDR3l"))){ dec <- FALSE}
     chains <- base::sort(chains, decreasing = dec)
     bg <- substr(chains[1], 5, 5)
     ad <- substr(chains[2], 5, 5)
@@ -351,22 +351,23 @@ get_u_motifs <- function(x, edges = edges, l = l){
 
   get_unique_str <- function(x){
     res <- base::unique(e[x][e[x] != "-"])
-    return(base::paste(base::unique(base::unlist(
-      base::strsplit(res, ", "))), collapse = ", "))
+    ret <- base::paste(base::unique(base::unlist(base::strsplit(res, ", "))), 
+                       collapse = ", ")
+    return(ret)
   }
 
   id <- base::as.numeric(x["id"])
   e <- edges[edges$from == id | edges$to == id,]
-  return(lapply(X=l, FUN = get_unique_str))
+  return(base::lapply(X = l, FUN = get_unique_str))
 }
 
 
 get_color <- function(x, l){
   
-  t <- base::vector(mode="character")
+  t <- base::vector(mode = "character")
   
   for(c in l){
-    if (x[[c]]!="-"){
+    if (x[[c]] != "-"){
       t <- base::c(t, c)
     }
   }
@@ -414,8 +415,8 @@ set_node_title <- function(x, chains) {
   cc <- base::paste0("<b>Clone count:", cc, "</b><br>")
   
   m <- get_motif_list(x, chains)
-  
-  return(base::paste0(l, cc, "<br>", m))
+  ret <- base::paste0(l, cc, "<br>", m)
+  return(ret)
 }
 
 
@@ -440,7 +441,7 @@ configure_network <- function(nodes, edges, ledges, lnodes){
                              style = id_style)) %>%
     visNetwork::visLegend(addEdges = ledges, addNodes = lnodes, 
                           useGroups = FALSE, position = "right", 
-                          width=0.15, zoom = FALSE)
+                          width = 0.15, zoom = FALSE)
   )
 }
 

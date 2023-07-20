@@ -233,8 +233,8 @@ Let's plot the graph:
 # plot the clust_irr object 
 plot_graph(clust_irr = clustirr_output)
 ```
-In this graph, enriched motifs *LEAR* and *LLEA* as well as the global connection
-*CAS-PLEARGYTF* between cells of the sample are visualized. <br>
+In this graph, enriched motifs *LEAR* and *LLEA* as well as the global 
+connection *CAS-PLEARGYTF* between cells of the sample are visualized. <br>
 
 Nodes can be dragged to improve visibility, if needed. The overall view can be
 toggled by clicking and dragging anywhere in the graph outside of nodes. 
@@ -256,9 +256,9 @@ highlighted. <br>
 The legend to the right explains all elements of the graph. In this case,
 cells sharing motifs between `CDR3b` sequences appear in blue.
 All cells are `Singletons` with a clone count of one and appear as diamonds.
-Shared motifs between cells are represented by gray `local edges`, cells sharing 
-motifs as well as global sequences are connected by red `local & global edges`
-edges. <br>
+Shared motifs between cells are represented by gray `local edges`, cells 
+sharing motifs as well as global sequences are connected by red 
+`local & global edges` edges. <br>
 
 To export a graph as for example `.png`-file, the `Export`-button of the Viewer
 window can be used after calling the `plot_graph()` function from within the 
@@ -449,8 +449,8 @@ Let's plot the graph:
 # beta & alpha chain
 plot_graph(out3)
 ```
-In this graph, cells that share local motifs and global sequences are connected with
-red edges. Blue nodes signify cells that share local motifs and/or global 
+In this graph, cells that share local motifs and global sequences are connected 
+with red edges. Blue nodes signify cells that share local motifs and/or global 
 sequences with CDR3$\beta$ sequences of other cells, yellow nodes share with 
 CDR3$\alpha$ sequences of other cells and green nodes share both. 
 

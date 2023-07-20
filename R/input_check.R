@@ -122,7 +122,7 @@ check_global_pairs <- function(global_pairs, s) {
         check_matrix_type(global_pairs, type = "character")
         check_matrix_column_count(global_pairs, 3)
         if(all(global_pairs[, c(1,2)] %in% s)==FALSE) {
-            stop("not all CDR3s from global_pair are found in s")
+            base::stop("not all CDR3s from global_pair are found in s")
         }
     }
 }

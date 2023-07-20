@@ -14,7 +14,7 @@ get_global_clust <- function(cdr3, global_max_dist) {
             if(d > global_max_dist) {
                 return(NULL)
             }
-            return(c(cdr3[is[1]], cdr3[is[2]]))
+            return(base::c(cdr3[is[1]], cdr3[is[2]]))
         }
 
         d <- stringdist::stringdistmatrix(

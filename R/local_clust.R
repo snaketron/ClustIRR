@@ -46,7 +46,7 @@ get_localclust_v1 <- function(cdr3,
     lp <- get_motif_in_seq(cdr3 = cdr3,
                            cdr3_core = cdr3_core,
                            motif = me$motif[me$pass == TRUE])
-    return(list(m = me, lp = lp))
+    return(base::list(m = me, lp = lp))
 }
 
 
@@ -98,7 +98,7 @@ get_localclust_v23 <- function(cdr3,
                            cdr3_core = cdr3_core,
                            motif = m$motif[m$pass == TRUE])
 
-    return(list(m = m, lp = lp))
+    return(base::list(m = m, lp = lp))
 }
 
 
@@ -221,7 +221,7 @@ get_motif_enrichment_fet <- function(x) {
     ove <- fet$estimate
     p <- fet$p.value
     ove_ci <- fet$conf.int[c(1,2)]
-    return(c(ove, ove_ci, p))
+    return(base::c(ove, ove_ci, p))
 }
 
 
@@ -322,7 +322,7 @@ get_motif_enrichment_boot <- function(x,
         # prob e>=o
         p_value <- sum(e >= o) / B
         # return
-        return(c(e_mean, e_min, e_max, o, ove, p_value))
+        return(base::c(e_mean, e_min, e_max, o, ove, p_value))
     }
 
     motif_s <- m[[as.character(x)]]$motif_s[[1]]

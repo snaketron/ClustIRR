@@ -42,8 +42,8 @@ them by setting \code{expand_clones} to \code{TRUE}.
   \item{\code{select node directly}} - click on node
   \item{\code{select node by id}} - dropdown menu to select node via CDR3 
   sequence, sorted alphabetically
-  \code{select node by group} - dropdown menu to select node via shared motif or 
-  global sequence, sorted alphabetically
+  \code{select node by group} - dropdown menu to select node via shared motif 
+  or global sequence, sorted alphabetically
   \item{\code{move node}} - click & drag node
   \item{\code{export graph}} - use console, viewer and \code{export} button
   
