@@ -37,17 +37,17 @@ object.
 \examples{
 # load package input data
 data("CDR3ab")
-s <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
-r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
+s <- base::data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
+r <- base::data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 
 # artificially enrich motif 'RQWW' inside sample dataset
-substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
-# add the artificial clonal expansion of two sequences to the sample dataset
-clones <- data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
+# add an artificial clonal expansion of two sequences to the sample dataset
+clones <- base::data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
                                        "CATSRAAKPDGLAALSTQYF"),
-                                 times = 15))
-s <- rbind(s, clones)
+                                       times = 15))
+s <- base::rbind(s, clones)
 
 # run analysis
 out <- cluster_irr(s = s,
@@ -69,13 +69,13 @@ out <- cluster_irr(s = s,
 out_ig <- get_graph(out)
 
 # output class
-class(out_ig)
+base::class(out_ig)
 
 # extract edges
-head(igraph::as_data_frame(out_ig, what = "edges"))
+utils::head(igraph::as_data_frame(out_ig, what = "edges"))
 
 # extract nodes
-head(igraph::as_data_frame(out_ig, what = "vertices"))
+utils::head(igraph::as_data_frame(out_ig, what = "vertices"))
 
 
 }

@@ -35,11 +35,11 @@ object.
 \examples{
 # load package input data
 data("CDR3ab")
-s <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
-r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
+s <- base::data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
+r <- base::data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 
 # artificially enrich motif 'RQWW' inside sample dataset
-substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
 # run analysis
 out <- cluster_irr(s = s,
@@ -58,18 +58,21 @@ out <- cluster_irr(s = s,
                       low_mem = FALSE))
 
 # output class
-class(out)
+base::class(out)
 
 # output structure
-str(out)
+utils::str(out)
 
 # inspect local motif enrichment results
-knitr::kable(head(out$clust$CDR3b$local$m))
+knitr::kable(utils::head(out$clust$CDR3b$local$m))
 
 # inspect which CDR3bs are globally similar
-knitr::kable(head(out$clust$CDR3b$global))
+knitr::kable(utils::head(out$clust$CDR3b$global))
 
 # create data.frame
 out_df <- get_edges(out)
+
+# inspect edge data.frame
+knitr::kable(utils::head(out_df))
 
 }

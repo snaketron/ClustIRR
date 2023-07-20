@@ -23,21 +23,20 @@ cluster_irr(
 observed in an immune receptor repertoire (IRR). The data.frame can have either
 one column or two columns:
 \itemize{
- \item One column: s contains CDR3s from a single chain: \emph{CDR3b}
- or \emph{CDR3a}
+ \item One column: s contains CDR3s from a single chain: \emph{CDR3b}, 
+ \emph{CDR3a}, \emph{CDR3g}, \emph{CDR3d}, \emph{CDR3h} or \emph{CDR3l}
  \item Two columns: s contains CDR3s from both chains (paired):
-    \emph{CDR3b} and \emph{CDR3a}
+    \emph{CDR3b} and \emph{CDR3a} or \emph{CDR3g} and \emph{CDR3d} or 
+    \emph{CDR3h} and \emph{CDR3l}
 }
-\emph{CDR3b} stands for CDR3 sequences derived from one of the following:
-\itemize{ \item \eqn{\beta} chain T cell receptors
-\item \eqn{\gamma} chain T cell receptors
-\item Heavy chain B cell receptors }
-
-\emph{CDR3a} stands for CDR3 sequences derived from one of the following:
-\itemize{
-\item \eqn{\alpha} chain T cell receptors
-\item \eqn{\delta} chain T cell receptors
-\item Light chain B cell receptors
+The column names represent the following CDR3 sequences:
+\itemize{ 
+\item \emph{CDR3b}: \eqn{\beta} chain T cell receptors
+\item \emph{CDR3a}: \eqn{\alpha} chain T cell receptors
+\item \emph{CDR3g}: \eqn{\gamma} chain T cell receptors
+\item \emph{CDR3d}: \eqn{\delta} chain T cell receptors
+\item \emph{CDR3h}: Heavy chain B cell receptors
+\item \emph{CDR3l}: Light chain B cell receptors
 }
 
 }
@@ -85,8 +84,8 @@ The output is an object with \code{clust_irr} structure. This object is formed
 by two sublists:
 \item{clust}{list, contains clustering results
 \itemize{
-      \item \code{CDR3b} - list, contains global+local clustering results for
-      CDR3s from chain \emph{TRB}
+      \item \code{CDR3b/g/h} - list, contains global+local clustering results 
+      for CDR3s from chain \emph{TRB}/\emph{TRG}/\emph{BRH}
       \itemize{
         \item \code{local} - list, local clustering results
           \itemize{
@@ -151,8 +150,9 @@ by two sublists:
         globally similar CDR3s are shown in each row of the matrix
         (analogous to \code{lp})
       }
-      \item \code{CDR3a} - list, contains global+local clustering results for
-      CDR3s from chain \emph{TRA} (same structure as in \code{CDR3b})
+      \item \code{CDR3a/d/l} - list, contains global+local clustering results 
+      for CDR3s from chain \emph{TRA}/\emph{TRD}/\emph{BRL} (same structure as 
+      in \code{CDR3b/g/h})
     }
 }
 
@@ -216,6 +216,14 @@ data("CDR3ab")
 s <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
 r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 
+# artificially enrich motif 'RQWW' inside sample dataset
+base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+
+# add an artificial clonal expansion of two sequences to the sample dataset
+s <- base::rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRAAKPDGLRALETQYF",
+                                       "CATSRAAKPDRQWWLSTQYF"),
+                                       times = 15)))
+
 # run analysis
 out <- cluster_irr(s = s,
                    r = r,
@@ -233,14 +241,17 @@ out <- cluster_irr(s = s,
                       low_mem = FALSE))
 
 # output class
-class(out)
+base::class(out)
 
 # output structure
-str(out)
+utils::str(out)
 
 # inspect motif enrichment results
-knitr::kable(head(out$clust$CDR3b$local$m))
+knitr::kable(utils::head(out$clust$CDR3b$local$m))
 
 # inspect which CDR3bs are globally similar
-knitr::kable(head(out$clust$CDR3b$global))
+knitr::kable(utils::head(out$clust$CDR3b$global))
+
+# plot graph
+plot_graph(out)
 }
