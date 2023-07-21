@@ -32,25 +32,25 @@ check_s <- function(s) {
 }
 
 check_r <- function(r) {
-  check_missing(r)
-  check_dataframe(r)
-  check_rowcount(r)
-  check_dataframe_colnames(r)
-  check_dataframe_na(r)
-  check_dataframe_empty(r)
+    check_missing(r)
+    check_dataframe(r)
+    check_rowcount(r)
+    check_dataframe_colnames(r)
+    check_dataframe_na(r)
+    check_dataframe_empty(r)
 }
 
 check_s_and_r <- function(s, r) {
-    if(!base::all(base::sort(base::colnames(s)) == 
-                  base::sort(base::colnames(r)))){
-      base::stop("s has to contain the same columns as r")
+    if (!base::all(base::sort(base::colnames(s)) ==
+        base::sort(base::colnames(r)))) {
+        base::stop("s has to contain the same columns as r")
     }
 }
 
 check_version <- function(version) {
     check_numeric(version)
     check_singlevalue(version)
-    if(!(version %in% base::c(1, 2, 3))) {
+    if (!(version %in% base::c(1, 2, 3))) {
         base::stop("version has to be 1, 2 or 3")
     }
 }
@@ -116,12 +116,12 @@ check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size
 }
 
 check_global_pairs <- function(global_pairs, s) {
-    if(!base::is.null(global_pairs)) {
+    if (!base::is.null(global_pairs)) {
         check_rowcount(global_pairs)
         check_matrix(global_pairs)
         check_matrix_type(global_pairs, type = "character")
         check_matrix_column_count(global_pairs, 3)
-        if(all(global_pairs[, c(1,2)] %in% s)==FALSE) {
+        if (all(global_pairs[, c(1, 2)] %in% s) == FALSE) {
             base::stop("not all CDR3s from global_pair are found in s")
         }
     }
@@ -148,18 +148,18 @@ get_control <- function(control_in) {
     )
 
     # if missing control_in -> use default values
-    if(base::missing(control_in) || base::is.null(control_in)) {
+    if (base::missing(control_in) || base::is.null(control_in)) {
         return(control)
     }
-    if(base::is.list(control_in) == FALSE) {
+    if (base::is.list(control_in) == FALSE) {
         base::stop("control must be a list")
     }
-    if(base::all(base::names(control_in) %in% base::names(control)) == FALSE){
+    if (base::all(base::names(control_in) %in% base::names(control)) == FALSE) {
         base::stop("unrecognized elements found in control")
     }
 
     ns <- names(control_in)
-    for(i in seq_len(length(control_in))) {
+    for (i in seq_len(length(control_in))) {
         control[[ns[i]]] <- control_in[[ns[i]]]
     }
     return(control)
@@ -173,7 +173,7 @@ check_dataframe <- function(x) {
         base::deparse(base::substitute(x)),
         " has to be of type data frame"
     )
-    if(!base::is.data.frame(x)) {
+    if (!base::is.data.frame(x)) {
         base::stop(w)
     }
 }
@@ -187,25 +187,26 @@ check_dataframe_colnames <- function(x) {
         ),
         "CDR3a and/or CDR3b or CDR3d and/or CDR3g or CDR3h and/or CDR3l"
     )
-    if(!base::any(base::colnames(x) %in% c)) {
+    if (!base::any(base::colnames(x) %in% c)) {
         base::stop(w)
     }
-    for(n in base::colnames(x)){
-      if(!base::is.character(x[[n]])){
-        base::stop(base::paste0(n, " column has to of type character"))
-      }
+    for (n in base::colnames(x)) {
+        if (!base::is.character(x[[n]])) {
+            s <- base::paste0(n, " column has to of type character")
+            base::stop(s)
+        }
     }
-    if(base::any(base::colnames(x) %in% base::c("CDR3a", "CDR3b")) &
-       base::any(base::colnames(x) %in% base::c("CDR3d", "CDR3g"))) {
-      base::stop("CDR3a/b can't be mixed with CDR3d/g columns")
+    if (base::any(base::colnames(x) %in% base::c("CDR3a", "CDR3b")) &
+        base::any(base::colnames(x) %in% base::c("CDR3d", "CDR3g"))) {
+        base::stop("CDR3a/b can't be mixed with CDR3d/g columns")
     }
-    if(base::any(base::colnames(x) %in% base::c("CDR3a", "CDR3b")) &
-       base::any(base::colnames(x) %in% base::c("CDR3h", "CDR3l"))) {
-      base::stop("CDR3a/b can't be mixed with CDR3l/h columns")
+    if (base::any(base::colnames(x) %in% base::c("CDR3a", "CDR3b")) &
+        base::any(base::colnames(x) %in% base::c("CDR3h", "CDR3l"))) {
+        base::stop("CDR3a/b can't be mixed with CDR3l/h columns")
     }
-    if(base::any(base::colnames(x) %in% base::c("CDR3d", "CDR3g")) &
-       base::any(base::colnames(x) %in% base::c("CDR3h", "CDR3l"))) {
-      base::stop("CDR3d/g can't be mixed with CDR3l/h columns")
+    if (base::any(base::colnames(x) %in% base::c("CDR3d", "CDR3g")) &
+        base::any(base::colnames(x) %in% base::c("CDR3h", "CDR3l"))) {
+        base::stop("CDR3d/g can't be mixed with CDR3l/h columns")
     }
 }
 
@@ -214,7 +215,7 @@ check_dataframe_empty <- function(x) {
         base::deparse(base::substitute(x)),
         " contains empty values"
     )
-    if(base::any(x == "", na.rm = TRUE)) {
+    if (base::any(x == "", na.rm = TRUE)) {
         base::warning(w)
     }
 }
@@ -224,7 +225,7 @@ check_dataframe_na <- function(x) {
         base::deparse(base::substitute(x)),
         " contains NA value"
     )
-    if(base::any(base::is.na(x))) {
+    if (base::any(base::is.na(x))) {
         base::warning(w)
     }
 }
@@ -235,7 +236,7 @@ check_greaterthan <- function(x, v) {
         " has to be <= ",
         v
     )
-    if(base::any(x > v)) {
+    if (base::any(x > v)) {
         base::stop(w)
     }
 }
@@ -245,7 +246,7 @@ check_infinity <- function(x) {
         base::deparse(base::substitute(x)),
         " has to be a finite number"
     )
-    if(base::any(base::is.infinite(x))) {
+    if (base::any(base::is.infinite(x))) {
         base::stop(w)
     }
 }
@@ -256,7 +257,7 @@ check_lessthan <- function(x, v) {
         " has to be >= ",
         v
     )
-    if(base::any(x < v)) {
+    if (base::any(x < v)) {
         base::stop(w)
     }
 }
@@ -266,10 +267,10 @@ check_logical <- function(x) {
         base::deparse(base::substitute(x)),
         " has to be logical"
     )
-    if(base::any(base::is.na(x))) {
+    if (base::any(base::is.na(x))) {
         base::stop(w)
     }
-    if(!base::is.logical(x)) {
+    if (!base::is.logical(x)) {
         base::stop(w)
     }
 }
@@ -279,7 +280,7 @@ check_matrix <- function(x) {
         base::deparse(base::substitute(x)),
         " has to be of type matrix"
     )
-    if(!base::is.matrix(x)) {
+    if (!base::is.matrix(x)) {
         base::stop(w)
     }
 }
@@ -289,7 +290,7 @@ check_matrix_column_count <- function(x, c) {
         base::deparse(base::substitute(x)),
         " has to have ", c, " columns"
     )
-    if(base::ncol(x) != c) {
+    if (base::ncol(x) != c) {
         base::stop(w)
     }
 }
@@ -300,13 +301,13 @@ check_matrix_type <- function(x, type) {
         " has to be a numeric matrix"
     )
 
-    if(type=="numeric") {
-        if(is.numeric(x)==FALSE) {
+    if (type == "numeric") {
+        if (is.numeric(x) == FALSE) {
             base::stop(w)
         }
     }
-    if(type=="character") {
-        if(is.character(x)==FALSE) {
+    if (type == "character") {
+        if (is.character(x) == FALSE) {
             base::stop(w)
         }
     }
@@ -317,7 +318,7 @@ check_missing <- function(x) {
         base::deparse(base::substitute(x)),
         " parameter is missing"
     )
-    if(base::missing(x) || base::is.null(x)) {
+    if (base::missing(x) || base::is.null(x)) {
         base::stop(w)
     }
 }
@@ -327,7 +328,7 @@ check_numeric <- function(x) {
         base::deparse(base::substitute(x)),
         " has to be numeric"
     )
-    if(base::any(!base::is.numeric(x))) {
+    if (base::any(!base::is.numeric(x))) {
         base::stop(w)
     }
 }
@@ -337,7 +338,7 @@ check_rowcount <- function(x) {
         base::deparse(base::substitute(x)),
         " contains zero rows"
     )
-    if(base::nrow(x) == 0) {
+    if (base::nrow(x) == 0) {
         base::stop(w)
     }
 }
@@ -347,10 +348,10 @@ check_singlevalue <- function(x) {
         base::deparse(base::substitute(x)),
         " has to be a single value"
     )
-    if(base::any(base::is.na(x))) {
+    if (base::any(base::is.na(x))) {
         base::stop(w)
     }
-    if(base::length(x) != 1) {
+    if (base::length(x) != 1) {
         base::stop(w)
     }
 }
@@ -360,7 +361,7 @@ check_wholenumber <- function(x) {
         base::deparse(base::substitute(x)),
         " has to be a whole number"
     )
-    if(base::any(!(abs(x - round(x)) < .Machine$double.eps^0.5))) {
+    if (base::any(!(abs(x - round(x)) < .Machine$double.eps^0.5))) {
         base::stop(w)
     }
 }
@@ -370,7 +371,7 @@ check_positive <- function(x) {
         base::deparse(base::substitute(x)),
         " has to be positive number"
     )
-    if(x < 0) {
+    if (x < 0) {
         base::stop(w)
     }
 }

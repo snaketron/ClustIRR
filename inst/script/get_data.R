@@ -33,7 +33,6 @@ CDR3a$TRBV <- NULL
 CDR3a$TRBJ <- NULL
 
 # create dummy CDR3ab
-CDR3ab <- data.frame(CDR3a = CDR3a$CDR3a,
-                     CDR3b = CDR3b$CDR3b)
+CDR3ab <- data.frame(CDR3a = CDR3a$CDR3a, CDR3b = CDR3b$CDR3b)
 save(CDR3ab, file = "data/CDR3ab.RData", compress = "xz")
 

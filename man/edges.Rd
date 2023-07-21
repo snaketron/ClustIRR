@@ -42,20 +42,20 @@ r <- base::data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
 # run analysis
-out <- cluster_irr(s = s,
-                   r = r,
-                   version = 3,
-                   ks = 4,
-                   cores = 1,
-                   control = list(
-                      B = 1000,
-                      global_max_dist = 1,
-                      local_max_fdr = 0.05,
-                      local_min_ove = 2,
-                      local_min_o = 1,
-                      trim_flank_aa = 3,
-                      global_pairs = NULL,
-                      low_mem = FALSE))
+out <- cluster_irr( s = s,
+                    r = r,
+                    version = 3,
+                    ks = 4,
+                    cores = 1,
+                    control = list(
+                        B = 1000,
+                        global_max_dist = 1,
+                        local_max_fdr = 0.05,
+                        local_min_ove = 2,
+                        local_min_o = 1,
+                        trim_flank_aa = 3,
+                        global_pairs = NULL,
+                        low_mem = FALSE))
 
 # output class
 base::class(out)

@@ -45,25 +45,25 @@ base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
 # add an artificial clonal expansion of two sequences to the sample dataset
 clones <- base::data.frame(CDR3b = rep(x = c("CATSRAAKPDGLAALETQYF",
-                                       "CATSRAAKPDGLAALSTQYF"),
-                                       times = 15))
+                                        "CATSRAAKPDGLAALSTQYF"),
+                                        times = 15))
 s <- base::rbind(s, clones)
 
 # run analysis
-out <- cluster_irr(s = s,
-                   r = r,
-                   version = 3,
-                   ks = 4,
-                   cores = 1,
-                   control = list(
-                      B = 1000,
-                      global_max_dist = 1,
-                      local_max_fdr = 0.05,
-                      local_min_ove = 2,
-                      local_min_o = 1,
-                      trim_flank_aa = 3,
-                      global_pairs = NULL,
-                      low_mem = FALSE))
+out <- cluster_irr( s = s,
+                    r = r,
+                    version = 3,
+                    ks = 4,
+                    cores = 1,
+                    control = list(
+                        B = 1000,
+                        global_max_dist = 1,
+                        local_max_fdr = 0.05,
+                        local_min_ove = 2,
+                        local_min_o = 1,
+                        trim_flank_aa = 3,
+                        global_pairs = NULL,
+                        low_mem = FALSE))
 
 # create igraph object
 out_ig <- get_graph(out)

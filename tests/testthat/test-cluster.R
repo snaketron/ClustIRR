@@ -395,7 +395,7 @@ for (version in c(1, 2, 3)) {
         ), regexp = "local_max_fdr has to be <= 1")
     })
 
-    test_that("control_input$local_min_ove parameter takes only valid input",{
+    test_that("control_input$local_min_ove parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$local_min_ove <- Inf # infinity
         expect_error(cluster_irr(
@@ -426,7 +426,7 @@ for (version in c(1, 2, 3)) {
         ), regexp = "local_min_ove has to be a single value")
     })
 
-    test_that("control_input$local_min_o parameter takes only valid input",{
+    test_that("control_input$local_min_o parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$local_min_o <- Inf # infinity
         expect_error(cluster_irr(
@@ -466,7 +466,7 @@ for (version in c(1, 2, 3)) {
         ), regexp = "local_min_o has to be a single value")
     })
 
-    test_that("control_input$trim_flank_aa parameter takes only valid input",{
+    test_that("control_input$trim_flank_aa parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$trim_flank_aa <- Inf # infinity
         expect_error(cluster_irr(
@@ -537,7 +537,7 @@ for (version in c(1, 2, 3)) {
         ), regexp = "low_mem has to be logical")
     })
 
-    test_that("control_input$global_pairs parameter takes only valid input",{
+    test_that("control_input$global_pairs parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$global_pairs <- matrix(
             data = NA,
@@ -552,7 +552,7 @@ for (version in c(1, 2, 3)) {
             cores = cores,
             control = control_input_tmp
         ), regexp = "global_pairs contains zero rows")
-        control_input_tmp$global_pairs <- base::data.frame(c(1, 2)) #rowcount 0
+        control_input_tmp$global_pairs <- base::data.frame(c(1, 2)) # rowcount 0
         expect_error(cluster_irr(
             s = s,
             r = r,
@@ -606,8 +606,8 @@ for (version in c(1, 2, 3)) {
 
     # test all versions with correct input
     test_that("cluster_irr works with correct input", {
-      control_input_tmp <- control_input
-      control_input_tmp$trim_flank_aa <- 0
+        control_input_tmp <- control_input
+        control_input_tmp$trim_flank_aa <- 0
         expect_no_error(cluster_irr(
             s = s,
             r = r,

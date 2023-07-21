@@ -3,19 +3,21 @@ title: "Introduction to ClustIRR"
 author: "S. Kitanovski, K. Wollek"
 date: "`r Sys.Date()`"
 output:
-  BiocStyle::html_document
+    BiocStyle::html_document
 vignette: >
-  %\VignetteIndexEntry{Introduction to ClustIRR}
-  %\VignetteEngine{knitr::rmarkdown}
-  %\VignetteEncoding{UTF-8}
+    %\VignetteIndexEntry{Introduction to ClustIRR}
+    %\VignetteEngine{knitr::rmarkdown}
+    %\VignetteEncoding{UTF-8}
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE,
-                      comment = "#>",
-                      fig.height = 5,
-                      fig.width = 5,
-                      fig.align = "center")
+knitr::opts_chunk$set(
+    collapse = TRUE,
+    comment = "#>",
+    fig.height = 5,
+    fig.width = 5,
+    fig.align = "center"
+)
 ```
 
 
@@ -60,9 +62,9 @@ The main input of ClustIRR are two sets of amino acid sequences of the
 complementarity determining region 3 (CDR3). The CDR3s may come from one T 
 cell receptor chain (e.g.\ only CDR3$\alpha$s or only CDR3$\beta$s) or from 
 both chains (CDR3$\alpha\beta$). The two sets represent two repertoires:
-    
-  * `s` : IR repertoire to be analyzed (case sample)
-  * `r`: reference IR repertoire (control/reference sample)
+
+* `s` : IR repertoire to be analyzed (case sample)
+* `r`: reference IR repertoire (control/reference sample)
 
 **Hint:** `s` and `r` may also consists of CDR3s from $\gamma\delta$ T-cells 
 ($CDR3\gamma$ and CDR3$\delta$) or B-cells (CDR3H and CDR3L).
@@ -97,9 +99,9 @@ str(r)
 
 `r Biocpkg("ClustIRR")` employs two clustering strategies:
 
-  * **local** clustering: detects enrichment of motifs in the data sample 
+* **local** clustering: detects enrichment of motifs in the data sample 
     compared to the reference
-  * **global** clustering: identifies pairs of CDR3s that have similar
+* **global** clustering: identifies pairs of CDR3s that have similar
     sequences
 
 The rationale behind these two clustering strategies is the following: two 
@@ -139,21 +141,20 @@ into 4-mers:
 
 ```{r}
 t <- 3
-cdr3_trimmed <- base::substr(x = cdr3, start = t+1, stop = nchar(cdr3)-t)
+cdr3_trimmed <- base::substr(x = cdr3, start = t + 1, stop = nchar(cdr3) - t)
 base::colnames(stringdist::qgrams(cdr3_trimmed, q = k))
 ```
  
 
 A motif is enriched if it satisfies the the following criteria:
 
-  1. `control$local_min_o`: minimum motif frequency in `s`
-  2. `control$local_min_ove`: minimum ratio of observed vs. expected (OvE) 
+1. `control$local_min_o`: minimum motif frequency in `s`
+2. `control$local_min_ove`: minimum ratio of observed vs. expected (OvE) 
     relative motif frequency, with $OvE=\dfrac{f_s}{n_s}/\dfrac{f_r}{n_r}$
-    
-      * $f_{s}$ and $f_{r}$: motif frequencies in repertoires `s` and `r`
-      * $n_{s}$ and $n_{r}$: total number of motifs in repertoires `s` and `r`
+    * $f_{s}$ and $f_{r}$: motif frequencies in repertoires `s` and `r`
+    * $n_{s}$ and $n_{r}$: total number of motifs in repertoires `s` and `r`
       
-  3. `control$local_max_fdr`: maximum false discovery rate (FDR) corrected 
+3. `control$local_max_fdr`: maximum false discovery rate (FDR) corrected 
     p-value computed by Fisher's exact test
 
 
@@ -173,8 +174,8 @@ input parameter `control$global_pairs`.
 
 `r Biocpkg("ClustIRR")` returns two types of output:
 
-  1. clustering results: tables and lists
-  2. graph (igraph object) 
+1. clustering results: tables and lists
+2. graph (igraph object) 
 
 
 # Case study 1: Detecting enriched motifs
@@ -192,12 +193,14 @@ base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
 ... and then we perform clustering with ClustIRR:
 
 ```{r}
-clustirr_output <- cluster_irr(s = s,  
-                               r = r,
-                               version = 3,
-                               ks = 4,
-                               cores = 1,
-                               control = list(trim_flank_aa = 3))
+clustirr_output <- cluster_irr(
+    s = s,
+    r = r,
+    version = 3,
+    ks = 4,
+    cores = 1,
+    control = list(trim_flank_aa = 3)
+)
 ```
 
 ## Local clustering results
@@ -211,7 +214,7 @@ and FDR$\approx0$.
 local_motifs <- clustirr_output$clust$CDR3b$local$m
 
 # display only passed motifs
-knitr::kable(local_motifs[local_motifs$pass == TRUE,], row.names = FALSE)
+knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
 ```
 
 ## Global clustering results
@@ -230,7 +233,7 @@ knitr::kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
 Let's plot the graph:
 
 ```{r}
-# plot the clust_irr object 
+# plot the clust_irr object
 plot_graph(clust_irr = clustirr_output)
 ```
 In this graph, enriched motifs *LEAR* and *LLEA* as well as the global 
@@ -274,7 +277,7 @@ ClustIRR should detect enrichment of most motifs at the core of *CATSRPDGLAQYF*.
 Lets try this out:
 
 ```{r}
-# create a clone of 10 T-cells 
+# create a clone of 10 T-cells
 clone <- base::data.frame(CDR3b = rep("CATSRPDGLAQYF", times = 10))
 ```
 
@@ -286,12 +289,14 @@ s <- base::rbind(s, clone)
 we perform clustering
 
 ```{r}
-clustirr_output <- cluster_irr(s = s,  
-                               r = r,
-                               version = 3,
-                               ks = 4,
-                               cores = 1,
-                               control = list(trim_flank_aa = 3))
+clustirr_output <- cluster_irr(
+    s = s,
+    r = r,
+    version = 3,
+    ks = 4,
+    cores = 1,
+    control = list(trim_flank_aa = 3)
+)
 ```
 
 ## Local clustering results
@@ -304,7 +309,7 @@ motifs that are part of the core of *CATSRPDGLAQYF*, such as *DGLA*, *PDGL*,
 local_motifs <- clustirr_output$clust$CDR3b$local$m
 
 # display only passed motifs
-knitr::kable(local_motifs[local_motifs$pass == TRUE,], row.names = FALSE)
+knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
 ```
 
 ## Global clustering results
@@ -326,7 +331,7 @@ knitr::kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
 Lets plot the clustering results:
 
 ```{r}
-# plot the clust_irr object 
+# plot the clust_irr object
 plot_graph(clust_irr = clustirr_output)
 ```
 This time, the legend shows a dot symbol for clonally `Expanded` cells.
@@ -340,7 +345,7 @@ To visualize the clone split into single cells (nodes), the `expand_clones`
 parameter can be set to `TRUE`:
 
 ```{r}
-# plot the clust_irr object 
+# plot the clust_irr object
 plot_graph(clust_irr = clustirr_output, expand_clones = TRUE)
 ```
 
@@ -366,7 +371,6 @@ r_a <- base::data.frame(CDR3a = CDR3ab$CDR3b[5001:10000])
 # CDR3b
 s_b <- base::data.frame(CDR3b = CDR3ab$CDR3b[4501:5000])
 r_b <- base::data.frame(CDR3b = CDR3ab$CDR3b[5001:10000])
-
 ```
 
 We will insert three clones into each chain as well as two motifs, to 
@@ -375,24 +379,30 @@ demonstrate some possible combinations that can occur.
 We start with the CDR3$\beta$ chain:
 
 * **Clone 1**: 10 times *CATSRLEFAQYF* 
-  * Test global and local edges
+    * Test global and local edges
 * **Clone 2**: 15 times *CATSRLEARATYF* 
-  * Test global and local edges + shared motif *LEAR*
+    * Test global and local edges + shared motif *LEAR*
 * **Clone 2**: 2 times *CATSEEEFAQYF* 
-  * Test global edge only
+    * Test global edge only
 * **Motif 1**: 10 times *LEAR* 
-  * Test edge to **Clone 2**
+    * Test edge to **Clone 2**
 * **Motif 2**: 5 times *REAL* 
-  * Will also be CDR3$\alpha$ **Motif 2**, to demonstrate separate clustering
+    * Will also be CDR3$\alpha$ **Motif 2**, to demonstrate separate clustering
 
 ```{r}
 # beta clones + motifs
-s_b <- base::rbind(s_b, 
-                   base::data.frame(CDR3b = rep("CATSRLEFAQYF", times = 10)))
-s_b <- base::rbind(s_b, 
-                   base::data.frame(CDR3b = rep("CATSRLEARATYF", times = 15)))
-s_b <- base::rbind(s_b, 
-                   base::data.frame(CDR3b = rep("CATSEEEFAQYF", times = 2)))
+s_b <- base::rbind(
+    s_b,
+    base::data.frame(CDR3b = rep("CATSRLEFAQYF", times = 10))
+)
+s_b <- base::rbind(
+    s_b,
+    base::data.frame(CDR3b = rep("CATSRLEARATYF", times = 15))
+)
+s_b <- base::rbind(
+    s_b,
+    base::data.frame(CDR3b = rep("CATSEEEFAQYF", times = 2))
+)
 base::substr(x = s_b$CDR3b[1:10], start = 4, stop = 7) <- "LEAR"
 base::substr(x = s_b$CDR3b[20:25], start = 5, stop = 8) <- "REAL"
 ```
@@ -401,27 +411,32 @@ For the We start with the CDR3$\alpha$ chain we will use the following
 sequences and motifs:
 
 * **Clone 1**: 20 times *CAWNQEEETYEQYF* 
-  * Test global and local edges
+    * Test global and local edges
 * **Clone 2**: 5 times *CAWNQEEETYEQYF* 
-  * Test global and local edges + shared motif *LEAR*
+    * Test global and local edges + shared motif *LEAR*
 * **Clone 2**: 2 times *CASSSLYNETTYF* 
-  * Test global edge only
+    * Test global edge only
 * **Motif 1**: 10 times *GPPN* 
-  * Test local edges
+    * Test local edges
 * **Motif 2**: 5 times *REAL* 
-  * Will also be CDR3$\beta$ **Motif 2**, to demonstrate separate clustering
+    * Will also be CDR3$\beta$ **Motif 2**, to demonstrate separate clustering
 
 ```{r}
 # alpha clones + motifs
-s_a <- base::rbind(s_a, 
-                   base::data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 20)))
-s_a <- base::rbind(s_a, 
-                   base::data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 5)))
-s_a <- base::rbind(s_a, 
-                   base::data.frame(CDR3a = rep("CASSSLYNETTYF", times = 2)))
+s_a <- base::rbind(
+    s_a,
+    base::data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 20))
+)
+s_a <- base::rbind(
+    s_a,
+    base::data.frame(CDR3a = rep("CAWNQEEETYEQYF", times = 5))
+)
+s_a <- base::rbind(
+    s_a,
+    base::data.frame(CDR3a = rep("CASSSLYNETTYF", times = 2))
+)
 base::substr(x = s_a$CDR3a[51:60], start = 6, stop = 9) <- "GPPN"
 base::substr(x = s_a$CDR3a[20:25], start = 5, stop = 8) <- "REAL"
-
 ```
 
 No we combine both chains:
@@ -430,18 +445,19 @@ No we combine both chains:
 # alpha & beta combined
 s_ab <- base::cbind(s_a, s_b)
 r_ab <- base::cbind(r_a, r_b)
-
 ```
 
 And perform clustering:
 
 ```{r}
-out3 <- cluster_irr(s = s_ab,
-                    r = r_ab,
-                    version = 3,
-                    ks = 4,
-                    cores = 8,
-                    control = list(trim_flank_aa = 3))
+out3 <- cluster_irr(
+    s = s_ab,
+    r = r_ab,
+    version = 3,
+    ks = 4,
+    cores = 8,
+    control = list(trim_flank_aa = 3)
+)
 ```
 Let's plot the graph:
 
@@ -471,7 +487,6 @@ r_g <- base::data.frame(CDR3g = CDR3ab$CDR3b[5001:10000])
 # CDR3d
 s_d <- base::data.frame(CDR3d = CDR3ab$CDR3a[4501:5000])
 r_d <- base::data.frame(CDR3d = CDR3ab$CDR3a[5001:10000])
-
 ```
 
 We will again insert three clones into each chain as well as two motifs, to 
@@ -480,53 +495,63 @@ demonstrate some possible combinations.
 We start with the CDR3$\gamma$ chain:
 
 * **Clone 1**: 4 times *CATSRLEFAQYF* 
-  * Test global and local edges
+    * Test global and local edges
 * **Clone 2**: 15 times *CATSRLEARATYF* 
-  * Test global and local edges + shared motif *LEAR*
+    * Test global and local edges + shared motif *LEAR*
 * **Clone 2**: 2 times *CATSEEEFAQYF* 
-  * Test global edge only
+    * Test global edge only
 * **Motif 1**: 10 times *LEAR* 
-  * Test edge to **Clone 2**
+    * Test edge to **Clone 2**
 * **Motif 2**: 5 times *REAL* 
-  * Will also be CDR3$\delta$ **Motif 2**, to demonstrate separate clustering
+    * Will also be CDR3$\delta$ **Motif 2**, to demonstrate separate clustering
 
 ```{r}
 # gamma clones + motifs
-s_g <- base::rbind(s_g, 
-                   base::data.frame(CDR3g = rep("CATSRLEFAQYF", times = 4)))
-s_g <- base::rbind(s_g, 
-                   base::data.frame(CDR3g = rep("CATSRLEARATYF", times = 15)))
-s_g <- base::rbind(s_g, 
-                   base::data.frame(CDR3g = rep("CATSEEEFAQYF", times = 2)))
+s_g <- base::rbind(
+    s_g,
+    base::data.frame(CDR3g = rep("CATSRLEFAQYF", times = 4))
+)
+s_g <- base::rbind(
+    s_g,
+    base::data.frame(CDR3g = rep("CATSRLEARATYF", times = 15))
+)
+s_g <- base::rbind(
+    s_g,
+    base::data.frame(CDR3g = rep("CATSEEEFAQYF", times = 2))
+)
 base::substr(x = s_g$CDR3g[1:10], start = 4, stop = 7) <- "LEAR"
 base::substr(x = s_g$CDR3g[20:25], start = 5, stop = 8) <- "REAL"
-
 ```
 
 Now the CDR3$\delta$ chain:
 
 * **Clone 1**: 4 times *CAWNQEEETYEQYF* 
-  * Test global and local edges
+    * Test global and local edges
 * **Clone 2**: 15 times *CAWNQEETTYEQYF* 
-  * Test global and local edges + shared motif *LEAR*
+    * Test global and local edges + shared motif *LEAR*
 * **Clone 2**: 2 times *CASSSLYNETTYF* 
-  * Test global edge only
+    * Test global edge only
 * **Motif 1**: 10 times *GPPN* 
-  * Test edge to **Clone 2**
+    * Test edge to **Clone 2**
 * **Motif 2**: 5 times *REAL* 
-  * Will also be CDR3$\gamma$ **Motif 2**, to demonstrate separate clustering
+    * Will also be CDR3$\gamma$ **Motif 2**, to demonstrate separate clustering
 
 ```{r}
 # delta clones + motifs
-s_d <- base::rbind(s_d, 
-                   base::data.frame(CDR3d = rep("CAWNQEEETYEQYF", times = 4)))
-s_d <- base::rbind(s_d, 
-                   base::data.frame(CDR3d = rep("CAWNQEETTYEQYF", times = 15)))
-s_d <- base::rbind(s_d, 
-                   base::data.frame(CDR3d = rep("CASSSLYNETTYF", times = 2)))
+s_d <- base::rbind(
+    s_d,
+    base::data.frame(CDR3d = rep("CAWNQEEETYEQYF", times = 4))
+)
+s_d <- base::rbind(
+    s_d,
+    base::data.frame(CDR3d = rep("CAWNQEETTYEQYF", times = 15))
+)
+s_d <- base::rbind(
+    s_d,
+    base::data.frame(CDR3d = rep("CASSSLYNETTYF", times = 2))
+)
 base::substr(x = s_d$CDR3d[51:60], start = 6, stop = 9) <- "GPPN"
 base::substr(x = s_d$CDR3d[20:25], start = 5, stop = 8) <- "REAL"
-
 ```
 
 Combine both chains:
@@ -540,12 +565,14 @@ r_gd <- base::cbind(r_g, r_d)
 Perform clustering:
 
 ```{r}
-out3 <- cluster_irr(s = s_gd,
-                    r = r_gd,
-                    version = 3,
-                    ks = 4,
-                    cores = 8,
-                    control = list(trim_flank_aa = 3))
+out3 <- cluster_irr(
+    s = s_gd,
+    r = r_gd,
+    version = 3,
+    ks = 4,
+    cores = 8,
+    control = list(trim_flank_aa = 3)
+)
 ```
 
 And plot the graph:

@@ -3,19 +3,19 @@
 \title{Clustering of immune receptor repertoires}
 \usage{
 cluster_irr(
-  s,
-  r,
-  version = 3,
-  ks = 4,
-  cores = 1,
-  control = list(B = 1000,
-                 global_max_dist = 1,
-                 local_max_fdr = 0.05,
-                 local_min_ove = 2,
-                 local_min_o = 1,
-                 trim_flank_aa = 0,
-                 global_pairs = NULL,
-                 low_mem = FALSE)
+    s,
+    r,
+    version = 3,
+    ks = 4,
+    cores = 1,
+    control = list( B = 1000,
+                    global_max_dist = 1,
+                    local_max_fdr = 0.05,
+                    local_min_ove = 2,
+                    local_min_o = 1,
+                    trim_flank_aa = 0,
+                    global_pairs = NULL,
+                    low_mem = FALSE)
 )
 }
 \arguments{
@@ -23,9 +23,9 @@ cluster_irr(
 observed in an immune receptor repertoire (IRR). The data.frame can have either
 one column or two columns:
 \itemize{
- \item One column: s contains CDR3s from a single chain: \emph{CDR3b}, 
- \emph{CDR3a}, \emph{CDR3g}, \emph{CDR3d}, \emph{CDR3h} or \emph{CDR3l}
- \item Two columns: s contains CDR3s from both chains (paired):
+\item One column: s contains CDR3s from a single chain: \emph{CDR3b}, 
+\emph{CDR3a}, \emph{CDR3g}, \emph{CDR3d}, \emph{CDR3h} or \emph{CDR3l}
+\item Two columns: s contains CDR3s from both chains (paired):
     \emph{CDR3b} and \emph{CDR3a} or \emph{CDR3g} and \emph{CDR3d} or 
     \emph{CDR3h} and \emph{CDR3l}
 }
@@ -49,33 +49,33 @@ have the same structure (number of columns and column names) as \code{s}}
 \item{control}{list, a named list of auxiliary parameters
 to control algorithm's behavior. See the details below:
 \itemize{\item \code{B} - integer, number of bootstrap samples. Only used by
-  version = 1. \code{B} = 1000 (default)
-  \item \code{global_max_dist} - number, Hamming distance (HD) threshold to
-  consider two CDR3s as globally clustered. CDR3s are globally clustered if
-  HD(\eqn{a}, \eqn{b}) \eqn{\leq} \code{global_max_dist}.
-  \code{global_max_dist} = 1 (default)
-  \item \code{local_max_fdr} - numeric, maximum False Discovery Rate (FDR) for
-  the detection of enriched motifs. \code{local_max_fdr} = 0.05 (default)
-  \item \code{local_min_ove} - numeric, minimum fold change between observed
-  and expected relative abundances for the detection of enriched motifs.
-  \code{local_min_ove} = 2 (default)
-  \item \code{local_min_o} - numeric, minimum absolute frequency of a motif in
-  the s in order for the motif to be used in the enrichment analysis.
-  \code{local_min_o} = 1 (default)
-  \item \code{trim_flank_aa} - integer, how many amino acids should be trimmed
-  from the flanks of all CDR3 sequences (only used for local clustering.
-  \code{trim_flank_aa} = 0 (default))
-  \item \code{low_mem} - logical, allows low memory mode for global clustering.
-  This will lead to increase in the CPU time but lead to a lower memory
-  footprint. \code{low_mem} = \code{FALSE} (default)
-  \item \code{global_pairs} - matrix, pre-computed global pairs. If
-  \code{global_pairs} is provided by the user, then global clustering is not
-  performed. Instead the CDR3 pairs from global_pairs are used as global
-  clustering pairs. \code{global_pairs} is a character matrix with 3 columns.
-  The first two columns contain pairs of CDR3 sequences. These are considered
-  globally clustered. The third column contains information about the TCR chain
-  of each pair of CDR3s: \emph{TRA} or \emph{TRB}. \code{global_pair} =
-  \code{NULL} (default)
+version = 1. \code{B} = 1000 (default)
+\item \code{global_max_dist} - number, Hamming distance (HD) threshold to
+consider two CDR3s as globally clustered. CDR3s are globally clustered if
+HD(\eqn{a}, \eqn{b}) \eqn{\leq} \code{global_max_dist}.
+\code{global_max_dist} = 1 (default)
+\item \code{local_max_fdr} - numeric, maximum False Discovery Rate (FDR) for
+the detection of enriched motifs. \code{local_max_fdr} = 0.05 (default)
+\item \code{local_min_ove} - numeric, minimum fold change between observed
+and expected relative abundances for the detection of enriched motifs.
+\code{local_min_ove} = 2 (default)
+\item \code{local_min_o} - numeric, minimum absolute frequency of a motif in
+the s in order for the motif to be used in the enrichment analysis.
+\code{local_min_o} = 1 (default)
+\item \code{trim_flank_aa} - integer, how many amino acids should be trimmed
+from the flanks of all CDR3 sequences (only used for local clustering.
+\code{trim_flank_aa} = 0 (default))
+\item \code{low_mem} - logical, allows low memory mode for global clustering.
+This will lead to increase in the CPU time but lead to a lower memory
+footprint. \code{low_mem} = \code{FALSE} (default)
+\item \code{global_pairs} - matrix, pre-computed global pairs. If
+\code{global_pairs} is provided by the user, then global clustering is not
+performed. Instead the CDR3 pairs from global_pairs are used as global
+clustering pairs. \code{global_pairs} is a character matrix with 3 columns.
+The first two columns contain pairs of CDR3 sequences. These are considered
+globally clustered. The third column contains information about the TCR chain
+of each pair of CDR3s: \emph{TRA} or \emph{TRB}. \code{global_pair} =
+\code{NULL} (default)
 }
 }
 }
@@ -84,11 +84,11 @@ The output is an object with \code{clust_irr} structure. This object is formed
 by two sublists:
 \item{clust}{list, contains clustering results
 \itemize{
-      \item \code{CDR3b/g/h} - list, contains global+local clustering results 
-      for CDR3s from chain \emph{TRB}/\emph{TRG}/\emph{BRH}
-      \itemize{
+    \item \code{CDR3b/g/h} - list, contains global+local clustering results 
+    for CDR3s from chain \emph{TRB}/\emph{TRG}/\emph{BRH}
+    \itemize{
         \item \code{local} - list, local clustering results
-          \itemize{
+        \itemize{
             \item \code{m} - data.frame, motif enrichment results
 
             For version = 2 and version = 3, \code{m} has the following set of
@@ -145,14 +145,14 @@ by two sublists:
             \code{cdr3} = \code{cdr3_core}
             \item \code{motif} - enriched motif from \code{cdr3_core}
             }
-          }
+        }
         \item \code{global} - matrix, global clustering results. Pairs of
         globally similar CDR3s are shown in each row of the matrix
         (analogous to \code{lp})
-      }
-      \item \code{CDR3a/d/l} - list, contains global+local clustering results 
-      for CDR3s from chain \emph{TRA}/\emph{TRD}/\emph{BRL} (same structure as 
-      in \code{CDR3b/g/h})
+    }
+    \item \code{CDR3a/d/l} - list, contains global+local clustering results 
+    for CDR3s from chain \emph{TRA}/\emph{TRD}/\emph{BRL} (same structure as 
+    in \code{CDR3b/g/h})
     }
 }
 
@@ -179,19 +179,19 @@ Two strategies are used:
     }
 \item Motif processing steps
     \itemize{
-          \item motif frequencies in data set \code{s} (\eqn{f_s}) and \code{r}
-          (\eqn{f_r})
-          \item total number of motifs in data set \code{s} (\eqn{n_s}) and
-          \code{r} (\eqn{n_r})
-          \item ratio of observed vs. expected motif counts using the following
-          formula: OvE=\eqn{(f_s/n_s)/(f_r/n_r})
-          \item In version 2 and 3, probability \eqn{p_i} of finding the
-          observed or a larger OvE for motif \eqn{i} given that the
-          null hypothesis is true is computed with the Fisher's exact test
-          \item In version 1, \eqn{p_i} is computed by bootstrapping
-          \item classify motif \eqn{i} as \code{pass=TRUE} if the motif passes
-          all filters specified in the user-provided control list, otherwise
-          as \code{pass=FALSE}
+        \item motif frequencies in data set \code{s} (\eqn{f_s}) and \code{r}
+        (\eqn{f_r})
+        \item total number of motifs in data set \code{s} (\eqn{n_s}) and
+        \code{r} (\eqn{n_r})
+        \item ratio of observed vs. expected motif counts using the following
+        formula: OvE=\eqn{(f_s/n_s)/(f_r/n_r})
+        \item In version 2 and 3, probability \eqn{p_i} of finding the
+        observed or a larger OvE for motif \eqn{i} given that the
+        null hypothesis is true is computed with the Fisher's exact test
+        \item In version 1, \eqn{p_i} is computed by bootstrapping
+        \item classify motif \eqn{i} as \code{pass=TRUE} if the motif passes
+        all filters specified in the user-provided control list, otherwise
+        as \code{pass=FALSE}
     }
 
 }
@@ -221,24 +221,24 @@ base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
 # add an artificial clonal expansion of two sequences to the sample dataset
 s <- base::rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRAAKPDGLRALETQYF",
-                                       "CATSRAAKPDRQWWLSTQYF"),
-                                       times = 15)))
+                                    "CATSRAAKPDRQWWLSTQYF"),
+                                    times = 15)))
 
 # run analysis
-out <- cluster_irr(s = s,
-                   r = r,
-                   version = 3,
-                   ks = 4,
-                   cores = 1,
-                   control = list(
-                      B = 1000,
-                      global_max_dist = 1,
-                      local_max_fdr = 0.05,
-                      local_min_ove = 2,
-                      local_min_o = 1,
-                      trim_flank_aa = 3,
-                      global_pairs = NULL,
-                      low_mem = FALSE))
+out <- cluster_irr( s = s,
+                    r = r,
+                    version = 3,
+                    ks = 4,
+                    cores = 1,
+                    control = list(
+                        B = 1000,
+                        global_max_dist = 1,
+                        local_max_fdr = 0.05,
+                        local_min_ove = 2,
+                        local_min_o = 1,
+                        trim_flank_aa = 3,
+                        global_pairs = NULL,
+                        low_mem = FALSE))
 
 # output class
 base::class(out)
