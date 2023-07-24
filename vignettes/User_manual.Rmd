@@ -34,14 +34,14 @@ important role in protecting the host against genetically diverse and rapidly
 evolving pathogens, such as viruses, bacteria, or cancers. The BCR and TCR
 sequence diversity originates in part due to V(D)J recombination, in which 
 different germline-encoded genes are joined to form immune receptors (IRs). 
-As a result of this process, practically each newly formed naive mature T cell 
+As a result of this process, practically every newly formed naive mature T cell 
 and B cell is equipped with a distinct IR, and this allows them to recognize 
 distinct sets of antigens. 
 
-B-cells bind antigens directly via the complementarity determining (CDR) 
-regions of their BCRs, and T-cells recognize antigenic peptides presented 
+B-cells bind antigens directly via the complementarity determining regions 
+(CDR) of their BCRs, and T-cells recognize antigenic peptides presented 
 by major histocompatibility (MHC) molecules via the CDRs of their TCRs. Antigen 
-recognition may lead to B/T  cell activation, and in such a case the cells 
+recognition may lead to B/T  cell activation, and in such a case, the cells 
 start to proliferate rapidly, forming antigen-specific clones that are capable 
 of mounting effective immune response. 
 
@@ -67,20 +67,20 @@ knitr::include_graphics("../inst/extdata/logo.png")
 
 ## Input
 
-The main input of `r Biocpkg("ClustIRR")` are two repertoires, i.e. sets of 
+The main input of `r Biocpkg("ClustIRR")` are two repertoires, i.e., sets of 
 amino acid sequences of the complementarity determining region 3 (CDR3). The 
-CDR3s may come from one T cell receptor chain (e.g.\ only CDR3$\alpha$s or only 
-CDR3$\beta$s) or from both chains (CDR3$\alpha\beta$). The two sets represent 
-two repertoires, and each element in the sets represents a T-cell:
+CDR3s may come from one T cell receptor chain (e.g., \ only CDR3$\alpha$s or 
+only CDR3$\beta$s) or from both chains (CDR3$\alpha\beta$). The two sets 
+represent two repertoires, and each element in the sets represents a T-cell:
 
-* `s` : IR repertoire to be analyzed (case sample)
+* `s`: IR repertoire to be analyzed (case sample)
 * `r`: reference IR repertoire (control/reference sample)
 
-**Hint:** `s` and `r` may also consists of CDR3s from $\gamma\delta$ T-cells 
+**Hint:** `s` and `r` may also consist of CDR3s from $\gamma\delta$ T-cells 
 ($CDR3\gamma$ and CDR3$\delta$) or B-cells (CDR3H and CDR3L). This is explained
 in case study 4.
 
-Lets look at an example data, which we will use as input:
+Let's look at an example data, which we will use as input:
 
 ```{r}
 data("CDR3ab")
@@ -115,15 +115,15 @@ str(r)
 sequences
 
 The rationale behind these two clustering strategies is the following: two 
-identical CDR3 sequences have the same specificity. CDR3 sequences that are
-similar (e.g. share the same sequence but differ at only 1 position) likely 
+identical CDR3 sequences have the same specificity. Similar CDR3 sequences 
+(e.g., share the same sequence but differ at only one position) likely 
 have similar specificity. Global clustering is designed to find such global 
 pairs. 
 
 Two CDR3s with significantly different sequences may still recognize the same
-peptide if they share a motif in their cores regions (e.g. identical 4-mer). 
-Such "useful" motifs may be enriched in `s`  but not in `r`, and the purpose 
-of local clustering is to identify them.
+peptide if they share a motif in their core regions (e.g., identical 4-mer). 
+Such "useful" motifs may be enriched in `s`  but not in `r`, and local 
+clustering aims to identify them.
 
 
 
@@ -143,17 +143,17 @@ base::colnames(stringdist::qgrams(cdr3, q = k))
 
 $k$-mers found in the **core region** of the CDR3 loop are more likely to 
 establish contact with an antigenic peptide than the $k$-mers found at the 
-flanks of the CDR3 sequence. Hence, the user is encouraged to remove few amino 
-acids from the flanks of each CDR3 sequence. This can be done by changing
-the control input from `control$trim_flank_aa` e.g.:
+flanks of the CDR3 sequence. Hence, the user is encouraged to remove a few 
+amino acids from the flanks of each CDR3 sequence. This can be done by changing
+the control input from `control$trim_flank_aa,` e.g.:
   
-  * `control$trim_flank_aa= 0`: no trimming
-  * `control$trim_flank_aa = 3`: trim 3 amino acids from both flanks of the 
+  * `control$trim_flank_aa = 0`: no trimming
+  * `control$trim_flank_aa = 3`: trim three amino acids from both flanks of the 
   CDR3 sequence
 
-Example of trimming CDR3 flanks and segmenting the core of the CDR3 sequence 
-into 4-mers is shown below. We now focus on 5 overlapping motifs found in the 
-core region of the `CASSTTTGTGELFF`
+An example of trimming CDR3 flanks and segmenting the core of the CDR3 sequence 
+into 4-mers is shown below. We now focus on five overlapping motifs found in 
+the core region of the `CASSTTTGTGELFF`.
 
 ```{r}
 t <- 3
@@ -171,8 +171,8 @@ satisfied:
     * $f_{s}$ and $f_{r}$: motif frequencies in repertoires `s` and `r`
     * $n_{s}$ and $n_{r}$: total number of motifs in repertoires `s` and `r`
       
-3. `control$local_max_fdr`: maximum false discovery rate (FDR) corrected 
-    p-value computed by Fisher's exact test
+3. `control$local_max_fdr`: maximum false discovery rate (FDR). Corrected 
+    p-value, computed by Fisher's exact test
 
 
 ### Global clustering
@@ -184,9 +184,11 @@ the user-defined threshold `control$global_max_dist` (default = 1).
 
 With this, `r Biocpkg("ClustIRR")` provides a very simple and intuitive 
 heuristic for identifying globally similar CDR3s. But this approach also 
-has drawbacks: 1) CDR3 sequences with different lengths are not compared; 
-2) Hamming distance by definition does not take into account the properties 
-of the replaced amino acids. 
+has drawbacks: 
+
+1. CDR3 sequences with different lengths are not compared
+2. Hamming distance, by definition, does not take into account the properties 
+of the replaced amino acids
 
 To overcome this challenge, `r Biocpkg("ClustIRR")` provides a second input
 option (see red input in `r Biocpkg("ClustIRR")` workflow), which allows the 
@@ -200,17 +202,17 @@ the input parameter `control$global_pairs`.
 `r Biocpkg("ClustIRR")` returns two types of output:
 
 1. clustering results: tables and lists
-2. graph object
+2. graph object: plot and lists of nodes & edges
 
-We will describe the inputs, outputs and the algorithm of 
+We will describe the inputs, outputs, and the algorithm of 
 `r Biocpkg("ClustIRR")` with the help of the following case studies. 
 
 # Case study 1: simple TCR repertoire analysis with `r Biocpkg("ClustIRR")`
 
-In this study we will insert the motif *LEAR* in the core regions of the first 
-20 CDR3 sequences of repertoire `s`. With this we simulate enrichment of this 
-motif. This motif is not enriched in repertoire `r`, and `r Biocpkg("ClustIRR")`
-should be able to detect *LEAR* as enriched:
+In this study, we will insert the motif *LEAR* in the core regions of the first 
+20 CDR3b sequences of repertoire `s`. With this, we simulate the enrichment of 
+this motif. This motif is not enriched in repertoire `r`, and 
+`r Biocpkg("ClustIRR")` should be able to detect *LEAR* as enriched:
 
 ```{r}
 # insert motif LEAR
@@ -232,7 +234,7 @@ clustirr_output <- ClustIRR::cluster_irr(
 
 ## Local clustering results
 In the following table we see that `r Biocpkg("ClustIRR")` has detected *LEAR* 
-as enriched motif in `s` compared to `r`: 
+as an enriched motif in `s` compared to `r`: 
 
 ```{r}
 # extract local motifs
@@ -250,7 +252,7 @@ This can also be seen from the lower frequency of *LLEA* ($f_s$=5) in `s`
 compared to *LEAR* ($f_s$=20). For *LEAR* we see FDR$\approx 10^{-15}$, 
 which is significantly smaller than the FDR$\approx 10^{-2}$ observed for 
 *LLEA*. Finally, for *LEAR* we saw OvE$\approx 100$, whereas for *LLEA*'s  
-OvE$=\infty$ as the motif is not found in repertoire `f` (division by 0 when 
+OvE$=\infty$ as the motif is not found in repertoire `f_r` (division by 0 when 
 calculating OvE). 
 
 
@@ -265,15 +267,15 @@ amino acid at position 4:
 knitr::kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
 ```
 
-## Puting it all together $\rightarrow$ graph
+## Putting it all together $\rightarrow$ graph
 
-One of the main outputs of `r Biocpkg("ClustIRR")` is an undirected graph. 
+An undirected graph is one of the main outputs of `r Biocpkg("ClustIRR")`. 
 Each vertex is a T-cell (row in repertoire `s`), and we draw an edge between 
 two vertices if a) they are globally similar; or b) if they share an enriched 
 motif. Vertices that are not connected by an edge to any other vertex are not 
 shown. 
 
-Lets visualize the graph output for this case study:
+Let's visualize the graph output for this case study:
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
 clustirr_graph <- plot_graph(clust_irr = clustirr_output)
@@ -284,44 +286,50 @@ clustirr_graph
 
 ### Vertices
 
-In the graph we see 20 diamond-shaped vertices $\rightarrow$ 20 T-cells or 
+The graph shows 20 diamond-shaped vertices $\rightarrow$ 20 T-cells or 
 rows from `s`. These are the 20 T-cells with CDR3 sequences in which we 
-inserted the motif *LEAR*. Next to each vertex we show the corresponding 
+inserted the motif *LEAR*. Next to each vertex, we show the corresponding 
 CDR3 sequence as a label. The remaining 480 T-cells in `s` are not shown 
-because their vertices do not have an edge to vertex.
+because their vertices do not have an edge to the vertex.
 
 ```{r}
 length(clustirr_graph$x$nodes$id)
 ```
 
-The vertices can have different **shapes** and **colors**. Diamond-shaped 
-vertex indicates that the corresponding T-cell is not clonally expanded, i.e. 
-the vertex represents a single T-cell. In the presence of clonal expansion 
-(see case study 2), the expanded T-cells will be represented as oval-shaped 
-vertices, and the vertex size will encode the number of clonally expanded cells.
+The vertices can have different **shapes** and **colors**. A vertex being 
+diamond-shaped indicates that the corresponding T-cell is not clonally 
+expanded, i.e., the vertex represents a single T-cell. In the presence of clonal
+expansion (see case study 2), the expanded T-cells will be represented as 
+oval-shaped vertices, and the vertex size will encode the number of clonally 
+expanded cells.
 
 The graph is **interactive**. You can interact with it in the following ways:
   
-  * vertex positions can be altered
-  * we can zoom in or out
-  * we can click on or hover over vertices to get additional information:
-      * CDR3 sequence
+  * vertex positions can be altered *(click & drag)*
+  * we can zoom in or out *(mouse wheel)*
+  * we can *hover over* vertices to get additional information:
+      * CDR3 sequence(s)
       * clone cell count
       * sequences of enriched motifs shared with neighbor vertices
       * sequences of globally related neighbor vertices
-  * by clicking on a vertex we highlight its edges. The CDR3 sequence of the 
-  selected vertex picked from the `Select by id` dropdown menu
-  * the complementary dropdown meny `Select by group` allows us to select
-  vertices sharing an enriched motif or a CDR3 sequence
+  * we can also *hover over* edges to get additional information:
+      * relevant CDR3 sequence(s) of the connected vertices
+      * sequences of enriched motifs shared by the connected vertices
+      * sequences of globally related sequences of the connected vertices
+  * the `Select by id` dropdown menu can be used to select vertices via 
+  sequence(s). By *clicking on* a vertex, we highlight it's CDR3 sequence(s) 
+  in the `Select by id` dropdown menu, as well as its edges and neighbors
+  * the complementary dropdown menu `Select by group` allows us to select
+  vertices sharing an enriched motif or CDR3 sequence(s)
 
 ### Edges
-Between a pair of vertices we draw an edge if: a) they are globally similar; 
-or b) if they share an enriched motif. Furthermore, if the repertoire contains 
-paired information of e.g. on $\beta$ and $\alpha$ chain CDR3 sequences, then 
-for each type of chain may have an edge.
+Between a pair of vertices, we draw an edge if: a) they are globally similar; 
+or b) they share an enriched motif. Furthermore, each chain type may have an
+edge if the repertoire contains paired information, e.g., on $\beta$ and 
+$\alpha$ chain CDR3 sequences.
 
 The **color** and **thickness** of the edges is determined by the type and 
-number of the similarities between a pair of vertices:
+the number of similarities between a pair of vertices:
 
   * if the vertices share an enriched motif: gray edge
   * if the vertices are globally similar: orange edge
@@ -338,13 +346,13 @@ and use the Viewer panel to export your image.
 
 # Case study 2: analysis of TCR repertoire with large expanded clone
 
-In this case study we assume that the data contains a clone with 10 T-cells 
+In this case study, we assume that the data contains a clone with 10 T-cells 
 (2% of the repertoire size). The T-cells in the expanded clone have the same 
 CDR3b sequence *CATSRPDGLAQYF*. `r Biocpkg("ClustIRR")` should detect most 
-motifs at the core of *CATSRPDGLAQYF* as enriched, while also reporting that
+motifs at the core of *CATSRPDGLAQYF* as enriched while also reporting that
 all cells within have globally similar (in fact identical) CDR3b sequences.
 
-Lets insert a clone in dataset `s`:
+Let's insert a clone in dataset `s`:
 
 ```{r}
 # create a clone of 10 T-cells
@@ -383,18 +391,18 @@ knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
 
 Once again, `r Biocpkg("ClustIRR")` finds the same pair of globally similar 
 CDR3 sequences. However, remember that this time our repertoire `s` contains 
-10 identical CDR3s that belong to the T-cells of the expanded clone. Each pair 
+ten identical CDR3s belonging to the expanded clone's T-cells. Each pair 
 of CDR3 sequences in the clone are globally similar. Meanwhile, the CDR3 
 sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* differ by one amino acid 
 at position 4.
 
-Lets check how the global and local similarities are represented in the
+Let's check how the global and local similarities are represented in the
 graph (see next section).
 
 
 ## Graph output
 
-Lets plot the clustering results:
+Let's plot the clustering results:
 
 ```{r}
 # plot the clust_irr object
@@ -404,27 +412,27 @@ plot_graph(clust_irr = clustirr_output, expand_clones = TRUE)
 &nbsp;
 
 We see two connected components. The component on the top is identical to the
-one we saw in case study 1. The new component is found at the bottom
+one we saw in case study 1. The new component is found at the bottom.
 
 Each vertex in the new component represents a T-cell that belongs to the 
-expanded clone (hence, 10 vertices in total). As noted earlier, expanded 
+expanded clone (hence, ten vertices in total). As noted earlier, expanded 
 T-cells are shown as ovals, whereas singletons are shown as diamonds.
 
-Naturally, all members of the clone have the same CDR3 sequences. Hence, they 
-are globally similar. At the same time, we observed enrichment of a number of 
+Naturally, all members of the clone have identical CDR3 sequences. Hence, they 
+are globally similar. At the same time, we observed the enrichment of several 
 motifs coming from the core of the CDR3 in the clonal T-cells. Hence, between 
-each pair of vertices in the bottom component we have both a local and global
+each pair of vertices in the bottom component, we have both a local and global
 edge $\rightarrow$ thick dark red edges (see legend).
 
-In real TCR repertoires we often find clonal expansions that are significantly
-larger than n=10. If the clonal expansion contains n=100 T-cells then 
-`r Biocpkg("ClustIRR")`would draw a completely connected component with 100 
+In real TCR repertoires, we often find clonal expansions that are significantly
+larger than n=10. If the clonal expansion contains n=100 T-cells, then 
+`r Biocpkg("ClustIRR")` would draw a completely connected component with 100 
 vertices and about 5000 edges between these vertices, which may lead to 
 overplotting. 
 
-To avoid this issue, we can set the parameter `expand_clones=FALSE` in the 
-`plot_graph` function. With this, clonal expansions are summarized with one 
-vertex, whose size scales with the size of the expansion (number of T-cells 
+To avoid this issue, we can set the parameter `expand_clones=FALSE` *(default)* 
+in the `plot_graph` function. With this, clonal expansions are summarized with 
+one vertex, whose size scales with the size of the expansion (number of T-cells 
 in the clone):
 
 ```{r}
@@ -433,21 +441,21 @@ plot_graph(clust_irr = clustirr_output,
 ```
 &nbsp;
 
-Hover over or click on the big vertex to get a summary of all edges between 
-the members of the corresponding clone. 
+*Hover over* the big vertex to get a summary of all edges between the members 
+of the corresponding clone. 
 
 
 # Case study 3: analysis of TCR repertoire with paired $\alpha\beta$ TCR chains
 
-Single cell technology allows us to sequence entire TCR repertoires, and
+Single-cell technology allows us to sequence entire TCR repertoires, and
 to extract the sequences of both TCR chains: $\beta$ and $\alpha$.
 
-`r Biocpkg("ClustIRR")` can analyse such data. Clustering is performed 
+`r Biocpkg("ClustIRR")` can analyze such data. Clustering is performed 
 separately using the CDR3 sequences of each chain.
 
-Lets create the input data. We sample 500 CDR3$\beta$ and CDR3$\alpha$ sequence 
-pairs. This will be the repertoire `s`. We will use 5000 CDR3$\beta$ and 
-CDR3$\alpha$ sequences to create the reference repertoire `r`:
+Let's create the input data. We sample 500 CDR3$\beta$ and CDR3$\alpha$ 
+sequence pairs. This will be the repertoire `s`. We will use 5000 CDR3$\beta$ 
+and CDR3$\alpha$ sequences to create the reference repertoire `r`:
 
 ```{r}
 data("CDR3ab")
@@ -482,14 +490,14 @@ clone_1 <- data.frame(CDR3a = rep(x = "CASSEGEQFF", times = 5),
 clone_2 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 3),
                       CDR3b = rep(x = "CASSLEEEEEEPLHF", times = 3))
 
-clone_3 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 3),
-                      CDR3b = rep(x = "CASSLAAAAASPLHF", times = 3))
+clone_3 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 2),
+                      CDR3b = rep(x = "CASSLAAAAASPLHF", times = 2))
 
 # append clones to s
 s <- rbind(s, clone_1, clone_2, clone_3)
 ```
 
-... and again lets perform clustering:
+... and again, let's perform clustering:
 
 ```{r}
 clustirr_ab <- cluster_irr(
@@ -511,9 +519,9 @@ plot_graph(clustirr_ab)
 &nbsp;
 
 ## How to interpret the graph?
-Repertoire `s` contains 3 clones of $\alpha\beta$ T-cells. Hence, we see three 
-large oval vertices in the graph. The size of the oval vertices (clones) is 
-proportional to the number of T-cells in each clone.
+Repertoire `s` contains three clones of $\alpha\beta$ T-cells. Hence, we see 
+three large oval vertices in the graph. The size of the oval vertices (clones) 
+is proportional to the number of T-cells in each clone.
 
 The oval vertices are green, which indicates that `r Biocpkg("ClustIRR")` has 
 detected local or global similarities (edges) between the corresponding CDR3a 
@@ -522,9 +530,13 @@ CDR3b sequences **or** between the CDR3a sequences, then the vertices are
 colored blue or yellow, respectively. 
 
 Most of the edges are shown by thin gray lines, and these represent local 
-similarities. Two edges are thick and red, and these represent both local 
-and global similarities.
+similarities. Two of the edges are thick and red, and these represent both 
+local and global similarities. 
 
+Motifs and globally similar sequences can be accessed directly by *hovering over*
+vertices or edges of interest. Sequences and motifs in the appearing window 
+can be selected via *double click* or *click & drag* and copied via 
+*right click* or keyboard shortcuts.
 
 # Case study 4: analysis of TCR repertoires with paired $\gamma\delta$ chains
 
@@ -534,13 +546,13 @@ and global similarities.
   * $\gamma\delta$ chain TCR repertoires
   * heavy(H)/light(L) chain BCR repertoires
 
-To carry out these analysis, the user has to configure the inputs in an 
-appropriate way. Here we demonstrate this point. The rest of the clustering
-analysis proceeds in a similar manner as outlined in case studies 1-3.
+To carry out this analysis, the user must appropriately configure the inputs. 
+Here we demonstrate this point. The rest of the clustering
+analysis proceeds similarly as outlined in case studies 1-3.
 
 ## Configuring the input
 To analyze $\alpha\beta$ chain TCR repertoires, the input data sets `s` and `r`
-are required to have one or both (e.g. if we have paired data as explained in
+are required to have one or both (e.g., if we have paired data as explained in
 case study 3) of the columns: `CDR3a` and `CDR3b`.
 
 For the analysis of $\gamma\delta$ chain TCR repertoires the columns `CDR3g` 
@@ -568,15 +580,15 @@ r <- base::data.frame(CDR3g = CDR3ab$CDR3a[5001:10000],
 data("CDR3ab")
 
 # heavy/light chain BCR data -> notice CDR3h and CDR3l columns of 's' and 'r'
-s <- base::data.frame(CDR3g = CDR3ab$CDR3a[4501:5000],
-                      CDR3d = CDR3ab$CDR3b[4501:5000])
+s <- base::data.frame(CDR3h = CDR3ab$CDR3a[4501:5000],
+                      CDR3l = CDR3ab$CDR3b[4501:5000])
 
-r <- base::data.frame(CDR3g = CDR3ab$CDR3a[5001:10000],
-                      CDR3d = CDR3ab$CDR3b[5001:10000])
+r <- base::data.frame(CDR3h = CDR3ab$CDR3a[5001:10000],
+                      CDR3l = CDR3ab$CDR3b[5001:10000])
 
 ```
 
-The rest of the analysis proceeds as usual, i.e. by calling the function
+The rest of the analysis proceeds as usual, i.e., by calling the function
 `cluster_irr`.
 
 ```{r session_info}
