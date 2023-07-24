@@ -9,7 +9,7 @@ function, formed by two sublists \itemize{
 \item \code{inputs} - list, original user inputs
 }
 }
-\item{expand_clones}{logical, show clonally expanded cells as distinct nodes
+\item{expand_clones}{logical, show clonally expanded cells as distinct vertices
 in the graph, including connections between them. Only relevant for version 3
 of the algorithm. \code{expand_clones} = \code{FALSE} (default)
 }
@@ -17,10 +17,10 @@ of the algorithm. \code{expand_clones} = \code{FALSE} (default)
 \value{
 The output is an interactive \emph{visNetwork} graph. 
 
-Nodes represent cells, edges represent clustered local or global similarities.
+Vertices represent cells, edges represent clustered local or global similarities.
 
 Informations about shared motifs and/or global sequences can be accessed via 
-hovering over nodes and edges (copy&paste possible). Nodes can be selected 
+hovering over vertices and edges (copy&paste possible). Vertices can be selected 
 directly, via sequence and by shared local or global connections. 
 
 Colors and symbols of each graph are explained in a legend. 
@@ -86,11 +86,23 @@ out <- cluster_irr( s = s,
                         global_pairs = NULL,
                         low_mem = FALSE))
 
+# plot graph with expanded clones as individual cells/vertices
+p1 <- plot_graph(out, expand_clones = TRUE)
+p1
 
-# plot graph
-plot_graph(out)
+# plot graph without expanded clones (default)
+p2 <- plot_graph(out)
+p2
 
-# plot graph with expanded clones as individual cells/nodes
-plot_graph(out, expand_clones = TRUE)
+# access nodes and edges of the graph as data.frame
+n <- p2$x$nodes
+str(n)
+class(n)
+head(n)
+
+e <- p2$x$edges
+str(e)
+class(e)
+head(e)
 
 }
