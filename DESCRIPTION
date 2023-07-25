@@ -13,9 +13,8 @@ Description: ClustIRR is a quantitative method for clustering of immune
     BCRs) that likely have similar specificity. 
     This is achieved by comparing the global and local sequence features of 
     complementarity determining regions (CDRs). 
-    Once the specificity groups are identified in a set of IRRs, the algorithm 
-    performs quantitative comparison of the cluster structures and their 
-    properties between biological conditions. 
+    Once the specificity groups are identified, ClustIRR visualizes them as 
+    using graphs.
 License: GPL-3 + file LICENSE
 LazyData: false
 Depends:
