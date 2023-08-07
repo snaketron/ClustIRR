@@ -1,3 +1,5 @@
 Changes in version 0.99.0 (25 July, 2023)
 + Submitted to Bioconductor
 
+Changes in version 0.99.4 (07 Aug, 2023)
++ Build errors/warnings fixed
