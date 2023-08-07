@@ -23,5 +23,8 @@ human naive CD8+ T cells.
 \examples{
 data("CDR3ab")
 }
-
+\value{
+data(CDR3ab) loads the object CDR3ab, which is a data.frame with two columns
+and 10,000 rows.
+}
 \keyword{datasets}
