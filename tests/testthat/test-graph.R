@@ -1,11 +1,11 @@
 data("CDR3ab")
-s <- data.frame(CDR3b = CDR3ab[1:50, "CDR3b"])
-r <- data.frame(CDR3b = CDR3ab[1:10000, "CDR3b"])
+s <- base::data.frame(CDR3b = CDR3ab[1:50, "CDR3b"])
+r <- base::data.frame(CDR3b = CDR3ab[1:10000, "CDR3b"])
 x <- cluster_irr(s, r)
 
 test_that("get_edges() takes enriched clust_irr object as input", {
     s2 <- s
-    substr(s2 = s2$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
+    base::substr(s2 = s2$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
     xi <- cluster_irr(s2, r)
     expect_no_error(get_edges(xi))
 })
@@ -44,4 +44,68 @@ test_that("plot_graph() warns if no local or global edges are found", {
     expect_warning(plot_graph(x),
         regexp = "No graph to plot \n"
     )
+})
+
+test_that("plot_graph() can handle edges of only one type", {
+    # only alpha edges
+    s <- base::data.frame(CDR3b = c("CASYSGANVLTF", "CASSSTGLRDSRDTQYF"),
+                          CDR3a = c("CAGNTGNQFYF", "CAGNTGNQFYF"))
+    r <- base::data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], 
+                          CDR3a = CDR3ab[1:100, "CDR3a"])
+    x <- cluster_irr(s, r)
+    expect_no_error(plot_graph(x))
+    # only beta edges 
+    s <- base::data.frame(CDR3b = c("CASYSGANVLTF", "CASYSGANVLTF"),
+                          CDR3a = c("CAGNTGNQFYF", "CAGNTGNQFSDYF"))
+    x <- cluster_irr(s, r)
+    expect_no_error(plot_graph(x))
+})
+
+test_that("plot_graph() can handle a single clone without external edges", {
+    s <- base::data.frame(CDR3b = c("CASYSGANVLTF", "CASYSGANVLTF"),
+                          CDR3a = c("CAGNTGNQFYF", "CAGNTGNQFYF"))
+    r <- base::data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], 
+                          CDR3a = CDR3ab[1:100, "CDR3a"])
+    x <- cluster_irr(s, r)
+    expect_no_error(plot_graph(x))
+})
+
+test_that("plot_graph() can handle NA values in s and/or r", {
+    s_e <- base::rbind(s, 
+                     base::data.frame(CDR3b = c("CASSSEDFDG", "CASSSEDFDG")))
+    s_na <- base::data.frame(CDR3b = base::c("CASSSEFEG", "CASSSEFEG", NA, NA))
+    r_na <- base::rbind(r, base::data.frame(CDR3b = c(NA, NA)))
+    base::suppressWarnings({x <- cluster_irr(s_na, r)})
+    p <- plot_graph(x)
+    expect_true(sum(is.na(p$x$nodes$clone_count)) == 0)
+    base::suppressWarnings({x <- cluster_irr(s_e, r_na)})
+    p <- plot_graph(x)
+    expect_true(sum(is.na(p$x$nodes$clone_count)) == 0)
+    base::suppressWarnings({x <- cluster_irr(s_na, r_na)})
+    p <- plot_graph(x)
+    expect_true(sum(is.na(p$x$nodes$clone_count)) == 0)
+})
+
+test_that("plot_graph() can handle NA values in s and/or r with 2 chains", {
+    s_ba <- base::data.frame(CDR3b = CDR3ab[1:50, "CDR3b"],
+                             CDR3a = CDR3ab[1:50, "CDR3a"])
+    s_ba <- base::rbind(s_ba, 
+                        base::data.frame(CDR3b = c("CASSSEDFDG", "CASSSEDFDG"),
+                                         CDR3a = c("CISSEDFS", "CISSEDFS")))
+    r_ba <- base::data.frame(CDR3b = CDR3ab[1:10000, "CDR3b"],
+                             CDR3a = CDR3ab[1:10000, "CDR3a"])
+    s_na <- base::data.frame(CDR3b = base::c("CASSEDFDG", "CASSEDFDG", NA, NA,
+                                             "CASSEDFDG"),
+                             CDR3a = base::c("CSSSEDFDG", NA, "CSIEDFDG", NA,
+                                             "CSIEDFDG"))
+    r_na <- base::rbind(r_ba, base::data.frame(CDR3b = NA, CDR3a = NA))
+    base::suppressWarnings({x <- cluster_irr(s_na, r_ba)})
+    p <- plot_graph(x)
+    expect_true(sum(is.na(p$x$nodes$clone_count)) == 0)
+    base::suppressWarnings({x <- cluster_irr(s_ba, r_na)})
+    p <- plot_graph(x)
+    expect_true(sum(is.na(p$x$nodes$clone_count)) == 0)
+    base::suppressWarnings({x <- cluster_irr(s_na, r_na)})
+    p <- plot_graph(x)
+    expect_true(sum(is.na(p$x$nodes$clone_count)) == 0)
 })

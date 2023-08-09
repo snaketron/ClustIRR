@@ -143,3 +143,53 @@ test_that("get_control() runs as expected", {
         regexp = "unrecognized elements found in control"
     )
 })
+
+test_that("check_aa() runs as expected", {
+    s <- base::data.frame(CDR3b = "CSSEDNDSSS12")
+    expect_error(
+        check_aa(s), 
+        regexp = "s contains non-standard or lowercase amino acid codes"
+    )
+    s <- base::data.frame(CDR3b = "CSSEDNDSSSAS", CDR3a = "CSSEDNDSBSZT")
+    expect_error(
+        check_aa(s), 
+        regexp = "s contains non-standard or lowercase amino acid codes"
+    )
+    s <- base::data.frame(CDR3b = base::c("ACDEFGHIKLMN", "ACDEFGHdKLMN"))
+    expect_error(
+        check_aa(s), 
+        regexp = "s contains non-standard or lowercase amino acid codes"
+    )
+    s <- base::data.frame(CDR3b = "ACDEFGHIKLMN", CDR3a = "PQRSTVWY")
+    expect_no_error(check_aa(s))
+})
+
+
+test_that("check_ks_and_trim_flank_aa() works as expected", {
+    data("CDR3ab")
+    s <- base::data.frame(CDR3b = CDR3ab[1:10, "CDR3b"]) # max(nchar(...)) 15
+    r <- base::data.frame(CDR3b = CDR3ab[1:100, "CDR3b"]) # max(nchar(...)) 24
+    
+    # 16 > 15
+    expect_error(
+        check_ks_and_trim_flank_aa(16, 0, s, r),
+        regexp = "ks has to be smaller than the biggest trimmed sequence"
+    ) 
+    expect_no_error(check_ks_and_trim_flank_aa(15, 0, s, r)) 
+    
+    # 14 > 13 (15-2*1)
+    expect_error(
+        check_ks_and_trim_flank_aa(14, 1, s, r),
+        regexp = "ks has to be smaller than the biggest trimmed sequence"
+    )
+    expect_no_error(check_ks_and_trim_flank_aa(13, 1, s, r)) 
+    
+    # 10 > 9 (15-2*3)
+    expect_error(
+        check_ks_and_trim_flank_aa(10, 3, s, r),
+        regexp = "ks has to be smaller than the biggest trimmed sequence"
+    ) 
+    expect_no_error(check_ks_and_trim_flank_aa(9, 3, s, r)) 
+    
+})
+

@@ -20,6 +20,7 @@ input_check <- function(s,
     check_trim_flank_aa(control$trim_flank_aa)
     check_low_mem(control$low_mem)
     check_global_pairs(control$global_pairs, s)
+    check_ks_and_trim_flank_aa(ks, control$trim_flank_aa, s, r)
 }
 
 check_s <- function(s) {
@@ -29,6 +30,7 @@ check_s <- function(s) {
     check_dataframe_colnames(s)
     check_dataframe_na(s)
     check_dataframe_empty(s)
+    check_aa(s)
 }
 
 check_r <- function(r) {
@@ -38,6 +40,7 @@ check_r <- function(r) {
     check_dataframe_colnames(r)
     check_dataframe_na(r)
     check_dataframe_empty(r)
+    check_aa(r)
 }
 
 check_s_and_r <- function(s, r) {
@@ -165,8 +168,33 @@ get_control <- function(control_in) {
     return(control)
 }
 
+check_ks_and_trim_flank_aa <- function(ks, trim, s, r){
+    k_max <- base::max(ks)
+    trim <- trim*2
+    s_max <- base::max(
+        base::apply(s, 2, function(x) base::max(base::nchar(x))))
+    r_max <- base::max(
+        base::apply(r, 2, function(x) base::max(base::nchar(x))))
+    rs_minmax <- base::min(s_max, r_max, na.rm = TRUE)
+
+    if((rs_minmax - trim) < k_max){
+        base::stop("ks has to be smaller than the biggest trimmed sequence")
+    }
+    
+}
 
 #### Helper functions ####
+
+check_aa <- function(x) {
+    aa <- "[^ACDEFGHIKLMNPQRSTVWY]"
+    w <- base::paste0(base::deparse(base::substitute(x)), 
+                      " contains non-standard or lowercase amino acid codes")
+    res <- base::lapply(x, function(y) base::length(base::grep(aa, y)) != 0)
+    if (base::any(base::unlist(res))) {
+        base::stop(w)
+    }
+    
+}
 
 check_dataframe <- function(x) {
     w <- base::paste0(
@@ -375,3 +403,4 @@ check_positive <- function(x) {
         base::stop(w)
     }
 }
+

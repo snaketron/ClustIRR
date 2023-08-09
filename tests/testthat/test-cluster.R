@@ -1,7 +1,7 @@
 # load minimal input data
 data("CDR3ab")
-s <- base::data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
-r <- base::data.frame(CDR3b = CDR3ab[1:10000, "CDR3b"])
+s <- base::data.frame(CDR3b = CDR3ab[1:500, "CDR3b"])
+r <- base::data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
 
 # detect cores
 cores <- future::availableCores()
@@ -18,6 +18,7 @@ control_input <- list(
     low_mem = FALSE,
     global_pairs = NULL
 )
+
 
 # check everything for all three versions of the algorithm
 for (version in c(1, 2, 3)) {
@@ -118,8 +119,8 @@ for (version in c(1, 2, 3)) {
     test_that("different combinations of s and r run as expected", {
         s_cdr3a <- s
         r_cdr3a <- r
-        colnames(s_cdr3a)[1] <- "CDR3a"
-        colnames(r_cdr3a)[1] <- "CDR3a"
+        base::colnames(s_cdr3a)[1] <- "CDR3a"
+        base::colnames(r_cdr3a)[1] <- "CDR3a"
         # cdr3a column only in s
         expect_error(check_s_and_r(
             s_cdr3a,
@@ -130,13 +131,13 @@ for (version in c(1, 2, 3)) {
             s,
             r_cdr3a
         ), regexp = "s has to contain the same columns as r")
-        colnames(r_cdr3a)[1] <- "CDR3c"
+        base::colnames(r_cdr3a)[1] <- "CDR3c"
         # cdr3b column only in s
         expect_error(check_s_and_r(
             s,
             r_cdr3a
         ), regexp = "s has to contain the same columns as r")
-        colnames(s_cdr3a)[1] <- "CDR3c"
+        base::colnames(s_cdr3a)[1] <- "CDR3c"
         # cdr3b column only in s
         expect_error(check_s_and_r(
             s_cdr3a,
@@ -632,12 +633,47 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
     })
+    
+    # na checks
+    test_that("cluster_irr works with NA included in s and/or r", {
+        nas <- base::data.frame(CDR3b = c(NA, NA))
+        s_na <- base::rbind(s, nas)
+        r_na <- base::rbind(r, nas)
+        base::suppressWarnings({
+            expect_no_error(cluster_irr(
+                s = s,
+                r = r,
+                ks = ks,
+                cores = cores,
+                version = version,
+                control = control_input
+            ))
+            expect_no_error(cluster_irr(
+                s = s,
+                r = r_na,
+                ks = ks,
+                cores = cores,
+                version = version,
+                control = control_input
+            ))
+            expect_no_error(cluster_irr(
+                s = s_na,
+                r = r_na,
+                ks = ks,
+                cores = cores,
+                version = version,
+                control = control_input
+            ))
+        })
+    })
+    
 }
 
 # test get_clust() functions with global_pairs input
 test_that("get_clust functions works with global_pairs input", {
     control_input_tmp <- control_input
-    control_input_tmp$global_pairs <- matrix(data = 17L, nrow = 10, ncol = 2)
+    control_input_tmp$global_pairs <- 
+        base::matrix(data = 17L, nrow = 10, ncol = 2)
     control_input_tmp$trim_flank_aa <- 0
     expect_no_error(get_clust_v1(
         cdr3 = s,
@@ -654,3 +690,6 @@ test_that("get_clust functions works with global_pairs input", {
         control = control_input_tmp
     ))
 })
+
+
+

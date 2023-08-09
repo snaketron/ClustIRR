@@ -133,7 +133,7 @@ plot_graph <- function(clust_irr, expand_clones = FALSE) {
     }
     edges <- igraph::as_data_frame(ig, what = "edges")
     nodes <- igraph::as_data_frame(ig, what = "vertices")
-    chains <- base::unique(edges$chain)
+    chains <- base::names(clust_irr$clust)
     types <- base::unique(edges$type)
     edges <- configure_edges(edges = edges, chains = chains, types = types)
     nodes <- configure_nodes(
@@ -144,11 +144,15 @@ plot_graph <- function(clust_irr, expand_clones = FALSE) {
         nodes <- nodes[!base::duplicated(nodes$label), ]
         edges <- edges[edges$from %in% nodes$id & edges$to %in% nodes$id, ]
     }
-    ledges <- base::data.frame(
-        color = base::unique(edges$color),
-        label = base::unique(edges$type),
-        arrows = "", width = 4
-    )
+    if(base::nrow(edges) != 0){
+        ledges <- base::data.frame(
+            color = base::unique(edges$color),
+            label = base::unique(edges$type),
+            arrows = "", width = 4
+        )
+    } else {
+        ledges <- base::data.frame()
+    }
     if (base::length(chains) > 1) {
         chains <- base::append(chains, "Both chains")
     }
@@ -374,12 +378,13 @@ configure_nodes <- function(nodes, edges, chains, types, s) {
             sep = ""
         )
         nodes$clone_count <- base::apply(X = nodes, MARGIN = 1, function(x) {
-            sum(s[chains[1]] == x[chains[1]] & s[chains[2]] == x[chains[2]])
+            base::sum(s[chains[1]] == x[chains[1]] & 
+                          s[chains[2]] == x[chains[2]])
         })
     } else {
         nodes$label <- nodes[[chains]]
         nodes$clone_count <- apply(X = nodes, MARGIN = 1, function(x) {
-            sum(s[chains] == x[chains])
+            base::sum(s[chains] == x[chains])
         })
     }
     nodes$size <- base::log2(nodes$clone_count) * clone_boost + min_size
