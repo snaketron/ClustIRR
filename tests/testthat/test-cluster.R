@@ -641,7 +641,7 @@ for (version in c(1, 2, 3)) {
         r_na <- base::rbind(r, nas)
         base::suppressWarnings({
             expect_no_error(cluster_irr(
-                s = s,
+                s = s_na,
                 r = r,
                 ks = ks,
                 cores = cores,

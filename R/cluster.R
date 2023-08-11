@@ -23,8 +23,8 @@ cluster_irr <- function(s,
     # get chains to be analyzed
     chains <- get_chains(base::colnames(s))
     # omit NA values from s and r
-    s <- stats::na.omit(s)
-    r <- stats::na.omit(r)
+    #s <- stats::na.omit(s)
+    #r <- stats::na.omit(r)
     # add ID to data
     s$id <- base::seq_len(length.out = base::nrow(s))
     # run analysis for each chain (if available)
@@ -32,12 +32,14 @@ cluster_irr <- function(s,
     base::names(clust) <- chains
 
     for (chain in chains) {
+        s_t <- s[!base::is.na(s[, chain]),chain]
+        r_t <- r[!base::is.na(r[, chain]),chain]
         if (version == 3) {
-            cdr3 <- s[, chain]
-            cdr3_ref <- r[, chain]
+            cdr3 <- s_t
+            cdr3_ref <- r_t
         } else {
-            cdr3 <- base::unique(s[, chain])
-            cdr3_ref <- base::unique(r[, chain])
+            cdr3 <- base::unique(s_t)
+            cdr3_ref <- base::unique(r_t)
         }
         if (version == 1) {
             clust[[chain]] <- get_clust_v1(

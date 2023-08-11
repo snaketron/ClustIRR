@@ -363,6 +363,8 @@ get_motif_list <- function(x, chains) {
 configure_nodes <- function(nodes, edges, chains, types, s) {
     base::names(nodes) <- "id"
     nodes <- base::merge(nodes, s, by = "id")
+    nodes[base::is.na(nodes)] <- "<NA>"
+    s[base::is.na(s)] <- "<NA>"
     min_size <- 20
     clone_boost <- 10
     if (base::length(chains) > 1) {

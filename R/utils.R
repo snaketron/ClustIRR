@@ -27,7 +27,7 @@ get_trimmed_flanks <- function(x,flank_size) {
     t <- flank_size * 2
     l <- base::nchar(x)
     s <- "trim_flank_aa too high, no sequences left to cluster after trimming"
-    if (base::max(l) <= t) {
+    if (base::max(l, na.rm = TRUE) <= t) {
         base::stop(s)
     }
 
