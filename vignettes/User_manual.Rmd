@@ -54,6 +54,20 @@ development of cancer immunotherapies, vaccines, antiviral drugs, etc.
 This vignette introduces `r Biocpkg("ClustIRR")`, a computational method 
 for clustering of immune receptor repertoires.
 
+# Installation
+`r Biocpkg("ClustIRR")` is freely available as part of Bioconductor, filling
+the current gap in software for the analysis of adaptive immune repertoires.
+To install `r Biocpkg("ClustIRR")` please start R and enter:
+
+```{r, eval=FALSE}
+if(!require("BiocManager", quietly = TRUE)) {
+  install.packages("BiocManager")
+}
+BiocManager::install("ClustIRR")
+```
+
+
+
 
 # ClustIRR algorithm
 The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR sequences 
