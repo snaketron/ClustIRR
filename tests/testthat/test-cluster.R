@@ -4,7 +4,7 @@ s <- base::data.frame(CDR3b = CDR3ab[1:500, "CDR3b"])
 r <- base::data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
 
 # detect cores
-cores <- future::availableCores()
+cores <- 1
 
 # set ks and control input parameters
 ks <- c(2, 3, 4)
@@ -633,7 +633,7 @@ for (version in c(1, 2, 3)) {
             control = control_input_tmp
         ))
     })
-    
+
     # na checks
     test_that("cluster_irr works with NA included in s and/or r", {
         nas <- base::data.frame(CDR3b = c(NA, NA))
@@ -666,13 +666,13 @@ for (version in c(1, 2, 3)) {
             ))
         })
     })
-    
+
 }
 
 # test get_clust() functions with global_pairs input
 test_that("get_clust functions works with global_pairs input", {
     control_input_tmp <- control_input
-    control_input_tmp$global_pairs <- 
+    control_input_tmp$global_pairs <-
         base::matrix(data = 17L, nrow = 10, ncol = 2)
     control_input_tmp$trim_flank_aa <- 0
     expect_no_error(get_clust_v1(

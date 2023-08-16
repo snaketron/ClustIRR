@@ -21,25 +21,22 @@ cluster_irr <- function(s,
         cores = cores, control = control
     )
     # get chains to be analyzed
-    chains <- get_chains(base::colnames(s))
-    # omit NA values from s and r
-    #s <- stats::na.omit(s)
-    #r <- stats::na.omit(r)
+    chains <- get_chains(colnames(s))
     # add ID to data
-    s$id <- base::seq_len(length.out = base::nrow(s))
+    s$id <- seq_len(length.out = nrow(s))
     # run analysis for each chain (if available)
-    clust <- base::vector(mode = "list", length = base::length(chains))
-    base::names(clust) <- chains
+    clust <- vector(mode = "list", length = length(chains))
+    names(clust) <- chains
 
     for (chain in chains) {
-        s_t <- s[!base::is.na(s[, chain]),chain]
-        r_t <- r[!base::is.na(r[, chain]),chain]
+        s_t <- s[!is.na(s[, chain]),chain]
+        r_t <- r[!is.na(r[, chain]),chain]
         if (version == 3) {
             cdr3 <- s_t
             cdr3_ref <- r_t
         } else {
-            cdr3 <- base::unique(s_t)
-            cdr3_ref <- base::unique(r_t)
+            cdr3 <- unique(s_t)
+            cdr3_ref <- unique(r_t)
         }
         if (version == 1) {
             clust[[chain]] <- get_clust_v1(
@@ -61,11 +58,11 @@ cluster_irr <- function(s,
             )
         }
     }
-    return(base::structure(
+    return(structure(
         class = "clust_irr",
-        base::list(
+        list(
             clust = clust,
-            inputs = base::list(
+            inputs = list(
                 s = s,
                 r = r,
                 version = version,
@@ -99,22 +96,22 @@ get_clust_v1 <- function(cdr3,
 
     # 2. global
     # if global_pairs are provided as input use them, else compute them
-    if (!base::is.null(control$global_pairs)) {
+    if (!is.null(control$global_pairs)) {
         g <- control$global_pairs
     } else {
         if (control$low_mem) {
             g <- get_global_clust_mem(
-                cdr3 = base::unique(cdr3),
+                cdr3 = unique(cdr3),
                 global_max_dist = control$global_max_dist
             )
         } else {
             g <- get_global_clust(
-                cdr3 = base::unique(cdr3),
+                cdr3 = unique(cdr3),
                 global_max_dist = control$global_max_dist
             )
         }
     }
-    return(base::list(local = l, global = g))
+    return(list(local = l, global = g))
 }
 
 
@@ -139,31 +136,31 @@ get_clust_v23 <- function(cdr3,
 
     # 2. global
     # if global_pairs are provided as input use them, else compute them
-    if (!base::is.null(control$global_pairs)) {
+    if (!is.null(control$global_pairs)) {
         g <- control$global_pairs
     } else {
         if (control$low_mem) {
             g <- get_global_clust_mem(
-                cdr3 = base::unique(cdr3),
+                cdr3 = unique(cdr3),
                 global_max_dist = control$global_max_dist
             )
         } else {
             g <- get_global_clust(
-                cdr3 = base::unique(cdr3),
+                cdr3 = unique(cdr3),
                 global_max_dist = control$global_max_dist
             )
         }
         if (version == 3) {
-            clones <- base::unique(cdr3[base::duplicated(cdr3)])
-            clones <- base::matrix(base::rep(clones, 2),
-                nrow = base::length(clones), ncol = 2
+            clones <- unique(cdr3[duplicated(cdr3)])
+            clones <- matrix(rep(clones, 2),
+                nrow = length(clones), ncol = 2
             )
-            if (base::is.null(g)) {
+            if (is.null(g)) {
                 g <- clones
             } else {
-                g <- base::rbind(clones, g)
+                g <- rbind(clones, g)
             }
         }
     }
-    return(base::list(local = l, global = g))
+    return(list(local = l, global = g))
 }

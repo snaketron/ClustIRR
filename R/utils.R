@@ -4,12 +4,12 @@
 # x = columns(data_sample)
 get_chains <- function(x) {
     js <- c(
-        base::which(base::regexpr(pattern = "CDR3b", text = x) != -1),
-        base::which(base::regexpr(pattern = "CDR3a", text = x) != -1),
-        base::which(base::regexpr(pattern = "CDR3g", text = x) != -1),
-        base::which(base::regexpr(pattern = "CDR3d", text = x) != -1),
-        base::which(base::regexpr(pattern = "CDR3h", text = x) != -1),
-        base::which(base::regexpr(pattern = "CDR3l", text = x) != -1)
+        which(regexpr(pattern = "CDR3b", text = x) != -1),
+        which(regexpr(pattern = "CDR3a", text = x) != -1),
+        which(regexpr(pattern = "CDR3g", text = x) != -1),
+        which(regexpr(pattern = "CDR3d", text = x) != -1),
+        which(regexpr(pattern = "CDR3h", text = x) != -1),
+        which(regexpr(pattern = "CDR3l", text = x) != -1)
     )
     return(x[js])
 }
@@ -20,34 +20,34 @@ get_chains <- function(x) {
 # cut the left/right flanks of each CDR3 sequence by flank_size amino
 # acids
 get_trimmed_flanks <- function(x,flank_size) {
-    n <- base::ifelse(test = base::deparse(base::substitute(x)) == "cdr3",
+    n <- ifelse(test = deparse(substitute(x)) == "cdr3",
         yes = "sample",
         no = "reference"
     )
     t <- flank_size * 2
-    l <- base::nchar(x)
+    l <- nchar(x)
     s <- "trim_flank_aa too high, no sequences left to cluster after trimming"
-    if (base::max(l, na.rm = TRUE) <= t) {
-        base::stop(s)
+    if (max(l, na.rm = TRUE) <= t) {
+        stop(s)
     }
 
-    x <- base::substr(
+    x <- substr(
         x = x,
         start = flank_size + 1,
-        stop = base::nchar(x) - flank_size
+        stop = nchar(x) - flank_size
     )
 
     x[x == ""] <- NA
 
-    if (base::any(base::is.na(x))) {
-        w <- base::paste0(
+    if (any(is.na(x))) {
+        w <- paste0(
             "cdr3 sequences shorter than ",
             t,
             " (trim_flank_aa*2) of the ",
             n,
             " dataset \n were trimmed completely before local clustering \n \n"
         )
-        base::warning(w)
+        warning(w)
     }
 
     return(x)
