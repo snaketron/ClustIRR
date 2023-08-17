@@ -56,7 +56,9 @@ for clustering of immune receptor repertoires.
 
 # Installation
 `r Biocpkg("ClustIRR")` is freely available as part of Bioconductor, filling
-the current gap in software for the analysis of adaptive immune repertoires.
+the gap that currently exists in terms of software for quantitative analysis 
+of adaptive immune repertoires. 
+
 To install `r Biocpkg("ClustIRR")` please start R and enter:
 
 ```{r, eval=FALSE}
