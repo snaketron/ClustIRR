@@ -97,20 +97,13 @@ get_clust <- function(cdr3,
         g <- control$global_pairs
     }
     else {
-        if(control$low_mem) {
-            g <- get_global_clust_mem(
-                cdr3 = unique(cdr3),
-                global_max_dist = control$global_max_dist)
-        }
-        else {
-            g <- get_global_clust(
-                cdr3 = unique(cdr3),
-                global_max_dist = control$global_max_dist)
-        }
+        g <- get_global_clust(cdr3 = unique(cdr3),
+                              global_max_dist = control$global_max_dist,
+                              low_mem = control$low_mem)
+
         if(version == 2) {
             clones <- unique(cdr3[duplicated(cdr3)])
-            clones <- matrix(rep(clones, 2),
-                             nrow = length(clones), ncol = 2)
+            clones <- matrix(rep(clones, 2), nrow = length(clones), ncol = 2)
             if(is.null(g)) {
                 g <- clones
             }

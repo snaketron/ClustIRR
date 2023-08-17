@@ -126,7 +126,7 @@ get_motifs <- function(x,
     # we are only interested in enrichment of motifs in sample relative to
     # reference. Remove all motifs from reference not found in sample.
     # Important: n_r must be sum of all motifs in pop!
-    kmers_r <- kmers_r[kmers_r$motif %in% kmers_s$motif, ]
+    kmers_r <- kmers_r[kmers_r$motif %in% kmers_s$motif,,drop=FALSE]
     
     m <- merge(x = kmers_s, y = kmers_r, by = "motif", all = TRUE)
     m[is.na(m[, "f_s"]), "f_s"] <- 0
