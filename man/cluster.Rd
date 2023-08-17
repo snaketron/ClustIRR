@@ -5,51 +5,41 @@
 cluster_irr(
     s,
     r,
-    version = 3,
+    version = 2,
     ks = 4,
     cores = 1,
-    control = list( B = 1000,
-                    global_max_dist = 1,
-                    local_max_fdr = 0.05,
-                    local_min_ove = 2,
-                    local_min_o = 1,
-                    trim_flank_aa = 0,
-                    global_pairs = NULL,
-                    low_mem = FALSE)
-)
+    control = list(global_max_dist = 1,
+                   local_max_fdr = 0.05,
+                   local_min_ove = 2,
+                   local_min_o = 1,
+                   trim_flank_aa = 0,
+                   global_pairs = NULL,
+                   low_mem = FALSE))
 }
 \arguments{
-\item{s}{data.frame, Complementarity determining regions 3 (CDR3s)
-observed in an immune receptor repertoire (IRR). The data.frame can have either
-one column or two columns:
+\item{s}{data.frame, complementarity determining region 3 (CDR3) amino acid
+sequences observed in an immune receptor repertoire (IRR). The data.frame can 
+have either one column or two columns:
 \itemize{
 \item One column: s contains CDR3s from a single chain: \emph{CDR3b}, 
 \emph{CDR3a}, \emph{CDR3g}, \emph{CDR3d}, \emph{CDR3h} or \emph{CDR3l}
-\item Two columns: s contains CDR3s from both chains (paired):
-    \emph{CDR3b} and \emph{CDR3a} or \emph{CDR3g} and \emph{CDR3d} or 
-    \emph{CDR3h} and \emph{CDR3l}
+\item Two columns: s contains CDR3s from both chains (paired), for instance:
+    \itemize{
+        \item \emph{CDR3b} and \emph{CDR3a} [for \eqn{\alpha\beta} TCRs]
+        \item \emph{CDR3g} and \emph{CDR3d} [for \eqn{\gamma\delta} TCRs]
+        \item \emph{CDR3h} and \emph{CDR3l} [for heavy/ligh chain BCRs]
+    }
 }
-The column names represent the following CDR3 sequences:
-\itemize{ 
-\item \emph{CDR3b}: \eqn{\beta} chain T cell receptors
-\item \emph{CDR3a}: \eqn{\alpha} chain T cell receptors
-\item \emph{CDR3g}: \eqn{\gamma} chain T cell receptors
-\item \emph{CDR3d}: \eqn{\delta} chain T cell receptors
-\item \emph{CDR3h}: Heavy chain B cell receptors
-\item \emph{CDR3l}: Light chain B cell receptors
-}
-
 }
 \item{r}{data.frame, reference (or control) repertoire of CDR3 sequences. Must
 have the same structure (number of columns and column names) as \code{s}}
-\item{version}{integer, version of the algorithm: \code{version} = 1, 2 or
-3 (default)}
+\item{version}{integer, version of the algorithm: \code{version} = 1 or 2 
+(default)}
 \item{ks}{integer or integer vector, motif lengths. \code{ks} = 4 (default)}
 \item{cores}{integer, number of CPU cores, \code{cores} = 1 (default).}
 \item{control}{list, a named list of auxiliary parameters
 to control algorithm's behavior. See the details below:
-\itemize{\item \code{B} - integer, number of bootstrap samples. Only used by
-version = 1. \code{B} = 1000 (default)
+\itemize{
 \item \code{global_max_dist} - number, Hamming distance (HD) threshold to
 consider two CDR3s as globally clustered. CDR3s are globally clustered if
 HD(\eqn{a}, \eqn{b}) \eqn{\leq} \code{global_max_dist}.
@@ -82,18 +72,14 @@ of each pair of CDR3s: \emph{TRA} or \emph{TRB}. \code{global_pair} =
 \value{
 The output is an object with \code{clust_irr} structure. This object is formed
 by two sublists:
-\item{clust}{list, contains clustering results
+\item{clust}{list, contains clustering results for each TCR/BCR chain. The
+results are stored in separate sub-list named appropriately (e.g. CDR3a, CDR3b, 
+CDR3g, etc.). In the following we who the typical structure of these lists:
 \itemize{
-    \item \code{CDR3b/g/h} - list, contains global+local clustering results 
-    for CDR3s from chain \emph{TRB}/\emph{TRG}/\emph{BRH}
+    \item \code{local} - list, local clustering results
     \itemize{
-        \item \code{local} - list, local clustering results
+        \item \code{m} - data.frame, motif enrichment results with columns:
         \itemize{
-            \item \code{m} - data.frame, motif enrichment results
-
-            For version = 2 and version = 3, \code{m} has the following set of
-            columns:
-            \itemize{
             \item \code{motif} - motif sequence
             \item \code{f_s} - observed motif counts in \code{s}
             \item \code{f_r} - observed motif counts in \code{r}
@@ -111,38 +97,15 @@ by two sublists:
             \item \code{pass} - logical value indicating whether a motifs are
             enriched (\code{pass=TRUE}) given the user-defined thresholds in
             control}
-
-            For version = 1, \code{m} has the following columns:
-            \itemize{
-            \item \code{motif} - motif sequence
-            \item \code{k} - motif length
-            \item \code{f_s} - motif counts in \code{s}
-            \item \code{mean_f_r} - mean motif counts in \code{r}
-            computed based on \code{B} simulations
-            \item \code{min_f_r} - maximum motif counts in \code{r}
-            computed based on \code{B} simulations
-            \item \code{max_f_r} - maximum motif counts in \code{r}
-            computed based on \code{B} simulations
-            \item \code{ove} - observed (\code{f_s)} / expected
-            (\code{mean_f_r)} motif relative frequency
-            \item \code{p_value} - probability of observing a motif count in
-            the \code{r} that is at least as high or higher as in the \code{s}
-            \item \code{fdr} - false discovery rate, i.e. adjusted p-value by
-            Benjamini & Hochberg correction
-            \item \code{pass} - logical value indicating whether motifs are
-            enriched (pass=TRUE) given the user-defined thresholds in control
-            }
-
             \item \code{lp} - data.frame, enriched motifs are linked to their
-            original CDR3 sequences and shown as rows in the data.frame
-
-            Contains the following columns:
+            original CDR3 sequences and shown as rows in the data.frame with
+            the following columns:
             \itemize{
-            \item \code{cdr3} - CDR3 sequence
-            \item \code{cdr3_core} - corresponding core of the CDR3 sequence,
-            obtained by trimming \code{trim_flank_aa} amino acids (user-defined
-            parameter). If \code{trim_flank_aa} = 0, then
-            \code{cdr3} = \code{cdr3_core}
+                \item \code{cdr3} - CDR3 amino acid sequence
+                \item \code{cdr3_core} - core portion of the CDR3 sequence,
+                obtained by trimming \code{trim_flank_aa} amino acids (user-
+                defined parameter). If \code{trim_flank_aa} = 0, then 
+                \code{cdr3} = \code{cdr3_core}
             \item \code{motif} - enriched motif from \code{cdr3_core}
             }
         }
@@ -150,31 +113,27 @@ by two sublists:
         globally similar CDR3s are shown in each row of the matrix
         (analogous to \code{lp})
     }
-    \item \code{CDR3a/d/l} - list, contains global+local clustering results 
-    for CDR3s from chain \emph{TRA}/\emph{TRD}/\emph{BRL} (same structure as 
-    in \code{CDR3b/g/h})
-    }
 }
-
 \item{inputs}{list, contains all user provided inputs (see \bold{Arguments})}
 }
 
 \description{
-This algorithm finds groups of TCRs that likely have similar peptide:MHC
-specificity.
-
-Two strategies are used:
+This algorithm finds groups of TCRs or BCRs with similar specificity. Two 
+clustering strategies are employed:
 \enumerate{
     \item Local clustering
     \item Global clustering
 }
 
-\bold{Local clustering procedure}
+\bold{Local clustering}
 
 \enumerate{
 \item CDR3 processing steps
     \itemize{
-        \item Get set of non-redundant CDR3s (only in version = 1 or 2)
+        \item each row of s and r is considered as a CDR3 sequence from an 
+        individual T- or B-cell (version = 2, default). If version=1 is
+        specified, then we compute the set of non-redundant CDR3s from s and r
+        and use them for clustering.
         \item Trim CDR3 ends
     }
 \item Motif processing steps
@@ -185,29 +144,25 @@ Two strategies are used:
         \code{r} (\eqn{n_r})
         \item ratio of observed vs. expected motif counts using the following
         formula: OvE=\eqn{(f_s/n_s)/(f_r/n_r})
-        \item In version 2 and 3, probability \eqn{p_i} of finding the
-        observed or a larger OvE for motif \eqn{i} given that the
-        null hypothesis is true is computed with the Fisher's exact test
-        \item In version 1, \eqn{p_i} is computed by bootstrapping
+        \item probability \eqn{p_i} of finding the observed or a larger OvE for 
+        motif \eqn{i} given that the null hypothesis is true is computed with 
+        the Fisher's exact test
         \item classify motif \eqn{i} as \code{pass=TRUE} if the motif passes
         all filters specified in the user-provided control list, otherwise
         as \code{pass=FALSE}
     }
-
 }
 
 
 \bold{Global clustering}
 
-ClustIRR employs two approaches for global clustering:
+The default ClustIRR algorithm for global clustering is simple. For each pair 
+of equal-length CDR3 sequences \eqn{i} and \eqn{j} we compute the Hamming 
+distance \eqn{d_{ij}}. If \eqn{d_{ij}\leq} \code{global_max_dist} (user-defined 
+input), then \eqn{i} and \eqn{j} are globally similar.
 
-\enumerate{
-\item For equal-length CDR3 sequences \eqn{i} and \eqn{j} we compute the
-Hamming distance \eqn{d_{ij}}. If \eqn{d_{ij}\leq} \code{global_max_dist}
-(user-defined input), then \eqn{i} and \eqn{j} are globally similar.
-\item The user can provide a matrix of globally similar CDR3 sequence pairs,
-computed by a complementary approach (e.g. tcrdist)
-}
+Alternatively, the user can provide a matrix of globally similar CDR3 sequence 
+pairs, computed by a complementary approachs such as TCRdist.
 }
 
 \examples{
@@ -225,13 +180,12 @@ s <- base::rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRAAKPDGLRALETQYF",
                                     times = 15)))
 
 # run analysis
-out <- cluster_irr( s = s,
-                    r = r,
-                    version = 3,
-                    ks = 4,
-                    cores = 1,
-                    control = list(
-                        B = 1000,
+out <- cluster_irr(s = s,
+                   r = r,
+                   version = 2,
+                   ks = 4,
+                   cores = 1,
+                   control = list(
                         global_max_dist = 1,
                         local_max_fdr = 0.05,
                         local_min_ove = 2,

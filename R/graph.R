@@ -14,8 +14,8 @@ get_edges <- function(clust_irr) {
     names(me) <- names(clust_irr$clust)
     for (chain in names(clust_irr$clust)) {
         tmp_d <- clust_irr$inputs$s[, c(chain, "id")]
-        # remove clonal expanded cdr3s for version 1 and 2
-        if (clust_irr$inputs$version != 3) {
+        # remove clonal expanded cdr3s for version 1
+        if (clust_irr$inputs$version != 2) {
             tmp_d <- tmp_d[!duplicated(tmp_d[[chain]]), ]
         }
         tmp_e <- e[e$chain == chain, ]
@@ -38,7 +38,7 @@ get_edges <- function(clust_irr) {
             "from", "to", "from_cdr3", "to_cdr3",
             "motif", "type", "chain"
         )]
-        # remove self-reference connections to prevent circles (only v3)
+        # remove self-reference connections to prevent circles (only v2)
         me <- me[!(me$from == me$to), ]
         return(me)
     }

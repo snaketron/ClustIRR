@@ -1,27 +1,28 @@
 \name{plot_graph}
 \alias{plot_graph}
-\title{Plot clustIRR graph}
+\title{Plot ClustIRR graph}
 \usage{plot_graph(clust_irr, expand_clones = FALSE)}
 \arguments{
 \item{clust_irr}{object of type \code{clust_irr}, result of \code{clust_irr} 
-function, formed by two sublists \itemize{
-\item \code{clust} - list,  clustering results
-\item \code{inputs} - list, original user inputs
-}
+function
 }
 \item{expand_clones}{logical, show clonally expanded cells as distinct vertices
-in the graph, including connections between them. Only relevant for version 3
+in the graph, including connections between them. Only relevant for version 2
 of the algorithm. \code{expand_clones} = \code{FALSE} (default)
 }
 }
 \value{
 The output is an interactive \emph{visNetwork} graph. 
 
-Vertices represent cells, edges represent clustered local or global similarities.
+Vertices represent cells, edges represent local or global similarities.
 
-Informations about shared motifs and/or global sequences can be accessed via 
-hovering over vertices and edges (copy&paste possible). Vertices can be selected 
-directly, via sequence and by shared local or global connections. 
+The user can obtain additional information about the vertices and edges by
+hovering/clicking.
+
+SK: this section does not clearly explain the meaning of each color/symbol.
+Please try to construct this section such that a novice user can understand
+it (maybe a list structure with items = colors, shapes, ...). Maybe the best
+section for this is the description section. Also, do we keep expanded_clones?
 
 Colors and symbols of each graph are explained in a legend. 
 Connections between chains are represented by different colors. 
@@ -53,7 +54,7 @@ or global sequence, sorted alphabetically
 
 
 \description{
-This is a helper function for visualization of an \code{clustIRR} object.
+This is a helper function for visualization of an \code{clust_irr} object.
 }
 
 \examples{
@@ -73,11 +74,10 @@ s <- rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRADKPDGLDALETQYF",
 # run analysis
 out <- cluster_irr( s = s,
                     r = r,
-                    version = 3,
+                    version = 2,
                     ks = 4,
                     cores = 1,
                     control = list(
-                        B = 1000,
                         global_max_dist = 1,
                         local_max_fdr = 0.05,
                         local_min_ove = 2,

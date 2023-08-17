@@ -9,7 +9,6 @@ cores <- 1
 # set ks and control input parameters
 ks <- c(2, 3, 4)
 control_input <- list(
-    B = 100,
     global_max_dist = 1,
     local_max_fdr = 0.05,
     local_min_ove = 2,
@@ -21,7 +20,7 @@ control_input <- list(
 
 
 # check everything for all three versions of the algorithm
-for (version in c(1, 2, 3)) {
+for (version in c(1, 2)) {
     test_that("s parameter takes only valid input", {
         expect_error(cluster_irr( # missing input
             r = r,
@@ -149,7 +148,7 @@ for (version in c(1, 2, 3)) {
         expect_error(cluster_irr(
             s = s,
             r = r,
-            version = "three", # non-numeric
+            version = "two", # non-numeric
             ks = ks,
             cores = cores,
             control = control_input
@@ -157,7 +156,7 @@ for (version in c(1, 2, 3)) {
         expect_error(cluster_irr(
             s = s,
             r = r,
-            version = c(1, 2, 3), # multiple values
+            version = c(1, 2), # multiple values
             ks = ks,
             cores = cores,
             control = control_input
@@ -169,7 +168,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ), regexp = "version has to be 1, 2 or 3")
+        ), regexp = "version has to be 1 or 2")
         expect_error(cluster_irr(
             s = s,
             r = r,
@@ -177,7 +176,7 @@ for (version in c(1, 2, 3)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ), regexp = "version has to be 1, 2 or 3")
+        ), regexp = "version has to be 1 or 2")
     })
 
     test_that("ks parameter takes only valid input", {
@@ -256,55 +255,6 @@ for (version in c(1, 2, 3)) {
             cores = 0, # < 1
             control = control_input
         ), regexp = "cores has to be >= 1")
-    })
-
-    test_that("control_input$B parameter takes only valid input", {
-        control_input_tmp <- control_input
-        control_input_tmp$B <- Inf # infinity
-        expect_error(cluster_irr(
-            s = s,
-            r = r,
-            version = version,
-            ks = ks,
-            cores = cores,
-            control = control_input_tmp
-        ), regexp = "B has to be a finite number")
-        control_input_tmp$B <- "Everyone" # non-numeric
-        expect_error(cluster_irr(
-            s = s,
-            r = r,
-            version = version,
-            ks = ks,
-            cores = cores,
-            control = control_input_tmp
-        ), regexp = "B has to be numeric")
-        control_input_tmp$B <- 1.7 # float
-        expect_error(cluster_irr(
-            s = s,
-            r = r,
-            version = version,
-            ks = ks,
-            cores = cores,
-            control = control_input_tmp
-        ), regexp = "B has to be a whole number")
-        control_input_tmp$B <- c(1, 2, 3) # multiple values
-        expect_error(cluster_irr(
-            s = s,
-            r = r,
-            version = version,
-            ks = ks,
-            cores = cores,
-            control = control_input_tmp
-        ), regexp = "B has to be a single value")
-        control_input_tmp$B <- 0 # < 1
-        expect_error(cluster_irr(
-            s = s,
-            r = r,
-            version = version,
-            ks = ks,
-            cores = cores,
-            control = control_input_tmp
-        ), regexp = "B has to be >= 1")
     })
 
     test_that("control_input$global_max_dist param takes only valid input", {
@@ -675,14 +625,7 @@ test_that("get_clust functions works with global_pairs input", {
     control_input_tmp$global_pairs <-
         base::matrix(data = 17L, nrow = 10, ncol = 2)
     control_input_tmp$trim_flank_aa <- 0
-    expect_no_error(get_clust_v1(
-        cdr3 = s,
-        cdr3_r = r,
-        ks = ks,
-        cores = cores,
-        control = control_input_tmp
-    ))
-    expect_no_error(get_clust_v23(
+    expect_no_error(get_clust(
         cdr3 = s,
         cdr3_r = r,
         ks = ks,

@@ -13,7 +13,6 @@ input_check <- function(s,
     check_ks(ks)
     check_local_min_ove(control$local_min_ove)
     check_cores(cores)
-    check_B(control$B)
     check_global_max_dist(control$global_max_dist)
     check_local_max_fdr(control$local_max_fdr)
     check_local_min_o(control$local_min_o)
@@ -53,8 +52,8 @@ check_s_and_r <- function(s, r) {
 check_version <- function(version) {
     check_numeric(version)
     check_singlevalue(version)
-    if (!(version %in% c(1, 2, 3))) {
-        stop("version has to be 1, 2 or 3")
+    if (!(version %in% c(1, 2))) {
+        stop("version has to be 1 or 2")
     }
 }
 
@@ -77,14 +76,6 @@ check_cores <- function(cores) {
     check_wholenumber(cores)
     check_singlevalue(cores)
     check_lessthan(cores, 1)
-}
-
-check_B <- function(B) {
-    check_infinity(B)
-    check_numeric(B)
-    check_wholenumber(B)
-    check_singlevalue(B)
-    check_lessthan(B, 1)
 }
 
 check_global_max_dist <- function(global_max_dist) {
@@ -140,7 +131,6 @@ check_low_mem <- function(low_mem) {
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
     control <- list(
-        B = 1000,
         global_max_dist = 1,
         local_max_fdr = 0.05,
         local_min_ove = 2,

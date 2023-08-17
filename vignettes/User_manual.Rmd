@@ -240,7 +240,7 @@ base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
 clustirr_output <- ClustIRR::cluster_irr(
   s = s,
   r = r,
-  version = 3,
+  version = 2,
   ks = 4,
   cores = 1,
   control = list(trim_flank_aa = 3))
@@ -382,7 +382,7 @@ s <- base::rbind(s, clone)
 clustirr_output <- cluster_irr(
   s = s,
   r = r,
-  version = 3,
+  version = 2,
   ks = 4,
   cores = 1,
   control = list(trim_flank_aa = 3))
@@ -517,7 +517,7 @@ s <- rbind(s, clone_1, clone_2, clone_3)
 clustirr_ab <- cluster_irr(
   s = s,
   r = r,
-  version = 3,
+  version = 2,
   ks = 4,
   cores = 1,
   control = list(trim_flank_aa = 3))

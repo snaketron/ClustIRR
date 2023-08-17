@@ -124,7 +124,6 @@ test_that("check_s_and_r() runs as expected", {
 
 test_that("get_control() runs as expected", {
     control <- base::list(
-        B = 1000,
         global_max_dist = 1,
         local_max_fdr = 0.05,
         local_min_ove = 2,
