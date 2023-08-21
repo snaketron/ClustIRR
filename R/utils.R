@@ -26,14 +26,32 @@ get_trimmed_flanks <- function(x, flank_size) {
     if(max(l, na.rm = TRUE) <= t) {
         stop("all input CDR3s are shorter than 2 x trim_flank_aa")
     }
-
+    
     x <- substr(x = x, start = flank_size + 1, stop = nchar(x) - flank_size)
     
     x[x == ""] <- NA
-
+    
     if(any(is.na(x))) {
         warning("some input CDR3s are shorter than 2 x trim_flank_aa")
     }
-
+    
     return(x)
+}
+
+
+get_clustirr_output_obj <- function(clust, 
+                                    s,
+                                    r,
+                                    version, 
+                                    ks, 
+                                    cores, 
+                                    control) {
+    
+    return(list(clust = clust, 
+                inputs = list(s = s, 
+                              r = r, 
+                              version = version, 
+                              ks = ks, 
+                              cores = cores,
+                              control = control)))
 }

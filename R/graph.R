@@ -534,9 +534,3 @@ configure_network <- function(nodes, edges, ledges, lnodes) {
     )
 }
 
-
-check_clustirr <- function(clust_irr) {
-    if (!is(clust_irr, "clust_irr")) {
-        stop("Input has to be object of class clust_irr")
-    }
-}

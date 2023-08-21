@@ -30,16 +30,14 @@ cluster_irr <- function(s,
                     ks = ks, cores = cores, control = control)
     names(clust) <- chains
     
-    return(structure(
-        class = "clust_irr",
-        list(clust = clust,
-             inputs = list(
-                 s = s,
-                 r = r,
-                 version = version,
-                 ks = ks,
-                 cores = cores,
-                 control = control))))
+    # setup clustirr object
+    return(get_clustirr_output_obj(clust = clust, 
+                                   s = s, 
+                                   r = r, 
+                                   version = version, 
+                                   ks = ks, 
+                                   cores = cores, 
+                                   control = control))
 }
 
 

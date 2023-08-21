@@ -6,9 +6,8 @@ input_check <- function(s,
                         ks,
                         cores,
                         control) {
-    check_s(s)
-    check_r(r)
-    check_s_and_r(s, r)
+    
+    check_s_r(s = s, r = r)
     check_version(version)
     check_ks(ks)
     check_local_min_ove(control$local_min_ove)
@@ -22,7 +21,7 @@ input_check <- function(s,
     check_ks_and_trim_flank_aa(ks, control$trim_flank_aa, s, r)
 }
 
-check_s <- function(s) {
+check_s_r <- function(s, r) {
     check_missing(s)
     check_dataframe(s)
     check_rowcount(s)
@@ -30,9 +29,7 @@ check_s <- function(s) {
     check_dataframe_na(s)
     check_dataframe_empty(s)
     check_aa(s)
-}
-
-check_r <- function(r) {
+    
     check_missing(r)
     check_dataframe(r)
     check_rowcount(r)
@@ -40,14 +37,12 @@ check_r <- function(r) {
     check_dataframe_na(r)
     check_dataframe_empty(r)
     check_aa(r)
-}
-
-check_s_and_r <- function(s, r) {
-    if (!all(sort(colnames(s)) ==
-        sort(colnames(r)))) {
+    
+    if(!all(sort(colnames(s)) == sort(colnames(r)))) {
         stop("s has to contain the same columns as r")
     }
 }
+
 
 check_version <- function(version) {
     check_numeric(version)
@@ -56,6 +51,7 @@ check_version <- function(version) {
         stop("version has to be 1 or 2")
     }
 }
+
 
 check_ks <- function(ks) {
     check_infinity(ks)
@@ -173,6 +169,20 @@ check_ks_and_trim_flank_aa <- function(ks, trim, s, r){
 
 }
 
+
+check_clustirr <- function(clust_irr) {
+    # if missing control_in -> use default values
+    if (missing(clust_irr) || is.null(clust_irr) || any(is.na(clust_irr))) {
+        stop("clust_irr is empty")
+    }
+    
+    if(all(names(clust_irr) %in% c("clust", "inputs"))==FALSE) {
+        stop("clust_irr should contain two sublists: clust and inputs")
+    }
+}
+
+
+
 #### Helper functions ####
 
 check_aa <- function(x) {
@@ -187,10 +197,7 @@ check_aa <- function(x) {
 }
 
 check_dataframe <- function(x) {
-    w <- paste0(
-        deparse(substitute(x)),
-        " has to be of type data frame"
-    )
+    w <- paste0(deparse(substitute(x)), " has to be of type data frame")
     if (!is.data.frame(x)) {
         stop(w)
     }
