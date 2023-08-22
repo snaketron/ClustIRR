@@ -24,16 +24,16 @@ input_check <- function(s,
 check_s_r <- function(s, r) {
     check_missing(s)
     check_dataframe(s)
+    check_r_s_cols(s)
     check_rowcount(s)
-    check_dataframe_colnames(s)
     check_dataframe_na(s)
     check_dataframe_empty(s)
     check_aa(s)
     
     check_missing(r)
     check_dataframe(r)
+    check_r_s_cols(r)
     check_rowcount(r)
-    check_dataframe_colnames(r)
     check_dataframe_na(r)
     check_dataframe_empty(r)
     check_aa(r)
@@ -43,15 +43,13 @@ check_s_r <- function(s, r) {
     }
 }
 
-
 check_version <- function(version) {
     check_numeric(version)
     check_singlevalue(version)
-    if (!(version %in% c(1, 2))) {
+    if(!(version %in% c(1, 2))) {
         stop("version has to be 1 or 2")
     }
 }
-
 
 check_ks <- function(ks) {
     check_infinity(ks)
@@ -106,12 +104,12 @@ check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size
 }
 
 check_global_pairs <- function(global_pairs, s) {
-    if (!is.null(global_pairs)) {
+    if(!is.null(global_pairs)) {
         check_rowcount(global_pairs)
         check_matrix(global_pairs)
         check_matrix_type(global_pairs, type = "character")
         check_matrix_column_count(global_pairs, 3)
-        if (all(global_pairs[, c(1, 2)] %in% s) == FALSE) {
+        if(all(global_pairs[, c(1, 2)] %in% s) == FALSE) {
             stop("not all CDR3s from global_pair are found in s")
         }
     }
@@ -137,13 +135,13 @@ get_control <- function(control_in) {
     )
 
     # if missing control_in -> use default values
-    if (missing(control_in) || is.null(control_in)) {
+    if(missing(control_in) || is.null(control_in)) {
         return(control)
     }
-    if (is.list(control_in) == FALSE) {
+    if(is.list(control_in) == FALSE) {
         stop("control must be a list")
     }
-    if (all(names(control_in) %in% names(control)) == FALSE) {
+    if(all(names(control_in) %in% names(control)) == FALSE) {
         stop("unrecognized elements found in control")
     }
 
@@ -172,7 +170,7 @@ check_ks_and_trim_flank_aa <- function(ks, trim, s, r){
 
 check_clustirr <- function(clust_irr) {
     # if missing control_in -> use default values
-    if (missing(clust_irr) || is.null(clust_irr) || any(is.na(clust_irr))) {
+    if(missing(clust_irr) || is.null(clust_irr) || any(is.na(clust_irr))) {
         stop("clust_irr is empty")
     }
     
@@ -190,7 +188,7 @@ check_aa <- function(x) {
     w <- paste0(deparse(substitute(x)),
                       " contains non-standard or lowercase amino acid codes")
     res <- lapply(x, function(y) length(grep(aa, y)) != 0)
-    if (any(unlist(res))) {
+    if(any(unlist(res))) {
         stop(w)
     }
 
@@ -198,40 +196,28 @@ check_aa <- function(x) {
 
 check_dataframe <- function(x) {
     w <- paste0(deparse(substitute(x)), " has to be of type data frame")
-    if (!is.data.frame(x)) {
+    if(!is.data.frame(x)) {
         stop(w)
     }
 }
 
-check_dataframe_colnames <- function(x) {
-    c <- c("CDR3a", "CDR3b", "CDR3d", "CDR3g", "CDR3l", "CDR3h")
-    w <- paste0(
-        paste0(
-            deparse(substitute(x)),
-            " has to contain at least one of the following columns: "
-        ),
-        "CDR3a and/or CDR3b or CDR3d and/or CDR3g or CDR3h and/or CDR3l"
-    )
-    if (!any(colnames(x) %in% c)) {
-        stop(w)
+check_r_s_cols <- function(x) {
+    if(!any(colnames(x) %in% paste0("CDR3", c("a", "b", "g", "d", "l", "h")))) {
+        stop(paste0("unallowed columns in s/r, allowed are ",
+                    "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h"))
     }
-    for (n in colnames(x)) {
-        if (!is.character(x[[n]])) {
-            s <- paste0(n, " column has to of type character")
-            stop(s)
-        }
+    if((any(colnames(x) %in% c("CDR3a", "CDR3b"))==TRUE &
+        all(colnames(x) %in% c("CDR3a", "CDR3b"))==FALSE)|
+       (any(colnames(x) %in% c("CDR3g", "CDR3d"))==TRUE &
+        all(colnames(x) %in% c("CDR3g", "CDR3d"))==FALSE)|
+       (any(colnames(x) %in% c("CDR3l", "CDR3h"))==TRUE &
+        all(colnames(x) %in% c("CDR3l", "CDR3h"))==FALSE)) {
+        stop(paste0("mixed chains, allowed chain combinations are ",
+                    "CDR3a x CDR3b, CDR3d x CDR3g, CDR3l x CDR3h"))
     }
-    if (any(colnames(x) %in% c("CDR3a", "CDR3b")) &
-        any(colnames(x) %in% c("CDR3d", "CDR3g"))) {
-        stop("CDR3a/b can't be mixed with CDR3d/g columns")
-    }
-    if (any(colnames(x) %in% c("CDR3a", "CDR3b")) &
-        any(colnames(x) %in% c("CDR3h", "CDR3l"))) {
-        stop("CDR3a/b can't be mixed with CDR3l/h columns")
-    }
-    if (any(colnames(x) %in% c("CDR3d", "CDR3g")) &
-        any(colnames(x) %in% c("CDR3h", "CDR3l"))) {
-        stop("CDR3d/g can't be mixed with CDR3l/h columns")
+    
+    if(any(sapply(x, class) != "character")) {
+        stop("non-character columns in s/r")
     }
 }
 
@@ -240,7 +226,7 @@ check_dataframe_empty <- function(x) {
         deparse(substitute(x)),
         " contains empty values"
     )
-    if (any(x == "", na.rm = TRUE)) {
+    if(any(x == "", na.rm = TRUE)) {
         warning(w)
     }
 }
@@ -250,7 +236,7 @@ check_dataframe_na <- function(x) {
         deparse(substitute(x)),
         " contains NA value"
     )
-    if (any(is.na(x))) {
+    if(any(is.na(x))) {
         warning(w)
     }
 }
@@ -261,7 +247,7 @@ check_greaterthan <- function(x, v) {
         " has to be <= ",
         v
     )
-    if (any(x > v)) {
+    if(any(x > v)) {
         stop(w)
     }
 }
@@ -271,7 +257,7 @@ check_infinity <- function(x) {
         deparse(substitute(x)),
         " has to be a finite number"
     )
-    if (any(is.infinite(x))) {
+    if(any(is.infinite(x))) {
         stop(w)
     }
 }
@@ -282,7 +268,7 @@ check_lessthan <- function(x, v) {
         " has to be >= ",
         v
     )
-    if (any(x < v)) {
+    if(any(x < v)) {
         stop(w)
     }
 }
@@ -292,10 +278,10 @@ check_logical <- function(x) {
         deparse(substitute(x)),
         " has to be logical"
     )
-    if (any(is.na(x))) {
+    if(any(is.na(x))) {
         stop(w)
     }
-    if (!is.logical(x)) {
+    if(!is.logical(x)) {
         stop(w)
     }
 }
@@ -305,7 +291,7 @@ check_matrix <- function(x) {
         deparse(substitute(x)),
         " has to be of type matrix"
     )
-    if (!is.matrix(x)) {
+    if(!is.matrix(x)) {
         stop(w)
     }
 }
@@ -315,7 +301,7 @@ check_matrix_column_count <- function(x, c) {
         deparse(substitute(x)),
         " has to have ", c, " columns"
     )
-    if (ncol(x) != c) {
+    if(ncol(x) != c) {
         stop(w)
     }
 }
@@ -326,13 +312,13 @@ check_matrix_type <- function(x, type) {
         " has to be a numeric matrix"
     )
 
-    if (type == "numeric") {
-        if (is.numeric(x) == FALSE) {
+    if(type == "numeric") {
+        if(is.numeric(x) == FALSE) {
             stop(w)
         }
     }
-    if (type == "character") {
-        if (is.character(x) == FALSE) {
+    if(type == "character") {
+        if(is.character(x) == FALSE) {
             stop(w)
         }
     }
@@ -343,7 +329,7 @@ check_missing <- function(x) {
         deparse(substitute(x)),
         " parameter is missing"
     )
-    if (missing(x) || is.null(x)) {
+    if(missing(x) || is.null(x)) {
         stop(w)
     }
 }
@@ -353,7 +339,7 @@ check_numeric <- function(x) {
         deparse(substitute(x)),
         " has to be numeric"
     )
-    if (any(!is.numeric(x))) {
+    if(any(!is.numeric(x))) {
         stop(w)
     }
 }
@@ -363,7 +349,7 @@ check_rowcount <- function(x) {
         deparse(substitute(x)),
         " contains zero rows"
     )
-    if (nrow(x) == 0) {
+    if(nrow(x) == 0) {
         stop(w)
     }
 }
@@ -373,10 +359,10 @@ check_singlevalue <- function(x) {
         deparse(substitute(x)),
         " has to be a single value"
     )
-    if (any(is.na(x))) {
+    if(any(is.na(x))) {
         stop(w)
     }
-    if (length(x) != 1) {
+    if(length(x) != 1) {
         stop(w)
     }
 }
@@ -386,7 +372,7 @@ check_wholenumber <- function(x) {
         deparse(substitute(x)),
         " has to be a whole number"
     )
-    if (any(!(abs(x - round(x)) < .Machine$double.eps^0.5))) {
+    if(any(!(abs(x - round(x)) < .Machine$double.eps^0.5))) {
         stop(w)
     }
 }
@@ -396,7 +382,7 @@ check_positive <- function(x) {
         deparse(substitute(x)),
         " has to be positive number"
     )
-    if (x < 0) {
+    if(x < 0) {
         stop(w)
     }
 }

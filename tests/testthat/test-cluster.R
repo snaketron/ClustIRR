@@ -54,7 +54,7 @@ for (version in c(1, 2)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ), regexp = "CDR3a column has to of type character")
+        ), regexp = "non\\-character columns in s\\/r")
         df <- s
         df["CDR3b"] <- 42
         expect_error(cluster_irr(
@@ -64,7 +64,7 @@ for (version in c(1, 2)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ), regexp = "CDR3b column has to of type character")
+        ), regexp = "non\\-character columns in s\\/r")
     })
 
 
@@ -102,7 +102,7 @@ for (version in c(1, 2)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ), regexp = "CDR3a column has to of type character")
+        ), regexp = "non\\-character columns in s\\/r")
         df <- r
         df["CDR3b"] <- 42
         expect_error(cluster_irr(
@@ -112,7 +112,7 @@ for (version in c(1, 2)) {
             ks = ks,
             cores = cores,
             control = control_input
-        ), regexp = "CDR3b column has to of type character")
+        ), regexp = "non\\-character columns in s\\/r")
     })
 
     test_that("different combinations of s and r run as expected", {
@@ -121,27 +121,23 @@ for (version in c(1, 2)) {
         base::colnames(s_cdr3a)[1] <- "CDR3a"
         base::colnames(r_cdr3a)[1] <- "CDR3a"
         # cdr3a column only in s
-        expect_error(check_s_and_r(
+        expect_error(check_s_r(
             s_cdr3a,
             r
         ), regexp = "s has to contain the same columns as r")
         # cdr3a column only in r
-        expect_error(check_s_and_r(
-            s,
-            r_cdr3a
-        ), regexp = "s has to contain the same columns as r")
+        expect_error(check_s_r(s, r_cdr3a), 
+                     regexp = "s has to contain the same columns as r")
         base::colnames(r_cdr3a)[1] <- "CDR3c"
         # cdr3b column only in s
-        expect_error(check_s_and_r(
-            s,
-            r_cdr3a
-        ), regexp = "s has to contain the same columns as r")
+        expect_error(check_s_r(s, r_cdr3a), 
+                     regexp = paste0("unallowed columns in s\\/r, allowed are ",
+                                     "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h"))
         base::colnames(s_cdr3a)[1] <- "CDR3c"
         # cdr3b column only in s
-        expect_error(check_s_and_r(
-            s_cdr3a,
-            r
-        ), regexp = "s has to contain the same columns as r")
+        expect_error(check_s_r(s_cdr3a, r), 
+                     regexp = paste0("unallowed columns in s/r, allowed are ",
+                                     "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h"))
     })
 
     test_that("version parameter takes only valid input", {
