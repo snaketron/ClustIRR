@@ -203,8 +203,9 @@ check_dataframe <- function(x) {
 
 check_r_s_cols <- function(x) {
     if(!any(colnames(x) %in% paste0("CDR3", c("a", "b", "g", "d", "l", "h")))) {
-        stop(paste0("unallowed columns in s/r, allowed are ",
-                    "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h"))
+      s <- paste0("unallowed columns in s/r, allowed are ",
+                  "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h")  
+      stop(s)
     }
     if((any(colnames(x) %in% c("CDR3a", "CDR3b"))==TRUE &
         all(colnames(x) %in% c("CDR3a", "CDR3b"))==FALSE)|
@@ -212,11 +213,12 @@ check_r_s_cols <- function(x) {
         all(colnames(x) %in% c("CDR3g", "CDR3d"))==FALSE)|
        (any(colnames(x) %in% c("CDR3l", "CDR3h"))==TRUE &
         all(colnames(x) %in% c("CDR3l", "CDR3h"))==FALSE)) {
-        stop(paste0("mixed chains, allowed chain combinations are ",
-                    "CDR3a x CDR3b, CDR3d x CDR3g, CDR3l x CDR3h"))
+      s <- paste0("mixed chains, allowed chain combinations are ",
+                  "CDR3a x CDR3b, CDR3d x CDR3g, CDR3l x CDR3h")
+        stop(s)
     }
     
-    if(any(sapply(x, class) != "character")) {
+    if(!all(vapply(x, inherits, logical(1), "character"))) {
         stop("non-character columns in s/r")
     }
 }
