@@ -215,7 +215,8 @@ the input parameter `control$global_pairs`.
 
 ## Output
 
-`r Biocpkg("ClustIRR")` returns two types of output:
+`r Biocpkg("ClustIRR")` returns an S4 object of class "clust_irr" that 
+contains two types of output:
 
 1. clustering results: tables and lists
 2. graph object: plot and lists of nodes & edges
@@ -254,7 +255,7 @@ as an enriched motif in `s` compared to `r`:
 
 ```{r}
 # extract local motifs
-local_motifs <- clustirr_output$clust$CDR3b$local$m
+local_motifs <- slot(clustirr_output, "clust")$CDR3b$local$m
 
 # display only passed motifs
 knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
@@ -280,7 +281,7 @@ amino acid at position 4:
 
 ```{r}
 # display globally similar pairs
-knitr::kable(clustirr_output$clust$CDR3b$global, row.names = FALSE)
+knitr::kable(slot(clustirr_output, "clust")$CDR3b$global, row.names = FALSE)
 ```
 
 ## Putting it all together $\rightarrow$ graph
@@ -397,7 +398,7 @@ many additional motifs that are part of the core of *CATSRPDGLAQYF*, such as
 
 ```{r, fig.align='center'}
 # extract local motifs
-local_motifs <- clustirr_output$clust$CDR3b$local$m
+local_motifs <- slot(clustirr_output, "clust")$clust$CDR3b$local$m
 
 # display only passed motifs
 knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
