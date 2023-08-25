@@ -3,3 +3,8 @@ Changes in version 0.99.0 (25 July, 2023)
 
 Changes in version 0.99.4 (07 Aug, 2023)
 + Build errors/warnings fixed
+
+Changes in version 0.99.16 (25 Aug, 2023)
++ Changes after first round of review done
++ Now we have two versions (old version=1 removed, unused) 
++ S4 object output of clust_irr
