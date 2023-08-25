@@ -39,6 +39,11 @@ get_trimmed_flanks <- function(x, flank_size) {
 }
 
 
+# This is the class of the outputs produced by function clust_irr. Object
+# from this class are used as input of plot_graph
+setClass("clust_irr", representation(clust = "list", inputs = "list"))
+
+
 get_clustirr_output_obj <- function(clust, 
                                     s,
                                     r,
@@ -47,11 +52,12 @@ get_clustirr_output_obj <- function(clust,
                                     cores, 
                                     control) {
     
-    return(list(clust = clust, 
-                inputs = list(s = s, 
-                              r = r, 
-                              version = version, 
-                              ks = ks, 
-                              cores = cores,
-                              control = control)))
+    
+    return(new("clust_irr", clust = clust,
+               inputs = list(s = s, 
+                             r = r, 
+                             version = version, 
+                             ks = ks, 
+                             cores = cores,
+                             control = control)))
 }

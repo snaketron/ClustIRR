@@ -70,8 +70,8 @@ of each pair of CDR3s: \emph{TRA} or \emph{TRB}. \code{global_pair} =
 }
 }
 \value{
-The output is an object with \code{clust_irr} structure. This object is formed
-by two sublists:
+The output is an S4 object of class \code{clust_irr}. This object contains 
+two sublists:
 \item{clust}{list, contains clustering results for each TCR/BCR chain. The
 results are stored in separate sub-list named appropriately (e.g. CDR3a, CDR3b, 
 CDR3g, etc.). In the following we who the typical structure of these lists:
@@ -201,10 +201,10 @@ base::class(out)
 utils::str(out)
 
 # inspect motif enrichment results
-knitr::kable(utils::head(out$clust$CDR3b$local$m))
+knitr::kable(utils::head(slot(out, "clust")$CDR3b$local$m))
 
 # inspect which CDR3bs are globally similar
-knitr::kable(utils::head(out$clust$CDR3b$global))
+knitr::kable(utils::head(slot(out, "clust")$CDR3b$global))
 
 # plot graph
 plot_graph(out)

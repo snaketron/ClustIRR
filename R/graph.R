@@ -10,12 +10,12 @@ get_edges <- function(clust_irr) {
         return(NULL)
     }
 
-    me <- vector(mode = "list", length = length(clust_irr$clust))
-    names(me) <- names(clust_irr$clust)
-    for (chain in names(clust_irr$clust)) {
-        tmp_d <- clust_irr$inputs$s[, c(chain, "id")]
+    me <- vector(mode = "list", length = length(slot(clust_irr, "clust")))
+    names(me) <- names(slot(clust_irr, "clust"))
+    for (chain in names(slot(clust_irr, "clust"))) {
+        tmp_d <- clust_irr@inputs$s[, c(chain, "id")]
         # remove clonal expanded cdr3s for version 1
-        if (clust_irr$inputs$version != 2) {
+        if (clust_irr@inputs$version != 2) {
             tmp_d <- tmp_d[!duplicated(tmp_d[[chain]]), ]
         }
         tmp_e <- e[e$chain == chain, ]
@@ -60,10 +60,10 @@ get_local_edges <- function(clust_irr) {
         return(NULL)
     }
 
-    edges_local <- vector(mode = "list", length = length(clust_irr$clust))
-    names(edges_local) <- names(clust_irr$clust)
-    for (chain in names(clust_irr$clust)) {
-        lp <- clust_irr$clust[[chain]]$local$lp
+    edges_local<-vector(mode = "list", length = length(slot(clust_irr,"clust")))
+    names(edges_local) <- names(slot(clust_irr, "clust"))
+    for (chain in names(slot(clust_irr, "clust"))) {
+        lp <- slot(clust_irr, "clust")[[chain]]$local$lp
         if (is.null(lp) == FALSE && nrow(lp) != 0) {
             edges_local[[chain]] <- do.call(rbind, lapply(
                 X = unique(lp$motif), FUN = get_lp, lp = lp,
@@ -94,10 +94,10 @@ get_global_edges <- function(clust_irr) {
         ))
     }
 
-    edges_global <- vector(mode = "list", length = length(clust_irr$clust))
-    names(edges_global) <- names(clust_irr$clust)
-    for (chain in names(clust_irr$clust)) {
-        g <- clust_irr$clust[[chain]]$global
+    edges_global<-vector(mode = "list",length = length(slot(clust_irr,"clust")))
+    names(edges_global) <- names(slot(clust_irr, "clust"))
+    for (chain in names(slot(clust_irr, "clust"))) {
+        g <- slot(clust_irr, "clust")[[chain]]$global
         if (is.null(g) == FALSE && nrow(g) != 0) {
             edges_global[[chain]] <- get_gp(gp = g, chain = chain)
         }
@@ -133,12 +133,12 @@ plot_graph <- function(clust_irr, expand_clones = FALSE) {
     }
     edges <- as_data_frame(ig, what = "edges")
     nodes <- as_data_frame(ig, what = "vertices")
-    chains <- names(clust_irr$clust)
+    chains <- names(slot(clust_irr, "clust"))
     types <- unique(edges$type)
     edges <- configure_edges(edges = edges, chains = chains, types = types)
     nodes <- configure_nodes(
         nodes = nodes, edges = edges, chains = chains,
-        types = types, s = clust_irr$inputs$s
+        types = types, s = clust_irr@inputs$s
     )
     if (!expand_clones) {
         nodes <- nodes[!duplicated(nodes$label), ]

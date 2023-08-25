@@ -6,7 +6,7 @@ x <- cluster_irr(s, r)
 
 test_that("plot_graph() takes only clust_irr object as input", {
     expect_error(plot_graph(NA),
-        regexp = "clust_irr is empty")
+        regexp = "input clust_irr is not class clust_irr")
 })
 
 test_that("plot_graph() warns if no local or global edges are found", {

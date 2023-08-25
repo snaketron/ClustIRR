@@ -3,7 +3,7 @@
 \title{Plot ClustIRR graph}
 \usage{plot_graph(clust_irr, expand_clones = FALSE)}
 \arguments{
-\item{clust_irr}{object of type \code{clust_irr}, result of \code{clust_irr} 
+\item{clust_irr}{S4 object of type \code{clust_irr}, result of \code{clust_irr} 
 function
 }
 \item{expand_clones}{logical, show clonally expanded cells as distinct vertices
@@ -18,11 +18,6 @@ Vertices represent cells, edges represent local or global similarities.
 
 The user can obtain additional information about the vertices and edges by
 hovering/clicking.
-
-SK: this section does not clearly explain the meaning of each color/symbol.
-Please try to construct this section such that a novice user can understand
-it (maybe a list structure with items = colors, shapes, ...). Maybe the best
-section for this is the description section. Also, do we keep expanded_clones?
 
 Colors and symbols of each graph are explained in a legend. 
 Connections between chains are represented by different colors. 
@@ -72,19 +67,19 @@ s <- rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRADKPDGLDALETQYF",
                                 times = 5)))
 
 # run analysis
-out <- cluster_irr( s = s,
-                    r = r,
-                    version = 2,
-                    ks = 4,
-                    cores = 1,
-                    control = list(
-                        global_max_dist = 1,
-                        local_max_fdr = 0.05,
-                        local_min_ove = 2,
-                        local_min_o = 1,
-                        trim_flank_aa = 3,
-                        global_pairs = NULL,
-                        low_mem = FALSE))
+out <- cluster_irr(s = s,
+                   r = r,
+                   version = 2,
+                   ks = 4,
+                   cores = 1,
+                   control = list(
+                       global_max_dist = 1,
+                       local_max_fdr = 0.05,
+                       local_min_ove = 2,
+                       local_min_o = 1,
+                       trim_flank_aa = 3,
+                       global_pairs = NULL,
+                       low_mem = FALSE))
 
 # plot graph with expanded clones as individual cells/vertices
 p1 <- plot_graph(out, expand_clones = TRUE)
