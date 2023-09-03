@@ -1,5 +1,3 @@
-export(cluster_irr)
-export(plot_graph)
 importFrom(future, plan)
 importFrom(future, multisession)
 importFrom(future, sequential)
@@ -17,3 +15,7 @@ importFrom(visNetwork, visLegend)
 importFrom(visNetwork, `%>%`)
 importFrom(igraph, graph_from_data_frame)
 importFrom(igraph, as_data_frame)
+
+export(cluster_irr)
+export(plot_graph)
+exportClasses(clust_irr)
