@@ -66,6 +66,9 @@ CDR3g, etc.). In the following we who the typical structure of these lists:
 }
 }
 
+\value{
+The output is an S4 object of class \code{clust_irr}
+}
 
 \examples{
 # inputs
