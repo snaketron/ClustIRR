@@ -13,9 +13,9 @@ get_edges <- function(clust_irr) {
     me <- vector(mode = "list", length = length(slot(clust_irr, "clust")))
     names(me) <- names(slot(clust_irr, "clust"))
     for (chain in names(slot(clust_irr, "clust"))) {
-        tmp_d <- clust_irr@inputs$s[, c(chain, "id")]
+        tmp_d <- slot(clust_irr, "inputs")$s[, c(chain, "id")]
         # remove clonal expanded cdr3s for version 1
-        if (clust_irr@inputs$version != 2) {
+        if (slot(clust_irr, "inputs")$version != 2) {
             tmp_d <- tmp_d[!duplicated(tmp_d[[chain]]), ]
         }
         tmp_e <- e[e$chain == chain, ]
@@ -138,7 +138,7 @@ plot_graph <- function(clust_irr, expand_clones = FALSE) {
     edges <- configure_edges(edges = edges, chains = chains, types = types)
     nodes <- configure_nodes(
         nodes = nodes, edges = edges, chains = chains,
-        types = types, s = clust_irr@inputs$s
+        types = types, s = slot(clust_irr, "inputs")$s
     )
     if (!expand_clones) {
         nodes <- nodes[!duplicated(nodes$label), ]
