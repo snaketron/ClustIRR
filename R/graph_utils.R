@@ -144,7 +144,7 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
         if(length(js) == 0) {
             return(NULL)
         }
-        return(data.frame(from = id_x[x], to = id_x[js]))
+        return(data.frame(from = id_x[x], to = id_y[js]))
     }
     
     get_hamming_dist <- function(x, 

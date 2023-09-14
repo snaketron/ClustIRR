@@ -103,12 +103,18 @@ join_graphs <- function(clust_irr_1, clust_irr_2) {
     d1 <- igraph::get.data.frame(ig1, what = "both")
     d1$edges$sample <- "s1"
     d1$edges <- d1$edges[, c("from", "to", "chain", "sample")]
+    d1$edges$from <- paste0("s1|", d1$edges$from)
+    d1$edges$to <- paste0("s1|", d1$edges$to)
+    
     d1$vertices$id <- d1$vertices$name
     d1$vertices$name <- paste0("s1|", d1$vertices$name)
     
     d2 <- igraph::get.data.frame(ig2, what = "both")
     d2$edges$sample <- "s2"
     d2$edges <- d2$edges[, c("from", "to", "chain", "sample")]
+    d2$edges$from <- paste0("s2|", d2$edges$from)
+    d2$edges$to <- paste0("s2|", d2$edges$to)
+    
     d2$vertices$id <- d2$vertices$name
     d2$vertices$name <- paste0("s2|", d2$vertices$name)
     
@@ -119,9 +125,14 @@ join_graphs <- function(clust_irr_1, clust_irr_2) {
     ige <- get_intergraph_edges(s1=slot(clust_irr_1, "inputs")$s,
                                 s2=slot(clust_irr_2, "inputs")$s,
                                 global_max_dist = global_max_dist)
+    ige$from <- paste0("s1|", ige$from)
+    ige$to <- paste0("s2|", ige$to)
     d1$edges <- rbind(d1$edges, ige)
     d <- d1
     
     # build graph
-    return(graph_from_data_frame(d$edges,directed=FALSE,vertices = d$vertices))
+    return(graph_from_data_frame(
+        d$edges, 
+        directed = FALSE,
+        vertices = d$vertices))
 }
