@@ -181,15 +181,13 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
     
     len_x <- nchar(seq_x)
     len_y <- nchar(seq_y)
-    lens <- unique(c(len_x, len_y))
     
-    hd <- lapply(X = lens,
+    hd <- lapply(X = unique(c(len_x, len_y)),
                  FUN = get_hamming_dist,
                  id_x = id_x,
                  id_y = id_y,
                  seq_x = seq_x,
                  seq_y = seq_y,
-                 lens = lens,
                  global_max_dist = global_max_dist)
     hd <- do.call(rbind, hd)
     if(nrow(hd)!=0) {
