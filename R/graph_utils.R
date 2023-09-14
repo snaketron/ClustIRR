@@ -129,15 +129,14 @@ get_intergraph_edges <- function(s1, s2, global_max_dist) {
     
     ige <- lapply(X = chains, 
                   FUN = get_intergraph_global,
-                  s1 = s1[, c("id", chain), drop=F], 
-                  s2 = s2[, c("id", chain), drop=F], 
-                  control = global_max_dist,
-                  chain)
+                  s1 = s1,
+                  s2 = s2,
+                  global_max_dist = global_max_dist)
     return(do.call(rbind, ige))
 }
 
 
-get_intergraph_global <- function(s1, s2, global_max_dist, chain) {
+get_intergraph_global <- function(x, s1, s2, global_max_dist) {
     
     get_hdist <- function(x, id_x, id_y, seq_x, seq_y, global_max_dist) {
         d <- stringdist(a = seq_x[x], b = seq_y, method = "hamming")
@@ -175,10 +174,10 @@ get_intergraph_global <- function(s1, s2, global_max_dist, chain) {
         return(hd)
     }
     
-    seq_x <- s1[,2]
-    seq_y <- s2[,2]
-    id_x <- s1[,1] 
-    id_y <- s2[,1]
+    seq_x <- s1[,x]
+    seq_y <- s2[,x]
+    id_x <- s1[,"id"] 
+    id_y <- s2[,"id"]
     
     len_x <- nchar(seq_x)
     len_y <- nchar(seq_y)
@@ -194,7 +193,7 @@ get_intergraph_global <- function(s1, s2, global_max_dist, chain) {
                  global_max_dist = global_max_dist)
     hd <- do.call(rbind, hd)
     if(nrow(hd)!=0) {
-        hd$chain <- chain
+        hd$chain <- x
         hd$sample <- "s1s2"
     }
     return(hd)
