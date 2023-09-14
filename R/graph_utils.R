@@ -178,7 +178,6 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
     seq_y <- s2[,x]
     id_x <- s1[,"id"] 
     id_y <- s2[,"id"]
-    
     len_x <- nchar(seq_x)
     len_y <- nchar(seq_y)
     
@@ -188,6 +187,8 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
                  id_y = id_y,
                  seq_x = seq_x,
                  seq_y = seq_y,
+                 len_x = len_x,
+                 len_y = len_y,
                  global_max_dist = global_max_dist)
     hd <- do.call(rbind, hd)
     if(nrow(hd)!=0) {
