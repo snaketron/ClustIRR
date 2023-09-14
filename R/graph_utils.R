@@ -157,7 +157,7 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
                                  global_max_dist) {
         
         is_x <- which(len_x == x)
-        is_y <- which(len_y == y)
+        is_y <- which(len_y == x)
         
         if(length(is_x)==0|length(is_y)==0) {
             return(NULL)
