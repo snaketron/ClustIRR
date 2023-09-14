@@ -18,4 +18,7 @@ importFrom(igraph, as_data_frame)
 
 export(cluster_irr)
 export(plot_graph)
+export(get_graph)
+export(join_graphs)
+
 exportClasses(clust_irr)

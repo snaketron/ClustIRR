@@ -11,7 +11,8 @@ get_global_clust <- function(cdr3, global_max_dist, low_mem) {
         return(cbind(rep(x = x, times = length(js)), js))
     }
     
-    get_hamming_dist <- function(x, cdr3, cdr3_len, global_max_dist, low_mem) {
+    get_hamming_dist <- function(x, cdr3, cdr3_len, 
+                                 global_max_dist, low_mem) {
         is <- which(cdr3_len == x)
         if(length(is) == 1) {
             return(NULL)
