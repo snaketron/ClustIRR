@@ -117,7 +117,7 @@ join_graphs <- function(clust_irr_1, clust_irr_2) {
     
     global_max_dist <- slot(clust_irr_1, "inputs")$control$global_max_dist
     ige <- get_intergraph_edges(s1=slot(clust_irr_1, "inputs")$s,
-                                s1=slot(clust_irr_2, "inputs")$s,
+                                s2=slot(clust_irr_2, "inputs")$s,
                                 global_max_dist = global_max_dist)
     d1$edges <- rbind(d1$edges, ige)
     d <- d1
