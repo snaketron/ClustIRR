@@ -1,29 +1,66 @@
 
 get_graph <- function(clust_irr) {
+    
+    get_clone_edges <- function(x, edges, cs) {
+        e <- edges[edges$chain == x, ]
+        if(nrow(e)==0) {
+            return(NULL)
+        }
+        
+        e <- merge(x = e, y = cs, by.x = "from_cdr3", by.y = x, all.x = TRUE)
+        e$from <- e$clone_id
+        e$clone_id <- NULL
+        e$clone_size <- NULL
+        
+        e <- merge(x = e, y = cs, by.x = "to_cdr3", by.y = x, all.x = TRUE)
+        e$to <- e$clone_id
+        e$clone_id <- NULL
+        e$clone_size <- NULL
+        
+        return(e)
+    }
+    
     check_clustirr(clust_irr = clust_irr)
 
     edges <- get_edges(clust_irr = clust_irr)
-
-    if (is.null(edges)) {
+    
+    if(is.null(edges)) {
         warning("No local or global edges to build igraph from \n")
         return(NULL)
     }
+    
+    # cells
+    s <- slot(clust_irr, "inputs")$s
+    
+    # clones
+    cs <- s
+    cs$clone_size <- 1
+    cs$id <- NULL
+    cs <- aggregate(clone_size~., data = cs, FUN = sum)
+    cs$clone_id <- 1:nrow(cs)
+    
+    # get chains to be analyzed
+    clone_edges <- lapply(X = get_chains(colnames(s)), 
+                          FUN = get_clone_edges,
+                          edges = edges, cs = cs)
+    clone_edges <- do.call(rbind, clone_edges)
+    cs$name <- cs$clone_id
+    cs <- cs[, rev(colnames(cs))]
+    
+    # build graph
+    ig <- igraph::graph_from_data_frame(
+        clone_edges[, c("from", "to", "chain", "type", 
+                        "motif", "from_cdr3", "to_cdr3")],
+        directed = FALSE,
+        vertices = cs)
 
-    ig <- graph_from_data_frame(edges, directed = FALSE)
-    
-    # these are the nodes that are part of s but do not have connections
-    # in the graph, so we have to add them as individual vertices
-    n <- as.numeric(V(ig)$name)
-    n <- setdiff(x = slot(clust_irr, "inputs")$s$id, y = n)
-    ig <- igraph::add_vertices(graph = ig,
-                               nv = length(n),
-                               name = as.character(n))
-    
     return(ig)
 }
 
 
-plot_graph <- function(clust_irr, expand_clones = FALSE) {
+plot_graph <- function(clust_irr,
+                       expand_clones = FALSE) {
+    
     check_clustirr(clust_irr = clust_irr)
     ig <- get_graph(clust_irr = clust_irr)
     if (is.null(ig)) {
@@ -33,6 +70,7 @@ plot_graph <- function(clust_irr, expand_clones = FALSE) {
     edges <- as_data_frame(ig, what = "edges")
     nodes <- as_data_frame(ig, what = "vertices")
     chains <- names(slot(clust_irr, "clust"))
+    
     types <- unique(edges$type)
     edges <- configure_edges(edges = edges, chains = chains, types = types)
     nodes <- configure_nodes(
@@ -91,7 +129,8 @@ plot_graph <- function(clust_irr, expand_clones = FALSE) {
 }
 
 
-join_graphs <- function(clust_irr_1, clust_irr_2) {
+join_graphs <- function(clust_irr_1, 
+                        clust_irr_2) {
     if(slot(clust_irr_1, "inputs")$control$global_max_dist!=
        slot(clust_irr_2, "inputs")$control$global_max_dist) {
        stop("variable global_max_dist used in clust_irr_1 and clust_irr_2") 

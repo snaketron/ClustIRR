@@ -99,16 +99,16 @@ get_clust <- function(cdr3,
                               global_max_dist = control$global_max_dist,
                               low_mem = control$low_mem)
 
-        if(version == 2) {
-            clones <- unique(cdr3[duplicated(cdr3)])
-            clones <- matrix(rep(clones, 2), nrow = length(clones), ncol = 2)
-            if(is.null(g)) {
-                g <- clones
-            }
-            else {
-                g <- rbind(clones, g)
-            }
-        }
+        # if(version == 2) {
+        #     clones <- unique(cdr3[duplicated(cdr3)])
+        #     clones <- matrix(rep(clones, 2), nrow = length(clones), ncol = 2)
+        #     if(is.null(g)) {
+        #         g <- clones
+        #     }
+        #     else {
+        #         g <- rbind(clones, g)
+        #     }
+        # }
     }
     return(list(local = l, global = g))
 }

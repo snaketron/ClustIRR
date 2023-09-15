@@ -32,14 +32,14 @@ get_edges <- function(clust_irr) {
     }
     me <- do.call(rbind, me)
     if (is.null(me) == FALSE && nrow(me) != 0) {
-        me$from <- me$id.x
-        me$to <- me$id.y
+        me$from_cell <- me$id.x
+        me$to_cell <- me$id.y
         me <- me[, c(
-            "from", "to", "from_cdr3", "to_cdr3",
+            "from_cell", "to_cell", "from_cdr3", "to_cdr3",
             "motif", "type", "chain"
         )]
         # remove self-reference connections to prevent circles (only v2)
-        me <- me[!(me$from == me$to), ]
+        me <- me[!(me$from_cell == me$to_cell), ]
         return(me)
     }
     warning("No local or global edges found \n")
@@ -371,7 +371,8 @@ get_motif_list <- function(x, chains) {
 
 configure_nodes <- function(nodes, edges, chains, types, s) {
     names(nodes) <- "id"
-    nodes <- merge(nodes, s, by = "id")
+    s$id <- as.character(s$id)
+    nodes <- merge(x = nodes, y = s, by = "id")
     nodes[is.na(nodes)] <- "<NA>"
     s[is.na(s)] <- "<NA>"
     min_size <- 20
@@ -407,8 +408,7 @@ configure_nodes <- function(nodes, edges, chains, types, s) {
     }
     nodes$group <- apply(
         X = nodes, MARGIN = 1, FUN = get_u_motifs,
-        edges = edges, l = l
-    )
+        edges = edges, l = l)
     for (i in seq_along(l)) {
         nodes[l[[i]]] <- unlist(lapply(nodes$group, `[`, i))
         nodes[nodes == ""] <- "-"
@@ -436,6 +436,7 @@ configure_nodes <- function(nodes, edges, chains, types, s) {
 
 
 get_u_motifs <- function(x, edges = edges, l = l) {
+    browser()
     get_unique_str <- function(x) {
         res <- unique(e[x][e[x] != "-"])
         return(
