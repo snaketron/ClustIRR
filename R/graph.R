@@ -157,16 +157,17 @@ join_graphs <- function(clust_irr_1,
     d2$vertices$id <- d2$vertices$name
     d2$vertices$name <- paste0("s2|", d2$vertices$name)
     
-    d1$vertices <- rbind(d1$vertices, d2$vertices)
-    d1$edges <- rbind(d1$edges, d2$edges)
-    
     global_max_dist <- slot(clust_irr_1, "inputs")$control$global_max_dist
-    ige <- get_intergraph_edges(s1=slot(clust_irr_1, "inputs")$s,
-                                s2=slot(clust_irr_2, "inputs")$s,
-                                global_max_dist = global_max_dist)
+    chains <- colnames(slot(clust_irr_1, "inputs")$s)
+    ige <- get_intergraph_edges(s1=d1$vertices,
+                                s2=d2$vertices,
+                                global_max_dist = global_max_dist,
+                                chains = chains)
     ige$from <- paste0("s1|", ige$from)
     ige$to <- paste0("s2|", ige$to)
-    d1$edges <- rbind(d1$edges, ige)
+    
+    d1$vertices <- rbind(d1$vertices, d2$vertices)
+    d1$edges <- rbind(d1$edges, d2$edges, ige)
     d <- d1
     
     # build graph

@@ -110,7 +110,7 @@ get_global_edges <- function(clust_irr) {
 
 
 
-get_intergraph_edges <- function(s1, s2, global_max_dist) {
+get_intergraph_edges <- function(s1, s2, global_max_dist, chains) {
     if(is.data.frame(s1)==FALSE) {
         stop("s1 should be a data.frame")
     }
@@ -124,8 +124,6 @@ get_intergraph_edges <- function(s1, s2, global_max_dist) {
        all(colnames(s2) %in% colnames(s1))==FALSE) {
         stop("s1 and s2 have different columns")
     }
-    
-    chains <- get_chains(colnames(s1))
     
     ige <- lapply(X = chains, 
                   FUN = get_intergraph_global,
@@ -176,8 +174,8 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
     
     seq_x <- s1[,x]
     seq_y <- s2[,x]
-    id_x <- s1[,"id"] 
-    id_y <- s2[,"id"]
+    id_x <- s1[,"name"] 
+    id_y <- s2[,"name"]
     len_x <- nchar(seq_x)
     len_y <- nchar(seq_y)
     
