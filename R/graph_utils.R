@@ -434,7 +434,6 @@ configure_nodes <- function(nodes, edges, chains, types, s) {
 
 
 get_u_motifs <- function(x, edges = edges, l = l) {
-    browser()
     get_unique_str <- function(x) {
         res <- unique(e[x][e[x] != "-"])
         return(

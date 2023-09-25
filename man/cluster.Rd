@@ -1,8 +1,8 @@
-\name{cluster_irr}
-\alias{cluster_irr}
+\name{cluster}
+\alias{cluster}
 \title{Clustering of immune receptor repertoires}
 \usage{
-cluster_irr(
+cluster(
     s,
     r,
     version = 2,
@@ -180,19 +180,19 @@ s <- base::rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRAAKPDGLRALETQYF",
                                     times = 15)))
 
 # run analysis
-out <- cluster_irr(s = s,
-                   r = r,
-                   version = 2,
-                   ks = 4,
-                   cores = 1,
-                   control = list(
-                        global_max_dist = 1,
-                        local_max_fdr = 0.05,
-                        local_min_ove = 2,
-                        local_min_o = 1,
-                        trim_flank_aa = 3,
-                        global_pairs = NULL,
-                        low_mem = FALSE))
+out <- cluster(s = s,
+               r = r,
+               version = 2,
+               ks = 4,
+               cores = 1,
+               control = list(
+                    global_max_dist = 1,
+                    local_max_fdr = 0.05,
+                    local_min_ove = 2,
+                    local_min_o = 1,
+                    trim_flank_aa = 3,
+                    global_pairs = NULL,
+                    low_mem = FALSE))
 
 # output class
 base::class(out)

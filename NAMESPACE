@@ -16,7 +16,7 @@ importFrom(visNetwork, `%>%`)
 importFrom(igraph, graph_from_data_frame)
 importFrom(igraph, as_data_frame)
 
-export(cluster_irr)
+export(cluster)
 export(plot_graph)
 export(get_graph)
 export(join_graphs)

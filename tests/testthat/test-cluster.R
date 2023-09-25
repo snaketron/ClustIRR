@@ -22,14 +22,14 @@ control_input <- list(
 # check everything for all three versions of the algorithm
 for (version in c(1, 2)) {
     test_that("s parameter takes only valid input", {
-        expect_error(cluster_irr( # missing input
+        expect_error(cluster( # missing input
             r = r,
             version = version,
             ks = ks,
             cores = cores,
             control = control_input
         ), regexp = "s parameter is missing")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = as.matrix(s), # matrix
             r = r,
             version = version,
@@ -37,7 +37,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "s has to be of type data frame")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s[0:0, ], # 0 row df
             r = r,
             version = version,
@@ -47,7 +47,7 @@ for (version in c(1, 2)) {
         ), regexp = "s has to be of type data frame")
         df <- s
         df["CDR3a"] <- 42
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = df, # numerical CDR3a column
             r = r,
             version = version,
@@ -57,7 +57,7 @@ for (version in c(1, 2)) {
         ), regexp = "non\\-character columns in s\\/r")
         df <- s
         df["CDR3b"] <- 42
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = df, # numerical CDR3b column
             r = r,
             version = version,
@@ -69,7 +69,7 @@ for (version in c(1, 2)) {
 
 
     test_that("r parameter takes only valid input", {
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             # missing input
             version = version,
@@ -77,7 +77,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "r parameter is missing")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = as.matrix(s), # matrix
             version = version,
@@ -85,7 +85,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "r has to be of type data frame")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r[0:0, ], # 0 row df
             version = version,
@@ -95,7 +95,7 @@ for (version in c(1, 2)) {
         ), regexp = "r has to be of type data frame")
         df <- r
         df["CDR3a"] <- 42
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = df, # numerical CDR3a column
             version = version,
@@ -105,7 +105,7 @@ for (version in c(1, 2)) {
         ), regexp = "non\\-character columns in s\\/r")
         df <- r
         df["CDR3b"] <- 42
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = df, # numerical CDR3b column
             version = version,
@@ -141,7 +141,7 @@ for (version in c(1, 2)) {
     })
 
     test_that("version parameter takes only valid input", {
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = "two", # non-numeric
@@ -149,7 +149,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "version has to be numeric")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = c(1, 2), # multiple values
@@ -157,7 +157,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "version has to be a single value")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = 1.6, # float
@@ -165,7 +165,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "version has to be 1 or 2")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = 4, # non-existing version
@@ -176,7 +176,7 @@ for (version in c(1, 2)) {
     })
 
     test_that("ks parameter takes only valid input", {
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -184,7 +184,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "ks has to be a finite number")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -192,7 +192,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "ks has to be numeric")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -200,7 +200,7 @@ for (version in c(1, 2)) {
             cores = cores,
             control = control_input
         ), regexp = "ks has to be a whole number")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -211,7 +211,7 @@ for (version in c(1, 2)) {
     })
 
     test_that("cores parameter takes only valid input", {
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -219,7 +219,7 @@ for (version in c(1, 2)) {
             cores = Inf, # infinite
             control = control_input
         ), regexp = "cores has to be a finite number")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -227,7 +227,7 @@ for (version in c(1, 2)) {
             cores = "all of them", # non-numeric
             control = control_input
         ), regexp = "cores has to be numeric")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -235,7 +235,7 @@ for (version in c(1, 2)) {
             cores = 1.7, # float
             control = control_input
         ), regexp = "cores has to be a whole number")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -243,7 +243,7 @@ for (version in c(1, 2)) {
             cores = c(1, 2, 3), # multiple values
             control = control_input
         ), regexp = "cores has to be a single value")
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -256,7 +256,7 @@ for (version in c(1, 2)) {
     test_that("control_input$global_max_dist param takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$global_max_dist <- Inf # infinity
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -265,7 +265,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "global_max_dist has to be a finite number")
         control_input_tmp$global_max_dist <- "Everyone" # non-numeric
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -274,7 +274,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "global_max_dist has to be numeric")
         control_input_tmp$global_max_dist <- 1.7 # float
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -283,7 +283,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "global_max_dist has to be a whole number")
         control_input_tmp$global_max_dist <- c(1, 2) # multiple values
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -292,7 +292,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "global_max_dist has to be a single value")
         control_input_tmp$global_max_dist <- 0 # < 1
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -305,7 +305,7 @@ for (version in c(1, 2)) {
     test_that("control_input$local_max_fdr param takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$local_max_fdr <- Inf # infinity
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -314,7 +314,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "local_max_fdr has to be a finite number")
         control_input_tmp$local_max_fdr <- "Everyone" # non-numeric
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -323,7 +323,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "local_max_fdr has to be numeric")
         control_input_tmp$local_max_fdr <- -1 # < 0
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -332,7 +332,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "local_max_fdr has to be >= 0")
         control_input_tmp$local_max_fdr <- 2 # > 1
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -345,7 +345,7 @@ for (version in c(1, 2)) {
     test_that("control_input$local_min_ove parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$local_min_ove <- Inf # infinity
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -354,7 +354,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "local_min_ove has to be a finite number")
         control_input_tmp$local_min_ove <- "Everyone" # non-numeric
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -363,7 +363,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "local_min_ove has to be numeric")
         control_input_tmp$local_min_ove <- c(1, 2, 3) # multiple values
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -376,7 +376,7 @@ for (version in c(1, 2)) {
     test_that("control_input$local_min_o parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$local_min_o <- Inf # infinity
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -385,7 +385,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "local_min_o has to be a finite number")
         control_input_tmp$local_min_o <- "Everyone" # non-numeric
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -394,7 +394,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "local_min_o has to be numeric")
         control_input_tmp$local_min_o <- 1.7 # float
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -403,7 +403,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "local_min_o has to be a whole number")
         control_input_tmp$local_min_o <- c(1, 2, 3) # multiple values
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -416,7 +416,7 @@ for (version in c(1, 2)) {
     test_that("control_input$trim_flank_aa parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$trim_flank_aa <- Inf # infinity
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -425,7 +425,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "trim_flank_aa has to be a finite number")
         control_input_tmp$trim_flank_aa <- "Everyone" # non-numeric
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -434,7 +434,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "trim_flank_aa has to be numeric")
         control_input_tmp$trim_flank_aa <- 1.7 # float
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -443,7 +443,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "trim_flank_aa has to be a whole number")
         control_input_tmp$trim_flank_aa <- -2 # positive
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -452,7 +452,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "trim_flank_aa has to be positive number")
         control_input_tmp$trim_flank_aa <- c(1, 2, 3) # single value
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -465,7 +465,7 @@ for (version in c(1, 2)) {
     test_that("control_input$low_mem parameter takes only valid input", {
         control_input_tmp <- control_input
         control_input_tmp$low_mem <- c(1, 2, 3) # multiple values
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -474,7 +474,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "low_mem has to be a single value")
         control_input_tmp$low_mem <- "TRUE" # not logical
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -491,7 +491,7 @@ for (version in c(1, 2)) {
             nrow = 0,
             ncol = 1
         ) # rowcount zero
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -500,7 +500,7 @@ for (version in c(1, 2)) {
             control = control_input_tmp
         ), regexp = "global_pairs contains zero rows")
         control_input_tmp$global_pairs <- base::data.frame(c(1, 2)) # rowcount 0
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -513,7 +513,7 @@ for (version in c(1, 2)) {
             nrow = 1,
             ncol = 1
         ) # non-integer matrix
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -526,7 +526,7 @@ for (version in c(1, 2)) {
             nrow = 1,
             ncol = 3
         ) # ≠ 2 columns
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -540,7 +540,7 @@ for (version in c(1, 2)) {
             nrow = 30,
             ncol = 2
         ) # wrong index
-        expect_error(cluster_irr(
+        expect_error(cluster(
             s = s,
             r = r,
             version = version,
@@ -552,10 +552,10 @@ for (version in c(1, 2)) {
 
 
     # test all versions with correct input
-    test_that("cluster_irr works with correct input", {
+    test_that("cluster works with correct input", {
         control_input_tmp <- control_input
         control_input_tmp$trim_flank_aa <- 0
-        expect_no_error(cluster_irr(
+        expect_no_error(cluster(
             s = s,
             r = r,
             ks = ks,
@@ -566,11 +566,11 @@ for (version in c(1, 2)) {
     })
 
     # test all versions with correct input and low_mem = true
-    test_that("cluster_irr works with correct input in low_mem mode", {
+    test_that("cluster works with correct input in low_mem mode", {
         control_input_tmp <- control_input
         control_input_tmp$low_mem <- TRUE
         control_input_tmp$trim_flank_aa <- 0
-        expect_no_error(cluster_irr(
+        expect_no_error(cluster(
             s = s,
             r = r,
             ks = ks,
@@ -581,12 +581,12 @@ for (version in c(1, 2)) {
     })
 
     # na checks
-    test_that("cluster_irr works with NA included in s and/or r", {
+    test_that("cluster works with NA included in s and/or r", {
         nas <- base::data.frame(CDR3b = c(NA, NA))
         s_na <- base::rbind(s, nas)
         r_na <- base::rbind(r, nas)
         base::suppressWarnings({
-            expect_no_error(cluster_irr(
+            expect_no_error(cluster(
                 s = s_na,
                 r = r,
                 ks = ks,
@@ -594,7 +594,7 @@ for (version in c(1, 2)) {
                 version = version,
                 control = control_input
             ))
-            expect_no_error(cluster_irr(
+            expect_no_error(cluster(
                 s = s,
                 r = r_na,
                 ks = ks,
@@ -602,7 +602,7 @@ for (version in c(1, 2)) {
                 version = version,
                 control = control_input
             ))
-            expect_no_error(cluster_irr(
+            expect_no_error(cluster(
                 s = s_na,
                 r = r_na,
                 ks = ks,

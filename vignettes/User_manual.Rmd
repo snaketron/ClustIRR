@@ -20,6 +20,15 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r}
+# ls <- list.files(path = "../R/", full.names = T)
+# for(f in ls) {
+#   source(f)
+# }
+# load("~/Desktop/work/R/ClustIRR/data/CDR3ab.RData")
+# library(igraph)
+```
+
 
 ```{r}
 library(ClustIRR)
@@ -104,7 +113,8 @@ data("CDR3ab")
 
 ```{r}
 # take the first 500 CDR3b sequences from the data -> s
-s <- base::data.frame(CDR3b = CDR3ab$CDR3b[1:500])
+# s <- base::data.frame(CDR3b = CDR3ab$CDR3b[1:500])
+s <- base::data.frame(CDR3b = c(CDR3ab$CDR3b[1:500], "CASSSSPGDQEQFF"))
 
 # take 5000 CDR3b sequences 501:5500 from the data -> r
 r <- base::data.frame(CDR3b = CDR3ab$CDR3b[501:5500])
@@ -240,7 +250,7 @@ base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
 ... and then we perform clustering with `r Biocpkg("ClustIRR")`:
 
 ```{r}
-clustirr_output <- ClustIRR::cluster_irr(
+clustirr_output <- cluster(
   s = s,
   r = r,
   version = 2,
@@ -382,7 +392,7 @@ s <- base::rbind(s, clone)
 ... and once again perform clustering with `r Biocpkg("ClustIRR")`:
 
 ```{r}
-clustirr_output <- cluster_irr(
+clustirr_output <- cluster(
   s = s,
   r = r,
   version = 2,
@@ -423,7 +433,7 @@ Let's plot the clustering results:
 
 ```{r}
 # plot the clust_irr object
-plot_graph(clust_irr = clustirr_output, expand_clones = TRUE)
+plot_graph(clust_irr = clustirr_output)
 ```
 
 &nbsp;
@@ -453,8 +463,7 @@ one vertex, whose size scales with the size of the expansion (number of T-cells
 in the clone):
 
 ```{r}
-plot_graph(clust_irr = clustirr_output, 
-           expand_clones = FALSE)
+plot_graph(clust_irr = clustirr_output)
 ```
 &nbsp;
 
@@ -517,7 +526,7 @@ s <- rbind(s, clone_1, clone_2, clone_3)
 ... and again, let's perform clustering:
 
 ```{r}
-clustirr_ab <- cluster_irr(
+clustirr_ab <- cluster(
   s = s,
   r = r,
   version = 2,
@@ -606,7 +615,7 @@ r <- base::data.frame(CDR3h = CDR3ab$CDR3a[5001:10000],
 ```
 
 The rest of the analysis proceeds as usual, i.e., by calling the function
-`cluster_irr`.
+`cluster`.
 
 ```{r session_info}
 utils::sessionInfo()

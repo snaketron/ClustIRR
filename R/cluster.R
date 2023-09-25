@@ -1,15 +1,15 @@
-cluster_irr <- function(s,
-                        r,
-                        version = 2,
-                        ks = 4,
-                        cores = 1,
-                        control = list(global_max_dist = 1,
-                                       local_max_fdr = 0.05,
-                                       local_min_ove = 2,
-                                       local_min_o = 1,
-                                       trim_flank_aa = 0,
-                                       global_pairs = NULL,
-                                       low_mem = FALSE)) {
+cluster <- function(s,
+                    r,
+                    version = 2,
+                    ks = 4,
+                    cores = 1,
+                    control = list(global_max_dist = 1,
+                                   local_max_fdr = 0.05,
+                                   local_min_ove = 2,
+                                   local_min_o = 1,
+                                   trim_flank_aa = 0,
+                                   global_pairs = NULL,
+                                   low_mem = FALSE)) {
     # control check
     control <- get_control(control_in = control)
     
@@ -98,7 +98,7 @@ get_clust <- function(cdr3,
         g <- get_global_clust(cdr3 = unique(cdr3),
                               global_max_dist = control$global_max_dist,
                               low_mem = control$low_mem)
-
+        
         # if(version == 2) {
         #     clones <- unique(cdr3[duplicated(cdr3)])
         #     clones <- matrix(rep(clones, 2), nrow = length(clones), ncol = 2)

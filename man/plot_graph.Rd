@@ -67,35 +67,31 @@ s <- rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRADKPDGLDALETQYF",
                                 times = 5)))
 
 # run analysis
-out <- cluster_irr(s = s,
-                   r = r,
-                   version = 2,
-                   ks = 4,
-                   cores = 1,
-                   control = list(
-                       global_max_dist = 1,
-                       local_max_fdr = 0.05,
-                       local_min_ove = 2,
-                       local_min_o = 1,
-                       trim_flank_aa = 3,
-                       global_pairs = NULL,
-                       low_mem = FALSE))
+out <- cluster(s = s,
+               r = r,
+               version = 2,
+               ks = 4,
+               cores = 1,
+               control = list(
+                    global_max_dist = 1,
+                    local_max_fdr = 0.05,
+                    local_min_ove = 2,
+                    local_min_o = 1,
+                    trim_flank_aa = 3,
+                    global_pairs = NULL,
+                    low_mem = FALSE))
 
-# plot graph with expanded clones as individual cells/vertices
-p1 <- plot_graph(out, expand_clones = TRUE)
+# plot graph with vertices as clones
+p1 <- plot_graph(out)
 p1
 
-# plot graph without expanded clones (default)
-p2 <- plot_graph(out)
-p2
-
 # access nodes and edges of the graph as data.frame
-n <- p2$x$nodes
+n <- p1$x$nodes
 str(n)
 class(n)
 head(n)
 
-e <- p2$x$edges
+e <- p1$x$edges
 str(e)
 class(e)
 head(e)

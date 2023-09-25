@@ -7,12 +7,14 @@ get_graph <- function(clust_irr) {
             return(NULL)
         }
         
-        e <- merge(x = e, y = cs, by.x = "from_cdr3", by.y = x, all.x = TRUE)
+        e <- merge(x = e, y = cs[, c(x, "clone_id", "clone_size")], 
+                   by.x = "from_cdr3", by.y = x, all.x = TRUE)
         e$from <- e$clone_id
         e$clone_id <- NULL
         e$clone_size <- NULL
         
-        e <- merge(x = e, y = cs, by.x = "to_cdr3", by.y = x, all.x = TRUE)
+        e <- merge(x = e, y = cs[, c(x, "clone_id", "clone_size")], 
+                   by.x = "to_cdr3", by.y = x, all.x = TRUE)
         e$to <- e$clone_id
         e$clone_id <- NULL
         e$clone_size <- NULL
@@ -47,6 +49,12 @@ get_graph <- function(clust_irr) {
     cs$name <- cs$clone_id
     cs <- cs[, rev(colnames(cs))]
     
+    # remove self-edges (apply only to clones)   
+    i <- which(clone_edges$from==clone_edges$to)
+    if(length(i) != 0) {
+        clone_edges <- clone_edges[-i,]
+    }
+    
     # build graph
     ig <- igraph::graph_from_data_frame(
         clone_edges[, c("from", "to", "chain", "type", 
@@ -57,76 +65,6 @@ get_graph <- function(clust_irr) {
     return(ig)
 }
 
-
-plot_graph <- function(clust_irr,
-                       expand_clones = FALSE) {
-    
-    check_clustirr(clust_irr = clust_irr)
-    ig <- get_graph(clust_irr = clust_irr)
-    if (is.null(ig)) {
-        warning("No graph to plot \n")
-        return(NULL)
-    }
-    edges <- as_data_frame(ig, what = "edges")
-    nodes <- as_data_frame(ig, what = "vertices")
-    chains <- names(slot(clust_irr, "clust"))
-    
-    types <- unique(edges$type)
-    edges <- configure_edges(edges = edges, chains = chains, types = types)
-    nodes <- configure_nodes(
-        nodes = nodes, edges = edges, chains = chains,
-        types = types, s = slot(clust_irr, "inputs")$s
-    )
-    if (!expand_clones) {
-        nodes <- nodes[!duplicated(nodes$label), ]
-        edges <- edges[edges$from %in% nodes$id & edges$to %in% nodes$id, ]
-    }
-    if(nrow(edges) != 0){
-        ledges <- data.frame(
-            color = unique(edges$color),
-            label = unique(edges$type),
-            arrows = "", width = 4
-        )
-    } else {
-        ledges <- data.frame()
-    }
-    if (length(chains) > 1) {
-        chains <- append(chains, "Both chains")
-    }
-    lnodes <- data.frame(
-        label = chains,
-        color = "", shape = "dot", size = 8
-    )
-    lnodes$color <- ifelse(test = lnodes$label == "CDR3b" |
-        lnodes$label == "CDR3g" |
-        lnodes$label == "CDR3h",
-    yes = "blue",
-    no = "yellow"
-    )
-    lnodes$color <- ifelse(test = lnodes$label == "Both chains",
-        yes = "green",
-        no = lnodes$color
-    )
-    shapes <- c("dot", "diamond")
-    labels <- c("Expanded", "Singleton")
-    for (i in seq_along(shapes)) {
-        if (shapes[i] %in% unique(nodes$shape)) {
-            lnodes <- rbind(
-                lnodes,
-                data.frame(
-                    label = labels[i],
-                    color = "black",
-                    shape = shapes[i],
-                    size = 8
-                )
-            )
-        }
-    }
-    return(configure_network(
-        nodes = nodes, edges = edges,
-        lnodes = lnodes, ledges = ledges
-    ))
-}
 
 
 join_graphs <- function(clust_irr_1, 
@@ -163,8 +101,8 @@ join_graphs <- function(clust_irr_1,
                                 s2=d2$vertices,
                                 global_max_dist = global_max_dist,
                                 chains = chains)
-    ige$from <- paste0("s1|", ige$from)
-    ige$to <- paste0("s2|", ige$to)
+    # ige$from <- paste0("s1|", ige$from)
+    # ige$to <- paste0("s2|", ige$to)
     
     d1$vertices <- rbind(d1$vertices, d2$vertices)
     d1$edges <- rbind(d1$edges, d2$edges, ige)
@@ -175,4 +113,85 @@ join_graphs <- function(clust_irr_1,
         d$edges, 
         directed = FALSE,
         vertices = d$vertices))
+}
+
+
+plot_graph <- function(clust_irr) {
+    
+    check_clustirr(clust_irr = clust_irr)
+    
+    ig <- get_graph(clust_irr = clust_irr)
+    if (is.null(ig)) {
+        warning("No graph to plot \n")
+        return(NULL)
+    }
+    plot(ig)
+}
+
+plot_graph_old <- function(clust_irr) {
+    
+    check_clustirr(clust_irr = clust_irr)
+    
+    ig <- get_graph(clust_irr = clust_irr)
+    if (is.null(ig)) {
+        warning("No graph to plot \n")
+        return(NULL)
+    }
+    edges <- as_data_frame(ig, what = "edges")
+    nodes <- as_data_frame(ig, what = "vertices")
+    chains <- names(slot(clust_irr, "clust"))
+    
+    types <- unique(edges$type)
+    edges <- configure_edges(edges = edges, chains = chains, types = types)
+    nodes <- configure_nodes(
+        nodes = nodes, edges = edges, chains = chains,
+        types = types, s = slot(clust_irr, "inputs")$s
+    )
+    nodes <- nodes[!duplicated(nodes$label), ]
+    edges <- edges[edges$from %in% nodes$id & edges$to %in% nodes$id, ]
+    if(nrow(edges) != 0){
+        ledges <- data.frame(
+            color = unique(edges$color),
+            label = unique(edges$type),
+            arrows = "", width = 4
+        )
+    } else {
+        ledges <- data.frame()
+    }
+    if (length(chains) > 1) {
+        chains <- append(chains, "Both chains")
+    }
+    lnodes <- data.frame(
+        label = chains,
+        color = "", shape = "dot", size = 8
+    )
+    lnodes$color <- ifelse(test = lnodes$label == "CDR3b" |
+                               lnodes$label == "CDR3g" |
+                               lnodes$label == "CDR3h",
+                           yes = "blue",
+                           no = "yellow"
+    )
+    lnodes$color <- ifelse(test = lnodes$label == "Both chains",
+                           yes = "green",
+                           no = lnodes$color
+    )
+    shapes <- c("dot", "diamond")
+    labels <- c("Expanded", "Singleton")
+    for (i in seq_along(shapes)) {
+        if (shapes[i] %in% unique(nodes$shape)) {
+            lnodes <- rbind(
+                lnodes,
+                data.frame(
+                    label = labels[i],
+                    color = "black",
+                    shape = shapes[i],
+                    size = 8
+                )
+            )
+        }
+    }
+    return(configure_network(
+        nodes = nodes, edges = edges,
+        lnodes = lnodes, ledges = ledges
+    ))
 }
