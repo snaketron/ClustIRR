@@ -192,6 +192,7 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
     if(nrow(hd)!=0) {
         hd$chain <- x
         hd$sample <- "s1s2"
+        hd$type <- "inter-sample"
     }
     return(hd)
 }
