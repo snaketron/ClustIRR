@@ -53,9 +53,11 @@ get_graph <- function(clust_irr) {
             if(is.null(lp) == FALSE && nrow(lp) != 0) {
                 lp <- lapply(X = unique(lp$motif), FUN = get_from_to, lp = lp)
                 lp <- do.call(rbind, lp)
-                lp$chain <- chain
-                lp$type <- "local"
-                el[[chain]] <- lp
+                if(is.null(lp)==FALSE) {
+                    lp$chain <- chain
+                    lp$type <- "local"
+                    el[[chain]] <- lp
+                }
             }
         }
         el <- do.call(rbind, el)
@@ -109,9 +111,16 @@ get_graph <- function(clust_irr) {
     edges <- rbind(get_local_edges(clust_irr = clust_irr),
                    get_global_edges(clust_irr = clust_irr))
     
+    # build graph with only vertices
     if(is.null(edges)) {
-        warning("No local or global edges to build igraph from \n")
-        return(NULL)
+        cs$name <- cs$clone_id
+        cs <- cs[, rev(colnames(cs))]
+        
+        ig <- igraph::graph_from_data_frame(d = data.frame(from = 1, to = 1),
+                                            directed = FALSE,
+                                            vertices = cs)
+        ig <- igraph::delete_edges(ig, edges = 1)
+        return(ig)
     }
     
     # get chains to be analyzed
@@ -123,7 +132,6 @@ get_graph <- function(clust_irr) {
     clone_edges$edge_id <- apply(X = clone_edges[, c("from", "to")],
                                  MARGIN = 1,
                                  FUN = get_edge_order)
-    
     
     cs$name <- cs$clone_id
     cs <- cs[, rev(colnames(cs))]
@@ -207,11 +215,30 @@ plot_graph <- function(clust_irr) {
     check_clustirr(clust_irr = clust_irr)
     
     ig <- get_graph(clust_irr = clust_irr)
-    if (is.null(ig)) {
+    if(is.null(ig)) {
         warning("No graph to plot \n")
         return(NULL)
     }
-    plot(ig)
+    
+    # get the vertices/edges of the graph
+    d <- get.data.frame(ig, what = "both")
+    d$vertices$id <- d$vertices$name
+    if(nrow(d$edges)!=0) {
+        d$edges <- d$edges[, c("from", "to", "chain", "type")]
+        d$edges <- configure_edges(es = d$edges)
+        ig <- graph_from_data_frame(d$edges, directed=FALSE,vertices=d$vertices)
+    } 
+    else {
+        d$edges <- data.frame(from = 1, to = 1)
+        ig <- graph_from_data_frame(d$edges, directed=FALSE,vertices=d$vertices)
+        ig <- delete_edges(ig, edges = 1)
+    }
+    
+    # make graph look visually better
+    ig <- configure_vertices_plot(g = ig, is_jg = FALSE)
+    ig <- configure_edges_plot(g = ig, is_jg = FALSE)
+    
+    plot(ig, vertex.label = NA)
 }
 
 configure_edges <- function(es) {
@@ -261,7 +288,7 @@ configure_edges <- function(es) {
 }
 
 configure_edges_plot <- function(g, is_jg) {
-    n_e <- length(g)
+    n_e <- length(E(g))
     if(n_e != 0) {
         E(g)$color <- E(g)$type_color
         E(g)$lty <- E(g)$chain_shape
