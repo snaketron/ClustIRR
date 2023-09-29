@@ -5,12 +5,10 @@ get_localclust <- function(cdr3,
                            control) {
     # 1. trim flanks only relevant for local motifs
     if(control$trim_flank_aa != 0) {
-        cdr3_core <- get_trimmed_flanks(
-            x = cdr3,
-            flank_size = control$trim_flank_aa)
-        cdr3_ref_core <- get_trimmed_flanks(
-            x = cdr3_ref,
-            flank_size = control$trim_flank_aa)
+        cdr3_core <- get_trimmed_flanks(x = cdr3,
+                                        flank_size = control$trim_flank_aa)
+        cdr3_ref_core <- get_trimmed_flanks(x = cdr3_ref,
+                                            flank_size = control$trim_flank_aa)
     }
     else{
         cdr3_core <- cdr3
@@ -18,14 +16,13 @@ get_localclust <- function(cdr3,
     }
 
     # 2. local clustering: get local motifs
-    m <- lapply(
-        X = ks,
-        FUN = get_motifs,
-        cdr3 = cdr3_core,
-        cdr3_ref = cdr3_ref_core,
-        min_o = control$local_min_o)
+    m <- lapply(X = ks,
+                FUN = get_motifs,
+                cdr3 = cdr3_core,
+                cdr3_ref = cdr3_ref_core,
+                min_o = control$local_min_o)
     m <- do.call(rbind, m)
-
+    
     # 3. compute enrichment by fisher's exact test
     ms <- t(apply(X = m[, c("f_s", "f_r", "n_s", "n_r")],
                   MARGIN = 1, FUN = get_motif_enrichment_fet))
@@ -42,12 +39,18 @@ get_localclust <- function(cdr3,
         m$ove >= control$local_min_ove &
         m$f_s >= control$local_min_o] <- TRUE
 
+    # get the unique cdr3s and cdr3_cores
+    us <- which(duplicated(cdr3)==FALSE)
+    if(length(us) != 0) {
+        cdr3 <- cdr3[us]
+        cdr3_core <- cdr3_core[us]
+    }
+    
     # 5. find motifs in input CDR3
-    lp <- get_motif_in_seq(
-        cdr3 = cdr3,
-        cdr3_core = cdr3_core,
-        motif = m$motif[m$pass == TRUE])
-
+    lp <- get_motif_in_seq(cdr3 = cdr3,
+                           cdr3_core = cdr3_core,
+                           motif = m$motif[m$pass == TRUE])
+    
     return(list(m = m, lp = lp))
 }
 
@@ -67,11 +70,10 @@ get_motif_in_seq <- function(cdr3_core,
     find_motif <- function(x, motif, cdr3_core, cdr3) {
         j <- which(regexpr(pattern = motif[x], text = cdr3_core) != -1)
         if(length(j) != 0) {
-            return(data.frame(
-                cdr3 = cdr3[j],
-                cdr3_core = cdr3_core[j],
-                motif = motif[x],
-                stringsAsFactors = FALSE))
+            return(data.frame(cdr3 = cdr3[j],
+                              cdr3_core = cdr3_core[j],
+                              motif = motif[x],
+                              stringsAsFactors = FALSE))
         }
         return(NULL)
     }
@@ -112,14 +114,11 @@ get_motifs <- function(x,
     kmers_r <- kmers_r[1, ]
     
     # convert table to data.frame
-    kmers_s <- data.frame(
-        motif = names(kmers_s),
-        f_s = as.numeric(kmers_s)
-    )
+    kmers_s <- data.frame(motif = names(kmers_s),
+                          f_s = as.numeric(kmers_s))
     kmers_s$n_s <- sum(kmers_s$f_s)
-    kmers_r <- data.frame(
-        motif = names(kmers_r),
-        f_r = as.numeric(kmers_r)
+    kmers_r <- data.frame(motif = names(kmers_r),
+                          f_r = as.numeric(kmers_r)
     )
     kmers_r$n_r <- sum(kmers_r$f_r)
     

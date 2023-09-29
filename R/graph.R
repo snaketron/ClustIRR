@@ -21,15 +21,80 @@ get_graph <- function(clust_irr) {
         return(e)
     }
     
-    check_clustirr(clust_irr = clust_irr)
-
-    edges <- get_edges(clust_irr = clust_irr)
-    
-    if(is.null(edges)) {
-        warning("No local or global edges to build igraph from \n")
-        return(NULL)
+    get_local_edges <- function(clust_irr) {
+        
+        get_lp <- function(x, lp, chain) {
+            if (sum(lp$motif == x) > 1) {
+                p <- t(combn(x = lp$cdr3[lp$motif == x], m = 2))
+                return(data.frame(
+                    from_cdr3 = p[, 1], to_cdr3 = p[, 2],
+                    motif = x, type = "local",
+                    chain = chain
+                ))
+            }
+            return(NULL)
+        }
+        
+        get_from_to <- function(x, lp) {
+            y <- lp$cdr3[lp$motif == x]
+            if(length(y)>1) {
+                y <- t(utils::combn(x = y, m = 2))
+                y <- data.frame(y)
+                colnames(y) <- c("from_cdr3", "to_cdr3")
+                y$motif <- x
+                return(y)
+            }
+        }
+        
+        el <- vector(mode = "list", length = length(slot(clust_irr,"clust")))
+        names(el) <- names(slot(clust_irr, "clust"))
+        for(chain in names(slot(clust_irr, "clust"))) {
+            lp <- slot(clust_irr, "clust")[[chain]]$local$lp
+            if(is.null(lp) == FALSE && nrow(lp) != 0) {
+                lp <- lapply(X = unique(lp$motif), FUN = get_from_to, lp = lp)
+                lp <- do.call(rbind, lp)
+                lp$chain <- chain
+                lp$type <- "local"
+                el[[chain]] <- lp
+            }
+        }
+        el <- do.call(rbind, el)
+        return(unique(el))
     }
     
+    get_global_edges <- function(clust_irr) {
+        
+        get_gp <- function(gp, chain) {
+            return(data.frame(
+                from_cdr3 = gp[, 1], to_cdr3 = gp[, 2],
+                motif = apply(gp, 1, get_diff_str),
+                type = "global",
+                chain = chain
+            ))
+        }
+        
+        eg <- vector(mode = "list", length = length(slot(clust_irr, "clust")))
+        names(eg) <- names(slot(clust_irr, "clust"))
+        for(chain in names(slot(clust_irr, "clust"))) {
+            g <- slot(clust_irr, "clust")[[chain]]$global
+            if(is.null(g) == FALSE && nrow(g) != 0) {
+                eg[[chain]] <- data.frame(from_cdr3 = g[,1], 
+                                          to_cdr3 = g[,2], 
+                                          motif = NA,
+                                          chain = chain,
+                                          type = "global")
+            }
+        }
+        eg <- do.call(rbind, eg)
+        return(eg)
+    }
+    
+    get_edge_order <- function(x) {
+        return(paste0(sort(c(x[1], x[2])), collapse = '-'))
+    }
+    
+    check_clustirr(clust_irr = clust_irr)
+
     # cells
     s <- slot(clust_irr, "inputs")$s
     
@@ -40,16 +105,31 @@ get_graph <- function(clust_irr) {
     cs <- aggregate(clone_size~., data = cs, FUN = sum)
     cs$clone_id <- 1:nrow(cs)
     
+    # get edges
+    edges <- rbind(get_local_edges(clust_irr = clust_irr),
+                   get_global_edges(clust_irr = clust_irr))
+    
+    if(is.null(edges)) {
+        warning("No local or global edges to build igraph from \n")
+        return(NULL)
+    }
+    
     # get chains to be analyzed
     clone_edges <- lapply(X = get_chains(colnames(s)), 
                           FUN = get_clone_edges,
-                          edges = edges, cs = cs)
+                          edges = edges, 
+                          cs = cs)
     clone_edges <- do.call(rbind, clone_edges)
+    clone_edges$edge_id <- apply(X = clone_edges[, c("from", "to")],
+                                 MARGIN = 1,
+                                 FUN = get_edge_order)
+    
+    
     cs$name <- cs$clone_id
     cs <- cs[, rev(colnames(cs))]
     
     # remove self-edges (apply only to clones)   
-    i <- which(clone_edges$from==clone_edges$to)
+    i <- which(duplicated(clone_edges$edge_id))
     if(length(i) != 0) {
         clone_edges <- clone_edges[-i,]
     }
@@ -191,7 +271,7 @@ configure_edges_plot <- function(g, is_jg) {
 
 configure_vertices_plot <- function(g, is_jg) {
     # default features
-    V(g)$size <- 1.5+log10(V(g)$clone_size)
+    V(g)$size <- 1.5+log2(V(g)$clone_size)
     
     if(is_jg==TRUE) {
         V(g)$color <- ifelse(test = V(g)$sample == "s1", 
@@ -206,8 +286,6 @@ configure_vertices_plot <- function(g, is_jg) {
     return(g)
 }
 
-
-
 get_visnet <- function(nodes, edges, ledges, lnodes) {
     V(g)$size <- V(g)$size*10
     visIgraph(igraph = g,
@@ -218,11 +296,5 @@ get_visnet <- function(nodes, edges, ledges, lnodes) {
               smooth = FALSE,
               type = "square")
 }
-
-
-
-
-
-
 
 
