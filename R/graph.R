@@ -110,7 +110,7 @@ get_graph <- function(clust_irr) {
                                     directed = FALSE,
                                     vertices = cs)
         ig <- delete_edges(ig, edges = 1)
-        return(ig)
+        return(list(graph = ig, clones = cs))
     }
     
     # get chains to be analyzed
@@ -138,21 +138,21 @@ get_graph <- function(clust_irr) {
                                 directed = FALSE,
                                 vertices = cs)
     
-    return(ig)
+    return(list(graph = ig, clones = cs))
 }
 
-join_graphs <- function(clust_irr_1, clust_irr_2) {
+get_joint_graph <- function(clust_irr_1, clust_irr_2) {
     
     if(get_clustirr_inputs(clust_irr_1)$control$global_max_dist!=
        get_clustirr_inputs(clust_irr_2)$control$global_max_dist) {
-       stop("variable global_max_dist used in clust_irr_1 and clust_irr_2") 
+        stop("variable global_max_dist used in clust_irr_1 and clust_irr_2") 
     }
     
     ig1 <- get_graph(clust_irr = clust_irr_1)
     ig2 <- get_graph(clust_irr = clust_irr_2)
     
     # get the vertices/edges of graph 1
-    d1 <- get.data.frame(ig1, what = "both")
+    d1 <- get.data.frame(ig1$graph, what = "both")
     if(nrow(d1$edges)!=0) {
         d1$edges$sample <- "s1"
         d1$edges <- d1$edges[, c("from", "to", "chain", "sample", "type")]
@@ -164,7 +164,7 @@ join_graphs <- function(clust_irr_1, clust_irr_2) {
     d1$vertices$sample <- "s1"
     
     # get the vertices/edges of graph 2
-    d2 <- get.data.frame(ig2, what = "both")
+    d2 <- get.data.frame(ig2$graph, what = "both")
     if(nrow(d2$edges)!=0) {
         d2$edges$sample <- "s2"
         d2$edges <- d2$edges[, c("from", "to", "chain", "sample", "type")]
@@ -196,7 +196,13 @@ join_graphs <- function(clust_irr_1, clust_irr_2) {
     g <- config_vertices_plot(g = g, is_jg = TRUE)
     g <- config_edges_plot(g = g, is_jg = TRUE)
     
-    return(g)
+    # prepare clones
+    cs_1 <- ig1$clones
+    cs_1$sample <- "s1"
+    cs_2 <- ig2$clones
+    cs_2$sample <- "s2"
+    
+    return(list(graph = g, clones = rbind(cs_1, cs_2)))
 }
 
 plot_graph <- function(clust_irr, as_visnet = FALSE) {
@@ -204,13 +210,14 @@ plot_graph <- function(clust_irr, as_visnet = FALSE) {
     check_clustirr(clust_irr = clust_irr)
     
     ig <- get_graph(clust_irr = clust_irr)
-    if(is.null(ig)) {
+    clones <- ig$clones
+    if(is.null(ig$graph)) {
         warning("No graph to plot \n")
-        return(NULL)
+        return(list(graph = NA, clones = clones))
     }
     
     # get the vertices/edges of the graph
-    d <- get.data.frame(ig, what = "both")
+    d <- get.data.frame(ig$graph, what = "both")
     d$vertices$id <- d$vertices$name
     if(nrow(d$edges)!=0) {
         d$edges <- d$edges[, c("from", "to", "chain", "type")]
@@ -220,25 +227,64 @@ plot_graph <- function(clust_irr, as_visnet = FALSE) {
     else {
         d$edges <- data.frame(from = 1, to = 1)
         ig <- graph_from_data_frame(d$edges, directed=FALSE,vertices=d$vertices)
-        ig <- delete_edges(ig, edges = 1)
+            ig <- delete_edges(ig, edges = 1)
     }
     
     # make graph look visually better
     ig <- config_vertices_plot(g = ig, is_jg = FALSE)
     ig <- config_edges_plot(g = ig, is_jg = FALSE)
     
+    # plot
     if(as_visnet == FALSE) {
-        return(plot(ig, vertex.label = NA))
+        plot(ig, vertex.label = NA)
     }
-    
     if(as_visnet == TRUE) {
         V(ig)$size <- V(ig)$size*10
-        return(visIgraph(igraph = ig,
-                         idToLabel = TRUE,
-                         layout = "layout_components",
-                         randomSeed = 1234,
-                         physics = FALSE,
-                         smooth = FALSE,
-                         type = "square"))
+        if(length(E(ig))==0) {
+            # apparently if no edges, visnetwork can't plot
+            ig <- add_edges(graph = ig, edges = c(1,1))
+        }
+        visIgraph(igraph = ig,
+                  idToLabel = TRUE,
+                  layout = "layout_components",
+                  randomSeed = 1234,
+                  physics = FALSE,
+                  smooth = FALSE,
+                  type = "square")
+        
+    }
+}
+
+plot_joint_graph <- function(clust_irr_1, clust_irr_2, as_visnet = FALSE) {
+    
+    check_clustirr(clust_irr = clust_irr_1)
+    check_clustirr(clust_irr = clust_irr_2)
+    
+    jg <- get_joint_graph(clust_irr_1 = clust_irr_1,
+                          clust_irr_2 = clust_irr_2)
+    
+    clones <- jg$clones
+    if(is.null(jg$graph)) {
+        warning("No graph to plot \n")
+        return(jg)
+    }
+    
+    # make graph look visually better
+    jg$graph <- config_vertices_plot(g = jg$graph, is_jg = TRUE)
+    jg$graph <- config_edges_plot(g = jg$graph, is_jg = TRUE)
+    
+    # plot
+    if(as_visnet == FALSE) {
+        plot(jg$graph, vertex.label = NA)
+    }
+    if(as_visnet == TRUE) {
+        V(jg$graph)$size <- V(jg$graph)$size*10
+        visIgraph(igraph = jg$graph,
+                  idToLabel = TRUE,
+                  layout = "layout_components",
+                  randomSeed = 1234,
+                  physics = FALSE,
+                  smooth = FALSE,
+                  type = "square")
     }
 }
