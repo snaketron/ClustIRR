@@ -1,4 +1,75 @@
 
+config_edges <- function(es) {
+    
+    # edge color by type
+    get_type_edge <- function(x) {
+        x <- sort(unique(x))
+        if(length(x)==2) {
+            return("black")
+        }
+        if(x == "local") {
+            return("purple")
+        }
+        if(x == "global") {
+            return("#27AE60")
+        }
+        return("black")
+    }
+    
+    # edge shape by chain
+    get_chain_edge <- function(x) {
+        x <- sort(unique(x))
+        if(length(x)==2) {
+            return("solid")
+        }
+        if(x %in% c("CDR3b", "CDR3g", "CDR3h")) {
+            return("dashed")
+        }
+        if(x %in% c("CDR3a", "CDR3d", "CDR3l")) {
+            return("dotted")
+        }
+    }
+    
+    if(nrow(es) == 0) {
+        return(NULL)
+    }
+    
+    attr_type <- aggregate(type~from+to, data = es, FUN = get_type_edge)
+    attr_type$type_color <- attr_type$type
+    attr_type$type <- NULL
+    
+    attr_chain <- aggregate(chain~from+to, data = es, FUN = get_chain_edge)
+    attr_chain$chain_shape <- attr_chain$chain
+    attr_chain$chain <- NULL
+    
+    return(merge(x = attr_chain, y = attr_type, by = c("from", "to")))
+}
+
+config_edges_plot <- function(g, is_jg) {
+    n_e <- length(E(g))
+    if(n_e != 0) {
+        E(g)$color <- E(g)$type_color
+        E(g)$lty <- E(g)$chain_shape
+    }
+    return(g)
+}
+
+config_vertices_plot <- function(g, is_jg) {
+    # default features
+    V(g)$size <- 1.5+log2(V(g)$clone_size)
+    
+    if(is_jg==TRUE) {
+        V(g)$color <- ifelse(test = V(g)$sample == "s1", 
+                             yes = "steelblue", no = "darkorange")
+        V(g)$frame.color <- V(g)$color
+    } 
+    else {
+        V(g)$color <- "black"
+        V(g)$frame.color <- "black"
+    }
+    
+    return(g)
+}
 
 get_intergraph_edges <- function(s1, s2, global_max_dist, chains) {
     if(is.data.frame(s1)==FALSE) {
@@ -22,7 +93,6 @@ get_intergraph_edges <- function(s1, s2, global_max_dist, chains) {
                   global_max_dist = global_max_dist)
     return(do.call(rbind, ige))
 }
-
 
 get_intergraph_global <- function(x, s1, s2, global_max_dist) {
     
@@ -86,349 +156,3 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
     }
     return(hd)
 }
-
-
-
-
-
-configure_edges <- function(edges, chains, types) {
-    get_edge_id <- function(x) {
-        t <- c(as.numeric(x["from"]), as.numeric(x["to"]))
-        return(paste(min(t), max(t)))
-    }
-    edges$edge_id <- apply(X = edges, MARGIN = 1, FUN = get_edge_id)
-    edges <- unique(edges[, c("edge_id", "motif", "type", "chain")])
-    m <- data.frame(edge_id = unique(edges$edge_id))
-    for (chain in chains) {
-        for (type in types) {
-            df <- edges[
-                edges$chain == chain & edges$type == type,
-                c("edge_id", "motif")
-            ]
-            t <- paste(chain, type, sep = "_")
-            c <- paste(chain, type, "count", sep = "_")
-            if (nrow(df) > 0) {
-                df <- do.call(
-                    cbind.data.frame,
-                    aggregate(motif ~ edge_id,
-                              data = df,
-                              FUN = function(x) {
-                                  count <- length(x)
-                                  c(
-                                      motifs = paste(x, collapse = ", "),
-                                      counts = count
-                                  )
-                              }
-                    )
-                )
-            } else {
-                df <- data.frame(
-                    a = character(), b = character(),
-                    c = character()
-                )
-            }
-            
-            colnames(df) <- c("edge_id", t, c)
-            m <- merge(m, df, by = "edge_id", all = TRUE)
-            
-            if (t %in% colnames(m)) {
-                m[[t]][is.na(m[[t]])] <- "-"
-            }
-            if (c %in% colnames(m)) {
-                m[[c]][is.na(m[[c]])] <- 0
-                m[[c]] <- as.numeric(m[[c]])
-            }
-        }
-    }
-    edges <- m
-    l <- colnames(edges)[grepl("local_count", colnames(edges))]
-    edges$local_count <- rowSums(edges[, l, drop = FALSE])
-    g <- colnames(edges)[grepl("global_count", colnames(edges))]
-    edges$global_count <- rowSums(edges[, g, drop = FALSE])
-    edges$total_count <- edges$global_count + edges$local_count
-    edges$from <-
-        as.numeric(apply(X = edges, MARGIN = 1, function(x) {
-            strsplit(x["edge_id"], " ")[[1]][1]
-        }))
-    edges$to <-
-        as.numeric(apply(X = edges, MARGIN = 1, function(x) {
-            strsplit(x["edge_id"], " ")[[1]][2]
-        }))
-    edges$length <- 15
-    edges$width <- edges$global_count * 5 + edges$local_count
-    edges$type <- ifelse(test = (edges$global_count > 0),
-                         yes = "global",
-                         no = "local"
-    )
-    edges$type <- ifelse(test = (edges$global_count > 0 &
-                                     edges$local_count > 0),
-                         yes = "local & global",
-                         no = edges$type
-    )
-    
-    edges$color <- ifelse(test = (edges$type == "local"),
-                          yes = "gray",
-                          no = "orange"
-    )
-    edges$color <- ifelse(test = (edges$type == "local & global"),
-                          yes = "#9A0000",
-                          no = edges$color
-    )
-    
-    edges$title <- apply(
-        X = edges, MARGIN = 1, FUN = get_motif_list,
-        chains = chains
-    )
-    edges$arrows <- ""
-    edges$dashes <- FALSE
-    edges$smooth <- FALSE
-    edges$shadow <- FALSE
-    return(edges)
-}
-
-
-get_motif_list <- function(x, chains) {
-    tbg <- tbg_g <- tbg_l <- tad <- tad_g <- tad_l <- t_gl <- t_lo <- ret <- ""
-    bg <- bg_g <- bg_l <- ad <- ad_g <- ad_l <- gl <- lo <- FALSE
-    m_y <- "<mark style=\"background-color: yellow; color: black;\">"
-    m_b <- "<mark style=\"background-color: blue; color: white;\">"
-    for (c in chains) {
-        gl <- lo <- FALSE
-        m <- m_b
-        if (c %in% c("CDR3a", "CDR3d", "CDR3l")) {
-            m <- m_y
-        }
-        g <- paste(c, "global", sep = "_")
-        l <- paste(c, "local", sep = "_")
-        if (g %in% names(x)) {
-            if (x[g] != "-") {
-                t_gl <-
-                    paste0("<b>Global:</b><br>", m, x[g], "</mark><br>")
-                gl <- TRUE
-            }
-        }
-        if (l %in% names(x)) {
-            if (x[l] != "-") {
-                t_lo <-
-                    paste0("<b>Local:</b><br>", m, x[l], "</mark><br>")
-                lo <- TRUE
-            }
-        }
-        if (gl | lo) {
-            if (c %in% c("CDR3b", "CDR3g", "CDR3h")) {
-                tbg_g <- t_gl
-                tbg_l <- t_lo
-                if (c == "CDR3b") {
-                    tbg <- "<b>CDR3-&beta;</b><br>"
-                }
-                if (c == "CDR3g") {
-                    tbg <- "<b>CDR3-&gamma;</b><br>"
-                }
-                if (c == "CDR3h") {
-                    tbg <- "<b>CDR3-H</b><br>"
-                }
-                bg <- TRUE
-            }
-            if (c %in% c("CDR3a", "CDR3d", "CDR3l")) {
-                tad_g <- t_gl
-                tad_l <- t_lo
-                if (c == "CDR3a") {
-                    tad <- "<b>CDR3-&alpha;</b><br>"
-                }
-                if (c == "CDR3d") {
-                    tad <- "<b>CDR3-&delta;</b><br>"
-                }
-                if (c == "CDR3l") {
-                    tad <- "<b>CDR3-L</b><br>"
-                }
-                ad <- TRUE
-            }
-        }
-    }
-    if (bg & ad) {
-        return(paste0(tbg, tbg_g, tbg_l, "<br>", tad, tad_g, tad_l))
-    }
-    if (bg & !ad) {
-        return(paste0(tbg, tbg_g, tbg_l))
-    }
-    if (!bg & ad) {
-        return(paste0(tad, tad_g, tad_l))
-    }
-    return("")
-}
-
-
-configure_nodes <- function(nodes, edges, chains, types, s) {
-    names(nodes) <- "id"
-    s$id <- as.character(s$id)
-    nodes <- merge(x = nodes, y = s, by = "id")
-    nodes[is.na(nodes)] <- "<NA>"
-    s[is.na(s)] <- "<NA>"
-    min_size <- 20
-    clone_boost <- 10
-    if (length(chains) > 1) {
-        dec <- TRUE
-        if (any(chains %in% c("CDR3h", "CDR3l"))) {
-            dec <- FALSE
-        }
-        chains <- sort(chains, decreasing = dec)
-        bg <- substr(chains[1], 5, 5)
-        ad <- substr(chains[2], 5, 5)
-        nodes$label <- paste(nodes[[chains[1]]], " (", bg, ") - ",
-                             nodes[[chains[2]]], " (", ad, ")",
-                             sep = ""
-        )
-        nodes$clone_count <- apply(X = nodes, MARGIN = 1, function(x) {
-            sum(s[chains[1]] == x[chains[1]] &
-                    s[chains[2]] == x[chains[2]])
-        })
-    } else {
-        nodes$label <- nodes[[chains]]
-        nodes$clone_count <- apply(X = nodes, MARGIN = 1, function(x) {
-            sum(s[chains] == x[chains])
-        })
-    }
-    nodes$size <- log2(nodes$clone_count) * clone_boost + min_size
-    nodes$color.border <- "black"
-    nodes$color.highlight <- "red"
-    l <- list()
-    for (c in chains) {
-        l <- c(l, paste0(c, "_", types))
-    }
-    nodes$group <- apply(
-        X = nodes, MARGIN = 1, FUN = get_u_motifs,
-        edges = edges, l = l)
-    for (i in seq_along(l)) {
-        nodes[l[[i]]] <- unlist(lapply(nodes$group, `[`, i))
-        nodes[nodes == ""] <- "-"
-    }
-    nodes$group <- apply(X = nodes, MARGIN = 1, function(x) {
-        u <- unlist(x["group"])
-        paste(u[nzchar(u)], collapse = ", ")
-    })
-    nodes$shape <- ifelse(test = nodes$clone_count > 1,
-                          yes = "dot", no = "diamond"
-    )
-    nodes$color.background <- apply(
-        X = nodes, MARGIN = 1, FUN = get_color,
-        l = l
-    )
-    nodes$title <- apply(
-        X = nodes, MARGIN = 1, FUN = set_node_title,
-        chains = chains
-    )
-    
-    nodes$shadow <- FALSE
-    nodes <- nodes[order(nodes$label), ]
-    return(nodes)
-}
-
-
-get_u_motifs <- function(x, edges = edges, l = l) {
-    get_unique_str <- function(x) {
-        res <- unique(e[x][e[x] != "-"])
-        return(
-            paste(
-                unique(
-                    unlist(strsplit(res, ", "))), collapse = ", "))
-    }
-    
-    id <- as.numeric(x["id"])
-    e <- edges[edges$from == id | edges$to == id, ]
-    return(lapply(X = l, FUN = get_unique_str))
-}
-
-
-get_color <- function(x, l) {
-    t <- vector(mode = "character")
-    
-    for (c in l) {
-        if (x[[c]] != "-") {
-            t <- c(t, c)
-        }
-    }
-    
-    bg <- "CDR3b_global" %in% t | "CDR3b_local" %in% t |
-        "CDR3g_global" %in% t | "CDR3g_local" %in% t |
-        "CDR3h_global" %in% t | "CDR3h_local" %in% t
-    
-    ad <- "CDR3a_global" %in% t | "CDR3a_local" %in% t |
-        "CDR3d_global" %in% t | "CDR3d_local" %in% t |
-        "CDR3l_global" %in% t | "CDR3l_local" %in% t
-    
-    if (ad & bg) {
-        return("green")
-    }
-    if (bg) {
-        return("blue")
-    }
-    return("yellow")
-}
-
-
-set_node_title <- function(x, chains) {
-    m <- "<mark style=\"background-color: white; color: black;\">"
-    mb <- "</mark><mark style=\"background-color: blue; color: white;\">"
-    my <- "</mark><mark style=\"background-color: yellow; color: black;\">"
-    mb_b <- paste0(mb, "<i>(&beta;)</i></mark><br>", m)
-    my_a <- paste0(my, "<i>(&alpha;)</i>")
-    mb_g <- paste0(mb, "<i>(&gamma;)</i></mark><br>", m)
-    my_d <- paste0(my, "<i>(&delta;)</i>")
-    mb_h <- paste0(mb, "<i>(H)</i></mark><br>", m)
-    my_l <- paste0(my, "<i>(L)</i>")
-    
-    l <- x[["label"]]
-    l <- gsub(pattern = " \\(b\\) - ", replacement = mb_b, x = l)
-    l <- gsub(pattern = " \\(a\\)", replacement = my_a, x = l)
-    l <- gsub(pattern = " \\(g\\) - ", replacement = mb_g, x = l)
-    l <- gsub(pattern = " \\(d\\)", replacement = my_d, x = l)
-    l <- gsub(pattern = " \\(h\\) - ", replacement = mb_h, x = l)
-    l <- gsub(pattern = " \\(l\\)", replacement = my_l, x = l)
-    l <- paste0(m, "<b>", l, "</b></mark><br><br>")
-    
-    cc <- x[["clone_count"]]
-    cc <- paste0("<b>Clone count:", cc, "</b><br>")
-    
-    m <- get_motif_list(x, chains)
-    return(paste0(l, cc, "<br>", m))
-}
-
-
-configure_network <- function(nodes, edges, ledges, lnodes) {
-    id_style <- paste(
-        "'width: ",
-        max(nchar(nodes$label)) * 7.5,
-        "px;'"
-    )
-    return(
-        visNetwork(nodes = nodes, edges = edges) %>%
-            visIgraphLayout(
-                layout = "layout_components",
-                randomSeed = 1234
-            ) %>%
-            visOptions(
-                highlightNearest =
-                    list(
-                        enabled = TRUE,
-                        degree = 1,
-                        algorithm = "hierarchical"
-                    ),
-                selectedBy = list(
-                    variable = "group",
-                    multiple = TRUE,
-                    sort = TRUE
-                ),
-                manipulation = FALSE,
-                nodesIdSelection = list(
-                    enabled = TRUE,
-                    style = id_style
-                )
-            ) %>%
-            visLegend(
-                addEdges = ledges, addNodes = lnodes,
-                useGroups = FALSE, position = "right",
-                width = 0.15, zoom = FALSE
-            )
-    )
-}
-

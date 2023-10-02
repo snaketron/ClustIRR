@@ -1,55 +1,45 @@
 \name{plot_graph}
 \alias{plot_graph}
 \title{Plot ClustIRR graph}
-\usage{plot_graph(clust_irr, expand_clones = FALSE)}
+\usage{plot_graph(clust_irr, as_visnet=FALSE)}
 \arguments{
 \item{clust_irr}{S4 object of type \code{clust_irr}, result of \code{clust_irr} 
 function
 }
-\item{expand_clones}{logical, show clonally expanded cells as distinct vertices
-in the graph, including connections between them. Only relevant for version 2
-of the algorithm. \code{expand_clones} = \code{FALSE} (default)
-}
 }
 \value{
-The output is an interactive \emph{visNetwork} graph. 
+The output is an igraph plot.
 
-Vertices represent cells, edges represent local or global similarities.
-
-The user can obtain additional information about the vertices and edges by
-hovering/clicking.
-
-Colors and symbols of each graph are explained in a legend. 
-Connections between chains are represented by different colors. 
-Clone counts are represented by different symbols and sizes, cells 
-sharing the exact same sequences (clonal expansions) are represented by dots 
-expanded in size. Edge color represents local connections, global connections 
-or both between cells. Edge thickness represents number of shared local and/or 
-global connections between cells.
-
-Clonally expanded cells can be represented by single dots, containing a list of
-in between shared motifs and sequences, or multiple dots with edges between 
-them by setting \code{expand_clones} to \code{TRUE}.
+Vertices are clones and edges represent local or global similarities. Edge 
+attributes 'color', 'linetype' and 'thickness' can be interpreted as follows:
 
 \itemize{
-\item{\code{scroll}} - click & drag background or edges
-\item{\code{zoom}} - use the mousewheel
-\item{\code{show information}} - hover-over node or edge
-\item{\code{select node directly}} - click on node
-\item{\code{select node by id}} - dropdown menu to select node via CDR3 
-sequence, sorted alphabetically
-\code{select node by group} - dropdown menu to select node via shared motif 
-or global sequence, sorted alphabetically
-\item{\code{move node}} - click & drag node
-\item{\code{export graph}} - use console, viewer and \code{export} button
-
+\item Edge colors
+    \itemize{
+        \item purple: local CDR3 similarity
+        \item green: global CDR3 similarity
+        \item black: local + global CDR3 similarity
+    }
+\item Edge linetypes
+    \itemize{
+        \item dashed: similarity between CDR3\eqn{\beta}, CDR3\eqn{\delta}, 
+        CDR3H
+        \item dotted: similarity between CDR3\eqn{\alpha}, CDR3\eqn{\gamma}, 
+        CDR3L
+        \item solid: similarity between CDR3s from both chains (e.g. 
+        CDR3\eqn{\alpha} and CDR3\eqn{\beta})
+    }
+\item Edge thickness: number of edges between two clones
 }
 
+The size of the vertices increases linearly as the logarithm of the degree of 
+the clonal expansion (number of cells per clone) in the corresponding clones.
 }
 
 
 \description{
-This is a helper function for visualization of an \code{clust_irr} object.
+This this function visualizes a graph. The input is \code{clust_irr} object
+created by the function \code{cluster_irr}.
 }
 
 \examples{
@@ -67,22 +57,22 @@ s <- rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRADKPDGLDALETQYF",
                                 times = 5)))
 
 # run analysis
-out <- cluster(s = s,
-               r = r,
-               version = 2,
-               ks = 4,
-               cores = 1,
-               control = list(
-                    global_max_dist = 1,
-                    local_max_fdr = 0.05,
-                    local_min_ove = 2,
-                    local_min_o = 1,
-                    trim_flank_aa = 3,
-                    global_pairs = NULL,
-                    low_mem = FALSE))
+out <- cluster_irr(s = s,
+                   r = r,
+                   version = 2,
+                   ks = 4,
+                   cores = 1,
+                   control = list(
+                        global_max_dist = 1,
+                        local_max_fdr = 0.05,
+                        local_min_ove = 2,
+                        local_min_o = 1,
+                        trim_flank_aa = 3,
+                        global_pairs = NULL,
+                        low_mem = FALSE))
 
 # plot graph with vertices as clones
-p1 <- plot_graph(out)
+p1 <- plot_graph(out, as_visnet=FALSE)
 p1
 
 # access nodes and edges of the graph as data.frame
@@ -95,5 +85,4 @@ e <- p1$x$edges
 str(e)
 class(e)
 head(e)
-
 }

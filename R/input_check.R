@@ -107,10 +107,10 @@ check_global_pairs <- function(global_pairs, s) {
   if(!is.null(global_pairs)) {
     check_rowcount(global_pairs)
     check_matrix(global_pairs)
-    check_matrix_type(global_pairs, type = "character")
-    check_matrix_column_count(global_pairs, 3)
-    if(all(global_pairs[, c(1, 2)] %in% s) == FALSE) {
-      stop("not all CDR3s from global_pair are found in s")
+    check_matrix_type(global_pairs, type = "numeric")
+    check_matrix_column_count(global_pairs, 2)
+    if(all(global_pairs[, c(1, 2)] %in% seq_len(nrow(s))) == FALSE) {
+      stop("some indices in global_pair are not found in s")
     }
   }
 }
