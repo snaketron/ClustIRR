@@ -1,3 +1,5 @@
+
+
 get_graph <- function(clust_irr) {
     
     get_clone_edges <- function(x, edges, cs) {
@@ -22,18 +24,6 @@ get_graph <- function(clust_irr) {
     }
     
     get_local_edges <- function(clust_irr) {
-        
-        get_lp <- function(x, lp, chain) {
-            if (sum(lp$motif == x) > 1) {
-                p <- t(combn(x = lp$cdr3[lp$motif == x], m = 2))
-                return(data.frame(
-                    from_cdr3 = p[, 1], to_cdr3 = p[, 2],
-                    motif = x, type = "local",
-                    chain = chain
-                ))
-            }
-            return(NULL)
-        }
         
         get_from_to <- function(x, lp) {
             y <- lp$cdr3[lp$motif == x]
@@ -141,7 +131,12 @@ get_graph <- function(clust_irr) {
     return(list(graph = ig, clones = cs))
 }
 
-get_joint_graph <- function(clust_irr_1, clust_irr_2) {
+
+get_joint_graph <- function(clust_irr_1, 
+                            clust_irr_2) {
+    
+    check_clustirr(clust_irr = clust_irr_1)
+    check_clustirr(clust_irr = clust_irr_2)
     
     if(get_clustirr_inputs(clust_irr_1)$control$global_max_dist!=
        get_clustirr_inputs(clust_irr_2)$control$global_max_dist) {
@@ -205,7 +200,9 @@ get_joint_graph <- function(clust_irr_1, clust_irr_2) {
     return(list(graph = g, clones = rbind(cs_1, cs_2)))
 }
 
-plot_graph <- function(clust_irr, as_visnet = FALSE) {
+
+plot_graph <- function(clust_irr, 
+                       as_visnet = FALSE) {
     
     check_clustirr(clust_irr = clust_irr)
     
@@ -255,7 +252,10 @@ plot_graph <- function(clust_irr, as_visnet = FALSE) {
     }
 }
 
-plot_joint_graph <- function(clust_irr_1, clust_irr_2, as_visnet = FALSE) {
+
+plot_joint_graph <- function(clust_irr_1, 
+                             clust_irr_2, 
+                             as_visnet = FALSE) {
     
     check_clustirr(clust_irr = clust_irr_1)
     check_clustirr(clust_irr = clust_irr_2)
@@ -288,3 +288,4 @@ plot_joint_graph <- function(clust_irr_1, clust_irr_2, as_visnet = FALSE) {
                   type = "square")
     }
 }
+

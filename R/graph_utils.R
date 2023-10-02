@@ -149,10 +149,11 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
                  len_y = len_y,
                  global_max_dist = global_max_dist)
     hd <- do.call(rbind, hd)
-    if(nrow(hd)!=0) {
+    if(is.null(hd)==FALSE && nrow(hd)!=0) {
         hd$chain <- x
         hd$sample <- "s1s2"
         hd$type <- "inter-sample"
+        return(hd)
     }
-    return(hd)
+    return(NULL)
 }
