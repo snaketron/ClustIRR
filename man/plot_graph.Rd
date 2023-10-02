@@ -4,9 +4,9 @@
 \usage{plot_graph(clust_irr, as_visnet=FALSE)}
 \arguments{
 \item{clust_irr}{S4 object of type \code{clust_irr}, result of \code{clust_irr} 
-function
-}
-}
+function}
+\item{as_visnet}{logical, if as_visnet=TRUE we plot an interactive graph with 
+visNetwork. If as_visnet=FALSE, we plot a static graph with igraph.}}
 \value{
 The output is an igraph plot.
 

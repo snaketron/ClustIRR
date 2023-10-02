@@ -79,11 +79,11 @@ functions. In the description below, \code{x} is a \code{clust_irr}
 object.
 
 \describe{
-\item{}{
+\item{get_clustirr_clust}{
 \code{get_clustirr_clust(x)}:
 Extract the clustering results (slot clust)
 }
-\item{}{
+\item{get_clustirr_inputs}{
 \code{get_clustirr_inputs(x)}:
 Extract the processed inputs (slot inputs)
 }

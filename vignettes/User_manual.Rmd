@@ -502,7 +502,7 @@ Let's plot the graph:
 
 ```{r}
 # beta & alpha chain
-plot_graph(o_ab)
+plot_graph(o_ab, as_visnet = TRUE)
 ```
 
 &nbsp;
