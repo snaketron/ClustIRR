@@ -8,3 +8,7 @@ Changes in version 0.99.16 (25 Aug, 2023)
 + Changes after first round of review done
 + Now we have two versions (old version=1 removed, unused) 
 + S4 object output of clust_irr
+
+Changes in version 0.99.20-0.99.26 (03 Oct, 2023)
++ Functions added for: graph building, joining, plotting
++ S4 object accessors added
