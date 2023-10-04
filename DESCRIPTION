@@ -15,7 +15,7 @@ Description: ClustIRR is a quantitative method for clustering of immune
 License: GPL-3 + file LICENSE
 LazyData: false
 Depends:
-    R (>= 4.2.0)
+    R (>= 4.3.0)
 Imports:
     stringdist,
     future,
