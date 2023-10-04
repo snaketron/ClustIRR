@@ -88,14 +88,14 @@ CDR3s may come from one T cell receptor chain (e.g., \ only CDR3$\alpha$s or
 only CDR3$\beta$s) or from both chains (CDR3$\alpha\beta$). The two sets 
 represent two repertoires, and each element in the sets represents a T-cell:
 
-* `s`: IR repertoire to be analyzed (case sample)
+* `s`: IR repertoire under investigation (case sample)
 * `r`: reference IR repertoire (control/reference sample)
 
-**Hint:** `s` and `r` may also consist of CDR3s from $\gamma\delta$ T-cells 
-($CDR3\gamma$ and CDR3$\delta$) or B-cells (CDR3H and CDR3L). This is explained
-in case study 4.
+**Hint:** `s` and `r` may also contain CDR3s from $\gamma\delta$ T-cells 
+(CDR3$\gamma$ and CDR3$\delta$) or B-cells (CDR3H and CDR3L). This is 
+explained in case study 4.
 
-Let's look at an example data, which we will use as input:
+Let's have a look at an example data set which we will use as input:
 
 ```{r}
 data("CDR3ab")
@@ -132,15 +132,14 @@ sequences
 
 The rationale behind these two clustering strategies is the following: two 
 identical CDR3 sequences have the same specificity. Similar CDR3 sequences 
-(e.g., share the same sequence but differ at only one position) likely 
-have similar specificity. Global clustering is designed to find such global 
-pairs. 
+(e.g., CDR3 sequences that differ by only one amino acid) may have similar 
+specificity. Global clustering is designed to find pairs of CDR3s that are
+globally (based on the complete CDR3 sequences) similar. 
 
-Two CDR3s with significantly different sequences may still recognize the same
-peptide if they share a motif in their core regions (e.g., identical 4-mer). 
-Such "useful" motifs may be enriched in `s`  but not in `r`, and local 
-clustering aims to identify them.
-
+We also know that two CDR3s with significantly different sequences may still 
+recognize the same peptide[^1] if they share a motif in their core regions 
+(e.g., identical 4-mer). Such "useful" motifs may be enriched in `s`  but not 
+in `r`, and local clustering aims to identify them.
 
 
 ### Local clustering
@@ -188,13 +187,13 @@ satisfied:
     * $n_{s}$ and $n_{r}$: total number of motifs in repertoires `s` and `r`
       
 3. `control$local_max_fdr`: maximum false discovery rate (FDR). Corrected 
-    p-value, computed by Fisher's exact test
+    p-value, computed by Fisher's exact test (actually hypergeometic test)
 
 
 ### Global clustering
 
 For global clustering, `r Biocpkg("ClustIRR")` quantifies the dissimilarity 
-between pairs of CDR3 sequences by using Hamming distances. Two CDR3 sequences 
+between pairs of CDR3 sequences using Hamming distances. Two CDR3 sequences 
 with Hamming distance $\leq x$ are considered globally similar, where $x$ is 
 the user-defined threshold `control$global_max_dist` (default = 1). 
 
@@ -206,7 +205,7 @@ has drawbacks:
 2. Hamming distance, by definition, does not take into account the properties 
 of the replaced amino acids
 
-To overcome this challenge, `r Biocpkg("ClustIRR")` provides a second input
+To overcome these challenges, `r Biocpkg("ClustIRR")` provides a second input
 option (see red input in `r Biocpkg("ClustIRR")` workflow), which allows the 
 user to provide a matrix of globally similar CDR3 sequences computed by 
 complementary approaches (e.g., *tcrdist*). This input can be provided via 
@@ -215,21 +214,25 @@ the input parameter `control$global_pairs`.
 
 ## Output
 
-`r Biocpkg("ClustIRR")` returns an S4 object of class "clust_irr" that 
-contains two types of output:
+The main function in `r Biocpkg("ClustIRR")` is `cluster_irr`. This function 
+returns an S4 object of class `clust_irr`. The object contains two sublists 
+(slots):
 
 1. clustering results: tables and lists
-2. graph object: plot and lists of nodes & edges
+2. processed inputs: processed version of the input data (`s`) and parameters
 
 We will describe the inputs, outputs, and the algorithm of 
 `r Biocpkg("ClustIRR")` with the help of the following case studies. 
 
+
 # Case study 1: simple TCR repertoire analysis with `r Biocpkg("ClustIRR")`
 
-In this study, we will insert the motif *LEAR* in the core regions of the first 
-20 CDR3b sequences of repertoire `s`. With this, we simulate the enrichment of 
-this motif. This motif is not enriched in repertoire `r`, and 
-`r Biocpkg("ClustIRR")` should be able to detect *LEAR* as enriched:
+In this example, we will insert the motif *LEAR* in the core regions of the 
+first 20 CDR3b sequences of repertoire `s`. With this, we simulate enrichment 
+of this motif. 
+
+This motif is not enriched in repertoire `r`, and `r Biocpkg("ClustIRR")` 
+should be able to detect *LEAR* as enriched:
 
 ```{r}
 # insert motif LEAR
@@ -249,8 +252,8 @@ o <- cluster_irr(s = s,
 ```
 
 ## Local clustering results
-In the following table we see that `r Biocpkg("ClustIRR")` has detected *LEAR* 
-as an enriched motif in `s` compared to `r`: 
+In the following table we see that `r Biocpkg("ClustIRR")` has detected 
+enrichment of *LEAR* in `s` compared to `r`: 
 
 ```{r}
 # extract local motifs
@@ -260,23 +263,22 @@ local_motifs <- get_clustirr_clust(o)$CDR3b$local$m
 knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
 ```
 
-Interestingly, the motif *LLEA* was also detected as enriched. This is probably
-because *LLEA* and *LEAR* share the substring *LEA*, hence, the enrichment of 
-*LLEA* can be seen as a byproduct of the inserted motif *LEAR*.
+Interestingly, the motif *LLEA* is also enriched. This is probably because 
+*LLEA* and *LEAR* share the substring *LEA*, hence, the enrichment of *LLEA* 
+can be seen as a byproduct of the inserted motif *LEAR*.
 
 This can also be seen from the lower frequency of *LLEA* ($f_s$=5) in `s` 
 compared to *LEAR* ($f_s$=20). For *LEAR* we see FDR$\approx 10^{-15}$, 
 which is significantly smaller than the FDR$\approx 10^{-2}$ observed for 
-*LLEA*. Finally, for *LEAR* we saw OvE$\approx 100$, whereas for *LLEA*'s  
-OvE$=\infty$ as the motif is not found in repertoire `f_r` (division by 0 when 
-calculating OvE). 
+*LLEA*. Finally, for *LEAR* we see OvE$\approx 100$, whereas for *LLEA*'s  
+OvE$=\infty$ (*LLEA* has `f_r=0`; division by 0 when calculating OvE). 
 
 
 ## Global clustering results
 
-Only one pair of globally similar CDR3 sequences was found in our mock data.
-The CDR3 sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* differ by one 
-amino acid at position 4:
+In our data we had only one pair of globally similar CDR3 sequences, i.e.
+the CDR3 sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* which differ 
+by one amino acid at position 4. `r Biocpkg("ClustIRR")` has identified this:
 
 ```{r}
 # display globally similar pairs
@@ -285,10 +287,16 @@ knitr::kable(get_clustirr_clust(o)$CDR3b$global, row.names = FALSE)
 
 ## Putting it all together $\rightarrow$ graph
 
-An undirected graph is one of the main outputs of `r Biocpkg("ClustIRR")`. 
-Each vertex is a T-cell clone, and we draw an edge between two vertices if 
-a) they are globally similar; or b) if they share an enriched motif (locally 
-similar). 
+To interpret the `r Biocpkg("ClustIRR")` output we can inspect the tables
+of locally/globally similar CDR3s. However, sometimes these tables can be
+massive and difficult to interpret. Hence, we provide the functions `get_graph`, 
+which allows us to generate an undirected graph (`r CRANpkg("igraph")` object) 
+from the main outputs of `r Biocpkg("ClustIRR")`, and `plot_graph` for 
+visualization of the graph.
+
+Each vertex in the graph is a T-cell clone, and we draw an edge between two 
+vertices if a) they are globally similar; or b) if they share an enriched 
+motif (locally similar). 
 
 Let's visualize the graph output for this case study:
 
@@ -308,30 +316,7 @@ clones (about 480) are shown as singleton vertices.
 We also wee two vertices connected by an edge. These are the two clones that
 are globally similar.
 
-
-
-
-
-We can also output an **interactive** visNetwork graph. You can interact with 
-it in the following ways:
-  
-  * vertex positions can be altered *(click & drag)*
-  * we can zoom in or out *(mouse wheel)*
-  * we can *hover over* vertices to get additional information:
-      * CDR3 sequence(s)
-      * clone cell count
-      * sequences of enriched motifs shared with neighbor vertices
-      * sequences of globally related neighbor vertices
-  * we can also *hover over* edges to get additional information:
-      * relevant CDR3 sequence(s) of the connected vertices
-      * sequences of enriched motifs shared by the connected vertices
-      * sequences of globally related sequences of the connected vertices
-  * the `Select by id` dropdown menu can be used to select vertices via 
-  sequence(s). By *clicking on* a vertex, we highlight it's CDR3 sequence(s) 
-  in the `Select by id` dropdown menu, as well as its edges and neighbors
-  * the complementary dropdown menu `Select by group` allows us to select
-  vertices sharing an enriched motif or CDR3 sequence(s)
-
+We can also plot an **interactive** graph with `r CRANpkg("visNetwork")`. 
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
 plot_graph(clust_irr = o, as_visnet = TRUE)
@@ -345,35 +330,39 @@ or b) they share an enriched motif. Furthermore, each chain type may have an
 edge if the repertoire contains paired information, e.g., on $\beta$ and 
 $\alpha$ chain CDR3 sequences.
 
-The **color** and **thickness** of the edges is determined by the type and 
-the number of similarities between a pair of vertices:
+The **color**, **linetype** and **thickness** of the edges are determined as
+follows. 
 
-  * if the vertices share an enriched motif: gray edge
-  * if the vertices are globally similar: orange edge
-  * if both: dark red and thick edge
+  * edge colors
+      
+      * purple: local CDR3 similarity
+      * green: global CDR3 similarity
+      * black: local and global CDR3 similarity
+      
+  * edge linetypes
+    
+      * dashed: similarity between CDR3$\beta$, CDR3$\delta$ and CDR3H
+      * dotted: similarity between CDR3$\alpha$, CDR3$\gamma$ and CDR3L
+      * solid: similarity between CDR3s from both chains (e.g. CDR3$\alpha$ 
+        and CDR3$\beta$)
 
-We can hover over or click on edges to learn what type of data is encoded 
-in each edge.
-
-### Exporting a graph as PNG
-Graphs can be exported as images. Plot the graph in Rstudio's console
-and use the Viewer panel to export your image.
-
+  * edge thickness: number of edges between two clones
 
 
 # Case study 2: analysis of TCR repertoire with large expanded clone
 
-In this case study, we assume that the data contains a clone with 10 T-cells 
-(2% of the repertoire size). The T-cells in the expanded clone have the same 
-CDR3b sequence *CATSRPDGLAQYF*. `r Biocpkg("ClustIRR")` should detect most 
-motifs at the core of *CATSRPDGLAQYF* as enriched while also reporting that
-all cells within have globally similar (in fact identical) CDR3b sequences.
+In this case study, we assume that the data contains a clone with 20 
+T-cells ($\approx$4% of the size of the initial repertoire). The T-cells 
+in the expanded clone have the same CDR3b sequence *CATSRPDGLAQYF*. 
+`r Biocpkg("ClustIRR")` should detect most motifs at the core of 
+*CATSRPDGLAQYF* as enriched while also reporting that all cells within 
+have globally similar (in fact identical) CDR3b sequences.
 
 Let's insert a clone in dataset `s`:
 
 ```{r}
 # create a clone of 10 T-cells
-clone <- base::data.frame(CDR3b = rep("CATSRPDGLAQYF", times = 10))
+clone <- base::data.frame(CDR3b = rep("CATSRPDGLAQYF", times = 20))
 
 # append the clone to the original repertoire 's'
 s <- base::rbind(s, clone)
@@ -397,7 +386,7 @@ many additional motifs that are part of the core of *CATSRPDGLAQYF*, such as
 
 ```{r, fig.align='center'}
 # extract local motifs
-local_motifs <- get_clustirr_clust(o)$clust$CDR3b$local$m
+local_motifs <- get_clustirr_clust(o)$CDR3b$local$m
 
 # display only passed motifs
 knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
@@ -407,10 +396,10 @@ knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
 
 Once again, `r Biocpkg("ClustIRR")` finds the same pair of globally similar 
 CDR3 sequences. However, remember that this time our repertoire `s` contains 
-ten identical CDR3s belonging to the expanded clone's T-cells. Each pair 
+20 identical CDR3s belonging to the expanded clone's T-cells. Each pair 
 of CDR3 sequences in the clone are globally similar. Meanwhile, the CDR3 
-sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* differ by one amino acid 
-at position 4.
+sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* differ by one amino 
+acid at position 4.
 
 Let's check how the global and local similarities are represented in the
 graph (see next section).
@@ -428,11 +417,15 @@ plot_graph(clust_irr = o, as_visnet = TRUE)
 &nbsp;
 
 We see one connected component, which is identical to the one we saw in case 
-study 1. Furthermore, we see a large vertex. This represents clonal expansion,
-i.e. the size of the vertex scales with the logarithm of the size of the 
-expansion (number of T-cells in the clone).
+study 1. Furthermore, we see a large vertex. This represents the clonal 
+expansion, where the size of the vertex scales as the logarithm of the number 
+of T-cells in the clone.
 
-Clonally expanded cells are globally and often locally similar to each other.
+Clonally expanded cells are globally similar to each other. If the specific 
+clonal expansion is only found in `s` but not in `r`, then it is likely that
+we will also see an enrichment of certain motifs from the core of the 
+corresponding CDR3 sequences. In summary, CDR3s of expanded clones are similar 
+in terms of the global sequences but may also be locally similar.
 
 
 # Case study 3: analysis of TCR repertoire with paired $\alpha\beta$ TCR chains
@@ -443,89 +436,122 @@ to extract the sequences of both TCR chains: $\beta$ and $\alpha$.
 `r Biocpkg("ClustIRR")` can analyze such data. Clustering is performed 
 separately using the CDR3 sequences of each chain.
 
-Let's create the input data. We sample 500 CDR3$\beta$ and CDR3$\alpha$ 
-sequence pairs. This will be the repertoire `s`. We will use 5000 CDR3$\beta$ 
-and CDR3$\alpha$ sequences to create the reference repertoire `r`:
+Let's create the input data. We create two repetoires: 
+
+  * repertoire `S0`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
+  * repertoire `S1`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
+  
+Imagine that `S0` and `S1` are two TCR repertoires of a cancer patient, 
+sequenced before and after cancer therapy, respectively.
 
 ```{r}
 data("CDR3ab")
 
-s <- base::data.frame(CDR3a = CDR3ab$CDR3a[4501:5000],
-                      CDR3b = CDR3ab$CDR3b[4501:5000])
+S0 <- base::data.frame(CDR3a = CDR3ab$CDR3a[3001:4000],
+                      CDR3b = CDR3ab$CDR3b[3001:4000])
 
-r <- base::data.frame(CDR3a = CDR3ab$CDR3a[5001:10000],
-                      CDR3b = CDR3ab$CDR3b[5001:10000])
+S1 <- base::data.frame(CDR3a = CDR3ab$CDR3a[5001:6000],
+                      CDR3b = CDR3ab$CDR3b[5001:6000])
 ```
 
-We imagine that the TCR repertoire has 
+TCR repertoire `S0` has 
 
   * two enriched motifs: *LEAR* and *REAL*
   * three expanded clones
-      * clone 1: 5 T-cells (CDR3a: CASSEGEQFF and CDR3b CASSLLARAEQFF)
-      * clone 2: 3 T-cells (CDR3a: CASSLESPLHF and CDR3b: CASSLEEEEEEPLHF)
-      * clone 3: 2 T-cells (CDR3a: CASSLESPLHF and CDR3b: CASSLAAAAASPLHF)
+      * clone 1: 100 T-cells (CDR3a: CASSEGEQFF and CDR3b CASSLLARAEQFF)
+      * clone 2: 50 T-cells (CDR3a: CASSLESPLHF and CDR3b: CASSLEEEEEEPLHF)
+      * clone 3: 10 T-cells (CDR3a: CASSLESPLHF and CDR3b: CASSLAAAAASPLHF)
 
 ```{r}
 # insert motif LEAR in CDR3b
-base::substr(x = s$CDR3b[1:10], start = 6, stop = 9) <- "LEAR"
+base::substr(x = S0$CDR3b[1:10], start = 6, stop = 9) <- "LEAR"
 # insert motif REAL in CDR3a
-base::substr(x = s$CDR3a[50:59], start = 6, stop = 9) <- "REAL"
+base::substr(x = S0$CDR3a[50:59], start = 6, stop = 9) <- "REAL"
 ```
+
 
 ```{r}
 # create 3 clones
-clone_1 <- data.frame(CDR3a = rep(x = "CASSEGEQFF", times = 5),
-                      CDR3b = rep(x = "CASSLLARAEQFF", times = 5))
+clone_1 <- data.frame(CDR3a = rep(x = "CASSEGEQFF", times = 100),
+                      CDR3b = rep(x = "CASSLLARAEQFF", times = 100))
 
-clone_2 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 3),
-                      CDR3b = rep(x = "CASSLEEEEEEPLHF", times = 3))
+clone_2 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 50),
+                      CDR3b = rep(x = "CASSLEEEEEEPLHF", times = 50))
 
-clone_3 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 2),
-                      CDR3b = rep(x = "CASSLAAAAASPLHF", times = 2))
+clone_3 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 10),
+                      CDR3b = rep(x = "CASSLAAAAASPLHF", times = 10))
 
 # append clones to s
-s <- rbind(s, clone_1, clone_2, clone_3)
+S0 <- rbind(S0, clone_1, clone_2, clone_3)
 ```
 
-... and again, let's perform clustering:
+
+TCR repertoire `S1` has 
+
+  * one enriched motif: *WWWW*
+  * one expanded clone 1: 100 T-cells (CDR3a: CASSEGEQFF and CDR3b 
+  CASSLLARAEQFF) [same as clone 1 in repertoire `S0`]
 
 ```{r}
-o_ab <- cluster_irr(s = s,
-                    r = r,
-                    version = 2,
-                    ks = 4,
-                    cores = 1,
-                    control = list(trim_flank_aa = 3))
+base::substr(x = S1$CDR3b[1:20], start = 6, stop = 9) <- "WWWW"
+S1 <- rbind(S1, clone_1)
 ```
 
-Let's plot the graph:
+
+We will perform two sets of analysis with `r Biocpkg("ClustIRR")`.
+
+First, we will inspect how the specificity structure of repertoire `S1` 
+(`s`=`S1`) is modulated compare to repertoire `S0` (`r`=`S0`). Second, we 
+will do the reverse, i.e. we will inspect the specificity structure of 
+repertoire `S0` (`s`=`S0`) compared to `S1` (`r`=`S1`).
+
+```{r}
+o_S1_vs_S0 <- cluster_irr(s = S1,
+                          r = S0,
+                          version = 2,
+                          ks = 4,
+                          cores = 1,
+                          control = list(trim_flank_aa = 3))
+
+
+o_S0_vs_S1 <- cluster_irr(s = S0,
+                          r = S1,
+                          version = 2,
+                          ks = 4,
+                          cores = 1,
+                          control = list(trim_flank_aa = 3))
+```
+
+Let's plot the joint graph:
 
 ```{r}
 # beta & alpha chain
-plot_graph(o_ab, as_visnet = TRUE)
+plot_joint_graph(clust_irr_1 = o_S1_vs_S0, 
+                 clust_irr_2 = o_S0_vs_S1,
+                 as_visnet = TRUE)
 ```
 
 &nbsp;
 
-## How to interpret the graph?
-Repertoire `s` contains three clones of $\alpha\beta$ T-cells. Hence, we see 
-three large oval vertices in the graph. The size of the oval vertices (clones) 
-is proportional to the number of T-cells in each clone.
+## How to interpret the joint graph?
 
-The oval vertices are green, which indicates that `r Biocpkg("ClustIRR")` has 
-detected local or global similarities (edges) between the corresponding CDR3a 
-**and** CDR3b sequences. If local/global similarities exist only between the 
-CDR3b sequences **or** between the CDR3a sequences, then the vertices are 
-colored blue or yellow, respectively. 
+The clones of repertoire `S0` and `S1` are shown are orange and blue 
+vertices, respectively. 
 
-Most of the edges are shown by thin gray lines, and these represent local 
-similarities. Two of the edges are thick and red, and these represent both 
-local and global similarities. 
+Repertoire `S0` contains three expanded clones. Hence, we see three large 
+orange vertices. Repertoire `S1` contains only one expanded clone shown as 
+a large blue vertex. The remaining vertices are small and likely contain a 
+single T-cell.
 
-Motifs and globally similar sequences can be accessed directly by *hovering over*
-vertices or edges of interest. Sequences and motifs in the appearing window 
-can be selected via *double click* or *click & drag* and copied via 
-*right click* or keyboard shortcuts.
+Within each repertoire, the edges are drawn as explained earlier. 
+
+Meanwhile, in the joint graph we also have edges between the vertices from 
+the two repertoires. These will be drawn if a pair of clones in `S0` and `S1` 
+have globally similar CDR3 sequences. In this particular example, the vertex 
+that represents the expanded clone 1 (large orange and blue vertices) are 
+connected by such an edge.
+
+
 
 # Case study 4: analysis of TCR repertoires with paired $\gamma\delta$ chains
 
@@ -585,3 +611,5 @@ utils::sessionInfo()
 ```
 
 
+[^1]: Glanville, Jacob, et al. "Identifying specificity groups in the T cell 
+receptor repertoire." Nature 547.7661 (2017): 94-98.
