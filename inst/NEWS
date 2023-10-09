@@ -12,3 +12,7 @@ Changes in version 0.99.16 (25 Aug, 2023)
 Changes in version 0.99.20-0.99.26 (03 Oct, 2023)
 + Functions added for: graph building, joining, plotting
 + S4 object accessors added
+
+Changes in version 0.99.28-29 (09 Oct, 2023)
++ Accepted in Bioconductor
+
