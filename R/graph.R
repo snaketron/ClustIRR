@@ -128,76 +128,82 @@ get_graph <- function(clust_irr) {
                                 directed = FALSE,
                                 vertices = cs)
     
+    
     return(list(graph = ig, clones = cs))
 }
 
 
-get_joint_graph <- function(clust_irr_1, 
-                            clust_irr_2) {
+get_joint_graph <- function(clust_irrs) {
     
-    check_clustirr(clust_irr = clust_irr_1)
-    check_clustirr(clust_irr = clust_irr_2)
-    
-    if(get_clustirr_inputs(clust_irr_1)$control$global_max_dist!=
-       get_clustirr_inputs(clust_irr_2)$control$global_max_dist) {
-        stop("variable global_max_dist used in clust_irr_1 and clust_irr_2") 
+    get_vertices <- function(x) {
+        return(x$vertices)
     }
     
-    ig1 <- get_graph(clust_irr = clust_irr_1)
-    ig2 <- get_graph(clust_irr = clust_irr_2)
-    
-    # get the vertices/edges of graph 1
-    d1 <- get.data.frame(ig1$graph, what = "both")
-    if(nrow(d1$edges)!=0) {
-        d1$edges$sample <- "s1"
-        d1$edges <- d1$edges[, c("from", "to", "chain", "sample", "type")]
-        d1$edges$from <- paste0("s1|", d1$edges$from)
-        d1$edges$to <- paste0("s1|", d1$edges$to)
+    get_edges <- function(x) {
+        return(x$edges)
     }
-    d1$vertices$id <- d1$vertices$name
-    d1$vertices$name <- paste0("s1|", d1$vertices$name)
-    d1$vertices$sample <- "s1"
     
-    # get the vertices/edges of graph 2
-    d2 <- get.data.frame(ig2$graph, what = "both")
-    if(nrow(d2$edges)!=0) {
-        d2$edges$sample <- "s2"
-        d2$edges <- d2$edges[, c("from", "to", "chain", "sample", "type")]
-        d2$edges$from <- paste0("s2|", d2$edges$from)
-        d2$edges$to <- paste0("s2|", d2$edges$to)
+    check_input <- function(clust_irrs) {
+        if(missing(clust_irrs)==TRUE) {
+            stop("clust_irrs input missing")
+        }
+        if(is.list(clust_irrs)==FALSE) {
+            stop("clust_irrs must be a list of clust_irr objects")
+        }
+        if(length(clust_irrs)<=1) {
+            stop("get_joint_graph needs >= 2 clust_irr outputs")
+        }
+        gmd <- numeric(length = length(clust_irrs))
+        for(i in 1:length(clust_irrs)) {
+            check_clustirr(clust_irr = clust_irrs[[i]])
+            gmd[i]<-get_clustirr_inputs(clust_irrs[[i]])$control$global_max_dist
+        }
+        if(length(unique(gmd))!=1) {
+            stop("all global_max_dist should be equal")
+        }
+        
+        # check if same chain names
+        cs <- colnames(get_clustirr_inputs(clust_irrs[[1]])$s)
+        for(i in 2:length(clust_irrs)) {
+            if(any(colnames(get_clustirr_inputs(clust_irrs[[i]])$s)!=cs)) {
+                stop("different chains in graphs")
+            }
+        }
     }
-    d2$vertices$id <- d2$vertices$name
-    d2$vertices$name <- paste0("s2|", d2$vertices$name)
-    d2$vertices$sample <- "s2"
     
-    global_max_dist <- get_clustirr_inputs(clust_irr_1)$control$global_max_dist
-    chains <- colnames(get_clustirr_inputs(clust_irr_1)$s)
+    # check input
+    check_input(clust_irrs = clust_irrs)
+    
+    # get chains
+    igs <- lapply(X = clust_irrs, FUN = get_graph)
+    chains <- colnames(get_clustirr_inputs(clust_irrs[[1]])$s)
     chains <- chains[chains!="id"]
-    ige <- get_intergraph_edges(s1=d1$vertices,
-                                s2=d2$vertices,
-                                global_max_dist = global_max_dist,
-                                chains = chains)
     
-    d1$vertices <- rbind(d1$vertices, d2$vertices)
-    d1$edges <- rbind(d1$edges, d2$edges, ige)
-    d <- d1
+    # get global_max_dist
+    gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_dist
     
-    d1$edges <- config_edges(es = d1$edges)
+    ige <- get_intergraph_edges(igs=igs, global_max_dist=gmd, chains=chains)
+    
+    df_v <- do.call(rbind, lapply(X = ige$igs_df, FUN = get_vertices))
+    df_e <- do.call(rbind, lapply(X = ige$igs_df, FUN = get_edges))
+    df_e <- rbind(df_e, ige$ige)
+    
+    df_e <- config_edges(es = df_e)
     
     # build joint graph
-    g <- graph_from_data_frame(d1$edges, directed=FALSE, vertices=d$vertices)
+    g <- graph_from_data_frame(df_e, directed=FALSE, vertices=df_v)
     
     # make graph look visually better
     g <- config_vertices_plot(g = g, is_jg = TRUE)
     g <- config_edges_plot(g = g, is_jg = TRUE)
     
     # prepare clones
-    cs_1 <- ig1$clones
-    cs_1$sample <- "s1"
-    cs_2 <- ig2$clones
-    cs_2$sample <- "s2"
+    # cs_1 <- ig1$clones
+    # cs_1$sample <- "s1"
+    # cs_2 <- ig2$clones
+    # cs_2$sample <- "s2"
     
-    return(list(graph = g, clones = rbind(cs_1, cs_2)))
+    return(list(graph = g, clones = NA))
 }
 
 
@@ -253,17 +259,43 @@ plot_graph <- function(clust_irr,
 }
 
 
-plot_joint_graph <- function(clust_irr_1, 
-                             clust_irr_2, 
+plot_joint_graph <- function(clust_irrs, 
                              as_visnet = FALSE) {
     
-    check_clustirr(clust_irr = clust_irr_1)
-    check_clustirr(clust_irr = clust_irr_2)
     
-    jg <- get_joint_graph(clust_irr_1 = clust_irr_1,
-                          clust_irr_2 = clust_irr_2)
+    check_input <- function(clust_irrs) {
+        if(missing(clust_irrs)==TRUE) {
+            stop("clust_irrs input missing")
+        }
+        if(is.list(clust_irrs)==FALSE) {
+            stop("clust_irrs must be a list of clust_irr objects")
+        }
+        if(length(clust_irrs)<=1) {
+            stop("get_joint_graph needs >= 2 clust_irr outputs")
+        }
+        gmd <- numeric(length = length(clust_irrs))
+        for(i in 1:length(clust_irrs)) {
+            check_clustirr(clust_irr = clust_irrs[[i]])
+            gmd[i]<-get_clustirr_inputs(clust_irrs[[i]])$control$global_max_dist
+        }
+        if(length(unique(gmd))!=1) {
+            stop("all global_max_dist should be equal")
+        }
+        
+        # check if same chain names
+        cs <- colnames(get_clustirr_inputs(clust_irrs[[1]])$s)
+        for(i in 2:length(clust_irrs)) {
+            if(any(colnames(get_clustirr_inputs(clust_irrs[[i]])$s)!=cs)) {
+                stop("different chains in graphs")
+            }
+        }
+    }
     
-    clones <- jg$clones
+    # check input
+    check_input(clust_irrs = clust_irrs)
+    
+    jg <- get_joint_graph(clust_irrs) 
+    
     if(is.null(jg$graph)) {
         warning("No graph to plot \n")
         return(jg)

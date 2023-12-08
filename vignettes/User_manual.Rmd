@@ -506,29 +506,29 @@ will do the reverse, i.e. we will inspect the specificity structure of
 repertoire `S0` (`s`=`S0`) compared to `S1` (`r`=`S1`).
 
 ```{r}
-o_S1_vs_S0 <- cluster_irr(s = S1,
-                          r = S0,
-                          version = 2,
-                          ks = 4,
-                          cores = 1,
-                          control = list(trim_flank_aa = 3))
+clust_irrs <- vector(mode = "list", length = 2)
+
+clust_irrs[[1]] <- cluster_irr(s = S1,
+                               r = S0,
+                               version = 2,
+                               ks = 4,
+                               cores = 1,
+                               control = list(trim_flank_aa = 3))
 
 
-o_S0_vs_S1 <- cluster_irr(s = S0,
-                          r = S1,
-                          version = 2,
-                          ks = 4,
-                          cores = 1,
-                          control = list(trim_flank_aa = 3))
+clust_irrs[[2]] <- cluster_irr(s = S0,
+                               r = S1,
+                               version = 2,
+                               ks = 4,
+                               cores = 1,
+                               control = list(trim_flank_aa = 3))
 ```
 
 Let's plot the joint graph:
 
 ```{r}
 # beta & alpha chain
-plot_joint_graph(clust_irr_1 = o_S1_vs_S0, 
-                 clust_irr_2 = o_S0_vs_S1,
-                 as_visnet = TRUE)
+plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
 ```
 
 &nbsp;

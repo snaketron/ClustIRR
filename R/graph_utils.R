@@ -59,8 +59,9 @@ config_vertices_plot <- function(g, is_jg) {
     V(g)$size <- 1.5+log2(V(g)$clone_size)
     
     if(is_jg==TRUE) {
-        V(g)$color <- ifelse(test = V(g)$sample == "s1", 
-                             yes = "steelblue", no = "darkorange")
+        V(g)$color_num <- as.numeric(as.factor(V(g)$sample))
+        max_n <- max(V(g)$color_num)
+        V(g)$color <- hcl.colors(n=max_n, palette = "Roma")[V(g)$color_num]
         V(g)$frame.color <- V(g)$color
     } 
     else {
@@ -71,27 +72,41 @@ config_vertices_plot <- function(g, is_jg) {
     return(g)
 }
 
-get_intergraph_edges <- function(s1, s2, global_max_dist, chains) {
-    if(is.data.frame(s1)==FALSE) {
-        stop("s1 should be a data.frame")
-    }
-    if(is.data.frame(s2)==FALSE) {
-        stop("s2 should be a data.frame")
-    }
-    if(ncol(s1)!=ncol(s2)) {
-        stop("s1 and s2 have different number of columns")
-    }
-    if(all(colnames(s1) %in% colnames(s2))==FALSE|
-       all(colnames(s2) %in% colnames(s1))==FALSE) {
-        stop("s1 and s2 have different columns")
+get_intergraph_edges <- function(igs, global_max_dist, chains) {
+    
+    get_df_from_ig <- function(x, igs) {
+        ig <- igs[[x]]
+        
+        # get the vertices/edges of graph
+        d <- get.data.frame(ig$graph, what = "both")
+        if(nrow(d$edges)!=0) {
+            d$edges$sample <- paste0("s", x)
+            d$edges <- d$edges[, c("from", "to", "chain", "sample", "type")]
+            d$edges$from <- paste0("s", x, "|", d$edges$from)
+            d$edges$to <- paste0("s", x, "|", d$edges$to)
+        }
+        d$vertices$id <- d$vertices$name
+        d$vertices$name <- paste0("s", x, "|", d$vertices$name)
+        d$vertices$sample <- paste0("s", x, "|")
+        
+        return(d)
     }
     
-    ige <- lapply(X = chains, 
-                  FUN = get_intergraph_global,
-                  s1 = s1,
-                  s2 = s2,
-                  global_max_dist = global_max_dist)
-    return(do.call(rbind, ige))
+    # get data.frame from igraph for each graphs
+    igs_df <- lapply(X = 1:length(igs), igs = igs, FUN = get_df_from_ig)
+    
+    # find global similarities between pairs of graphs
+    for(i in 1:(length(igs_df)-1)) {
+        for(j in (i+1):length(igs_df)) {
+            ige <- lapply(X = chains, 
+                          FUN = get_intergraph_global,
+                          s1 = igs_df[[i]]$vertices,
+                          s2 = igs_df[[j]]$vertices,
+                          global_max_dist = global_max_dist)
+        }
+    }
+    ige <- do.call(rbind, ige)
+    return(list(ige = ige, igs_df = igs_df))
 }
 
 get_intergraph_global <- function(x, s1, s2, global_max_dist) {
@@ -148,10 +163,13 @@ get_intergraph_global <- function(x, s1, s2, global_max_dist) {
                  len_x = len_x,
                  len_y = len_y,
                  global_max_dist = global_max_dist)
+    
     hd <- do.call(rbind, hd)
     if(is.null(hd)==FALSE && nrow(hd)!=0) {
         hd$chain <- x
-        hd$sample <- "s1s2"
+        hd$sample<-paste0(do.call(rbind,strsplit(x=hd$from,split="\\|"))[,1],
+                          "|", 
+                          do.call(rbind,strsplit(x=hd$to, split = "\\|"))[,1])
         hd$type <- "inter-sample"
         return(hd)
     }
