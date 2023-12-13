@@ -436,7 +436,7 @@ to extract the sequences of both TCR chains: $\beta$ and $\alpha$.
 `r Biocpkg("ClustIRR")` can analyze such data. Clustering is performed 
 separately using the CDR3 sequences of each chain.
 
-Let's create the input data. We create two repertoires: 
+Let's create the input data. We create two repetoires: 
 
   * repertoire `S0`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
   * repertoire `S1`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
@@ -507,7 +507,6 @@ repertoire `S0` (`s`=`S0`) compared to `S1` (`r`=`S1`).
 
 ```{r}
 clust_irrs <- vector(mode = "list", length = 2)
-names(clust_irrs) <- c("S0", "S1")
 
 clust_irrs[[1]] <- cluster_irr(s = S1,
                                r = S0,
@@ -528,10 +527,8 @@ clust_irrs[[2]] <- cluster_irr(s = S0,
 Let's plot the joint graph:
 
 ```{r}
-
 # beta & alpha chain
 plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
-
 ```
 
 &nbsp;
@@ -609,7 +606,8 @@ r <- base::data.frame(CDR3h = CDR3ab$CDR3a[5001:10000],
 The rest of the analysis proceeds as usual, i.e., by calling the function
 `cluster_irr`.
 
-# Case study 5: analysis of more than two TCR repertoires
+
+# Case study 5: joint analysis of 4 TCR repertoires
 
 Let's create the input data. We create 4 repertoires: 
 
@@ -623,7 +621,6 @@ two samples, one before (0) and one after (1) treatment:
 
   * `A0` vs `A1` 
   * `B0` vs `B1`
-
 
 ```{r}
 data("CDR3ab")
@@ -694,16 +691,6 @@ The clones present in both samples from the same patient are shown as large
 vertices, respectively. 
 
 Within each repertoire, the edges are drawn as explained earlier. 
-
-Meanwhile, in the joint graph we also have edges between the vertices from 
-the two repertoires. These will be drawn if a pair of clones in `S0` and `S1` 
-have globally similar CDR3 sequences. In this particular example, the vertex 
-that represents the expanded clone 1 (large orange and blue vertices) are 
-connected by such an edge.
-
-
-
-
 
 
 ```{r session_info}
