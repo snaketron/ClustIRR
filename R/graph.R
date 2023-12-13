@@ -171,13 +171,28 @@ get_joint_graph <- function(clust_irrs) {
         }
     }
     
+    get_clust_irrs_names <- function(clust_irrs) {
+        clust_irrs_names <- names(clust_irrs)
+        if(is.null(clust_irrs_names)) {
+            names(clust_irrs) <- paste0("s", 1:length(clust_irrs))
+        }
+        return(clust_irrs)
+    }
+    
+    
     # check input
     check_input(clust_irrs = clust_irrs)
+    
+    # get clust_irrs names
+    clust_irrs <- get_clust_irrs_names(clust_irrs = clust_irrs)
     
     # get chains
     igs <- lapply(X = clust_irrs, FUN = get_graph)
     chains <- colnames(get_clustirr_inputs(clust_irrs[[1]])$s)
     chains <- chains[chains!="id"]
+
+    # rename igs
+    names(igs) <- names(clust_irrs)
     
     # get global_max_dist
     gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_dist
@@ -196,12 +211,6 @@ get_joint_graph <- function(clust_irrs) {
     # make graph look visually better
     g <- config_vertices_plot(g = g, is_jg = TRUE)
     g <- config_edges_plot(g = g, is_jg = TRUE)
-    
-    # prepare clones
-    # cs_1 <- ig1$clones
-    # cs_1$sample <- "s1"
-    # cs_2 <- ig2$clones
-    # cs_2$sample <- "s2"
     
     return(list(graph = g, clones = NA))
 }
@@ -259,9 +268,8 @@ plot_graph <- function(clust_irr,
 }
 
 
-plot_joint_graph <- function(clust_irrs, 
+plot_joint_graph <- function(clust_irrs,
                              as_visnet = FALSE) {
-    
     
     check_input <- function(clust_irrs) {
         if(missing(clust_irrs)==TRUE) {
@@ -310,7 +318,7 @@ plot_joint_graph <- function(clust_irrs,
         plot(jg$graph, vertex.label = NA)
     }
     if(as_visnet == TRUE) {
-        V(jg$graph)$size <- V(jg$graph)$size*10
+        V(jg$graph)$size <- V(jg$graph)$size*5
         visIgraph(igraph = jg$graph,
                   idToLabel = TRUE,
                   layout = "layout_components",

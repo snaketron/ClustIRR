@@ -82,20 +82,23 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
         if(nrow(d$edges)!=0) {
             d$edges$sample <- paste0("s", x)
             d$edges <- d$edges[, c("from", "to", "chain", "sample", "type")]
-            d$edges$from <- paste0("s", x, "|", d$edges$from)
-            d$edges$to <- paste0("s", x, "|", d$edges$to)
+            d$edges$from <- paste0(names(igs)[x], "|", d$edges$from)
+            d$edges$to <- paste0(names(igs)[x], "|", d$edges$to)
         }
         d$vertices$id <- d$vertices$name
-        d$vertices$name <- paste0("s", x, "|", d$vertices$name)
-        d$vertices$sample <- paste0("s", x, "|")
+        d$vertices$name <- paste0(names(igs)[x], "|", d$vertices$name)
+        d$vertices$sample <- paste0(names(igs)[x])
         
         return(d)
     }
     
     # get data.frame from igraph for each graphs
     igs_df <- lapply(X = 1:length(igs), igs = igs, FUN = get_df_from_ig)
-    
+    # browser()
     # find global similarities between pairs of graphs
+    n_p <- length(igs_df)*(length(igs_df)-1)/2
+    ige_df <- vector(mode = "list", length = n_p)
+    count <- 1
     for(i in 1:(length(igs_df)-1)) {
         for(j in (i+1):length(igs_df)) {
             ige <- lapply(X = chains, 
@@ -103,10 +106,12 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
                           s1 = igs_df[[i]]$vertices,
                           s2 = igs_df[[j]]$vertices,
                           global_max_dist = global_max_dist)
+            ige_df[[count]] <- do.call(rbind, ige)
+            count <- count + 1
         }
     }
-    ige <- do.call(rbind, ige)
-    return(list(ige = ige, igs_df = igs_df))
+    ige_df <- do.call(rbind, ige_df)
+    return(list(ige = ige_df, igs_df = igs_df))
 }
 
 get_intergraph_global <- function(x, s1, s2, global_max_dist) {

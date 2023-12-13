@@ -436,7 +436,7 @@ to extract the sequences of both TCR chains: $\beta$ and $\alpha$.
 `r Biocpkg("ClustIRR")` can analyze such data. Clustering is performed 
 separately using the CDR3 sequences of each chain.
 
-Let's create the input data. We create two repetoires: 
+Let's create the input data. We create two repertoires: 
 
   * repertoire `S0`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
   * repertoire `S1`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
@@ -507,6 +507,7 @@ repertoire `S0` (`s`=`S0`) compared to `S1` (`r`=`S1`).
 
 ```{r}
 clust_irrs <- vector(mode = "list", length = 2)
+names(clust_irrs) <- c("S0", "S1")
 
 clust_irrs[[1]] <- cluster_irr(s = S1,
                                r = S0,
@@ -527,8 +528,10 @@ clust_irrs[[2]] <- cluster_irr(s = S0,
 Let's plot the joint graph:
 
 ```{r}
+
 # beta & alpha chain
 plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
+
 ```
 
 &nbsp;
@@ -605,6 +608,103 @@ r <- base::data.frame(CDR3h = CDR3ab$CDR3a[5001:10000],
 
 The rest of the analysis proceeds as usual, i.e., by calling the function
 `cluster_irr`.
+
+# Case study 5: analysis of more than two TCR repertoires
+
+Let's create the input data. We create 4 repertoires: 
+
+  * repertoire `A0`: 500 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
+  * repertoire `A1`: 500 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
+  * repertoire `B0`: 500 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
+  * repertoire `B1`: 500 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
+  
+Imagine we have two cancer patients, `A` and `B`. From each patient we have 
+two samples, one before (0) and one after (1) treatment:
+
+  * `A0` vs `A1` 
+  * `B0` vs `B1`
+
+
+```{r}
+data("CDR3ab")
+```
+
+```{r}
+A0 <- base::data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
+                       CDR3b = CDR3ab$CDR3b[3001:3100])
+# add clone
+A0 <- rbind(A0, A0[rep(x = 100, times = 10), ])
+
+
+A1 <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 3101:3200)],
+                       CDR3b = CDR3ab$CDR3b[c(3100, 3101:3200)])
+# add clone
+A1 <- rbind(A1, A1[rep(x = 1, times = 20), ])
+```
+
+```{r}
+B0 <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
+                       CDR3b = CDR3ab$CDR3b[c(3100, 4001:4100)])
+# add clone
+B0 <- rbind(B0, B0[rep(x = 1, times = 5), ])
+
+B1 <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4100:4199)],
+                       CDR3b = CDR3ab$CDR3b[c(3100, 4100:4199)])
+# add clone
+B1 <- rbind(B1, B1[rep(x = 1, times = 50), ])
+```
+
+
+```{r}
+clust_irrs <- vector(mode = "list", length = 4)
+names(clust_irrs) <- c("A0", "A1", "B0", "B1")
+
+clust_irrs[[1]] <- cluster_irr(s = A0, r = A1,
+                               version = 2, ks = 4, cores = 1,
+                               control = list(trim_flank_aa = 3))
+
+
+clust_irrs[[2]] <- cluster_irr(s = A1, r = A0,
+                               version = 2, ks = 4, cores = 1,
+                               control = list(trim_flank_aa = 3))
+
+
+clust_irrs[[3]] <- cluster_irr(s = B0, r = B1,
+                               version = 2, ks = 4, cores = 1,
+                               control = list(trim_flank_aa = 3))
+
+
+clust_irrs[[4]] <- cluster_irr(s = B1, r = B0,
+                               version = 2, ks = 4, cores = 1,
+                               control = list(trim_flank_aa = 3))
+```
+
+Let's plot the joint graph:
+
+```{r, fig.width=6, fig.height=6}
+# beta & alpha chain
+plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
+```
+
+&nbsp;
+
+## How to interpret the joint graph?
+
+The clones present in both samples from the same patient are shown as large 
+vertices, respectively. 
+
+Within each repertoire, the edges are drawn as explained earlier. 
+
+Meanwhile, in the joint graph we also have edges between the vertices from 
+the two repertoires. These will be drawn if a pair of clones in `S0` and `S1` 
+have globally similar CDR3 sequences. In this particular example, the vertex 
+that represents the expanded clone 1 (large orange and blue vertices) are 
+connected by such an edge.
+
+
+
+
+
 
 ```{r session_info}
 utils::sessionInfo()
