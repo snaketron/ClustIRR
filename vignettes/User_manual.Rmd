@@ -527,6 +527,11 @@ clust_irrs[[2]] <- cluster_irr(s = S0,
 Let's plot the joint graph:
 
 ```{r}
+gjg <- get_joint_graph(clust_irrs = clust_irrs)
+```
+
+
+```{r}
 # beta & alpha chain
 plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
 ```
