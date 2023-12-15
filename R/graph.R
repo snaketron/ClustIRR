@@ -56,18 +56,21 @@ get_graph <- function(x, clust_irrs) {
     return(paste0(sort(c(x[1], x[2])), collapse = '-'))
   }
   
-  build_graph <- function(le, ge, cs) {
+  build_graph <- function(le, ge, cs, sample_id) {
     
-    add_edges_ig <- function(le, ig) {
+    add_edges_ig <- function(le, ig, sample_id) {
       
-      add_motif_edges <- function(x, ig) {
-        xp <- utils::combn(x = x, m = 2)
+      add_motif_edges <- function(x, ig, sample_id) {
+        xp <- utils::combn(x = paste0(sample_id, '|', x), m = 2)
         xp <- as.vector(xp)
         return(igraph::add.edges(graph = ig, edges = xp))
       }
       
       for(i in 1:length(le)) {
-        ig <- add_motif_edges(x = le[[i]], ig = ig)
+        # if only one element in le then do not add edge, else add
+        if(length(le[[i]])!=1) {
+          ig <- add_motif_edges(x = le[[i]], ig = ig, sample_id = sample_id)
+        }
       }
       return(ig)
     }
@@ -78,11 +81,13 @@ get_graph <- function(x, clust_irrs) {
                                 vertices = cs)
     ig <- delete_edges(ig, edges = 1)
     
+    # browser()
+    
     # add local edges
     if(length(le)!=0) {
       for(chain in names(le)) {
         if(length(le[[chain]])!=0) {
-          ig <- add_edges_ig(le[[chain]], ig = ig)
+          ig <- add_edges_ig(le = le[[chain]], ig = ig, sample_id = sample_id)
         }
       }
     }
@@ -111,8 +116,10 @@ get_graph <- function(x, clust_irrs) {
   le <- get_local_edges(clust_irr = clust_irr, cs = cs)
   ge <- get_global_edges(clust_irr = clust_irr)
   
+  # TODO: what does it mean is.null(ge) or legnth(le)==0
+  
   # build graph with only vertices
-  if(length(le)==0 & nrow(ge)==0) {
+  if(length(le)==0 & is.null(ge)) {
     ig <- graph_from_data_frame(d = data.frame(from = cs$name[1], 
                                                to = cs$name[1]),
                                 directed = FALSE,
@@ -123,7 +130,7 @@ get_graph <- function(x, clust_irrs) {
   }
   
   # build graph
-  ig <- build_graph(le = le, ge = ge, cs = cs)
+  ig <- build_graph(le = le, ge = ge, cs = cs, sample_id = x)
   
   return(list(graph = ig, clones = cs))
 }
@@ -216,7 +223,6 @@ plot_graph <- function(clust_irr,
   check_clustirr(clust_irr = clust_irr)
   
   clust_irr <- list(clust_irr)
-  # vector(mode = "list", length = 1)
   names(clust_irr) <- "S"
   ig <- get_graph(x = "S", clust_irrs = clust_irr)
   clones <- ig$clones

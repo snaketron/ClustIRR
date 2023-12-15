@@ -410,6 +410,9 @@ graph (see next section).
 Let's plot the clustering results:
 
 ```{r}
+# o <- list(o)
+# names(o) <- "S"
+# w <- get_graph(x = "S", clust_irrs = o)
 # plot the clust_irr object
 plot_graph(clust_irr = o, as_visnet = TRUE)
 ```
