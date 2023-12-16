@@ -289,7 +289,6 @@ plot_joint_graph <- function(clust_irrs,
   check_input(clust_irrs = clust_irrs)
   
   jg <- get_joint_graph(clust_irrs) 
-  
   if(is.null(jg$graph)) {
     warning("No graph to plot \n")
     return(jg)
@@ -304,6 +303,7 @@ plot_joint_graph <- function(clust_irrs,
     plot(jg$graph, vertex.label = NA)
   }
   if(as_visnet == TRUE) {
+    browser()
     V(jg$graph)$size <- V(jg$graph)$size*5
     visIgraph(igraph = jg$graph,
               idToLabel = TRUE,

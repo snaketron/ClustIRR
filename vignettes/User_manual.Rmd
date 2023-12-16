@@ -323,7 +323,6 @@ plot_graph(clust_irr = o, as_visnet = TRUE)
 ```
 
 
-
 ### Edges
 Between a pair of vertices, we draw an edge if: a) they are globally similar; 
 or b) they share an enriched motif. Furthermore, each chain type may have an
@@ -410,10 +409,6 @@ graph (see next section).
 Let's plot the clustering results:
 
 ```{r}
-# o <- list(o)
-# names(o) <- "S"
-# w <- get_graph(x = "S", clust_irrs = o)
-# plot the clust_irr object
 plot_graph(clust_irr = o, as_visnet = TRUE)
 ```
 
@@ -533,8 +528,8 @@ Let's plot the joint graph:
 gjg <- get_joint_graph(clust_irrs = clust_irrs)
 ```
 
-
 ```{r}
+names(clust_irrs) <- c("S1", "S0")
 # beta & alpha chain
 plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
 ```
