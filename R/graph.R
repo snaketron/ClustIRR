@@ -81,8 +81,6 @@ get_graph <- function(x, clust_irrs) {
                                 vertices = cs)
     ig <- delete_edges(ig, edges = 1)
     
-    # browser()
-    
     # add local edges
     if(length(le)!=0) {
       for(chain in names(le)) {
@@ -303,7 +301,6 @@ plot_joint_graph <- function(clust_irrs,
     plot(jg$graph, vertex.label = NA)
   }
   if(as_visnet == TRUE) {
-    browser()
     V(jg$graph)$size <- V(jg$graph)$size*5
     visIgraph(igraph = jg$graph,
               idToLabel = TRUE,

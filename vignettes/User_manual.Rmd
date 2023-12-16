@@ -505,6 +505,7 @@ repertoire `S0` (`s`=`S0`) compared to `S1` (`r`=`S1`).
 
 ```{r}
 clust_irrs <- vector(mode = "list", length = 2)
+names(clust_irrs) <- c("S1", "S0")
 
 clust_irrs[[1]] <- cluster_irr(s = S1,
                                r = S0,
@@ -525,11 +526,6 @@ clust_irrs[[2]] <- cluster_irr(s = S0,
 Let's plot the joint graph:
 
 ```{r}
-gjg <- get_joint_graph(clust_irrs = clust_irrs)
-```
-
-```{r}
-names(clust_irrs) <- c("S1", "S0")
 # beta & alpha chain
 plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
 ```
@@ -581,7 +577,7 @@ CDR3l.
 
 Dummy example:
 
-```{r}
+```{r, eval=F}
 data("CDR3ab")
 
 # gamma/delta chain TCR data -> notice CDR3g and CDR3d columns of 's' and 'r'
@@ -593,8 +589,7 @@ r <- base::data.frame(CDR3g = CDR3ab$CDR3a[5001:10000],
 
 ```
 
-
-```{r}
+```{r, eval=F}
 data("CDR3ab")
 
 # heavy/light chain BCR data -> notice CDR3h and CDR3l columns of 's' and 'r'
