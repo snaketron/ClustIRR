@@ -602,74 +602,68 @@ The rest of the analysis proceeds as usual, i.e., by calling the function
 
 # Case study 5: joint analysis of 4 TCR repertoires
 
-Let's create the input data. We create 4 repertoires: 
-
-  * repertoire `A0`: 500 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
-  * repertoire `A1`: 500 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
-  * repertoire `B0`: 500 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
-  * repertoire `B1`: 500 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
-  
-Imagine we have two cancer patients, `A` and `B`. From each patient we have 
-two samples, one before (0) and one after (1) treatment:
-
-  * `A0` vs `A1` 
-  * `B0` vs `B1`
+Imagine that we have a two patients, P1 and P2. From each patient 
+we have two IRRs, one before (A) and one after (B) treatment. 
 
 ```{r}
 data("CDR3ab")
-```
 
-```{r}
-A0 <- base::data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
+P1_A <- base::data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
                        CDR3b = CDR3ab$CDR3b[3001:3100])
 # add clone
-A0 <- rbind(A0, A0[rep(x = 100, times = 10), ])
+P1_A <- rbind(P1_A, P1_A[rep(x = 100, times = 10), ])
 
 
-A1 <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 3101:3200)],
+P1_B <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 3101:3200)],
                        CDR3b = CDR3ab$CDR3b[c(3100, 3101:3200)])
 # add clone
-A1 <- rbind(A1, A1[rep(x = 1, times = 20), ])
+P1_B <- rbind(P1_B, P1_B[rep(x = 1, times = 20), ])
 ```
 
 ```{r}
-B0 <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
+P2_A <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
                        CDR3b = CDR3ab$CDR3b[c(3100, 4001:4100)])
 # add clone
-B0 <- rbind(B0, B0[rep(x = 1, times = 5), ])
+P2_A <- rbind(P2_A, P2_A[rep(x = 1, times = 5), ])
 
-B1 <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4100:4199)],
+P2_B <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4100:4199)],
                        CDR3b = CDR3ab$CDR3b[c(3100, 4100:4199)])
 # add clone
-B1 <- rbind(B1, B1[rep(x = 1, times = 50), ])
+P2_B <- rbind(P2_B, P2_B[rep(x = 1, times = 50), ])
 ```
 
+We can analyze the specificity structure of IRR A and B by performing 
+clustering with `r Biocpkg("ClustIRR")`. Here we perform two analyses: 
+A vs B and B vs. A, which allows us to find enriched motifs from either
+direction. The results are stored in a list of size 4
 
 ```{r}
 clust_irrs <- vector(mode = "list", length = 4)
-names(clust_irrs) <- c("A0", "A1", "B0", "B1")
+names(clust_irrs) <- c("P1_A", "P1_B", "P2_A", "P2_B")
 
-clust_irrs[[1]] <- cluster_irr(s = A0, r = A1,
+clust_irrs[[1]] <- cluster_irr(s = P1_A, r = P1_B,
                                version = 2, ks = 4, cores = 1,
                                control = list(trim_flank_aa = 3))
 
 
-clust_irrs[[2]] <- cluster_irr(s = A1, r = A0,
+clust_irrs[[2]] <- cluster_irr(s = P1_B, r = P1_A,
                                version = 2, ks = 4, cores = 1,
                                control = list(trim_flank_aa = 3))
 
 
-clust_irrs[[3]] <- cluster_irr(s = B0, r = B1,
+clust_irrs[[3]] <- cluster_irr(s = P2_A, r = P2_B,
                                version = 2, ks = 4, cores = 1,
                                control = list(trim_flank_aa = 3))
 
 
-clust_irrs[[4]] <- cluster_irr(s = B1, r = B0,
+clust_irrs[[4]] <- cluster_irr(s = P2_A, r = P2_B,
                                version = 2, ks = 4, cores = 1,
                                control = list(trim_flank_aa = 3))
 ```
 
-Let's plot the joint graph:
+`r Biocpkg("ClustIRR")` provides the unique oppertunity to merge the four 
+graphs (in fact: as many `r Biocpkg("ClustIRR")` outputs as we want) and 
+to visualize them.
 
 ```{r, fig.width=6, fig.height=6}
 # beta & alpha chain
