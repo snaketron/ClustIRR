@@ -28,35 +28,35 @@ library(visNetwork)
 
 
 # Introduction
-Adaptive immune repertoires of B- and T-cell receptors (BCRs/TCRs) play an 
-important role in protecting the host against genetically diverse and rapidly 
-evolving pathogens, such as viruses, bacteria, or cancers. The BCR and TCR
-sequence diversity originates in part due to V(D)J recombination, in which 
-different germline-encoded genes are joined to form immune receptors (IRs). 
-As a result of this process, practically every newly formed naive mature T cell 
-and B cell is equipped with a distinct IR, and this allows them to recognize 
-distinct sets of antigens. 
+Adaptive immune immunity relies on diverse immune receptor repertoires (IRRs:
+B- and T-cell receptor repertoires) to protect the host against genetically 
+diverse and rapidly evolving pathogens, such as viruses, bacteria, or cancers. 
+The B- and T-cell receptor (BCR/TCR) sequence diversity originates in part due 
+to V(D)J recombination, in which different germline-encoded genes are joined 
+to form immune receptors. As a result of this process, practically every newly 
+formed naive mature T cell and B cell is equipped with a distinct IR, and this 
+allows them to recognize distinct sets of antigens. 
 
 B-cells bind antigens directly via the complementarity determining regions 
 (CDR) of their BCRs, and T-cells recognize antigenic peptides presented 
-by major histocompatibility (MHC) molecules via the CDRs of their TCRs. Antigen 
-recognition may lead to B/T  cell activation, and in such a case, the cells 
-start to proliferate rapidly, forming antigen-specific clones that are capable 
-of mounting effective immune response. 
+by major histocompatibility (MHC) molecules via the CDRs of their TCRs. 
+Antigen recognition may lead to B/T cell activation, and in such a case, 
+the cells start to proliferate rapidly, forming antigen-specific clones 
+that are capable of mounting effective immune response. 
 
 Recent studies have shown that similarity in TCR sequences implies shared 
-antigen specificity between receptors. Hence, by clustering of TCR sequences of
-a repertoire derived by high-throughput sequencing (HT-seq), we can identify 
+antigen specificity between receptors. Hence, by clustering of TCR sequences 
+of a repertoire derived by high-throughput sequencing (HT-seq), we can identify 
 groups of TCRs with shared antigen specificity, which is essential for the 
 development of cancer immunotherapies, vaccines, antiviral drugs, etc. 
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a computational method 
-for clustering of immune receptor repertoires.
+for clustering of IRRs.
 
 # Installation
 `r Biocpkg("ClustIRR")` is freely available as part of Bioconductor, filling
 the gap that currently exists in terms of software for quantitative analysis 
-of adaptive immune repertoires. 
+of IRRs. 
 
 To install `r Biocpkg("ClustIRR")` please start R and enter:
 
@@ -67,18 +67,13 @@ if(!require("BiocManager", quietly = TRUE)) {
 BiocManager::install("ClustIRR")
 ```
 
-
-
-
 # ClustIRR algorithm
-The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IR sequences 
-to find groups of IRs with similar specificity. 
+The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IRR sequences 
+to find groups of receptors with similar specificity. 
 
 ```{r graphic, echo = FALSE, fig.align="left", out.width='90%'}
 knitr::include_graphics("../inst/extdata/logo.png")
 ```
-
-
 
 ## Input
 
@@ -88,8 +83,8 @@ CDR3s may come from one T cell receptor chain (e.g., \ only CDR3$\alpha$s or
 only CDR3$\beta$s) or from both chains (CDR3$\alpha\beta$). The two sets 
 represent two repertoires, and each element in the sets represents a T-cell:
 
-* `s`: IR repertoire under investigation (case sample)
-* `r`: reference IR repertoire (control/reference sample)
+* `s`: IRR under investigation (case sample)
+* `r`: reference IRR (control/reference sample)
 
 **Hint:** `s` and `r` may also contain CDR3s from $\gamma\delta$ T-cells 
 (CDR3$\gamma$ and CDR3$\delta$) or B-cells (CDR3H and CDR3L). This is 
