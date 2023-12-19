@@ -168,7 +168,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
   count <- 1
   for(i in 1:(length(igs)-1)) {
     for(j in (i+1):length(igs)) {
-      # browser()
+      message(i, "vs.", j, "\n")
       ige[[count]] <- do.call(rbind, 
                               lapply(X = chains, 
                                      FUN = get_igg,
