@@ -349,13 +349,18 @@ get_joint_graph <- function(clust_irrs) {
   # get the vertices/edges of the graph
   df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
   df_e <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "edges"))
-  browser()
+  
   if(nrow(df_e)!=0) {
     df_e$type <- "intra-sample"
-    df_e <- rbind(df_e, ige$ige[, c("from", "to", "type")])
-    
+    if(nrow(ige$ige)!=0) {
+      df_e <- rbind(df_e, ige$ige[, c("from", "to", "type")])
+    }
+  } 
+  else {
+    if(nrow(ige$ige)!=0) {
+      df_e <- ige$ige[, c("from", "to", "type")]
+    }
   }
-  # df_e <- config_edges(es = df_e)
   
   # build joint graph
   g <- graph_from_data_frame(df_e, directed=FALSE, vertices=df_v)
