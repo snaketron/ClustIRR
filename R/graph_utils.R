@@ -74,13 +74,7 @@ config_vertices_plot <- function(g, is_jg) {
 
 get_intergraph_edges <- function(igs, global_max_dist, chains) {
   
-  # here s1 and s2 are clone tables
-  get_igg <- function(x, 
-                      s1, 
-                      s2, 
-                      s1_name, 
-                      s2_name, 
-                      global_max_dist) {
+  get_igg <- function(x, i, igs, global_max_dist, chain) {
     
     get_hdist <- function(x, 
                           id_x, 
@@ -132,8 +126,15 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
       return(hd)
     }
     
-    seq_x <- s1[,x]
-    seq_y <- s2[,x]
+    
+    s1_name <- names(igs)[i]
+    s2_name <- names(igs)[x]
+    
+    s1 <- igs[[i]]$clones
+    s2 <- igs[[x]]$clones
+    
+    seq_x <- s1[,chain]
+    seq_y <- s2[,chain]
     id_x <- s1[,"name"] 
     id_y <- s2[,"name"]
     len_x <- nchar(seq_x)
@@ -153,7 +154,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
     # browser()
     hd <- do.call(rbind, hd)
     if(is.null(hd)==FALSE && nrow(hd)!=0) {
-      hd$chain <- x
+      hd$chain <- chain
       hd$sample <- paste0(hd$sample_x, "|", hd$sample_y)
       hd$sample_x <- NULL
       hd$sample_y <- NULL
@@ -164,22 +165,22 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
   }
   
   # find global similarities between pairs of clone tables
-  ige <- vector(mode = "list", length = length(igs)*(length(igs)-1)/2)
+  ige <- vector(mode = "list", length = length(chains)*(length(igs)-1))
+  
   count <- 1
   for(i in 1:(length(igs)-1)) {
-    for(j in (i+1):length(igs)) {
-      message(i, "-vs-", j, "\n")
-      ige[[count]] <- do.call(rbind, 
-                              lapply(X = chains, 
+    message("merging clust_irr index: ", i, "\n")
+    for(chain in chains) {
+      ige[[count]] <- do.call(rbind,
+                              lapply(X = (i+1):length(igs), 
+                                     i = i,
                                      FUN = get_igg,
-                                     s1 = igs[[i]]$clones,
-                                     s2 = igs[[j]]$clones,
-                                     s1_name = names(igs)[i],
-                                     s2_name = names(igs)[j],
+                                     igs = igs,
+                                     chain = chain,
                                      global_max_dist = global_max_dist))
       count <- count + 1
     }
   }
   ige <- do.call(rbind, ige)
-  return(list(ige = ige))
+  return(ige)
 }

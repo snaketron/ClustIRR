@@ -80,9 +80,7 @@ get_graph <- function(clust_irr, sample_id = "S") {
                                 directed = FALSE,
                                 vertices = cs)
     ig <- delete_edges(ig, edges = 1)
-    
-    # browser()
-    
+ 
     # add local edges
     if(length(le)!=0) {
       for(chain in names(le)) {
@@ -352,13 +350,13 @@ get_joint_graph <- function(clust_irrs) {
   
   if(nrow(df_e)!=0) {
     df_e$type <- "intra-sample"
-    if(nrow(ige$ige)!=0) {
-      df_e <- rbind(df_e, ige$ige[, c("from", "to", "type")])
+    if(nrow(ige)!=0) {
+      df_e <- rbind(df_e, ige[, c("from", "to", "type")])
     }
   } 
   else {
-    if(nrow(ige$ige)!=0) {
-      df_e <- ige$ige[, c("from", "to", "type")]
+    if(nrow(ige)!=0) {
+      df_e <- ige[, c("from", "to", "type")]
     }
   }
   
