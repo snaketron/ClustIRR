@@ -1,7 +1,3 @@
-importFrom(future, plan)
-importFrom(future, multisession)
-importFrom(future, sequential)
-importFrom(future.apply, future_lapply)
 import(methods)
 import(stats)
 importFrom(stringdist, stringdistmatrix)

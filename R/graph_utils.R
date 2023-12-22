@@ -72,7 +72,7 @@ config_vertices_plot <- function(g, is_jg) {
   return(g)
 }
 
-get_intergraph_edges <- function(igs, global_max_dist, chains) {
+get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
   
   get_igg <- function(x, i, igs, global_max_dist, chain) {
     
@@ -139,7 +139,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
     id_y <- s2[,"name"]
     len_x <- nchar(seq_x)
     len_y <- nchar(seq_y)
-    # browser()
+
     hd <- lapply(X = unique(c(len_x, len_y)),
                  FUN = get_hamming_dist,
                  id_x = id_x,
@@ -151,7 +151,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
                  sample_x = s1_name,
                  sample_y = s2_name,
                  global_max_dist = global_max_dist)
-    # browser()
+
     hd <- do.call(rbind, hd)
     if(is.null(hd)==FALSE && nrow(hd)!=0) {
       hd$chain <- chain
@@ -169,7 +169,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
   
   count <- 1
   for(i in 1:(length(igs)-1)) {
-    message("merging clust_irr index: ", i, "\n")
+    message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
     for(chain in chains) {
       ige[[count]] <- do.call(rbind,
                               lapply(X = (i+1):length(igs), 
@@ -182,5 +182,6 @@ get_intergraph_edges <- function(igs, global_max_dist, chains) {
     }
   }
   ige <- do.call(rbind, ige)
+  
   return(ige)
 }

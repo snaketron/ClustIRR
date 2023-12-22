@@ -522,7 +522,9 @@ Let's plot the joint graph:
 
 ```{r}
 # beta & alpha chain
-plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
+plot_joint_graph(clust_irrs = clust_irrs, 
+                 cores = 1, 
+                 as_visnet = TRUE)
 ```
 
 &nbsp;
@@ -667,7 +669,9 @@ to visualize them.
 
 ```{r, fig.width=6, fig.height=6}
 # beta & alpha chain
-plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
+plot_joint_graph(clust_irrs = clust_irrs, 
+                 cores = 1,
+                 as_visnet = TRUE)
 ```
 
 &nbsp;

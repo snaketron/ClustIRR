@@ -1,7 +1,6 @@
 get_localclust <- function(cdr3,
                            cdr3_ref,
                            ks,
-                           cores,
                            control) {
     # 1. trim flanks only relevant for local motifs
     if(control$trim_flank_aa != 0) {

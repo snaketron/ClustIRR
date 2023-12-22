@@ -87,7 +87,6 @@ get_clust <- function(cdr3,
     l <- get_localclust(cdr3 = cdr3,
                         cdr3_ref = cdr3_ref,
                         ks = ks,
-                        cores = cores,
                         control = control)
     
     # 2. global

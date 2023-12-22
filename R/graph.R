@@ -142,7 +142,7 @@ get_graph <- function(clust_irr, sample_id = "S") {
 }
 
 
-get_joint_graph <- function(clust_irrs) {
+get_joint_graph <- function(clust_irrs, cores) {
   
   check_input <- function(clust_irrs) {
     if(missing(clust_irrs)==TRUE) {
@@ -325,11 +325,15 @@ get_joint_graph <- function(clust_irrs) {
   # check input
   check_input(clust_irrs = clust_irrs)
   
+  # check cores
+  check_cores(cores = cores)
+  
   # get clust_irrs names
   clust_irrs <- get_clust_irrs_names(clust_irrs = clust_irrs)
   
   # get igs
-  igs <- lapply(X = names(clust_irrs), clust_irrs=clust_irrs, 
+  igs <- lapply(X = names(clust_irrs), 
+                clust_irrs = clust_irrs, 
                 FUN = get_graph_data)
   
   # rename igs
@@ -342,7 +346,10 @@ get_joint_graph <- function(clust_irrs) {
   gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_dist
   
   # get intergraph edges (global)
-  ige <- get_intergraph_edges(igs=igs, global_max_dist=gmd, chains=chains)
+  ige <- get_intergraph_edges(igs = igs, 
+                              global_max_dist = gmd, 
+                              chains = chains, 
+                              cores = cores)
   
   # get the vertices/edges of the graph
   df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
@@ -405,7 +412,7 @@ plot_graph <- function(clust_irr, as_visnet = FALSE) {
 }
 
 
-plot_joint_graph <- function(clust_irrs, as_visnet = FALSE) {
+plot_joint_graph <- function(clust_irrs, cores, as_visnet = FALSE) {
   
   check_input <- function(clust_irrs) {
     if(missing(clust_irrs)==TRUE) {
@@ -438,7 +445,10 @@ plot_joint_graph <- function(clust_irrs, as_visnet = FALSE) {
   # check input
   check_input(clust_irrs = clust_irrs)
   
-  jg <- get_joint_graph(clust_irrs) 
+  # check cores
+  check_cores(cores = cores)
+  
+  jg <- get_joint_graph(clust_irrs, cores = cores) 
   if(is.null(jg$graph)) {
     warning("No graph to plot \n")
     return(jg)
