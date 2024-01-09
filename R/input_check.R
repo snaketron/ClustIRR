@@ -17,6 +17,7 @@ input_check <- function(s,
   check_local_min_o(control$local_min_o)
   check_trim_flank_aa(control$trim_flank_aa)
   check_low_mem(control$low_mem)
+  check_global_smart(control$global_smart)
   check_global_pairs(control$global_pairs, s)
   check_ks_and_trim_flank_aa(ks, control$trim_flank_aa, s, r)
 }
@@ -104,13 +105,66 @@ check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size
 }
 
 check_global_pairs <- function(global_pairs, s) {
-  if(!is.null(global_pairs)) {
-    check_rowcount(global_pairs)
-    check_matrix(global_pairs)
-    check_matrix_type(global_pairs, type = "numeric")
-    check_matrix_column_count(global_pairs, 2)
-    if(all(global_pairs[, c(1, 2)] %in% seq_len(nrow(s))) == FALSE) {
-      stop("some indices in global_pair are not found in s")
+  if(missing(global_pairs)) {
+    stop("global_pairs is missing")
+  }
+  if(is.null(global_pairs)) {
+    stop("global_pairs is NULL")
+  }
+  if(is.data.frame(global_pairs)==FALSE) {
+    stop("global_pairs must be a data.frame")
+  }
+  if(nrow(global_pairs)==0) {
+    stop("global_pairs must be a data.frame with at least one row")
+  }
+  if(ncol(global_pairs)!=4) {
+    stop("global_pairs must have 4 columns: from_cdr3, to_cdr3 weight, chain")
+  }
+  if(any(colnames(global_pairs) %in% c("from_cdr3", "to_cdr3", 
+                                       "weight", "chain"))==FALSE) {
+    stop("global_pairs must have 4 columns: from_cdr3, to_cdr3 weight, chain")
+  }
+  
+  if(is.character(global_pairs$from_cdr3)==FALSE) {
+    stop("from_cdr3 must be a character vector")
+  }
+  if(is.character(global_pairs$to_cdr3)==FALSE) {
+    stop("to_cdr3 must be a character vector")
+  }
+  if(any(is.na(global_pairs$to_cdr3) | is.null(global_pairs$to_cdr3))) {
+    stop("some chains in global_pairs$to_cdr3 are NA or NULL")
+  }
+  if(any(is.na(global_pairs$from_cdr3) | is.null(global_pairs$from_cdr3))) {
+    stop("some chains in global_pairs$from_cdr3 are NA or NULL")
+  }
+  
+  if(is.numeric(global_pairs$weight)==FALSE) {
+    stop("weight must be a numeric vector")
+  }
+  if(global_pairs$weight < 0 | global_pairs$weight > 1) {
+    stop("weight must be a number between 0 and 1")
+  }
+  if(is.na(global_pairs$weight) | is.null(global_pairs$weight)) {
+    stop("some weights are NA or NULL")
+  }
+  
+  if(is.character(global_pairs$chain)==FALSE) {
+    stop("chain must be a character vector")
+  }
+  if(any(global_pairs$chain %in% get_chains(colnames(s)))==FALSE) {
+    stop("some chains in global_pairs$chain are not part of s")
+  }
+  if(any(is.na(global_pairs$chain) | is.null(global_pairs$chain))) {
+    stop("some chains in global_pairs$chain are NA or NULL")
+  }
+  for(chain in unique(global_pairs$chain)) {
+    if(any(s[,chain] %in% global_pairs$from_cdr3[
+      global_pairs$chain==chain])==FALSE) {
+      stop("some CDR3 sequences in global_pair are not found in s")
+    }
+    if(any(s[,chain] %in% global_pairs$to_cdr3[
+      global_pairs$chain==chain])==FALSE) {
+      stop("some CDR3 sequences in global_pair are not found in s")
     }
   }
 }
@@ -118,6 +172,11 @@ check_global_pairs <- function(global_pairs, s) {
 check_low_mem <- function(low_mem) {
   check_singlevalue(x = low_mem)
   check_logical(x = low_mem)
+}
+
+check_global_smart <- function(global_smart) {
+  check_singlevalue(x = global_smart)
+  check_logical(x = global_smart)
 }
 
 # Description:
@@ -131,8 +190,8 @@ get_control <- function(control_in) {
     local_min_o = 1,
     trim_flank_aa = 0,
     global_pairs = NULL,
-    low_mem = FALSE
-  )
+    low_mem = FALSE,
+    global_smart = FALSE)
   
   # if missing control_in -> use default values
   if(missing(control_in) || is.null(control_in)) {

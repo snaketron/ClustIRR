@@ -95,9 +95,14 @@ get_clust <- function(cdr3,
         g <- control$global_pairs
     }
     else {
+      if(control$global_smart) {
+        g <- get_global_clust_smart(cdr3 = unique(cdr3))
+      } 
+      else {
         g <- get_global_clust(cdr3 = unique(cdr3),
                               global_max_dist = control$global_max_dist,
                               low_mem = control$low_mem)
+      }
     }
     return(list(local = l, global = g))
 }

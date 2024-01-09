@@ -16,3 +16,8 @@ Changes in version 0.99.20-0.99.26 (03 Oct, 2023)
 Changes in version 0.99.28-29 (09 Oct, 2023)
 + Accepted in Bioconductor
 
+Chainges in version 1.1.5 (20 Dec, 2023)
++ New graph generating and plotting functions
+
+Changes in version 1.1.10 (08 Jan, 2024)
++ New global clustering solution
