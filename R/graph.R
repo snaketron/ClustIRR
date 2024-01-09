@@ -172,7 +172,6 @@ get_graph <- function(clust_irr, sample_id = "S") {
     return(list(graph = ig, clones = cs))
   }
   
-  # browser()
   # build graph
   ig <- build_graph(le = le, ge = ge, cs = cs, 
                     sample_id = sample_id, chains = chains)
