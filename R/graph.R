@@ -439,12 +439,8 @@ plot_graph <- function(clust_irr, as_visnet = FALSE) {
       ig <- add_edges(graph = ig, edges = c("S1","S1"))
     }
     
-    E(ig)$width <- E(ig)$weight*2
-    E(ig)$color <- ifelse(test = E(ig)$weight > 0.8,
-                          yes = "black", no = "#666666")
-    i <- which(E(ig)$weight < 0.4)
-    if(length(i)!=0) {
-      E(ig)$color[i] <- "gray"
+    if(all(E(ig)$width == 1)==FALSE) {
+      E(ig)$width <- 2*(1/(1+exp(-(-6-0.1*E(ig)$weight))))
     }
     
     visIgraph(igraph = ig,

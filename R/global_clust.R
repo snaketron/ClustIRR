@@ -69,13 +69,13 @@ get_global_clust <- function(cdr3, global_max_dist, low_mem, control) {
 get_global_clust_smart <- function(cdr3) {
   
   # computes blosum62 score for pairs of sequences returned by blaster 
-  get_bscore <- function(x, d, bm) {
-    return(stringDist(x = c(d$QueryMatchSeq[x], d$TargetMatchSeq[x]),
+  get_bscore <- function(x, d, bm, db) {
+    return(stringDist(x = c(db$Seq[d$QueryId[x]], db$Seq[d$TargetId[x]]),
                       method = "substitutionMatrix", 
                       type = "global", 
                       substitutionMatrix = bm, 
-                      gapOpening = 11,
-                      gapExtension = 2))
+                      gapOpening = 10,
+                      gapExtension = 4))
   }
   
   db <- data.frame(Id = 1:length(cdr3), Seq = cdr3)
@@ -98,12 +98,14 @@ get_global_clust_smart <- function(cdr3) {
   
   # compute BLSOUM62 score for matches
   data("BLOSUM62", package = "Biostrings")
-  o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, bm = BLOSUM62)
-  
+  o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, db = db, bm = BLOSUM62)
+  o$nbs <- ifelse(test = o$bs < 0, yes = o$bs*-1, no = 0)
+  # browser()
   # normalize score between 1 (best metch) and -1 (worst match)
-  o$nbs <- o$bs/(-150)
+  # o$nbs <- o$bs/(-150)
+  # o$nbs <- 1/(1+exp(-(-6-0.1*o$bs)))
   
-  return(data.frame(from_cdr3 = cdr3[o$QueryId], #o$QueryId,#
-                    to_cdr3 = cdr3[o$TargetId], #o$TargetId,#
+  return(data.frame(from_cdr3 = db$Seq[o$QueryId],
+                    to_cdr3 = db$Seq[o$TargetId],
                     weight = o$nbs))
 }
