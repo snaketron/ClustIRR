@@ -90,7 +90,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
         return(NULL)
       }
       return(data.frame(from = id_x[x], 
-                        to = id_y[js], 
+                        to = id_y[js],
                         sample_x = sample_x, 
                         sample_y = sample_y))
     }
@@ -159,6 +159,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
       hd$sample_x <- NULL
       hd$sample_y <- NULL
       hd$type <- "inter-sample"
+      hd$weight <- 1
       return(hd)
     }
     return(NULL)
@@ -178,6 +179,80 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
                                      igs = igs,
                                      chain = chain,
                                      global_max_dist = global_max_dist))
+      count <- count + 1
+    }
+  }
+  ige <- do.call(rbind, ige)
+  
+  return(ige)
+}
+
+get_intergraph_edges_smart <- function(igs, chains, cores) {
+  
+  get_bscore <- function(x, s1, s2, bm, d) {
+    return(stringDist(x = c(s1$Seq[d$QueryId[x]], s2$Seq[d$TargetId[x]]),
+                      method = "substitutionMatrix", 
+                      type = "global", 
+                      substitutionMatrix = bm, 
+                      gapOpening = 10,
+                      gapExtension = 4))
+  }
+  
+  get_blastr <- function(s1, s2, chain) {
+    s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name)
+    s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name)
+    
+    o <- blast(query = s1, 
+               db = s2, 
+               maxAccepts = 1000, 
+               minIdentity = 0.80,
+               alphabet = "protein", 
+               output_to_file = FALSE)
+    
+    # if empty stop
+    if(nrow(o)==0) {
+      return(NULL)
+    }
+    
+    # compute BLSOUM62 score for matches
+    data("BLOSUM62", package = "Biostrings")
+    o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 
+                   s1 = s1, s2 = s2, bm = BLOSUM62)
+    o$nbs <- ifelse(test = o$bs < 0, yes = o$bs*-1, no = 0)
+    
+    return(data.frame(from = s1$name[o$QueryId],
+                      to = s2$name[o$TargetId],
+                      weight = o$nbs))
+  }
+  
+  get_igg <- function(x, i, igs, chain) {
+    s1_name <- names(igs)[i]
+    s2_name <- names(igs)[x]
+    
+    b <- get_blastr(s1 = igs[[i]]$clones, s2 = igs[[x]]$clones, chain = chain)
+    if(is.null(b)==FALSE && nrow(b)!=0) {
+      b$chain <- chain
+      b$sample <- paste0(s1_name, "|", s2_name)
+      b$type <- "inter-sample"
+      return(b)
+    }
+    
+    return(NULL)
+  }
+  
+  # find global similarities between pairs of clone tables
+  ige <- vector(mode = "list", length = length(chains)*(length(igs)-1))
+  
+  count <- 1
+  for(i in 1:(length(igs)-1)) {
+    message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
+    for(chain in chains) {
+      ige[[count]] <- do.call(rbind,
+                              lapply(X = (i+1):length(igs), 
+                                     i = i,
+                                     FUN = get_igg,
+                                     igs = igs,
+                                     chain = chain))
       count <- count + 1
     }
   }

@@ -100,7 +100,6 @@ get_global_clust_smart <- function(cdr3) {
   data("BLOSUM62", package = "Biostrings")
   o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, db = db, bm = BLOSUM62)
   o$nbs <- ifelse(test = o$bs < 0, yes = o$bs*-1, no = 0)
-  # browser()
   # normalize score between 1 (best metch) and -1 (worst match)
   # o$nbs <- o$bs/(-150)
   # o$nbs <- 1/(1+exp(-(-6-0.1*o$bs)))

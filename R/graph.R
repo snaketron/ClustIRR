@@ -110,13 +110,15 @@ get_graph <- function(clust_irr, sample_id = "S") {
     if(length(le)!=0) {
       for(chain in chains) {
         if(length(le[[chain]])!=0) {
-          ig<-add_local_edges(le = le[[chain]], ig = ig, sample_id = sample_id)
+          ig <- add_local_edges(le = le[[chain]], ig = ig, 
+                                sample_id = sample_id)
         }
       }
     }
     
+    # browser()
     # add global edges
-    if(nrow(ge)!=0) {
+    if(is.null(ge)==FALSE && nrow(ge)!=0) {
       for(chain in chains) {
         chain_ge <- ge[ge$chain == chain, ]
         if(nrow(chain_ge)!=0) {
@@ -351,10 +353,8 @@ get_joint_graph <- function(clust_irrs, cores) {
       
       return(list(graph = ig, clones = cs))
     }
-    
     # build graph
     ig <- build_graph(le = le, ge = ge, cs = cs, sample_id = x)
-    
     return(list(graph = ig, clones = cs))
   }
     
@@ -367,10 +367,13 @@ get_joint_graph <- function(clust_irrs, cores) {
   # get clust_irrs names
   clust_irrs <- get_clust_irrs_names(clust_irrs = clust_irrs)
   
+  
   # get igs
-  igs <- lapply(X = names(clust_irrs), 
-                clust_irrs = clust_irrs, 
-                FUN = get_graph_data)
+  igs <- vector(mode = "list", length = length(clust_irrs))
+  for(i in 1:length(clust_irrs)) {
+    igs[[i]] <- get_graph(clust_irr = clust_irrs[[i]], 
+                          sample_id = names(clust_irrs)[i])
+  }
   
   # rename igs
   names(igs) <- names(clust_irrs)
@@ -378,28 +381,34 @@ get_joint_graph <- function(clust_irrs, cores) {
   # get chains
   chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
   
-  # get global_max_dist
-  gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_dist
-  
-  # get intergraph edges (global)
-  ige <- get_intergraph_edges(igs = igs, 
-                              global_max_dist = gmd, 
-                              chains = chains, 
-                              cores = cores)
+  if(get_clustirr_inputs(clust_irrs[[1]])$control$global_smart==FALSE) {
+    # get global_max_dist
+    gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_dist
+    # get intergraph edges (global)
+    ige <- get_intergraph_edges(igs = igs, 
+                                global_max_dist = gmd, 
+                                chains = chains, 
+                                cores = cores)
+  } 
+  else {
+    # get intergraph edges (global)
+    ige <- get_intergraph_edges_smart(igs = igs, 
+                                      chains = chains, 
+                                      cores = cores)
+  }
   
   # get the vertices/edges of the graph
   df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
   df_e <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "edges"))
-  
   if(nrow(df_e)!=0) {
     df_e$type <- "intra-sample"
     if(nrow(ige)!=0) {
-      df_e <- rbind(df_e, ige[, c("from", "to", "type")])
+      df_e <- rbind(df_e, ige[, c("from", "to", "weight", "type")])
     }
   } 
   else {
     if(nrow(ige)!=0) {
-      df_e <- ige[, c("from", "to", "type")]
+      df_e <- ige[, c("from", "to", "weight", "type")]
     }
   }
   
