@@ -218,7 +218,9 @@ get_intergraph_edges_smart <- function(igs, chains, cores) {
     data("BLOSUM62", package = "Biostrings")
     o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 
                    s1 = s1, s2 = s2, bm = BLOSUM62)
-    o$nbs <- ifelse(test = o$bs < 0, yes = o$bs*-1, no = 0)
+    o$nbs <- o$bs/(-100)
+    o$nbs <- ifelse(test = o$nbs < 0, yes = 0, no = o$nbs)
+    # o$nbs <- ifelse(test = o$bs < 0, yes = o$bs*-1, no = 0)
     
     return(data.frame(from = s1$name[o$QueryId],
                       to = s2$name[o$TargetId],
