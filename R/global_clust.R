@@ -66,6 +66,7 @@ get_global_clust <- function(cdr3, global_max_dist, low_mem, control) {
     return(hd)
 }
 
+
 get_global_clust_smart <- function(cdr3) {
   
   # computes blosum62 score for pairs of sequences returned by blaster 
@@ -77,7 +78,7 @@ get_global_clust_smart <- function(cdr3) {
                       gapOpening = 10,
                       gapExtension = 4))
   }
-  
+
   db <- data.frame(Id = 1:length(cdr3), Seq = cdr3)
   
   # blast
@@ -94,6 +95,13 @@ get_global_clust_smart <- function(cdr3) {
   # if empty stop
   if(nrow(o)==0) {
     return(NULL)
+  }
+  
+  key <- apply(X = o[,c("QueryId", "TargetId")], MARGIN = 1, 
+               FUN = function(x) {paste0(sort(x), collapse = '-')})
+  key_js <- which(duplicated(key)==FALSE)
+  if(length(key_js)!=0) {
+    o <- o[key_js, ]
   }
   
   # compute BLSOUM62 score for matches

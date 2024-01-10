@@ -112,14 +112,14 @@ get_motifs <- function(x,
         stop("no kmers found in reference")
     }
     kmers_r <- kmers_r[1, ]
+    n_r <- sum(kmers_r)
     
     # convert table to data.frame
     kmers_s <- data.frame(motif = names(kmers_s),
                           f_s = as.numeric(kmers_s))
     kmers_s$n_s <- sum(kmers_s$f_s)
     kmers_r <- data.frame(motif = names(kmers_r),
-                          f_r = as.numeric(kmers_r)
-    )
+                          f_r = as.numeric(kmers_r))
     kmers_r$n_r <- sum(kmers_r$f_r)
     
     # we are only interested in enrichment of motifs in sample relative to
@@ -130,7 +130,7 @@ get_motifs <- function(x,
     m <- merge(x = kmers_s, y = kmers_r, by = "motif", all = TRUE)
     m[is.na(m[, "f_s"]), "f_s"] <- 0
     m[is.na(m[, "f_r"]), "f_r"] <- 0
-    m[is.na(m[, "n_r"]), "n_r"] <- kmers_r$n_r[1]
+    m[is.na(m[, "n_r"]), "n_r"] <- n_r
     m[is.na(m[, "n_s"]), "n_s"] <- kmers_s$n_s[1]
     
     m$k <- x
