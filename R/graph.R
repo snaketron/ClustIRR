@@ -443,12 +443,14 @@ plot_graph <- function(clust_irr, as_visnet = FALSE) {
   if(as_visnet == TRUE) {
     V(ig)$size <- V(ig)$size*5
     if(length(E(ig))==0) {
+      message("no edges found in the graph, dummy self-edge added")
       # apparently if no edges, visnetwork can't plot
-      ig <- add_edges(graph = ig, edges = c("S1","S1"))
-    }
-    
-    if(all(E(ig)$width == 1)==FALSE) {
-      E(ig)$width <- 2*(1/(1+exp(-(-6-0.1*E(ig)$weight))))
+      ig <- add_edges(graph = ig, edges = c(V(ig)[1],V(ig)[1]))
+    } 
+    else {
+      if(all(E(ig)$width == 1)==FALSE) {
+        E(ig)$width <- 2*(1/(1+exp(-(-6-0.1*E(ig)$weight))))
+      }
     }
     
     visIgraph(igraph = ig,
