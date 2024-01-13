@@ -139,7 +139,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
     id_y <- s2[,"name"]
     len_x <- nchar(seq_x)
     len_y <- nchar(seq_y)
-
+    
     hd <- lapply(X = unique(c(len_x, len_y)),
                  FUN = get_hamming_dist,
                  id_x = id_x,
@@ -151,15 +151,16 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
                  sample_x = s1_name,
                  sample_y = s2_name,
                  global_max_dist = global_max_dist)
-
+    
     hd <- do.call(rbind, hd)
     if(is.null(hd)==FALSE && nrow(hd)!=0) {
       hd$chain <- chain
       hd$sample <- paste0(hd$sample_x, "|", hd$sample_y)
       hd$sample_x <- NULL
       hd$sample_y <- NULL
-      hd$type <- "inter-sample"
       hd$weight <- 1
+      hd$type <- "between-repertoire"
+      hd$clustering <- "global"
       return(hd)
     }
     return(NULL)
@@ -235,7 +236,8 @@ get_intergraph_edges_smart <- function(igs, chains, cores) {
     if(is.null(b)==FALSE && nrow(b)!=0) {
       b$chain <- chain
       b$sample <- paste0(s1_name, "|", s2_name)
-      b$type <- "inter-sample"
+      b$type <- "within-repertoire"
+      b$clustering <- "global"
       return(b)
     }
     
