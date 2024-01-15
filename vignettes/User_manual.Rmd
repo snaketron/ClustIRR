@@ -187,10 +187,16 @@ satisfied:
 
 ### Global clustering
 
-For global clustering, `r Biocpkg("ClustIRR")` quantifies the dissimilarity 
-between pairs of CDR3 sequences using Hamming distances. Two CDR3 sequences 
-with Hamming distance $\leq x$ are considered globally similar, where $x$ is 
-the user-defined threshold `control$global_max_dist` (default = 1). 
+For global clustering, `r Biocpkg("ClustIRR")` employs one of three strategies.
+To employ a specific global clustering strategy you must set the appropriate
+control parameters (`global_smart` and/or `global_pairs`)
+
+*Strategy 1:* if `control$global_smart = FALSE` 
+
+In this case, `r Biocpkg("ClustIRR")` quantifies the dissimilarity between 
+pairs of CDR3 sequences using Hamming distances. Two CDR3 sequences with 
+Hamming distance $\leq x$ are considered globally similar, where $x$ is the 
+user-defined threshold `control$global_max_dist` (default = 1). 
 
 With this, `r Biocpkg("ClustIRR")` provides a very simple and intuitive 
 heuristic for identifying globally similar CDR3s. But this approach also 
@@ -200,11 +206,27 @@ has drawbacks:
 2. Hamming distance, by definition, does not take into account the properties 
 of the replaced amino acids
 
-To overcome these challenges, `r Biocpkg("ClustIRR")` provides a second input
-option (see red input in `r Biocpkg("ClustIRR")` workflow), which allows the 
-user to provide a matrix of globally similar CDR3 sequences computed by 
-complementary approaches (e.g., *tcrdist*). This input can be provided via 
-the input parameter `control$global_pairs`.
+*Strategy 2:* if `control$global_smart = TRUE`
+
+In this case, `r Biocpkg("ClustIRR")` does pairwise alignment of CDR3 sequences
+and computes a BLOSUM62 score $B$. 
+
+Mean self-similarity score of amino acids in the BLOSUM62 matrix (diagonal 
+entries) is about +6. Empirically we know that CDR3 sequences are typically 
+short (e.g. 15 amino acids on average). If we multiply $15\cdot6$ we get $B=90$,
+i.e. we know that scores $B\approx100$ are associated with pairs of quite 
+similar CDR3 sequences. Hence, we transform $B$ to $B'=\max(0, \min(1, B/100))$,
+i.e. if $B\geq100 \rightarrow B'=1$ (high degree of global similarity), else if 
+$B\leq0 \rightarrow B'=0$ (low degree of global similarity), else $B'=B/100$.
+
+*Strategy 3:* if `control$global_pairs` is specified by the user
+
+`r Biocpkg("ClustIRR")` also provides a second input option (see red input 
+in `r Biocpkg("ClustIRR")` workflow), which allows the user to provide a 
+data.frame containing globally similar CDR3 sequences computed by complementary
+approaches (e.g., *tcrdist*). This input can be provided via the input 
+parameter `control$global_pairs`. In this case, global clustering is not
+performed by `r Biocpkg("ClustIRR")`.
 
 
 ## Output
@@ -243,7 +265,8 @@ o <- cluster_irr(s = s,
                  version = 2,
                  ks = 4,
                  cores = 1,
-                 control = list(trim_flank_aa = 3))
+                 control = list(global_smart = FALSE,
+                                trim_flank_aa = 3))
 ```
 
 
@@ -371,7 +394,8 @@ o <- cluster_irr(s = s,
                  version = 2,
                  ks = 4,
                  cores = 1,
-                 control = list(trim_flank_aa = 3))
+                 control = list(global_smart = FALSE,
+                                trim_flank_aa = 3))
 ```
 
 ## Local clustering results
@@ -508,7 +532,8 @@ clust_irrs[[1]] <- cluster_irr(s = S1,
                                version = 2,
                                ks = 4,
                                cores = 1,
-                               control = list(trim_flank_aa = 3))
+                               control = list(global_smart = FALSE,
+                                              trim_flank_aa = 3))
 
 
 clust_irrs[[2]] <- cluster_irr(s = S0,
@@ -516,7 +541,8 @@ clust_irrs[[2]] <- cluster_irr(s = S0,
                                version = 2,
                                ks = 4,
                                cores = 1,
-                               control = list(trim_flank_aa = 3))
+                               control = list(global_smart = FALSE,
+                                              trim_flank_aa = 3))
 ```
 
 Let's plot the joint graph:
@@ -646,17 +672,20 @@ names(clust_irrs) <- c("P1_A", "P1_B", "P2_A", "P2_B")
 
 clust_irrs[[1]] <- cluster_irr(s = P1_A, r = P1_B,
                                version = 2, ks = 4, cores = 1,
-                               control = list(trim_flank_aa = 3))
+                               control = list(global_smart = FALSE,
+                                              trim_flank_aa = 3))
 
 
 clust_irrs[[2]] <- cluster_irr(s = P1_B, r = P1_A,
                                version = 2, ks = 4, cores = 1,
-                               control = list(trim_flank_aa = 3))
+                               control = list(global_smart = FALSE,
+                                              trim_flank_aa = 3))
 
 
 clust_irrs[[3]] <- cluster_irr(s = P2_A, r = P2_B,
                                version = 2, ks = 4, cores = 1,
-                               control = list(trim_flank_aa = 3))
+                               control = list(global_smart = FALSE,
+                                              trim_flank_aa = 3))
 
 
 clust_irrs[[4]] <- cluster_irr(s = P2_A, r = P2_B,

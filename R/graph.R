@@ -2,6 +2,18 @@
 
 get_graph <- function(clust_irr, sample_id = "S") {
   
+  get_clones <- function(sample_id, x) {
+    cs <- x
+    cs$clone_size <- 1
+    cs$id <- NULL
+    cs <- aggregate(clone_size~., data = cs, FUN = sum)
+    cs$clone_id <- seq_len(nrow(cs))
+    cs$sample <- sample_id
+    cs$name <- paste0(sample_id, '|', cs$clone_id)
+    cs <- cs[, rev(colnames(cs))]
+    return(cs)
+  }
+  
   get_local_edges <- function(clust_irr, cs) {
     
     get_motif_to_id <- function(x, cs, lp, chain) {
@@ -157,20 +169,12 @@ get_graph <- function(clust_irr, sample_id = "S") {
     }
   }
   
-  # clones
-  cs <- s
-  cs$clone_size <- 1
-  cs$id <- NULL
-  cs <- aggregate(clone_size~., data = cs, FUN = sum)
-  cs$clone_id <- seq_len(nrow(cs))
-  cs$sample <- sample_id
-  cs$name <- paste0(sample_id, '|', cs$clone_id)
-  cs <- cs[, rev(colnames(cs))]
+  # get clones
+  cs <- get_clones(sample_id = sample_id, x = s)
   
   # get local and global edges between clones
   le <- get_local_edges(clust_irr = clust_irr, cs = cs)
   ge <- get_global_edges(clust_irr = clust_irr, cs = cs)
-  # TODO: what does it mean is.null(ge) or legnth(le)==0
   
   # build graph with only vertices
   if(length(le)==0 & is.null(ge)) {
