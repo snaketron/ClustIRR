@@ -85,7 +85,7 @@ get_global_clust_smart <- function(cdr3) {
   o <- blast(query = db, 
              db = db, 
              maxAccepts = 1000, 
-             minIdentity = 0.80,
+             minIdentity = 0.90,
              alphabet = "protein", 
              output_to_file = FALSE)
   

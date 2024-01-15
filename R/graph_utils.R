@@ -206,7 +206,7 @@ get_intergraph_edges_smart <- function(igs, chains, cores) {
     o <- blast(query = s1, 
                db = s2, 
                maxAccepts = 1000, 
-               minIdentity = 0.80,
+               minIdentity = 0.90,
                alphabet = "protein", 
                output_to_file = FALSE)
     
