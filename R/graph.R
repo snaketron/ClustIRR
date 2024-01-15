@@ -193,7 +193,7 @@ get_graph <- function(clust_irr, sample_id = "S") {
 }
 
 
-get_joint_graph <- function(clust_irrs, cores) {
+get_joint_graph <- function(clust_irrs, cores = 1) {
   
   check_input <- function(clust_irrs) {
     if(missing(clust_irrs)==TRUE) {
@@ -277,13 +277,13 @@ get_joint_graph <- function(clust_irrs, cores) {
   df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
   df_e <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "edges"))
   if(nrow(df_e)!=0) {
-    if(nrow(ige)!=0) {
+    if(is.null(ige)==FALSE && nrow(ige)!=0) {
       df_e <- rbind(df_e, ige[, c("from", "to", "weight", 
                                   "type", "clustering")])
     }
   } 
   else {
-    if(nrow(ige)!=0) {
+    if(is.null(ige)==FALSE && nrow(ige)!=0) {
       df_e <- ige[, c("from", "to", "weight", 
                       "type", "clustering")]
     }
@@ -341,7 +341,7 @@ plot_graph <- function(clust_irr, as_visnet = FALSE) {
 }
 
 
-plot_joint_graph <- function(clust_irrs, cores, as_visnet = FALSE) {
+plot_joint_graph <- function(clust_irrs, cores = 1, as_visnet = FALSE) {
   
   check_input <- function(clust_irrs) {
     if(missing(clust_irrs)==TRUE) {

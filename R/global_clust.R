@@ -104,9 +104,13 @@ get_global_clust_smart <- function(cdr3) {
     o <- o[key_js, ]
   }
   
+  # get blosum matrix from Biostrings
+  data_env <- new.env(parent = emptyenv())
+  data("BLOSUM62", envir = data_env, package = "Biostrings")
+  
   # compute BLSOUM62 score for matches
-  data("BLOSUM62", package = "Biostrings")
-  o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, db = db, bm = BLOSUM62)
+  o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, 
+                 d = o, db = db, bm = data_env[["BLOSUM62"]])
   o$nbs <- o$bs/(-100)
   o$nbs <- ifelse(test = o$nbs < 0, yes = 0, no = o$nbs)
   # normalize score between 1 (best metch) and -1 (worst match)

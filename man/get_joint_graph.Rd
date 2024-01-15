@@ -1,10 +1,11 @@
 \name{get_joint_graph}
 \alias{get_joint_graph}
-\title{Joins two graphs obtained from two \code{clust_irr} objects}
-\usage{get_joint_graph(clust_irrs)}
+\title{Joins two graphs obtained from two or more \code{clust_irr} objects}
+\usage{get_joint_graph(clust_irrs, cores=1)}
 \arguments{
 \item{clust_irrs}{A list of at least two S4 objects generated with the 
 function \code{cluster_irr}}
+\item{cores}{integer, number of computer cores to use (default = 1)}
 }
 \value{
 The main output of this function is an \code{igraph} object. This object
@@ -37,35 +38,19 @@ The results is another \code{igraph} object.
 \examples{
 # load package input data
 data("CDR3ab")
-s <- base::data.frame(CDR3b = CDR3ab[1:100, "CDR3b"])
-r <- base::data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
+s_1 <- base::data.frame(CDR3b = CDR3ab[1:100, "CDR3b"])
+s_2 <- base::data.frame(CDR3b = CDR3ab[101:200, "CDR3b"])
+r <- base::data.frame(CDR3b = CDR3ab[1:500, "CDR3b"])
 
-# artificially enrich motif 'RWGW' inside sample dataset
-base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RWGW"
 
-# add an artificial clonal expansion of two sequences to the sample dataset
-s <- rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRADKPDGLDALETQYF",
-                                                 "CATSRAAKPDGLAALSTQYF"),
-                                           times = 5)))
+# run 1st analysis -> clust_irr object
+o_1 <- cluster_irr(s = s_1, r = r, version = 2, ks = 4)
 
-# run ClustIRR analysis
-c1 <- cluster_irr(s = s, 
-                  r = r,
-                  version = 2,
-                  ks = 4,
-                  cores = 1,
-                  control = list(trim_flank_aa = 3))
-                   
-# run ClustIRR analysis
-c2 <- cluster_irr(s = s, 
-                  r = r,
-                  version = 2,
-                  ks = 4,
-                  cores = 1,
-                  control = list(trim_flank_aa = 3))
-  
+# run 2nd analysis -> clust_irr object
+o_2 <- cluster_irr(s = s_2, r = r, version = 2, ks = 4)
+
 # join clust_irr objects in a list               
-clust_irrs <- c(c1, c2)
+clust_irrs <- c(o_1, o_2)
 names(clust_irrs) <- c("C1", "C2")
 
 # get graph
