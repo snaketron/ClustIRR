@@ -83,7 +83,7 @@ get_graph <- function(clust_irr, sample_id = "S") {
       
       for(i in 1:length(le)) {
         # if only one element in le then do not add edge, else add
-        if(length(le[[i]])!=1) {
+        if(length(le[[i]])>1) {
           ig <- add_motif_edges(x = le[[i]], ig = ig, sample_id = sample_id)
         }
       }
@@ -124,7 +124,6 @@ get_graph <- function(clust_irr, sample_id = "S") {
       }
     }
     
-    # browser()
     # add global edges
     if(is.null(ge)==FALSE && nrow(ge)!=0) {
       for(chain in chains) {
@@ -399,4 +398,4 @@ plot_joint_graph <- function(clust_irrs, cores, as_visnet = FALSE) {
               type = "square")
   }
 }
-
+        

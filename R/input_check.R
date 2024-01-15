@@ -182,15 +182,14 @@ check_global_smart <- function(global_smart) {
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
-  control <- list(
-    global_max_dist = 1,
-    local_max_fdr = 0.05,
-    local_min_ove = 2,
-    local_min_o = 1,
-    trim_flank_aa = 0,
-    global_pairs = NULL,
-    low_mem = FALSE,
-    global_smart = FALSE)
+  control <- list(global_smart = TRUE,
+                  global_max_dist = 1,
+                  local_max_fdr = 0.05,
+                  local_min_ove = 2,
+                  local_min_o = 1,
+                  trim_flank_aa = 0,
+                  global_pairs = NULL,
+                  low_mem = FALSE)
   
   # if missing control_in -> use default values
   if(missing(control_in) || is.null(control_in)) {

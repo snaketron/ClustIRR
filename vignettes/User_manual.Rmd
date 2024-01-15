@@ -246,6 +246,7 @@ o <- cluster_irr(s = s,
                  control = list(trim_flank_aa = 3))
 ```
 
+
 ## Local clustering results
 In the following table we see that `r Biocpkg("ClustIRR")` has detected 
 enrichment of *LEAR* in `s` compared to `r`: 
