@@ -17,7 +17,6 @@ get_global_clust_hamming <- function(cdr3, control) {
     return(cbind(rep(x = x, times = length(js)), js))
   }
   
-  # Computes Hamming distances
   get_hd <- function(x, cdr3, cdr3_len, global_max_dist, 
                      low_mem, trim_flank_aa) {
     
@@ -26,9 +25,7 @@ get_global_clust_hamming <- function(cdr3, control) {
       return(NULL)
     }
     if(length(is) == 2) {
-      d <- stringdist(a = cdr3[is[1]], 
-                      b = cdr3[is[2]], 
-                      method = "hamming")
+      d <- stringdist(a = cdr3[is[1]], b = cdr3[is[2]], method = "hamming")
       if(d > global_max_dist) {
         return(NULL)
       }
@@ -38,7 +35,7 @@ get_global_clust_hamming <- function(cdr3, control) {
         cweight <- 1
       } 
       else {
-        if(trim_flank_aa*2 <= x) {
+        if(trim_flank_aa*2 >= x) {
           cweight <- 0
         } 
         else {
@@ -68,16 +65,22 @@ get_global_clust_hamming <- function(cdr3, control) {
       }
       
       # compute hamming distance of core CDR3 region
-      if(trim_flank_aa*2 <= x | trim_flank_aa == 0) {
-        cweight <- rep(x = 0, times = nrow(hd))
-      }
+      if(trim_flank_aa == 0) {
+        cweight <- rep(x = 1, times = nrow(hd))
+      } 
       else {
-        cweight <- vapply(X = 1:nrow(hd), 
-                          a = cdr3[is[hd[, 1]]], 
-                          b = cdr3[is[hd[, 2]]],
-                          trim = trim_flank_aa, 
-                          len = x,
-                          FUN.VALUE = numeric(1))
+        if(trim_flank_aa*2 >= x) {
+          cweight <- rep(x = 0, times = nrow(hd))
+        }
+        else {
+          cweight <- vapply(X = 1:nrow(hd),
+                            FUN = get_cweight,
+                            a = cdr3[is[hd[, 1]]], 
+                            b = cdr3[is[hd[, 2]]],
+                            trim = trim_flank_aa, 
+                            len = x,
+                            FUN.VALUE = numeric(1))
+        }
       }
       
       return(data.frame(from_cdr3 = cdr3[is[hd[, 1]]],
@@ -98,11 +101,12 @@ get_global_clust_hamming <- function(cdr3, control) {
         cweight <- rep(x = 1, times = nrow(js))
       } 
       else {
-        if(trim_flank_aa*2 <= x) {
+        if(trim_flank_aa*2 >= x) {
           cweight <- rep(x = 0, times = nrow(js))
         }
         else {
-          cweight <- vapply(X = 1:length(js[, 1]), 
+          cweight <- vapply(X = 1:length(js[, 1]),
+                            FUN = get_cweight,
                             a = cdr3[is[js[, 1]]], 
                             b = cdr3[is[js[, 2]]],
                             trim = trim_flank_aa, 
@@ -152,7 +156,7 @@ get_global_clust_blosum <- function(cdr3, control) {
     b <- db$Seq[d$TargetId[x]]
     na <- nchar(a)
     nb <- nchar(b)
-    if((na-2*trim)<=0 | (nb-2*trim)) {
+    if((na-2*trim)<=0 | (nb-2*trim)<=0) {
       return(NA)
     }
     
@@ -228,8 +232,8 @@ get_global_clust_blosum <- function(cdr3, control) {
   
   return(data.frame(from_cdr3 = db$Seq[o$QueryId],
                     to_cdr3 = db$Seq[o$TargetId],
-                    weight = o$bs,
-                    cweight = o$core_bs))
+                    weight = -o$bs,
+                    cweight = -o$core_bs))
 }
 
 
