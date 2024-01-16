@@ -506,7 +506,7 @@ get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
       hd$weight <- 1
       hd$cweight <- 1
       hd$type <- "between-repertoire"
-      hd$chain <- chains
+      hd$chain <- chain
       hd$clustering <- "global"
       return(hd)
     }

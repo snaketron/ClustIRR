@@ -40,7 +40,7 @@ get_global_clust_hamming <- function(cdr3, control) {
           cweight <- 0
         } 
         else {
-          cweigt <- 1
+          cweight <- 1
           # cweight <- get_cweight(x = 1, 
           #                        a = cdr3[is[1]], 
           #                        b = cdr3[is[2]], 
@@ -110,7 +110,7 @@ get_global_clust_hamming <- function(cdr3, control) {
           cweight <- rep(x = 0, times = nrow(js))
         }
         else {
-          cweight <- rep(x = 1, times = nrow(hd))
+          cweight <- rep(x = 1, times = nrow(js))
           # cweight <- vapply(X = 1:nrow(js),
           #                   FUN = get_cweight,
           #                   a = cdr3[is[js[, 1]]], 
