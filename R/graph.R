@@ -273,6 +273,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
   if(get_clustirr_inputs(clust_irrs[[1]])$control$global_smart==FALSE) {
     # get global_max_dist
     gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_dist
+    
     # get intergraph edges (global)
     ige <- get_intergraph_edges_hamming(igs = igs, 
                                         global_max_dist = gmd, 
@@ -280,10 +281,14 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
                                         cores = cores)
   } 
   else {
+    # get global_max_dist
+    trim_flank_aa <- get_clustirr_inputs(clust_irrs[[1]])$control$trim_flank_aa
+    
     # get intergraph edges (global)
     ige <- get_intergraph_edges_blosum(igs = igs, 
                                        chains = chains, 
-                                       cores = cores)
+                                       cores = cores,
+                                       trim_flank_aa = trim_flank_aa)
   }
   
   # get the vertices/edges of the graph
@@ -538,18 +543,18 @@ get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
 
 get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
   
-  get_bscore_trim <- function(x, s1, s2, bm, d, trim) {
+  get_bscore_trim <- function(x, s1, s2, bm, d, trim_flank_aa) {
     
     a <- s1$Seq[d$QueryId[x]]
     b <- s2$Seq[d$TargetId[x]]
     na <- nchar(a)
     nb <- nchar(b)
-    if((na-2*trim)<=0 | (nb-2*trim)<=0) {
+    if((na-2*trim_flank_aa)<=0 | (nb-2*trim_flank_aa)<=0) {
       return(NA)
     }
     
-    a <- substr(x = a, start = trim+1, stop = nchar(a)-trim)
-    b <- substr(x = b, start = trim+1, stop = nchar(b)-trim)
+    a <- substr(x = a, start = trim_flank_aa+1, stop = nchar(a)-trim_flank_aa)
+    b <- substr(x = b, start = trim_flank_aa+1, stop = nchar(b)-trim_flank_aa)
     
     return(stringDist(x = c(a, b),
                       method = "substitutionMatrix", 
@@ -568,7 +573,7 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
                       gapExtension = 4))
   }
   
-  get_blastr <- function(s1, s2, chain) {
+  get_blastr <- function(s1, s2, chain, trim_flank_aa) {
     s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name)
     s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name)
     
@@ -601,7 +606,7 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
                           s2 = s2,
                           d = o,
                           bm = data_env[["BLOSUM62"]],
-                          trim = trim_flank_aa,
+                          trim_flank_aa = trim_flank_aa,
                           FUN.VALUE = numeric(1))
     }
     
@@ -612,11 +617,14 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
                       cweight = -o$core_bs))
   }
   
-  get_igg <- function(x, i, igs, chain) {
+  get_igg <- function(x, i, igs, chain, trim_flank_aa) {
     s1_name <- names(igs)[i]
     s2_name <- names(igs)[x]
     
-    b <- get_blastr(s1 = igs[[i]]$clones, s2 = igs[[x]]$clones, chain = chain)
+    b <- get_blastr(s1 = igs[[i]]$clones, 
+                    s2 = igs[[x]]$clones, 
+                    chain = chain, 
+                    trim_flank_aa = trim_flank_aa)
     if(is.null(b)==FALSE && nrow(b)!=0) {
       b$chain <- chain
       b$sample <- paste0(s1_name, "|", s2_name)
@@ -641,6 +649,7 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
                                      i = i,
                                      FUN = get_igg,
                                      igs = igs,
+                                     trim_flank_aa = trim_flank_aa,
                                      chain = chain))
       count <- count + 1
     }
