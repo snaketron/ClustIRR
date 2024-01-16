@@ -76,7 +76,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
   
   get_igg <- function(x, i, igs, global_max_dist, chain) {
     
-    get_hdist <- function(x, 
+    get_hd_row <- function(x, 
                           id_x, 
                           id_y, 
                           seq_x, 
@@ -95,16 +95,16 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
                         sample_y = sample_y))
     }
     
-    get_hamming_dist <- function(x, 
-                                 id_x, 
-                                 id_y, 
-                                 seq_x, 
-                                 seq_y, 
-                                 len_x, 
-                                 len_y, 
-                                 sample_x,
-                                 sample_y,
-                                 global_max_dist) {
+    get_hd <- function(x, 
+                       id_x, 
+                       id_y, 
+                       seq_x, 
+                       seq_y, 
+                       len_x, 
+                       len_y, 
+                       sample_x,
+                       sample_y,
+                       global_max_dist) {
       
       is_x <- which(len_x == x)
       is_y <- which(len_y == x)
@@ -114,7 +114,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
       }
       
       hd <- lapply(X = seq_along(is_x),
-                   FUN = get_hdist,
+                   FUN = get_hd_row,
                    id_x = id_x[is_x], 
                    id_y = id_y[is_y], 
                    seq_x = seq_x[is_x], 
@@ -141,7 +141,7 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
     len_y <- nchar(seq_y)
     
     hd <- lapply(X = unique(c(len_x, len_y)),
-                 FUN = get_hamming_dist,
+                 FUN = get_hd,
                  id_x = id_x,
                  id_y = id_y,
                  seq_x = seq_x,
@@ -159,7 +159,9 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
       hd$sample_x <- NULL
       hd$sample_y <- NULL
       hd$weight <- 1
+      hd$cweight <- 1
       hd$type <- "between-repertoire"
+      hd$chain <- chains
       hd$clustering <- "global"
       return(hd)
     }
@@ -188,7 +190,28 @@ get_intergraph_edges <- function(igs, global_max_dist, chains, cores) {
   return(ige)
 }
 
-get_intergraph_edges_smart <- function(igs, chains, cores) {
+get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
+  
+  get_bscore_trim <- function(x, s1, s2, bm, d, trim) {
+    
+    a <- s1$Seq[d$QueryId[x]]
+    b <- s2$Seq[d$TargetId[x]]
+    na <- nchar(a)
+    nb <- nchar(b)
+    if((na-2*trim)<=0 | (nb-2*trim)<=0) {
+      return(NA)
+    }
+    
+    a <- substr(x = a, start = trim+1, stop = nchar(a)-trim)
+    b <- substr(x = b, start = trim+1, stop = nchar(b)-trim)
+    
+    return(stringDist(x = c(a, b),
+                      method = "substitutionMatrix", 
+                      type = "global", 
+                      substitutionMatrix = bm, 
+                      gapOpening = 10,
+                      gapExtension = 4))
+  }
   
   get_bscore <- function(x, s1, s2, bm, d) {
     return(stringDist(x = c(s1$Seq[d$QueryId[x]], s2$Seq[d$TargetId[x]]),
@@ -222,13 +245,25 @@ get_intergraph_edges_smart <- function(igs, chains, cores) {
     # compute BLSOUM62 score for matches
     o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 
                    s1 = s1, s2 = s2, bm = data_env[["BLOSUM62"]])
-    o$nbs <- o$bs/(-100)
-    o$nbs <- ifelse(test = o$nbs < 0, yes = 0, no = o$nbs)
-    o$nbs <- ifelse(test = o$nbs > 1, yes = 1, no = o$nbs)
+    
+    # compute BLSOUM62 score for matches
+    o$core_bs <- o$bs
+    if(trim_flank_aa > 0) {
+      o$core_bs <- vapply(X = 1:nrow(o), 
+                          FUN = get_bscore_trim, 
+                          s1 = s1,
+                          s2 = s2,
+                          d = o,
+                          bm = data_env[["BLOSUM62"]],
+                          trim = trim_flank_aa,
+                          FUN.VALUE = numeric(1))
+    }
+    
     
     return(data.frame(from = s1$name[o$QueryId],
                       to = s2$name[o$TargetId],
-                      weight = o$nbs))
+                      weight = -o$bs,
+                      cweight = -o$core_bs))
   }
   
   get_igg <- function(x, i, igs, chain) {
@@ -240,6 +275,7 @@ get_intergraph_edges_smart <- function(igs, chains, cores) {
       b$chain <- chain
       b$sample <- paste0(s1_name, "|", s2_name)
       b$type <- "within-repertoire"
+      b$chain <- chain
       b$clustering <- "global"
       return(b)
     }

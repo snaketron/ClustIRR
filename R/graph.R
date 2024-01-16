@@ -66,6 +66,7 @@ get_graph <- function(clust_irr, sample_id = "S") {
         eg[[chain]] <- data.frame(from_cdr3 = g[,"from_clone_id"], 
                                   to_cdr3 = g[,"to_clone_id"], 
                                   weight = g[,"weight"],
+                                  cweight = g[,"cweight"],
                                   motif = NA,
                                   chain = chain,
                                   type = "global")
@@ -81,28 +82,32 @@ get_graph <- function(clust_irr, sample_id = "S") {
   
   build_graph <- function(le, ge, cs, sample_id, chains) {
     
-    add_local_edges <- function(le, ig, sample_id) {
+    add_local_edges <- function(le, ig, sample_id, chain) {
       
-      add_motif_edges <- function(x, ig, sample_id) {
+      add_motif_edges <- function(x, ig, sample_id, chain) {
         xp <- utils::combn(x = paste0(sample_id, '|', x), m = 2)
         xp <- as.vector(xp)
         return(igraph::add.edges(graph = ig, 
                                  edges = xp, 
                                  weight = 1,
+                                 cweight = 1,
                                  type = "within-repertoire",
+                                 chain = chain,
                                  clustering = "local"))
       }
       
       for(i in 1:length(le)) {
         # if only one element in le then do not add edge, else add
         if(length(le[[i]])>1) {
-          ig <- add_motif_edges(x = le[[i]], ig = ig, sample_id = sample_id)
+          ig <- add_motif_edges(x = le[[i]], ig = ig, 
+                                sample_id = sample_id,
+                                chain = chain)
         }
       }
       return(ig)
     }
     
-    add_global_edges <- function(ge, ig, sample_id) {
+    add_global_edges <- function(ge, ig, sample_id, chain) {
       
       get_e <- function(x, sample_id) {
         return(paste0(sample_id, '|', x))
@@ -113,7 +118,9 @@ get_graph <- function(clust_irr, sample_id = "S") {
       ig <- igraph::add.edges(graph = ig, 
                               edges = e, 
                               weight = ge$weight,
+                              cweight = ge$cweight,
                               type = "within-repertoire",
+                              chain = chain,
                               clustering = "global")
 
       return(ig)
@@ -131,7 +138,8 @@ get_graph <- function(clust_irr, sample_id = "S") {
       for(chain in chains) {
         if(length(le[[chain]])!=0) {
           ig <- add_local_edges(le = le[[chain]], ig = ig, 
-                                sample_id = sample_id)
+                                sample_id = sample_id, 
+                                chain = chain)
         }
       }
     }
@@ -141,7 +149,9 @@ get_graph <- function(clust_irr, sample_id = "S") {
       for(chain in chains) {
         chain_ge <- ge[ge$chain == chain, ]
         if(nrow(chain_ge)!=0) {
-          ig <- add_global_edges(ge = chain_ge, ig = ig, sample_id = sample_id)
+          ig <- add_global_edges(ge = chain_ge, ig = ig, 
+                                 sample_id = sample_id,
+                                 chain = chain)
         }
       }
     }
@@ -186,8 +196,11 @@ get_graph <- function(clust_irr, sample_id = "S") {
   }
   
   # build graph
-  ig <- build_graph(le = le, ge = ge, cs = cs, 
-                    sample_id = sample_id, chains = chains)
+  ig <- build_graph(le = le, 
+                    ge = ge, 
+                    cs = cs, 
+                    sample_id = sample_id, 
+                    chains = chains)
   
   return(list(graph = ig, clones = cs))
 }
@@ -261,16 +274,16 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     # get global_max_dist
     gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_dist
     # get intergraph edges (global)
-    ige <- get_intergraph_edges(igs = igs, 
-                                global_max_dist = gmd, 
-                                chains = chains, 
-                                cores = cores)
+    ige <- get_intergraph_edges_hamming(igs = igs, 
+                                        global_max_dist = gmd, 
+                                        chains = chains, 
+                                        cores = cores)
   } 
   else {
     # get intergraph edges (global)
-    ige <- get_intergraph_edges_smart(igs = igs, 
-                                      chains = chains, 
-                                      cores = cores)
+    ige <- get_intergraph_edges_blosum(igs = igs, 
+                                       chains = chains, 
+                                       cores = cores)
   }
   
   # get the vertices/edges of the graph
@@ -278,14 +291,14 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
   df_e <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "edges"))
   if(nrow(df_e)!=0) {
     if(is.null(ige)==FALSE && nrow(ige)!=0) {
-      df_e <- rbind(df_e, ige[, c("from", "to", "weight", 
-                                  "type", "clustering")])
+      df_e <- rbind(df_e, ige[, c("from", "to", "weight", "cweight",
+                                  "type", "chain", "clustering")])
     }
   } 
   else {
     if(is.null(ige)==FALSE && nrow(ige)!=0) {
-      df_e <- ige[, c("from", "to", "weight", 
-                      "type", "clustering")]
+      df_e <- ige[, c("from", "to", "weight", "cweight",
+                      "type", "chain", "clustering")]
     }
   }
   
@@ -403,3 +416,236 @@ plot_joint_graph <- function(clust_irrs, cores = 1, as_visnet = FALSE) {
   }
 }
         
+
+get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
+  
+  get_igg <- function(x, i, igs, global_max_dist, chain) {
+    
+    get_hd_row <- function(x, 
+                           id_x, 
+                           id_y, 
+                           seq_x, 
+                           seq_y,
+                           sample_x,
+                           sample_y,
+                           global_max_dist) {
+      d <- stringdist(a = seq_x[x], b = seq_y, method = "hamming")
+      js <- which(d <= global_max_dist)
+      if(length(js) == 0) {
+        return(NULL)
+      }
+      return(data.frame(from = id_x[x], 
+                        to = id_y[js],
+                        sample_x = sample_x, 
+                        sample_y = sample_y))
+    }
+    
+    get_hd <- function(x, 
+                       id_x, 
+                       id_y, 
+                       seq_x, 
+                       seq_y, 
+                       len_x, 
+                       len_y, 
+                       sample_x,
+                       sample_y,
+                       global_max_dist) {
+      
+      is_x <- which(len_x == x)
+      is_y <- which(len_y == x)
+      
+      if(length(is_x)==0|length(is_y)==0) {
+        return(NULL)
+      }
+      
+      hd <- lapply(X = seq_along(is_x),
+                   FUN = get_hd_row,
+                   id_x = id_x[is_x], 
+                   id_y = id_y[is_y], 
+                   seq_x = seq_x[is_x], 
+                   seq_y = seq_y[is_y],
+                   sample_x = sample_x,
+                   sample_y = sample_y,
+                   global_max_dist = global_max_dist)
+      hd <- do.call(rbind, hd)
+      return(hd)
+    }
+    
+    
+    s1_name <- names(igs)[i]
+    s2_name <- names(igs)[x]
+    
+    s1 <- igs[[i]]$clones
+    s2 <- igs[[x]]$clones
+    
+    seq_x <- s1[,chain]
+    seq_y <- s2[,chain]
+    id_x <- s1[,"name"] 
+    id_y <- s2[,"name"]
+    len_x <- nchar(seq_x)
+    len_y <- nchar(seq_y)
+    
+    hd <- lapply(X = unique(c(len_x, len_y)),
+                 FUN = get_hd,
+                 id_x = id_x,
+                 id_y = id_y,
+                 seq_x = seq_x,
+                 seq_y = seq_y,
+                 len_x = len_x,
+                 len_y = len_y,
+                 sample_x = s1_name,
+                 sample_y = s2_name,
+                 global_max_dist = global_max_dist)
+    
+    hd <- do.call(rbind, hd)
+    if(is.null(hd)==FALSE && nrow(hd)!=0) {
+      hd$chain <- chain
+      hd$sample <- paste0(hd$sample_x, "|", hd$sample_y)
+      hd$sample_x <- NULL
+      hd$sample_y <- NULL
+      hd$weight <- 1
+      hd$cweight <- 1
+      hd$type <- "between-repertoire"
+      hd$chain <- chains
+      hd$clustering <- "global"
+      return(hd)
+    }
+    return(NULL)
+  }
+  
+  # find global similarities between pairs of clone tables
+  ige <- vector(mode = "list", length = length(chains)*(length(igs)-1))
+  
+  count <- 1
+  for(i in 1:(length(igs)-1)) {
+    message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
+    for(chain in chains) {
+      ige[[count]] <- do.call(rbind,
+                              lapply(X = (i+1):length(igs), 
+                                     i = i,
+                                     FUN = get_igg,
+                                     igs = igs,
+                                     chain = chain,
+                                     global_max_dist = global_max_dist))
+      count <- count + 1
+    }
+  }
+  ige <- do.call(rbind, ige)
+  
+  return(ige)
+}
+
+
+get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
+  
+  get_bscore_trim <- function(x, s1, s2, bm, d, trim) {
+    
+    a <- s1$Seq[d$QueryId[x]]
+    b <- s2$Seq[d$TargetId[x]]
+    na <- nchar(a)
+    nb <- nchar(b)
+    if((na-2*trim)<=0 | (nb-2*trim)<=0) {
+      return(NA)
+    }
+    
+    a <- substr(x = a, start = trim+1, stop = nchar(a)-trim)
+    b <- substr(x = b, start = trim+1, stop = nchar(b)-trim)
+    
+    return(stringDist(x = c(a, b),
+                      method = "substitutionMatrix", 
+                      type = "global", 
+                      substitutionMatrix = bm, 
+                      gapOpening = 10,
+                      gapExtension = 4))
+  }
+  
+  get_bscore <- function(x, s1, s2, bm, d) {
+    return(stringDist(x = c(s1$Seq[d$QueryId[x]], s2$Seq[d$TargetId[x]]),
+                      method = "substitutionMatrix", 
+                      type = "global", 
+                      substitutionMatrix = bm, 
+                      gapOpening = 10,
+                      gapExtension = 4))
+  }
+  
+  get_blastr <- function(s1, s2, chain) {
+    s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name)
+    s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name)
+    
+    o <- blast(query = s1, 
+               db = s2, 
+               maxAccepts = 1000, 
+               minIdentity = 0.90,
+               alphabet = "protein", 
+               output_to_file = FALSE)
+    
+    # if empty stop
+    if(nrow(o)==0) {
+      return(NULL)
+    }
+    
+    # get blosum matrix from Biostrings
+    data_env <- new.env(parent = emptyenv())
+    data("BLOSUM62", envir = data_env, package = "Biostrings")
+    
+    # compute BLSOUM62 score for matches
+    o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 
+                   s1 = s1, s2 = s2, bm = data_env[["BLOSUM62"]])
+    
+    # compute BLSOUM62 score for matches
+    o$core_bs <- o$bs
+    if(trim_flank_aa > 0) {
+      o$core_bs <- vapply(X = 1:nrow(o), 
+                          FUN = get_bscore_trim, 
+                          s1 = s1,
+                          s2 = s2,
+                          d = o,
+                          bm = data_env[["BLOSUM62"]],
+                          trim = trim_flank_aa,
+                          FUN.VALUE = numeric(1))
+    }
+    
+    
+    return(data.frame(from = s1$name[o$QueryId],
+                      to = s2$name[o$TargetId],
+                      weight = -o$bs,
+                      cweight = -o$core_bs))
+  }
+  
+  get_igg <- function(x, i, igs, chain) {
+    s1_name <- names(igs)[i]
+    s2_name <- names(igs)[x]
+    
+    b <- get_blastr(s1 = igs[[i]]$clones, s2 = igs[[x]]$clones, chain = chain)
+    if(is.null(b)==FALSE && nrow(b)!=0) {
+      b$chain <- chain
+      b$sample <- paste0(s1_name, "|", s2_name)
+      b$type <- "within-repertoire"
+      b$chain <- chain
+      b$clustering <- "global"
+      return(b)
+    }
+    
+    return(NULL)
+  }
+  
+  # find global similarities between pairs of clone tables
+  ige <- vector(mode = "list", length = length(chains)*(length(igs)-1))
+  
+  count <- 1
+  for(i in 1:(length(igs)-1)) {
+    message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
+    for(chain in chains) {
+      ige[[count]] <- do.call(rbind,
+                              lapply(X = (i+1):length(igs), 
+                                     i = i,
+                                     FUN = get_igg,
+                                     igs = igs,
+                                     chain = chain))
+      count <- count + 1
+    }
+  }
+  ige <- do.call(rbind, ige)
+  
+  return(ige)
+}
