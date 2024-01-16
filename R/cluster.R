@@ -84,26 +84,15 @@ get_clust <- function(cdr3,
                       ks,
                       cores,
                       control) {
-    # 1. local
-    l <- get_localclust(cdr3 = cdr3,
-                        cdr3_ref = cdr3_ref,
-                        ks = ks,
+  # 1. local
+  l <- get_localclust(cdr3 = cdr3,
+                      cdr3_ref = cdr3_ref,
+                      ks = ks,
+                      control = control)
+  
+  # 2. global
+  g <- get_global_clust(cdr3 = unique(cdr3), 
                         control = control)
-    
-    # 2. global
-    # if global_pairs are provided as input use them, else compute them
-    if(!is.null(control$global_pairs)) {
-        g <- control$global_pairs
-    }
-    else {
-      if(control$global_smart) {
-        g <- get_global_clust_smart(cdr3 = unique(cdr3))
-      } 
-      else {
-        g <- get_global_clust(cdr3 = unique(cdr3),
-                              global_max_dist = control$global_max_dist,
-                              low_mem = control$low_mem)
-      }
-    }
-    return(list(local = l, global = g))
+  
+  return(list(local = l, global = g))
 }

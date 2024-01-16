@@ -224,7 +224,7 @@ get_intergraph_edges_smart <- function(igs, chains, cores) {
                    s1 = s1, s2 = s2, bm = data_env[["BLOSUM62"]])
     o$nbs <- o$bs/(-100)
     o$nbs <- ifelse(test = o$nbs < 0, yes = 0, no = o$nbs)
-    # o$nbs <- ifelse(test = o$bs < 0, yes = o$bs*-1, no = 0)
+    o$nbs <- ifelse(test = o$nbs > 1, yes = 1, no = o$nbs)
     
     return(data.frame(from = s1$name[o$QueryId],
                       to = s2$name[o$TargetId],
