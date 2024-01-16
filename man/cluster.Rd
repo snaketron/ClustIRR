@@ -69,11 +69,11 @@ performed. Instead the CDR3 pairs from \code{global_pairs} are used as global
 clustering pairs. \code{global_pairs} is a data.frame matrix with 4 columns.
 The first two columns, named, from_cdr3 and to_cdr3 contain pairs of CDR3 
 sequences that are considered globally similar. The third column, called
-weight, contains a similarity weight between 1 (strong similarity) and 0 (low 
-similarity). If weights are not available they should be set to 1. The fourth 
-column, called chain, contains the chain immune receptor in which the CDR3s
-are found: CDR3b or CDR3a [for \eqn{\alpha\beta} TCRs]; CDR3g or CDR3d [for 
-\eqn{\gamma\delta} TCRs]; or CDR3h or CDR3l [for heavy/ligh chain BCRs].
+weight, contains a similarity weight. If weights are not available they should 
+be set to 1. The fourth column, called chain, contains the chain immune 
+receptor in which the CDR3s are found: CDR3b or CDR3a [for \eqn{\alpha\beta} 
+TCRs]; CDR3g or CDR3d [for \eqn{\gamma\delta} TCRs]; or CDR3h or CDR3l 
+[for heavy/ligh chain BCRs].
 }
 }
 }
@@ -118,9 +118,10 @@ CDR3g, etc.). In the following we who the typical structure of these lists:
             }
         }
         \item \code{global} - data.frame, global clustering results. Pairs of
-        globally similar CDR3s are shown in each row, with their similarity
-        weight between 1 (complete similarity) and 0 (low similarity) and 
-        chain type.
+        globally similar CDR3s are shown in each row. The similarity score of
+        the complete CDRs (weight) and the similarity score of the core part
+        (trimmed part) of the CDRs (cweight) are provided in the next columns,
+        together with the type of the chain.
     }
 }
 \item{inputs}{list, contains all user provided inputs (see \bold{Arguments})}
