@@ -123,7 +123,7 @@ get_global_clust_blosum <- function(cdr3, control) {
   o <- blast(query = db, 
              db = db, 
              maxAccepts = 1000, 
-             minIdentity = 0.90,
+             minIdentity = 0.85,
              alphabet = "protein", 
              output_to_file = FALSE)
   

@@ -599,7 +599,7 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
     o <- blast(query = s1, 
                db = s2, 
                maxAccepts = 1000, 
-               minIdentity = 0.90,
+               minIdentity = 0.85,
                alphabet = "protein", 
                output_to_file = FALSE)
     
