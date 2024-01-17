@@ -596,8 +596,6 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
     s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name,
                      len = nchar(s2[, chain]))
     
-    max_len <- ifelse(test = s1$len >= s2$len, yes = s1$len, no = s2$len)
-    
     o <- blast(query = s1, 
                db = s2, 
                maxAccepts = 1000, 
@@ -635,6 +633,10 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
                       to = s2$name[o$TargetId],
                       weight = -o$bs,
                       cweight = -o$core_bs)
+    
+    len_s1 <- s1$len[o$QueryId]
+    len_s2 <- s2$len[o$TargetId]
+    max_len <- ifelse(test = len_s1 >= len_s2, yes = len_s1, no = len_s2)
     out$max_len <- max_len
     out$nweight <- out$weight/out$max_len
     out$ncweight <- out$cweight/out$max_len
