@@ -1,13 +1,6 @@
 
 get_global_clust_hamming <- function(cdr3, control) {
   
-  get_cweight <- function(x, a, b, trim, len, global_max_dist) {
-    u <- stringdist(a = substr(x=a[x], start=trim+1, stop=len-trim+1), 
-                    b = substr(x=b[x], start=trim+1, stop=len-trim+1), 
-                    method="hamming")
-    return(ifelse(test = u <= global_max_dist, yes = 1, no = 0))
-  }
-  
   get_pairdist <- function(x, a, len_a, global_max_dist) {
     d <- stringdist(a = a[x], b = a[(x + 1):len_a], method = "hamming")
     js <- which(d <= global_max_dist)
@@ -18,8 +11,7 @@ get_global_clust_hamming <- function(cdr3, control) {
     return(cbind(rep(x = x, times = length(js)), js))
   }
   
-  get_hd <- function(x, cdr3, cdr3_len, global_max_dist, 
-                     low_mem, trim_flank_aa) {
+  get_hd <- function(x, cdr3, cdr3_len, global_max_dist, low_mem) {
     
     is <- which(cdr3_len == x)
     if(length(is) == 1) {
@@ -30,30 +22,14 @@ get_global_clust_hamming <- function(cdr3, control) {
       if(d > global_max_dist) {
         return(NULL)
       }
-      
-      # compute hamming distance of core CDR3 region
-      if(trim_flank_aa == 0) {
-        cweight <- 1
-      } 
-      else {
-        if(trim_flank_aa*2 >= x) {
-          cweight <- 0
-        } 
-        else {
-          cweight <- 1
-          # cweight <- get_cweight(x = 1, 
-          #                        a = cdr3[is[1]], 
-          #                        b = cdr3[is[2]], 
-          #                        trim = trim_flank_aa, 
-          #                        len = x,
-          #                        global_max_dist = global_max_dist)
-        }
-      }
-      
+
       return(data.frame(from_cdr3 = cdr3[is[1]],
                         to_cdr3 = cdr3[is[2]],
                         weight = 1,
-                        cweight = cweight))
+                        cweight = 1,
+                        nweight = 1,
+                        ncweight = 1,
+                        max_len = NA))
     }
     
     if(low_mem) {
@@ -67,31 +43,13 @@ get_global_clust_hamming <- function(cdr3, control) {
         return(hd)
       }
       
-      # compute hamming distance of core CDR3 region
-      if(trim_flank_aa == 0) {
-        cweight <- rep(x = 1, times = nrow(hd))
-      } 
-      else {
-        if(trim_flank_aa*2 >= x) {
-          cweight <- rep(x = 0, times = nrow(hd))
-        }
-        else {
-          cweight <- rep(x = 1, times = nrow(hd))
-          # cweight <- vapply(X = 1:nrow(hd),
-          #                   FUN = get_cweight,
-          #                   a = cdr3[is[hd[, 1]]], 
-          #                   b = cdr3[is[hd[, 2]]],
-          #                   trim = trim_flank_aa, 
-          #                   len = x,
-          #                   global_max_dist = global_max_dist,
-          #                   FUN.VALUE = numeric(1))
-        }
-      }
-      
       return(data.frame(from_cdr3 = cdr3[is[hd[, 1]]],
                         to_cdr3 = cdr3[is[hd[, 2]]],
                         weight = 1,
-                        cweight = cweight))
+                        cweight = 1,
+                        nweight = 1,
+                        ncweight = 1,
+                        max_len = NA))
     }
     else {
       d <- stringdistmatrix(a = cdr3[is], b = cdr3[is], method="hamming")
@@ -101,31 +59,13 @@ get_global_clust_hamming <- function(cdr3, control) {
         return(NULL)
       }
       
-      # compute hamming distance of core CDR3 region
-      if(trim_flank_aa == 0) {
-        cweight <- rep(x = 1, times = nrow(js))
-      } 
-      else {
-        if(trim_flank_aa*2 >= x) {
-          cweight <- rep(x = 0, times = nrow(js))
-        }
-        else {
-          cweight <- rep(x = 1, times = nrow(js))
-          # cweight <- vapply(X = 1:nrow(js),
-          #                   FUN = get_cweight,
-          #                   a = cdr3[is[js[, 1]]], 
-          #                   b = cdr3[is[js[, 2]]],
-          #                   trim = trim_flank_aa, 
-          #                   len = x,
-          #                   global_max_dist = global_max_dist,
-          #                   FUN.VALUE = numeric(1))
-        }
-      }
-      
       return(data.frame(from_cdr3 = cdr3[is[js[, 1]]],
                         to_cdr3 = cdr3[is[js[, 2]]],
                         weight = 1,
-                        cweight = cweight))
+                        cweight = 1,
+                        nweight = 1,
+                        ncweight = 1,
+                        max_len = NA))
     }
   }
   
@@ -137,8 +77,7 @@ get_global_clust_hamming <- function(cdr3, control) {
                cdr3 = cdr3,
                cdr3_len = cdr3_len,
                global_max_dist = control$global_max_dist,
-               low_mem = control$low_mem,
-               trim_flank_aa = control$trim_flank_aa)
+               low_mem = control$low_mem)
   
   hd <- do.call(rbind, hd)
   return(hd)
@@ -214,10 +153,6 @@ get_global_clust_blosum <- function(cdr3, control) {
                  db = db, 
                  bm = data_env[["BLOSUM62"]],
                  FUN.VALUE = numeric(1))
-  # o$nbs <- o$bs
-  # o$nbs <- ifelse(test = o$nbs < 0, yes = 0, no = o$nbs)
-  # o$nbs <- ifelse(test = o$nbs > 1, yes = 1, no = o$nbs)
-  
   
   # compute BLSOUM62 score for matches
   if(control$trim_flank_aa == 0) {
@@ -231,16 +166,19 @@ get_global_clust_blosum <- function(cdr3, control) {
                         bm = data_env[["BLOSUM62"]],
                         trim = control$trim_flank_aa,
                         FUN.VALUE = numeric(1))
-    # o$core_nbs <- o$core_bs
-    # o$core_nbs <- ifelse(test = o$core_nbs < 0, yes = 0, no = o$core_nbs)
-    # o$core_nbs <- ifelse(test = o$core_nbs > 1, yes = 1, no = o$core_nbs)
   }
   
   
-  return(data.frame(from_cdr3 = db$Seq[o$QueryId],
+  out <- data.frame(from_cdr3 = db$Seq[o$QueryId],
                     to_cdr3 = db$Seq[o$TargetId],
                     weight = -o$bs,
-                    cweight = -o$core_bs))
+                    cweight = -o$core_bs)
+  
+  out$max_len <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
+                       FUN = function(x) {return(max(nchar(x)))})
+  out$nweight <- out$weight/out$max_len
+  out$ncweight <- out$cweight/out$max_len
+  return(out)
 }
 
 

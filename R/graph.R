@@ -63,13 +63,20 @@ get_graph <- function(clust_irr, sample_id = "S") {
         g$to_clone_id <- g$clone_id
         g$clone_id <- NULL
         
-        eg[[chain]] <- data.frame(from_cdr3 = g[,"from_clone_id"], 
-                                  to_cdr3 = g[,"to_clone_id"], 
-                                  weight = g[,"weight"],
-                                  cweight = g[,"cweight"],
-                                  motif = NA,
-                                  chain = chain,
-                                  type = "global")
+        out <- data.frame(from_cdr3 = g[,"from_clone_id"], 
+                          to_cdr3 = g[,"to_clone_id"], 
+                          weight = g[,"weight"],
+                          cweight = g[,"cweight"],
+                          motif = NA,
+                          chain = chain,
+                          type = "global")
+        
+        out$max_len <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
+                             FUN = function(x) {return(max(nchar(x)))})
+        out$nweight <- out$weight/out$max_len
+        out$ncweight <- out$cweight/out$max_len
+        
+        eg[[chain]] <- out
       }
     }
     eg <- do.call(rbind, eg)
@@ -91,6 +98,9 @@ get_graph <- function(clust_irr, sample_id = "S") {
                                  edges = xp, 
                                  weight = 1,
                                  cweight = 1,
+                                 nweight = 1,
+                                 ncweight = 1,
+                                 max_len = NA,
                                  type = "within-repertoire",
                                  chain = chain,
                                  clustering = "local"))
@@ -119,6 +129,9 @@ get_graph <- function(clust_irr, sample_id = "S") {
                               edges = e, 
                               weight = ge$weight,
                               cweight = ge$cweight,
+                              nweight = ge$nweight,
+                              ncweight = ge$ncweight,
+                              max_len = ge$max_len,
                               type = "within-repertoire",
                               chain = chain,
                               clustering = "global")
@@ -294,16 +307,17 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
   # get the vertices/edges of the graph
   df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
   df_e <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "edges"))
+  # these are the cols we want to keep in this order
+  cols <- c("from", "to", "weight", "cweight", "nweight", "ncweight", 
+            "max_len", "type", "chain", "clustering")
   if(nrow(df_e)!=0) {
     if(is.null(ige)==FALSE && nrow(ige)!=0) {
-      df_e <- rbind(df_e, ige[, c("from", "to", "weight", "cweight",
-                                  "type", "chain", "clustering")])
+      df_e <- rbind(df_e[, cols], ige[, cols])
     }
   } 
   else {
     if(is.null(ige)==FALSE && nrow(ige)!=0) {
-      df_e <- ige[, c("from", "to", "weight", "cweight",
-                      "type", "chain", "clustering")]
+      df_e <- ige[, cols]
     }
   }
   
@@ -510,6 +524,9 @@ get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
       hd$sample_y <- NULL
       hd$weight <- 1
       hd$cweight <- 1
+      hd$nweight <- 1
+      hd$ncweight <- 1
+      hd$max_len <- NA
       hd$type <- "between-repertoire"
       hd$chain <- chain
       hd$clustering <- "global"
@@ -574,8 +591,12 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
   }
   
   get_blastr <- function(s1, s2, chain, trim_flank_aa) {
-    s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name)
-    s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name)
+    s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name, 
+                     len = nchar(s1[, chain]))
+    s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name,
+                     len = nchar(s2[, chain]))
+    
+    max_len <- ifelse(test = s1$len >= s2$len, yes = s1$len, no = s2$len)
     
     o <- blast(query = s1, 
                db = s2, 
@@ -610,11 +631,15 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
                           FUN.VALUE = numeric(1))
     }
     
-    
-    return(data.frame(from = s1$name[o$QueryId],
+    out <- data.frame(from = s1$name[o$QueryId],
                       to = s2$name[o$TargetId],
                       weight = -o$bs,
-                      cweight = -o$core_bs))
+                      cweight = -o$core_bs)
+    out$max_len <- max_len
+    out$nweight <- out$weight/out$max_len
+    out$ncweight <- out$cweight/out$max_len
+    
+    return(out)
   }
   
   get_igg <- function(x, i, igs, chain, trim_flank_aa) {
@@ -658,3 +683,4 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
   
   return(ige)
 }
+
