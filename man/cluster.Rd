@@ -43,7 +43,7 @@ to control algorithm's behavior. See the details below:
 \itemize{
 \item \code{global_smart} - logical, should we use smart global clustering 
 based of BLOSUM62 scores (slower but more accurate; default) or less smart 
-global clustering based on Hamming distance (faster but less accurate) 
+global clustering based on Hamming distances (faster but less accurate) 
 \item \code{global_max_dist} - integer, if \code{global_smart}=FALSE, then 
 \code{global_max_dist} defines a Hamming distance (HD) threshold, i.e. two 
 CDR3s as globally similar if their Hamming distance is smaller or equal to 
@@ -118,10 +118,17 @@ CDR3g, etc.). In the following we who the typical structure of these lists:
             }
         }
         \item \code{global} - data.frame, global clustering results. Pairs of
-        globally similar CDR3s are shown in each row. The similarity score of
-        the complete CDRs (weight) and the similarity score of the core part
-        (trimmed part) of the CDRs (cweight) are provided in the next columns,
-        together with the type of the chain.
+        globally similar CDR3s are shown in each row (analogous to \code{lp}).
+        If \code{global_smart}=FALSE in the control, then global clustering is 
+        done based on Hamming distances and the remaining columns of this 
+        data.frame are not important. Else, if \code{global_smart}=FALSE, then
+        the remainig columns are relevant, i.e. global similarity scores are 
+        shown for the complete CDR3 sequence pairs (column \code{weight}) or 
+        their core (trimmed) CDR3 sequence part (column \code{cweight}). The 
+        column \code{max_len} stores the the maximum length in each pair of 
+        CDR3 sequences, and is used to normalize the scores \code{weight} and 
+        \code{cweight}: the normalized scores are shown in the columns 
+        \code{nweight} and \code{ncweight}.
     }
 }
 \item{inputs}{list, contains all user provided inputs (see \bold{Arguments})}
@@ -162,7 +169,6 @@ clustering strategies are employed:
         as \code{pass=FALSE}
     }
 }
-
 
 \bold{Global clustering}
 

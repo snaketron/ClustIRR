@@ -690,7 +690,8 @@ clust_irrs[[3]] <- cluster_irr(s = P2_A, r = P2_B,
 
 clust_irrs[[4]] <- cluster_irr(s = P2_A, r = P2_B,
                                version = 2, ks = 4, cores = 1,
-                               control = list(trim_flank_aa = 3))
+                               control = list(global_smart = FALSE,
+                                              trim_flank_aa = 3))
 ```
 
 `r Biocpkg("ClustIRR")` provides the unique oppertunity to merge the four 
