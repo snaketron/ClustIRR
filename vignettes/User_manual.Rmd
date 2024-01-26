@@ -660,25 +660,10 @@ direction. The results are stored in a list of size 4
 clust_irrs <- vector(mode = "list", length = 4)
 names(clust_irrs) <- c("P1_A", "P1_B", "P2_A", "P2_B")
 
-clust_irrs[[1]] <- cluster_irr(s = P1_A, r = P1_B,
-                               ks = 4, cores = 1,
-                               control = list(global_smart = FALSE,
-                                              trim_flank_aa = 3))
-
-
-clust_irrs[[2]] <- cluster_irr(s = P1_B, r = P1_A,
-                               control = list(global_smart = FALSE,
-                                              trim_flank_aa = 3))
-
-
-clust_irrs[[3]] <- cluster_irr(s = P2_A, r = P2_B,
-                               control = list(global_smart = FALSE,
-                                              trim_flank_aa = 3))
-
-
-clust_irrs[[4]] <- cluster_irr(s = P2_A, r = P2_B,
-                               control = list(global_smart = FALSE,
-                                              trim_flank_aa = 3))
+clust_irrs[[1]] <- cluster_irr(s = P1_A, r = NULL)
+clust_irrs[[2]] <- cluster_irr(s = P1_B, r = NULL)
+clust_irrs[[3]] <- cluster_irr(s = P2_A, r = NULL)
+clust_irrs[[4]] <- cluster_irr(s = P2_B, r = NULL)
 ```
 
 `r Biocpkg("ClustIRR")` provides the unique oppertunity to merge the four 
@@ -687,9 +672,7 @@ to visualize them.
 
 ```{r, fig.width=6, fig.height=6}
 # beta & alpha chain
-plot_joint_graph(clust_irrs = clust_irrs, 
-                 cores = 1,
-                 as_visnet = TRUE)
+plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
 ```
 
 &nbsp;

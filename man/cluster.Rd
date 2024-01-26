@@ -12,7 +12,7 @@ cluster_irr(
                    local_max_fdr = 0.05,
                    local_min_ove = 2,
                    local_min_o = 1,
-                   trim_flank_aa = 0,
+                   trim_flank_aa = 3,
                    global_pairs = NULL,
                    low_mem = FALSE))
 }
@@ -58,7 +58,7 @@ the s in order for the motif to be used in the enrichment analysis.
 \code{local_min_o} = 1 (default)
 \item \code{trim_flank_aa} - integer, how many amino acids should be trimmed
 from the flanks of all CDR3 sequences (only used for local clustering.
-\code{trim_flank_aa} = 0 (default))
+\code{trim_flank_aa} = 3 (default))
 \item \code{low_mem} - logical, allows low memory mode for global clustering.
 This will lead to increase in the CPU time but lead to a lower memory
 footprint. \code{low_mem} = \code{FALSE} (default)

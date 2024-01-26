@@ -7,42 +7,45 @@ cluster_irr <- function(s,
                                        local_max_fdr = 0.05,
                                        local_min_ove = 2,
                                        local_min_o = 1,
-                                       trim_flank_aa = 0,
+                                       trim_flank_aa = 3,
                                        global_pairs = NULL,
                                        low_mem = FALSE)) {
-    
-    # control check
-    control <- get_control(control_in = control)
-    
-    # input check
-    input_check(s = s, r = r, ks = ks, cores = cores, control = control)
-    
-    # if r is null or missing -> only global analysis of s
-    global_only <- ifelse(test = missing(r)||is.null(r), yes = TRUE, no = FALSE)
-    
-    # get chains to be analyzed
-    chains <- get_chains(colnames(s))
-    
-    # add ID to data
-    s$id <- seq_len(length.out = nrow(s))
-    
-    # run analysis for each chain
-    clust <- lapply(X = chains, 
-                    FUN = run_chain_analysis,
-                    s = s, r = r,
-                    ks = ks, 
-                    cores = cores, 
-                    control = control,
-                    global_only = global_only)
-    names(clust) <- chains
-    
-    # setup clustirr object
-    return(get_clustirr_output_obj(clust = clust, 
-                                   s = s, 
-                                   r = r,
-                                   ks = ks, 
-                                   cores = cores, 
-                                   control = control))
+  # control check
+  control <- get_control(control_in = control)
+  
+  # input check
+  input_check(s = s, r = r, ks = ks, cores = cores, control = control)
+  
+  # if r is null or missing -> only global analysis of s
+  global_only <- ifelse(test = missing(r)||is.null(r), yes = TRUE, no = FALSE)
+  if(global_only) {
+    r <- NULL
+  }
+  
+  # get chains to be analyzed
+  chains <- get_chains(colnames(s))
+  
+  # add ID to data
+  s$id <- seq_len(length.out = nrow(s))
+  
+  # run analysis for each chain
+  clust <- lapply(X = chains, 
+                  FUN = run_chain_analysis,
+                  s = s, 
+                  r = r,
+                  ks = ks, 
+                  cores = cores, 
+                  control = control,
+                  global_only = global_only)
+  names(clust) <- chains
+  
+  # setup clustirr object
+  return(get_clustirr_output_obj(clust = clust, 
+                                 s = s, 
+                                 r = r,
+                                 ks = ks, 
+                                 cores = cores, 
+                                 control = control))
 }
 
 
