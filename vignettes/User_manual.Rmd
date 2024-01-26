@@ -236,7 +236,7 @@ returns an S4 object of class `clust_irr`. The object contains two sublists
 (slots):
 
 1. clustering results: tables and lists
-2. processed inputs: processed version of the input data (`s`) and parameters
+2. processed inputs: processed form of the input data (`s`) and parameters
 
 We will describe the inputs, outputs, and the algorithm of 
 `r Biocpkg("ClustIRR")` with the help of the following case studies. 
@@ -262,7 +262,6 @@ base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
 ```{r}
 o <- cluster_irr(s = s,
                  r = r,
-                 version = 2,
                  ks = 4,
                  cores = 1,
                  control = list(global_smart = FALSE,
@@ -391,7 +390,6 @@ s <- base::rbind(s, clone)
 ```{r}
 o <- cluster_irr(s = s,
                  r = r,
-                 version = 2,
                  ks = 4,
                  cores = 1,
                  control = list(global_smart = FALSE,
@@ -527,20 +525,12 @@ repertoire `S0` (`s`=`S0`) compared to `S1` (`r`=`S1`).
 clust_irrs <- vector(mode = "list", length = 2)
 names(clust_irrs) <- c("S1", "S0")
 
-clust_irrs[[1]] <- cluster_irr(s = S1,
-                               r = S0,
-                               version = 2,
-                               ks = 4,
-                               cores = 1,
+clust_irrs[[1]] <- cluster_irr(s = S1, r = S0,
                                control = list(global_smart = FALSE,
                                               trim_flank_aa = 3))
 
 
-clust_irrs[[2]] <- cluster_irr(s = S0,
-                               r = S1,
-                               version = 2,
-                               ks = 4,
-                               cores = 1,
+clust_irrs[[2]] <- cluster_irr(s = S0, r = S1,
                                control = list(global_smart = FALSE,
                                               trim_flank_aa = 3))
 ```
@@ -671,25 +661,22 @@ clust_irrs <- vector(mode = "list", length = 4)
 names(clust_irrs) <- c("P1_A", "P1_B", "P2_A", "P2_B")
 
 clust_irrs[[1]] <- cluster_irr(s = P1_A, r = P1_B,
-                               version = 2, ks = 4, cores = 1,
+                               ks = 4, cores = 1,
                                control = list(global_smart = FALSE,
                                               trim_flank_aa = 3))
 
 
 clust_irrs[[2]] <- cluster_irr(s = P1_B, r = P1_A,
-                               version = 2, ks = 4, cores = 1,
                                control = list(global_smart = FALSE,
                                               trim_flank_aa = 3))
 
 
 clust_irrs[[3]] <- cluster_irr(s = P2_A, r = P2_B,
-                               version = 2, ks = 4, cores = 1,
                                control = list(global_smart = FALSE,
                                               trim_flank_aa = 3))
 
 
 clust_irrs[[4]] <- cluster_irr(s = P2_A, r = P2_B,
-                               version = 2, ks = 4, cores = 1,
                                control = list(global_smart = FALSE,
                                               trim_flank_aa = 3))
 ```

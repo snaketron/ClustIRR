@@ -43,7 +43,6 @@ get_trimmed_flanks <- function(x, flank_size) {
 get_clustirr_output_obj <- function(clust, 
                                     s,
                                     r,
-                                    version, 
                                     ks, 
                                     cores, 
                                     control) {
@@ -52,7 +51,6 @@ get_clustirr_output_obj <- function(clust,
     return(new("clust_irr", clust = clust,
                inputs = list(s = s, 
                              r = r, 
-                             version = version, 
                              ks = ks, 
                              cores = cores,
                              control = control)))

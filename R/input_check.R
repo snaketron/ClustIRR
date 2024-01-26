@@ -2,13 +2,11 @@
 # Check user provided input and generate errors and warnings, if necessary
 input_check <- function(s,
                         r,
-                        version,
                         ks,
                         cores,
                         control) {
   
   check_s_r(s = s, r = r)
-  check_version(version)
   check_ks(ks)
   check_local_min_ove(control$local_min_ove)
   check_cores(cores)
@@ -19,7 +17,6 @@ input_check <- function(s,
   check_low_mem(control$low_mem)
   check_global_smart(control$global_smart)
   check_global_pairs(control$global_pairs, s)
-  check_ks_and_trim_flank_aa(ks, control$trim_flank_aa, s, r)
 }
 
 check_s_r <- function(s, r) {
@@ -31,26 +28,22 @@ check_s_r <- function(s, r) {
   check_dataframe_empty(s)
   check_aa(s)
   
-  check_missing(r)
-  check_dataframe(r)
-  check_r_s_cols(r)
-  check_rowcount(r)
-  check_dataframe_na(r)
-  check_dataframe_empty(r)
-  check_aa(r)
-  
-  if(!all(sort(colnames(s)) == sort(colnames(r)))) {
-    stop("s has to contain the same columns as r")
+  if(missing(r)|is.null(r)) {
+    message("missing input r, global clustering mode only")
+  } else {
+    check_dataframe(r)
+    check_r_s_cols(r)
+    check_rowcount(r)
+    check_dataframe_na(r)
+    check_dataframe_empty(r)
+    check_aa(r)
+    
+    if(!all(sort(colnames(s)) == sort(colnames(r)))) {
+      stop("s has to contain the same columns as r")
+    }
   }
 }
 
-check_version <- function(version) {
-  check_numeric(version)
-  check_singlevalue(version)
-  if(!(version %in% c(1, 2))) {
-    stop("version has to be 1 or 2")
-  }
-}
 
 check_ks <- function(ks) {
   check_infinity(ks)
@@ -209,21 +202,6 @@ get_control <- function(control_in) {
   return(control)
 }
 
-check_ks_and_trim_flank_aa <- function(ks, trim, s, r){
-  k_max <- max(ks)
-  trim <- trim*2
-  s_max <- max(
-    apply(s, 2, function(x) max(nchar(x))))
-  r_max <- max(
-    apply(r, 2, function(x) max(nchar(x))))
-  rs_minmax <- min(s_max, r_max, na.rm = TRUE)
-  
-  if((rs_minmax - trim) < k_max){
-    stop("ks has to be smaller than the biggest trimmed sequence")
-  }
-  
-}
-
 
 check_clustirr <- function(clust_irr) {
   # if missing control_in -> use default values
@@ -236,7 +214,25 @@ check_clustirr <- function(clust_irr) {
   }
 }
 
-
+# equal_controls <- function(clust_irrs) {
+#   
+#   get_vec <- function(x, key) {
+#     return(get_clustirr_inputs(x)$control[[key]])
+#   }
+#   
+#   control_keys <- c("global_smart", "global_max_dist", "local_max_fdr",
+#                     "local_min_ove", "local_min_o", "trim_flank_aa")
+#   control_types <- c("global_smart", "global_max_dist", "local_max_fdr",
+#                      "local_min_ove", "local_min_o", "trim_flank_aa")
+#   
+#   
+#   for(key in control_keys) {
+#     val <- unlist(lapply(X = clust_irrs, FUN = get_vec, key = key))
+#     if(length(unique(val)!=1) {
+#       stop(paste0("different controls:", key))
+#     }
+#   }
+# }
 
 #### Helper functions ####
 

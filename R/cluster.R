@@ -1,6 +1,5 @@
 cluster_irr <- function(s,
                         r,
-                        version = 2,
                         ks = 4,
                         cores = 1,
                         control = list(global_smart = FALSE,
@@ -16,8 +15,10 @@ cluster_irr <- function(s,
     control <- get_control(control_in = control)
     
     # input check
-    input_check(s = s, r = r, version = version, ks = ks,
-                cores = cores, control = control)
+    input_check(s = s, r = r, ks = ks, cores = cores, control = control)
+    
+    # if r is null or missing -> only global analysis of s
+    global_only <- ifelse(test = missing(r)||is.null(r), yes = TRUE, no = FALSE)
     
     # get chains to be analyzed
     chains <- get_chains(colnames(s))
@@ -28,15 +29,17 @@ cluster_irr <- function(s,
     # run analysis for each chain
     clust <- lapply(X = chains, 
                     FUN = run_chain_analysis,
-                    s = s, r = r, version = version,
-                    ks = ks, cores = cores, control = control)
+                    s = s, r = r,
+                    ks = ks, 
+                    cores = cores, 
+                    control = control,
+                    global_only = global_only)
     names(clust) <- chains
     
     # setup clustirr object
     return(get_clustirr_output_obj(clust = clust, 
                                    s = s, 
-                                   r = r, 
-                                   version = version, 
+                                   r = r,
                                    ks = ks, 
                                    cores = cores, 
                                    control = control))
@@ -48,29 +51,37 @@ cluster_irr <- function(s,
 # analysis
 run_chain_analysis <- function(x, 
                                s, 
-                               r, 
-                               version, 
+                               r,
                                ks, 
                                cores, 
-                               control) {
-    
-    chain <- x
-    s_t <- s[!is.na(s[, chain]),chain]
-    r_t <- r[!is.na(r[, chain]),chain]
-    if(version == 2) {
-        cdr3 <- s_t
-        cdr3_ref <- r_t
+                               control,
+                               global_only) {
+  
+  
+  get_cdr3s <- function(x, chain) {
+    x <- x[, chain]
+    x <- x[is.na(x)==FALSE]
+    if(length(x)==0) {
+      stop("no CDR3s found")
     }
-    else {
-        cdr3 <- unique(s_t)
-        cdr3_ref <- unique(r_t)
-    }
-    return(get_clust(cdr3 = cdr3,
-                     cdr3_ref = cdr3_ref,
-                     version = version,
-                     ks = ks,
-                     cores = cores,
-                     control = control))
+    return(x)
+  }
+  
+  chain <- x
+  if(global_only) {
+    cdr3 <- get_cdr3s(x = s, chain = chain)
+    cdr3_ref <- NULL
+  } 
+  else {
+    cdr3 <- get_cdr3s(x = s, chain = chain)
+    cdr3_ref <- get_cdr3s(x = r, chain = chain)
+  }
+  return(get_clust(cdr3 = cdr3,
+                   cdr3_ref = cdr3_ref,
+                   ks = ks,
+                   cores = cores,
+                   control = control,
+                   global_only = global_only))
 }
 
 
@@ -80,15 +91,18 @@ run_chain_analysis <- function(x,
 # (if available)
 get_clust <- function(cdr3,
                       cdr3_ref,
-                      version,
                       ks,
                       cores,
-                      control) {
+                      control,
+                      global_only) {
   # 1. local
-  l <- get_localclust(cdr3 = cdr3,
-                      cdr3_ref = cdr3_ref,
-                      ks = ks,
-                      control = control)
+  l <- NULL
+  if(global_only==FALSE) {
+    l <- get_localclust(cdr3 = cdr3, 
+                        cdr3_ref = cdr3_ref, 
+                        ks = ks, 
+                        control = control)
+  }
   
   # 2. global
   g <- get_global_clust(cdr3 = unique(cdr3), 

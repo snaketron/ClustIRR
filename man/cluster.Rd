@@ -5,7 +5,6 @@
 cluster_irr(
     s,
     r,
-    version = 2,
     ks = 4,
     cores = 1,
     control = list(global_smart = FALSE,
@@ -28,14 +27,14 @@ have either one column or two columns:
     \itemize{
         \item \emph{CDR3b} and \emph{CDR3a} [for \eqn{\alpha\beta} TCRs]
         \item \emph{CDR3g} and \emph{CDR3d} [for \eqn{\gamma\delta} TCRs]
-        \item \emph{CDR3h} and \emph{CDR3l} [for heavy/ligh chain BCRs]
+        \item \emph{CDR3h} and \emph{CDR3l} [for heavy/light chain BCRs]
     }
 }
 }
 \item{r}{data.frame, reference (or control) repertoire of CDR3 sequences. Must
-have the same structure (number of columns and column names) as \code{s}}
-\item{version}{integer, version of the algorithm: \code{version} = 1 or 2 
-(default)}
+have the same structure (number of columns and column names) as \code{s}. If
+this is not specified or set to NULL, then ClustIRR performs only global 
+clustering using sample \code{s}}
 \item{ks}{integer or integer vector, motif lengths. \code{ks} = 4 (default)}
 \item{cores}{integer, number of CPU cores, \code{cores} = 1 (default).}
 \item{control}{list, a named list of auxiliary parameters
@@ -143,17 +142,12 @@ clustering strategies are employed:
 }
 
 \bold{Local clustering}
-
+The aim of local clustering is to find motifs (contiguous k-mers of the CDR 
+sequence) that are overrepresented in repertoire \code{s} compared to 
+repertoire \code{r}. This is an outline of the local clustering procedure:
 \enumerate{
-\item CDR3 processing steps
-    \itemize{
-        \item each row of s and r is considered as a CDR3 sequence from an 
-        individual T- or B-cell (version = 2, default). If version=1 is
-        specified, then we compute the set of non-redundant CDR3s from s and r
-        and use them for clustering.
-        \item Trim CDR3 ends
-    }
-\item Motif processing steps
+\item Trim CDR3 flanks based on \code{control$trim_flank_aa}
+\item For each motif found in \code{s} compute the following:
     \itemize{
         \item motif frequencies in data set \code{s} (\eqn{f_s}) and \code{r}
         (\eqn{f_r})
@@ -164,13 +158,14 @@ clustering strategies are employed:
         \item probability \eqn{p_i} of finding the observed or a larger OvE for 
         motif \eqn{i} given that the null hypothesis is true is computed with 
         the Fisher's exact test
-        \item classify motif \eqn{i} as \code{pass=TRUE} if the motif passes
-        all filters specified in the user-provided control list, otherwise
-        as \code{pass=FALSE}
+        \item if a motif passes the criteria defined in control list, set flag 
+        \eqn{\text{pass}_i=\text{T}}, else \eqn{\text{pass}_i=\text{F}}
     }
 }
 
-\bold{Global clustering}
+\bold{Global clustering} The aim of global clustering is to find similar
+CDR3 sequences in repertoire \code{s}. This is an outline of the global 
+clustering approaches implemented in ClustIRR:
 
 The default ClustIRR algorithm for global clustering is simple. For each pair 
 of equal-length CDR3 sequences \eqn{i} and \eqn{j} we compute the Hamming 
@@ -198,7 +193,6 @@ s <- base::rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRAAKPDGLRALETQYF",
 # run analysis
 out <- cluster_irr(s = s,
                    r = r,
-                   version = 2,
                    ks = 4,
                    cores = 1,
                    control = list(

@@ -36,7 +36,6 @@ s <- rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRADKPDGLDALETQYF",
 # run analysis
 out <- cluster_irr(s = s,
                    r = r,
-                   version = 2,
                    ks = 4,
                    cores = 1,
                    control = list(trim_flank_aa = 3))

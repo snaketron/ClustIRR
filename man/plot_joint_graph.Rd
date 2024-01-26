@@ -32,10 +32,10 @@ r <- base::data.frame(CDR3b = CDR3ab[1:500, "CDR3b"])
 
 
 # run 1st analysis -> clust_irr object
-o_1 <- cluster_irr(s = s_1, r = r, version = 2, ks = 4)
+o_1 <- cluster_irr(s = s_1, r = r, ks = 4)
 
 # run 2nd analysis -> clust_irr object
-o_2 <- cluster_irr(s = s_2, r = r, version = 2, ks = 4)
+o_2 <- cluster_irr(s = s_2, r = r, ks = 4)
 
 # plot graph with vertices as clones
 plot_joint_graph(c(o_1, o_2))
