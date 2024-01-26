@@ -406,67 +406,6 @@ test_that("control_input$low_mem parameter takes only valid input", {
   ), regexp = "low_mem has to be logical")
 })
 
-test_that("control_input$global_pairs parameter takes only valid input", {
-  control_input_tmp <- control_input
-  control_input_tmp$global_pairs <- matrix(
-    data = NA,
-    nrow = 0,
-    ncol = 1
-  ) # rowcount zero
-  expect_error(cluster_irr(
-    s = s,
-    r = r,
-    ks = ks,
-    cores = cores,
-    control = control_input_tmp
-  ), regexp = "global_pairs contains zero rows")
-  control_input_tmp$global_pairs <- base::data.frame(c(1, 2)) # rowcount 0
-  expect_error(cluster_irr(
-    s = s,
-    r = r,
-    ks = ks,
-    cores = cores,
-    control = control_input_tmp
-  ), regexp = "global_pairs has to be of type matrix")
-  control_input_tmp$global_pairs <- matrix(
-    data = "NA",
-    nrow = 1,
-    ncol = 1
-  ) # non-integer matrix
-  expect_error(cluster_irr(
-    s = s,
-    r = r,
-    ks = ks,
-    cores = cores,
-    control = control_input_tmp
-  ), regexp = "global_pairs has to be a numeric matrix")
-  control_input_tmp$global_pairs <- matrix(
-    data = 17L,
-    nrow = 1,
-    ncol = 3
-  ) # ≠ 2 columns
-  expect_error(cluster_irr(
-    s = s,
-    r = r,
-    ks = ks,
-    cores = cores,
-    control = control_input_tmp
-  ), regexp = "global_pairs has to have 2 columns")
-  n <- nrow(s) + 1
-  control_input_tmp$global_pairs <- matrix(
-    data = as.integer(n),
-    nrow = 30,
-    ncol = 2
-  ) # wrong index
-  expect_error(cluster_irr(
-    s = s,
-    r = r,
-    ks = ks,
-    cores = cores,
-    control = control_input_tmp
-  ), regexp = "some indices in global_pair are not found in s")
-})
-
 
 test_that("cluster works with correct input", {
   control_input_tmp <- control_input

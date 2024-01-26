@@ -28,7 +28,7 @@ check_s_r <- function(s, r) {
   check_dataframe_empty(s)
   check_aa(s)
   
-  if(missing(r)|is.null(r)) {
+  if(missing(r)||is.null(r)) {
     message("missing input r, global clustering mode only")
   } else {
     check_dataframe(r)
