@@ -98,11 +98,11 @@ data("CDR3ab")
 
 ```{r}
 # take the first 500 CDR3b sequences from the data -> s
-# s <- base::data.frame(CDR3b = CDR3ab$CDR3b[1:500])
-s <- base::data.frame(CDR3b = c(CDR3ab$CDR3b[1:500], "CASSSSPGDQEQFF"))
+# s <- data.frame(CDR3b = CDR3ab$CDR3b[1:500])
+s <- data.frame(CDR3b = c(CDR3ab$CDR3b[1:500], "CASSSSPGDQEQFF"))
 
 # take 5000 CDR3b sequences 501:5500 from the data -> r
-r <- base::data.frame(CDR3b = CDR3ab$CDR3b[501:5500])
+r <- data.frame(CDR3b = CDR3ab$CDR3b[501:5500])
 ```
 
 
@@ -147,7 +147,7 @@ Example of segmenting CDR3 sequence into 4-mers:
 ```{r}
 cdr3 <- "CASSTTTGTGELFF"
 k <- 4
-base::colnames(stringdist::qgrams(cdr3, q = k))
+colnames(stringdist::qgrams(cdr3, q = k))
 ```
 
 
@@ -167,8 +167,8 @@ the core region of the `CASSTTTGTGELFF`.
 
 ```{r}
 t <- 3
-cdr3_trimmed <- base::substr(x = cdr3, start = t + 1, stop = nchar(cdr3) - t)
-base::colnames(stringdist::qgrams(cdr3_trimmed, q = k))
+cdr3_trimmed <- substr(x = cdr3, start = t + 1, stop = nchar(cdr3) - t)
+colnames(stringdist::qgrams(cdr3_trimmed, q = k))
 ```
  
 
@@ -196,7 +196,7 @@ control parameters (`global_smart` and/or `global_pairs`)
 In this case, `r Biocpkg("ClustIRR")` quantifies the dissimilarity between 
 pairs of CDR3 sequences using Hamming distances. Two CDR3 sequences with 
 Hamming distance $\leq x$ are considered globally similar, where $x$ is the 
-user-defined threshold `control$global_max_dist` (default = 1). 
+user-defined threshold `control$global_max_hdist` (default = 1). 
 
 With this, `r Biocpkg("ClustIRR")` provides a very simple and intuitive 
 heuristic for identifying globally similar CDR3s. But this approach also 
@@ -253,7 +253,7 @@ should be able to detect *LEAR* as enriched:
 
 ```{r}
 # insert motif LEAR
-base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
+substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
 ```
 
 
@@ -379,10 +379,10 @@ Let's insert a clone in dataset `s`:
 
 ```{r}
 # create a clone of 10 T-cells
-clone <- base::data.frame(CDR3b = rep("CATSRPDGLAQYF", times = 20))
+clone <- data.frame(CDR3b = rep("CATSRPDGLAQYF", times = 20))
 
 # append the clone to the original repertoire 's'
-s <- base::rbind(s, clone)
+s <- rbind(s, clone)
 ```
 
 ... and once again perform clustering with `r Biocpkg("ClustIRR")`:
@@ -454,7 +454,7 @@ separately using the CDR3 sequences of each chain.
 
 Let's create the input data. We create two repetoires: 
 
-  * repertoire `S0`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
+  * repertoire `S0`: 100 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
   * repertoire `S1`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
   
 Imagine that `S0` and `S1` are two TCR repertoires of a cancer patient, 
@@ -463,55 +463,31 @@ sequenced before and after cancer therapy, respectively.
 ```{r}
 data("CDR3ab")
 
-S0 <- base::data.frame(CDR3a = CDR3ab$CDR3a[3001:4000],
-                      CDR3b = CDR3ab$CDR3b[3001:4000])
+S0 <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
+                 CDR3b = CDR3ab$CDR3b[3001:3100],
+                 clone_size = c(50, 10, rep(1, times = 98)))
 
-S1 <- base::data.frame(CDR3a = CDR3ab$CDR3a[5001:6000],
-                      CDR3b = CDR3ab$CDR3b[5001:6000])
+S1 <- data.frame(CDR3a = CDR3ab$CDR3a[5001:5200],
+                 CDR3b = CDR3ab$CDR3b[5001:5200],
+                 clone_size = c(20, rep(1, times = 199)))
+
+# add motif 'WWWW'
+substr(x = S1$CDR3b[1], start = 5, stop = 8) <- "WWWW"
 ```
 
 TCR repertoire `S0` has 
 
   * two enriched motifs: *LEAR* and *REAL*
-  * three expanded clones
-      * clone 1: 100 T-cells (CDR3a: CASSEGEQFF and CDR3b CASSLLARAEQFF)
-      * clone 2: 50 T-cells (CDR3a: CASSLESPLHF and CDR3b: CASSLEEEEEEPLHF)
-      * clone 3: 10 T-cells (CDR3a: CASSLESPLHF and CDR3b: CASSLAAAAASPLHF)
-
-```{r}
-# insert motif LEAR in CDR3b
-base::substr(x = S0$CDR3b[1:10], start = 6, stop = 9) <- "LEAR"
-# insert motif REAL in CDR3a
-base::substr(x = S0$CDR3a[50:59], start = 6, stop = 9) <- "REAL"
-```
-
-
-```{r}
-# create 3 clones
-clone_1 <- data.frame(CDR3a = rep(x = "CASSEGEQFF", times = 100),
-                      CDR3b = rep(x = "CASSLLARAEQFF", times = 100))
-
-clone_2 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 50),
-                      CDR3b = rep(x = "CASSLEEEEEEPLHF", times = 50))
-
-clone_3 <- data.frame(CDR3a = rep(x = "CASSLESPLHF", times = 10),
-                      CDR3b = rep(x = "CASSLAAAAASPLHF", times = 10))
-
-# append clones to s
-S0 <- rbind(S0, clone_1, clone_2, clone_3)
-```
-
+  * two expanded clones
+      * clone 1: 50 T-cells (CDR3a: CASSFGPYGSQPQHF and CDR3b CASSRDAGNTIYF)
+      * clone 2: 10 T-cells (CDR3a: CATSRLRQGLNEKLFF and CDR3b: CASGGGLAYEQYF)
 
 TCR repertoire `S1` has 
 
   * one enriched motif: *WWWW*
-  * one expanded clone 1: 100 T-cells (CDR3a: CASSEGEQFF and CDR3b 
-  CASSLLARAEQFF) [same as clone 1 in repertoire `S0`]
+  * one expanded clone 1: 20 T-cells (CDR3a: CASSQPGTDHGYTF and CDR3b 
+  CASSPQGREATGELFF)
 
-```{r}
-base::substr(x = S1$CDR3b[1:20], start = 6, stop = 9) <- "WWWW"
-S1 <- rbind(S1, clone_1)
-```
 
 
 We will perform two sets of analysis with `r Biocpkg("ClustIRR")`.
@@ -539,9 +515,7 @@ Let's plot the joint graph:
 
 ```{r}
 # beta & alpha chain
-plot_joint_graph(clust_irrs = clust_irrs, 
-                 cores = 1, 
-                 as_visnet = TRUE)
+plot_joint_graph(clust_irrs = clust_irrs, cores = 1, as_visnet = TRUE)
 ```
 
 &nbsp;
@@ -595,10 +569,10 @@ Dummy example:
 data("CDR3ab")
 
 # gamma/delta chain TCR data -> notice CDR3g and CDR3d columns of 's' and 'r'
-s <- base::data.frame(CDR3g = CDR3ab$CDR3a[4501:5000],
+s <- data.frame(CDR3g = CDR3ab$CDR3a[4501:5000],
                       CDR3d = CDR3ab$CDR3b[4501:5000])
 
-r <- base::data.frame(CDR3g = CDR3ab$CDR3a[5001:10000],
+r <- data.frame(CDR3g = CDR3ab$CDR3a[5001:10000],
                       CDR3d = CDR3ab$CDR3b[5001:10000])
 
 ```
@@ -607,10 +581,10 @@ r <- base::data.frame(CDR3g = CDR3ab$CDR3a[5001:10000],
 data("CDR3ab")
 
 # heavy/light chain BCR data -> notice CDR3h and CDR3l columns of 's' and 'r'
-s <- base::data.frame(CDR3h = CDR3ab$CDR3a[4501:5000],
+s <- data.frame(CDR3h = CDR3ab$CDR3a[4501:5000],
                       CDR3l = CDR3ab$CDR3b[4501:5000])
 
-r <- base::data.frame(CDR3h = CDR3ab$CDR3a[5001:10000],
+r <- data.frame(CDR3h = CDR3ab$CDR3a[5001:10000],
                       CDR3l = CDR3ab$CDR3b[5001:10000])
 
 ```
@@ -627,28 +601,24 @@ we have two IRRs, one before (A) and one after (B) treatment.
 ```{r}
 data("CDR3ab")
 
-P1_A <- base::data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
-                       CDR3b = CDR3ab$CDR3b[3001:3100])
-# add clone
-P1_A <- rbind(P1_A, P1_A[rep(x = 100, times = 10), ])
+P1_A <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
+                   CDR3b = CDR3ab$CDR3b[3001:3100],
+                   clone_size = rpois(n = 100, lambda = 1)+1)
 
 
-P1_B <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 3101:3200)],
-                       CDR3b = CDR3ab$CDR3b[c(3100, 3101:3200)])
-# add clone
-P1_B <- rbind(P1_B, P1_B[rep(x = 1, times = 20), ])
+P1_B <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 3101:3200)],
+                   CDR3b = CDR3ab$CDR3b[c(3100, 3101:3200)],
+                   clone_size = rpois(n = 101, lambda = 1)+1)
 ```
 
 ```{r}
-P2_A <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
-                       CDR3b = CDR3ab$CDR3b[c(3100, 4001:4100)])
-# add clone
-P2_A <- rbind(P2_A, P2_A[rep(x = 1, times = 5), ])
+P2_A <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
+                   CDR3b = CDR3ab$CDR3b[c(3100, 4001:4100)])
 
-P2_B <- base::data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4100:4199)],
-                       CDR3b = CDR3ab$CDR3b[c(3100, 4100:4199)])
-# add clone
-P2_B <- rbind(P2_B, P2_B[rep(x = 1, times = 50), ])
+P2_B <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4100:4199)],
+                   CDR3b = CDR3ab$CDR3b[c(3100, 4100:4199)])
+
+# not clone_size -> assumption clone_size = 1
 ```
 
 We can analyze the specificity structure of IRR A and B by performing 

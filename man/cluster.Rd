@@ -8,7 +8,7 @@ cluster_irr(
     ks = 4,
     cores = 1,
     control = list(global_smart = FALSE,
-                   global_max_dist = 1,
+                   global_max_hdist = 1,
                    local_max_fdr = 0.05,
                    local_min_ove = 2,
                    local_min_o = 1,
@@ -43,11 +43,11 @@ to control algorithm's behavior. See the details below:
 \item \code{global_smart} - logical, should we use smart global clustering 
 based of BLOSUM62 scores (slower but more accurate; default) or less smart 
 global clustering based on Hamming distances (faster but less accurate) 
-\item \code{global_max_dist} - integer, if \code{global_smart}=FALSE, then 
-\code{global_max_dist} defines a Hamming distance (HD) threshold, i.e. two 
+\item \code{global_max_hdist} - integer, if \code{global_smart}=FALSE, then 
+\code{global_max_hdist} defines a Hamming distance (HD) threshold, i.e. two 
 CDR3s as globally similar if their Hamming distance is smaller or equal to 
-\code{global_max_dist} HD(\eqn{a}, \eqn{b}) \eqn{\leq} \code{global_max_dist}.
-\code{global_max_dist} = 1 (default)
+\code{global_max_hdist} HD(\eqn{a}, \eqn{b}) \eqn{\leq} \code{global_max_hdist}.
+\code{global_max_hdist} = 1 (default)
 \item \code{local_max_fdr} - numeric, maximum False Discovery Rate (FDR) for
 the detection of enriched motifs. \code{local_max_fdr} = 0.05 (default)
 \item \code{local_min_ove} - numeric, minimum fold change between observed
@@ -169,7 +169,7 @@ clustering approaches implemented in ClustIRR:
 
 The default ClustIRR algorithm for global clustering is simple. For each pair 
 of equal-length CDR3 sequences \eqn{i} and \eqn{j} we compute the Hamming 
-distance \eqn{d_{ij}}. If \eqn{d_{ij}\leq} \code{global_max_dist} (user-defined 
+distance \eqn{d_{ij}}. If \eqn{d_{ij}\leq} \code{global_max_hdist} (user-defined 
 input), then \eqn{i} and \eqn{j} are globally similar.
 
 Alternatively, the user can provide a matrix of globally similar CDR3 sequence 
@@ -197,7 +197,7 @@ out <- cluster_irr(s = s,
                    cores = 1,
                    control = list(
                         global_smart = TRUE,
-                        global_max_dist = 1,
+                        global_max_hdist = 1,
                         local_max_fdr = 0.05,
                         local_min_ove = 2,
                         local_min_o = 1,

@@ -3,7 +3,7 @@ cluster_irr <- function(s,
                         ks = 4,
                         cores = 1,
                         control = list(global_smart = FALSE,
-                                       global_max_dist = 1,
+                                       global_max_hdist = 1,
                                        local_max_fdr = 0.05,
                                        local_min_ove = 2,
                                        local_min_o = 1,
@@ -24,6 +24,10 @@ cluster_irr <- function(s,
   
   # get chains to be analyzed
   chains <- get_chains(colnames(s))
+  
+  # add clone size info
+  s <- get_clone_size(s)
+  r <- get_clone_size(r)
   
   # add ID to data
   s$id <- seq_len(length.out = nrow(s))
@@ -62,7 +66,9 @@ run_chain_analysis <- function(x,
   
   
   get_cdr3s <- function(x, chain) {
-    x <- x[, chain]
+    # multiple cdr3 x clone_count -> cells
+    # in the global analysis this is reverted
+    x <- rep(x[, chain], times = x$clone_size)
     x <- x[is.na(x)==FALSE]
     if(length(x)==0) {
       stop("no CDR3s found")

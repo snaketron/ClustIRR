@@ -4,9 +4,7 @@ get_graph <- function(clust_irr, sample_id = "S") {
   
   get_clones <- function(sample_id, x) {
     cs <- x
-    cs$clone_size <- 1
     cs$id <- NULL
-    cs <- aggregate(clone_size~., data = cs, FUN = sum)
     cs$clone_id <- seq_len(nrow(cs))
     cs$sample <- sample_id
     cs$name <- paste0(sample_id, '|', cs$clone_id)
@@ -209,11 +207,8 @@ get_graph <- function(clust_irr, sample_id = "S") {
   }
   
   # build graph
-  ig <- build_graph(le = le, 
-                    ge = ge, 
-                    cs = cs, 
-                    sample_id = sample_id, 
-                    chains = chains)
+  ig <- build_graph(le = le, ge = ge, cs = cs, 
+                    sample_id = sample_id, chains = chains)
   
   return(list(graph = ig, clones = cs))
 }
@@ -234,10 +229,10 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     gmd <- numeric(length = length(clust_irrs))
     for(i in 1:length(clust_irrs)) {
       check_clustirr(clust_irr = clust_irrs[[i]])
-      gmd[i]<-get_clustirr_inputs(clust_irrs[[i]])$control$global_max_dist
+      gmd[i]<-get_clustirr_inputs(clust_irrs[[i]])$control$global_max_hdist
     }
     if(length(unique(gmd))!=1) {
-      stop("all global_max_dist should be equal")
+      stop("all global_max_hdist should be equal")
     }
     
     # check if same chain names
@@ -284,17 +279,17 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
   chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
   
   if(get_clustirr_inputs(clust_irrs[[1]])$control$global_smart==FALSE) {
-    # get global_max_dist
-    gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_dist
+    # get global_max_hdist
+    gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_hdist
     
     # get intergraph edges (global)
     ige <- get_intergraph_edges_hamming(igs = igs, 
-                                        global_max_dist = gmd, 
+                                        global_max_hdist = gmd, 
                                         chains = chains, 
                                         cores = cores)
   } 
   else {
-    # get global_max_dist
+    # get global_max_hdist
     trim_flank_aa <- get_clustirr_inputs(clust_irrs[[1]])$control$trim_flank_aa
     
     # get intergraph edges (global)
@@ -388,10 +383,10 @@ plot_joint_graph <- function(clust_irrs, cores = 1, as_visnet = FALSE) {
     gmd <- numeric(length = length(clust_irrs))
     for(i in 1:length(clust_irrs)) {
       check_clustirr(clust_irr = clust_irrs[[i]])
-      gmd[i]<-get_clustirr_inputs(clust_irrs[[i]])$control$global_max_dist
+      gmd[i]<-get_clustirr_inputs(clust_irrs[[i]])$control$global_max_hdist
     }
     if(length(unique(gmd))!=1) {
-      stop("all global_max_dist should be equal")
+      stop("all global_max_hdist should be equal")
     }
     
     # check if same chain names
@@ -436,9 +431,9 @@ plot_joint_graph <- function(clust_irrs, cores = 1, as_visnet = FALSE) {
 }
         
 
-get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
+get_intergraph_edges_hamming <- function(igs, global_max_hdist, chains, cores) {
   
-  get_igg <- function(x, i, igs, global_max_dist, chain) {
+  get_igg <- function(x, i, igs, global_max_hdist, chain) {
     
     get_hd_row <- function(x, 
                            id_x, 
@@ -447,9 +442,9 @@ get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
                            seq_y,
                            sample_x,
                            sample_y,
-                           global_max_dist) {
+                           global_max_hdist) {
       d <- stringdist(a = seq_x[x], b = seq_y, method = "hamming")
-      js <- which(d <= global_max_dist)
+      js <- which(d <= global_max_hdist)
       if(length(js) == 0) {
         return(NULL)
       }
@@ -468,7 +463,7 @@ get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
                        len_y, 
                        sample_x,
                        sample_y,
-                       global_max_dist) {
+                       global_max_hdist) {
       
       is_x <- which(len_x == x)
       is_y <- which(len_y == x)
@@ -485,7 +480,7 @@ get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
                    seq_y = seq_y[is_y],
                    sample_x = sample_x,
                    sample_y = sample_y,
-                   global_max_dist = global_max_dist)
+                   global_max_hdist = global_max_hdist)
       hd <- do.call(rbind, hd)
       return(hd)
     }
@@ -514,7 +509,7 @@ get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
                  len_y = len_y,
                  sample_x = s1_name,
                  sample_y = s2_name,
-                 global_max_dist = global_max_dist)
+                 global_max_hdist = global_max_hdist)
     
     hd <- do.call(rbind, hd)
     if(is.null(hd)==FALSE && nrow(hd)!=0) {
@@ -548,7 +543,7 @@ get_intergraph_edges_hamming <- function(igs, global_max_dist, chains, cores) {
                                      FUN = get_igg,
                                      igs = igs,
                                      chain = chain,
-                                     global_max_dist = global_max_dist))
+                                     global_max_hdist = global_max_hdist))
       count <- count + 1
     }
   }
@@ -599,7 +594,7 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
     o <- blast(query = s1, 
                db = s2, 
                maxAccepts = 1000, 
-               minIdentity = 0.80,
+               minIdentity = 0.85,
                alphabet = "protein", 
                output_to_file = FALSE)
     

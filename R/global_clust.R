@@ -1,9 +1,9 @@
 
 get_global_clust_hamming <- function(cdr3, control) {
   
-  get_pairdist <- function(x, a, len_a, global_max_dist) {
+  get_pairdist <- function(x, a, len_a, global_max_hdist) {
     d <- stringdist(a = a[x], b = a[(x + 1):len_a], method = "hamming")
-    js <- which(d <= global_max_dist)
+    js <- which(d <= global_max_hdist)
     if(length(js) == 0) {
       return(NULL)
     }
@@ -11,7 +11,7 @@ get_global_clust_hamming <- function(cdr3, control) {
     return(cbind(rep(x = x, times = length(js)), js))
   }
   
-  get_hd <- function(x, cdr3, cdr3_len, global_max_dist, low_mem) {
+  get_hd <- function(x, cdr3, cdr3_len, global_max_hdist, low_mem) {
     
     is <- which(cdr3_len == x)
     if(length(is) == 1) {
@@ -19,7 +19,7 @@ get_global_clust_hamming <- function(cdr3, control) {
     }
     if(length(is) == 2) {
       d <- stringdist(a = cdr3[is[1]], b = cdr3[is[2]], method = "hamming")
-      if(d > global_max_dist) {
+      if(d > global_max_hdist) {
         return(NULL)
       }
 
@@ -37,7 +37,7 @@ get_global_clust_hamming <- function(cdr3, control) {
                    FUN = get_pairdist,
                    a = cdr3[is],
                    len_a = length(is),
-                   global_max_dist = global_max_dist)
+                   global_max_hdist = global_max_hdist)
       hd <- do.call(rbind, hd)
       if(is.null(hd)) {
         return(hd)
@@ -54,7 +54,7 @@ get_global_clust_hamming <- function(cdr3, control) {
     else {
       d <- stringdistmatrix(a = cdr3[is], b = cdr3[is], method="hamming")
       d[upper.tri(x = d, diag = TRUE)] <- NA
-      js <- which(d <= global_max_dist, arr.ind = TRUE)
+      js <- which(d <= global_max_hdist, arr.ind = TRUE)
       if(nrow(js) == 0) {
         return(NULL)
       }
@@ -76,7 +76,7 @@ get_global_clust_hamming <- function(cdr3, control) {
                FUN = get_hd,
                cdr3 = cdr3,
                cdr3_len = cdr3_len,
-               global_max_dist = control$global_max_dist,
+               global_max_hdist = control$global_max_hdist,
                low_mem = control$low_mem)
   
   hd <- do.call(rbind, hd)
@@ -123,7 +123,7 @@ get_global_clust_blosum <- function(cdr3, control) {
   o <- blast(query = db, 
              db = db, 
              maxAccepts = 1000, 
-             minIdentity = 0.80,
+             minIdentity = 0.85,
              alphabet = "protein", 
              output_to_file = FALSE)
   

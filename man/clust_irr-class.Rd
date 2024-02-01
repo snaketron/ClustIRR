@@ -111,7 +111,7 @@ r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 
 # controls: auxiliary inputs
 control <- list(global_smart = TRUE,
-                global_max_dist = 1,
+                global_max_hdist = 1,
                 local_max_fdr = 0.05,
                 local_min_ove = 2,
                 local_min_o = 1,

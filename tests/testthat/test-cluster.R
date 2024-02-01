@@ -9,7 +9,7 @@ cores <- 1
 # set ks and control input parameters
 ks <- c(2, 3, 4)
 control_input <- list(
-  global_max_dist = 1,
+  global_max_hdist = 1,
   local_max_fdr = 0.05,
   local_min_ove = 2,
   local_min_o = 1,
@@ -198,48 +198,48 @@ test_that("cores parameter takes only valid input", {
   ), regexp = "cores has to be >= 1")
 })
 
-test_that("control_input$global_max_dist param takes only valid input", {
+test_that("control_input$global_max_hdist param takes only valid input", {
   control_input_tmp <- control_input
-  control_input_tmp$global_max_dist <- Inf # infinity
+  control_input_tmp$global_max_hdist <- Inf # infinity
   expect_error(cluster_irr(
     s = s,
     r = r,
     ks = ks,
     cores = cores,
     control = control_input_tmp
-  ), regexp = "global_max_dist has to be a finite number")
-  control_input_tmp$global_max_dist <- "Everyone" # non-numeric
+  ), regexp = "global_max_hdist has to be a finite number")
+  control_input_tmp$global_max_hdist <- "Everyone" # non-numeric
   expect_error(cluster_irr(
     s = s,
     r = r,
     ks = ks,
     cores = cores,
     control = control_input_tmp
-  ), regexp = "global_max_dist has to be numeric")
-  control_input_tmp$global_max_dist <- 1.7 # float
+  ), regexp = "global_max_hdist has to be numeric")
+  control_input_tmp$global_max_hdist <- 1.7 # float
   expect_error(cluster_irr(
     s = s,
     r = r,
     ks = ks,
     cores = cores,
     control = control_input_tmp
-  ), regexp = "global_max_dist has to be a whole number")
-  control_input_tmp$global_max_dist <- c(1, 2) # multiple values
+  ), regexp = "global_max_hdist has to be a whole number")
+  control_input_tmp$global_max_hdist <- c(1, 2) # multiple values
   expect_error(cluster_irr(
     s = s,
     r = r,
     ks = ks,
     cores = cores,
     control = control_input_tmp
-  ), regexp = "global_max_dist has to be a single value")
-  control_input_tmp$global_max_dist <- 0 # < 1
+  ), regexp = "global_max_hdist has to be a single value")
+  control_input_tmp$global_max_hdist <- 0 # < 1
   expect_error(cluster_irr(
     s = s,
     r = r,
     ks = ks,
     cores = cores,
     control = control_input_tmp
-  ), regexp = "global_max_dist has to be >= 1")
+  ), regexp = "global_max_hdist has to be >= 1")
 })
 
 test_that("control_input$local_max_fdr param takes only valid input", {

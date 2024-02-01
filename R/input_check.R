@@ -10,7 +10,7 @@ input_check <- function(s,
   check_ks(ks)
   check_local_min_ove(control$local_min_ove)
   check_cores(cores)
-  check_global_max_dist(control$global_max_dist)
+  check_global_max_hdist(control$global_max_hdist)
   check_local_max_fdr(control$local_max_fdr)
   check_local_min_o(control$local_min_o)
   check_trim_flank_aa(control$trim_flank_aa)
@@ -30,7 +30,8 @@ check_s_r <- function(s, r) {
   
   if(missing(r)||is.null(r)) {
     message("missing input r, global clustering mode only")
-  } else {
+  } 
+  else {
     check_dataframe(r)
     check_r_s_cols(r)
     check_rowcount(r)
@@ -66,12 +67,12 @@ check_cores <- function(cores) {
   check_lessthan(cores, 1)
 }
 
-check_global_max_dist <- function(global_max_dist) {
-  check_infinity(global_max_dist)
-  check_numeric(global_max_dist)
-  check_wholenumber(global_max_dist)
-  check_singlevalue(global_max_dist)
-  check_lessthan(global_max_dist, 1)
+check_global_max_hdist <- function(global_max_hdist) {
+  check_infinity(global_max_hdist)
+  check_numeric(global_max_hdist)
+  check_wholenumber(global_max_hdist)
+  check_singlevalue(global_max_hdist)
+  check_lessthan(global_max_hdist, 1)
 }
 
 check_local_max_fdr <- function(local_max_fdr) {
@@ -176,7 +177,7 @@ check_global_smart <- function(global_smart) {
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
   control <- list(global_smart = TRUE,
-                  global_max_dist = 1,
+                  global_max_hdist = 1,
                   local_max_fdr = 0.05,
                   local_min_ove = 2,
                   local_min_o = 1,
@@ -220,9 +221,9 @@ check_clustirr <- function(clust_irr) {
 #     return(get_clustirr_inputs(x)$control[[key]])
 #   }
 #   
-#   control_keys <- c("global_smart", "global_max_dist", "local_max_fdr",
+#   control_keys <- c("global_smart", "global_max_hdist", "local_max_fdr",
 #                     "local_min_ove", "local_min_o", "trim_flank_aa")
-#   control_types <- c("global_smart", "global_max_dist", "local_max_fdr",
+#   control_types <- c("global_smart", "global_max_hdist", "local_max_fdr",
 #                      "local_min_ove", "local_min_o", "trim_flank_aa")
 #   
 #   
@@ -238,13 +239,12 @@ check_clustirr <- function(clust_irr) {
 
 check_aa <- function(x) {
   aa <- "[^ACDEFGHIKLMNPQRSTVWY]"
-  w <- paste0(deparse(substitute(x)),
-              " contains non-standard or lowercase amino acid codes")
-  res <- lapply(x, function(y) length(grep(aa, y)) != 0)
-  if(any(unlist(res))) {
-    stop(w)
+  for(col in get_chains(colnames(x))) {
+    res <- lapply(x[,col], function(y) length(grep(aa, y)) != 0)
+    if(any(unlist(res))) {
+      stop("non-standard amino acid symbols in input CDR")
+    }
   }
-  
 }
 
 check_dataframe <- function(x) {
@@ -255,24 +255,27 @@ check_dataframe <- function(x) {
 }
 
 check_r_s_cols <- function(x) {
-  if(!any(colnames(x) %in% paste0("CDR3", c("a", "b", "g", "d", "l", "h")))) {
+  if(!any(colnames(x) %in% c("clone_size", 
+                             paste0("CDR3", c("a","b","g","d","l","h"))))) {
     s <- paste0("unallowed columns in s/r, allowed are ",
-                "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h")  
+                "CDR3a, CDR3b, CDR3d, CDR3g, CDR3l, CDR3h and clone_size")  
     stop(s)
   }
   if((any(colnames(x) %in% c("CDR3a", "CDR3b"))==TRUE &
-      all(colnames(x) %in% c("CDR3a", "CDR3b"))==FALSE)|
+      all(colnames(x) %in% c("CDR3a", "CDR3b", "clone_size"))==FALSE)|
      (any(colnames(x) %in% c("CDR3g", "CDR3d"))==TRUE &
-      all(colnames(x) %in% c("CDR3g", "CDR3d"))==FALSE)|
+      all(colnames(x) %in% c("CDR3g", "CDR3d", "clone_size"))==FALSE)|
      (any(colnames(x) %in% c("CDR3l", "CDR3h"))==TRUE &
-      all(colnames(x) %in% c("CDR3l", "CDR3h"))==FALSE)) {
+      all(colnames(x) %in% c("CDR3l", "CDR3h", "clone_size"))==FALSE)) {
     s <- paste0("mixed chains, allowed chain combinations are ",
                 "CDR3a x CDR3b, CDR3d x CDR3g, CDR3l x CDR3h")
     stop(s)
   }
   
-  if(!all(vapply(x, inherits, logical(1), "character"))) {
-    stop("non-character columns in s/r")
+  if(any(colnames(x) == "clone_size")) {
+    if(any(is.numeric(x$clone_size)==FALSE)) {
+      stop("clone_size must be numeric")
+    }
   }
 }
 

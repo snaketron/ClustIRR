@@ -61,7 +61,7 @@ config_vertices_plot <- function(g, is_jg) {
   if(is_jg==TRUE) {
     V(g)$color_num <- as.numeric(as.factor(V(g)$sample))
     max_n <- max(V(g)$color_num)
-    V(g)$color <- hcl.colors(n=max_n, palette = "Roma")[V(g)$color_num]
+    V(g)$color <- hcl.colors(n=max(5, max_n), palette = "Roma")[V(g)$color_num]
     V(g)$frame.color <- V(g)$color
   } 
   else {
