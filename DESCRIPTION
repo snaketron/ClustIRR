@@ -25,7 +25,8 @@ Imports:
     visNetwork,
     blaster,
     Biostrings,
-    grDevices
+    grDevices,
+    parallel
 Suggests:
     BiocStyle,
     knitr,

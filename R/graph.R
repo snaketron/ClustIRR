@@ -268,6 +268,9 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
   # get igs
   igs <- vector(mode = "list", length = length(clust_irrs))
   for(i in 1:length(clust_irrs)) {
+    
+    message("creating graphs: ", i, "\n")
+    
     igs[[i]] <- get_graph(clust_irr = clust_irrs[[i]], 
                           sample_id = names(clust_irrs)[i])
   }
@@ -594,7 +597,7 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
     o <- blast(query = s1, 
                db = s2, 
                maxAccepts = 1000, 
-               minIdentity = 0.85,
+               minIdentity = 0.80,
                alphabet = "protein", 
                output_to_file = FALSE)
     
@@ -666,13 +669,21 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
   for(i in 1:(length(igs)-1)) {
     message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
     for(chain in chains) {
+      # ige[[count]] <- do.call(rbind,
+      #                         lapply(X = (i+1):length(igs), 
+      #                                i = i,
+      #                                FUN = get_igg,
+      #                                igs = igs,
+      #                                trim_flank_aa = trim_flank_aa,
+      #                                chain = chain))
       ige[[count]] <- do.call(rbind,
-                              lapply(X = (i+1):length(igs), 
-                                     i = i,
-                                     FUN = get_igg,
-                                     igs = igs,
-                                     trim_flank_aa = trim_flank_aa,
-                                     chain = chain))
+                              mclapply(X = (i+1):length(igs), 
+                                       i = i,
+                                       FUN = get_igg,
+                                       igs = igs,
+                                       trim_flank_aa = trim_flank_aa,
+                                       chain = chain,
+                                       mc.cores = cores))
       count <- count + 1
     }
   }
