@@ -593,8 +593,8 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
     
     o <- blast(query = s1, 
                db = s2, 
-               maxAccepts = 1000, 
-               minIdentity = 0.85,
+               maxAccepts = 10000, 
+               minIdentity = 0.80,
                alphabet = "protein", 
                output_to_file = FALSE)
     
@@ -650,7 +650,7 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
     if(is.null(b)==FALSE && nrow(b)!=0) {
       b$chain <- chain
       b$sample <- paste0(s1_name, "|", s2_name)
-      b$type <- "within-repertoire"
+      b$type <- "between-repertoire"
       b$chain <- chain
       b$clustering <- "global"
       return(b)
