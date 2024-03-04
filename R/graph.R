@@ -61,18 +61,23 @@ get_graph <- function(clust_irr, sample_id = "S") {
         g$to_clone_id <- g$clone_id
         g$clone_id <- NULL
         
+        
         out <- data.frame(from_cdr3 = g[,"from_clone_id"], 
                           to_cdr3 = g[,"to_clone_id"], 
                           weight = g[,"weight"],
+                          nweight = g[,"nweight"],
                           cweight = g[,"cweight"],
+                          ncweight = g[,"ncweight"],
+                          max_len = g[, "max_len"],
                           motif = NA,
                           chain = chain,
                           type = "global")
         
-        out$max_len <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
-                             FUN = function(x) {return(max(nchar(x)))})
-        out$nweight <- out$weight/out$max_len
-        out$ncweight <- out$cweight/out$max_len
+        # browser()
+        # out$max_len <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
+        #                      FUN = function(x) {return(max(nchar(x)))})
+        # out$nweight <- out$weight/out$max_len
+        # out$ncweight <- out$cweight/out$max_len
         
         eg[[chain]] <- out
       }

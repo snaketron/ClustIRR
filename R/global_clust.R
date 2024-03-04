@@ -168,7 +168,6 @@ get_global_clust_blosum <- function(cdr3, control) {
                         FUN.VALUE = numeric(1))
   }
   
-  
   out <- data.frame(from_cdr3 = db$Seq[o$QueryId],
                     to_cdr3 = db$Seq[o$TargetId],
                     weight = -o$bs,
