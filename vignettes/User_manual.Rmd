@@ -90,6 +90,11 @@ represent two repertoires, and each element in the sets represents a T-cell:
 (CDR3$\gamma$ and CDR3$\delta$) or B-cells (CDR3H and CDR3L). This is 
 explained in case study 4.
 
+`r Biocpkg("ClustIRR")` does not perform any kind of clonotyping, the sequences
+supplied by the user are not collapsed before clustering. To integrate clone
+size information in the analysis, an optional `clone_size` column can be added
+to the input table.
+
 Let's have a look at an example data set which we will use as input:
 
 ```{r}
