@@ -6,7 +6,7 @@ repertoires (IRRs). The algorithm identifies groups of T or B cell
 receptors (TCRs or BCRs) that likely have the same antigen specificity. 
 This is achieved by comparing *global* and *local* sequence features of the 
 complementarity determining regions (CDRs) of TCRs and BCRs. Once the 
-specificity groups are identified in a set of IRRs, the algorithm ientifies
+specificity groups are identified in a set of IRRs, the algorithm identifies
 clusters and performs a quantitative comparison of the cluster abundances 
 between biological conditions. 
 
