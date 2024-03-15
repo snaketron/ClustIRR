@@ -610,7 +610,6 @@ P1_A <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
                    CDR3b = CDR3ab$CDR3b[3001:3100],
                    clone_size = rpois(n = 100, lambda = 1)+1)
 
-
 P1_B <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 3101:3200)],
                    CDR3b = CDR3ab$CDR3b[c(3100, 3101:3200)],
                    clone_size = rpois(n = 101, lambda = 1)+1)
@@ -620,8 +619,8 @@ P1_B <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 3101:3200)],
 P2_A <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
                    CDR3b = CDR3ab$CDR3b[c(3100, 4001:4100)])
 
-P2_B <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4100:4199)],
-                   CDR3b = CDR3ab$CDR3b[c(3100, 4100:4199)])
+P2_B <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
+                   CDR3b = CDR3ab$CDR3b[c(3100, 4001:4100)])
 
 # not clone_size -> assumption clone_size = 1
 ```

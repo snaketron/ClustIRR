@@ -34,7 +34,7 @@ cluster_irr <- function(s,
   
   # run analysis for each chain
   clust <- lapply(X = chains, 
-                  FUN = run_chain_analysis,
+                  FUN = get_clust,
                   s = s, 
                   r = r,
                   ks = ks, 
@@ -54,18 +54,17 @@ cluster_irr <- function(s,
 
 
 # Description:
-# Wrapper to be run within the main call and will perform chain-specific
-# analysis
-run_chain_analysis <- function(x, 
-                               s, 
-                               r,
-                               ks, 
-                               cores, 
-                               control,
-                               global_only) {
+# Wrapper of the main functions performed separately for CDR3b and CDR3a
+# (if available)
+get_clust <- function(x,
+                      s,
+                      r,
+                      ks,
+                      cores,
+                      control,
+                      global_only) {
   
-  
-  get_cdr3s <- function(x, chain) {
+  get_cdr3s_for_local <- function(x, chain) {
     # multiple cdr3 x clone_count -> cells
     # in the global analysis this is reverted
     x <- rep(x[, chain], times = x$clone_size)
@@ -76,45 +75,28 @@ run_chain_analysis <- function(x,
     return(x)
   }
   
-  chain <- x
-  if(global_only) {
-    cdr3 <- get_cdr3s(x = s, chain = chain)
-    cdr3_ref <- NULL
-  } 
-  else {
-    cdr3 <- get_cdr3s(x = s, chain = chain)
-    cdr3_ref <- get_cdr3s(x = r, chain = chain)
+  get_cdr3s_for_global <- function(x, chain) {
+    # multiple cdr3 x clone_count -> cells
+    # in the global analysis this is reverted
+    x <- x[, chain]
+    x <- x[is.na(x)==FALSE]
+    if(length(x)==0) {
+      stop("no CDR3s found")
+    }
+    return(x)
   }
-  return(get_clust(cdr3 = cdr3,
-                   cdr3_ref = cdr3_ref,
-                   ks = ks,
-                   cores = cores,
-                   control = control,
-                   global_only = global_only))
-}
-
-
-
-# Description:
-# Wrapper of the main functions performed separately for CDR3b and CDR3a
-# (if available)
-get_clust <- function(cdr3,
-                      cdr3_ref,
-                      ks,
-                      cores,
-                      control,
-                      global_only) {
+  
   # 1. local
   l <- NULL
   if(global_only==FALSE) {
-    l <- get_localclust(cdr3 = cdr3, 
-                        cdr3_ref = cdr3_ref, 
+    l <- get_localclust(cdr3 = get_cdr3s_for_local(x = s, chain = x), 
+                        cdr3_ref = get_cdr3s_for_local(x = r, chain = x), 
                         ks = ks, 
                         control = control)
   }
   
   # 2. global
-  g <- get_global_clust(cdr3 = cdr3,
+  g <- get_global_clust(cdr3 = get_cdr3s_for_global(x = s, chain = x),
                         control = control)
   
   return(list(local = l, global = g))
