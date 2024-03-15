@@ -114,7 +114,7 @@ get_clust <- function(cdr3,
   }
   
   # 2. global
-  g <- get_global_clust(cdr3 = unique(cdr3), 
+  g <- get_global_clust(cdr3 = cdr3,
                         control = control)
   
   return(list(local = l, global = g))

@@ -61,6 +61,12 @@ get_graph <- function(clust_irr, sample_id = "S") {
         g$to_clone_id <- g$clone_id
         g$clone_id <- NULL
         
+        # remove duplicated ids
+        g <- g[g$from_clone_id != g$to_clone_id, ]
+        g$key <- apply(X = g[, c("from_clone_id", "to_clone_id")], MARGIN = 1, 
+                       FUN = function(x) {return(paste0(sort(x),collapse='|'))})
+        g <- g[duplicated(g$key)==FALSE,]
+        g$key <- NULL
         
         out <- data.frame(from_cdr3 = g[,"from_clone_id"], 
                           to_cdr3 = g[,"to_clone_id"], 
@@ -72,12 +78,6 @@ get_graph <- function(clust_irr, sample_id = "S") {
                           motif = NA,
                           chain = chain,
                           type = "global")
-        
-        # browser()
-        # out$max_len <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
-        #                      FUN = function(x) {return(max(nchar(x)))})
-        # out$nweight <- out$weight/out$max_len
-        # out$ncweight <- out$cweight/out$max_len
         
         eg[[chain]] <- out
       }

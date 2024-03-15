@@ -1,5 +1,5 @@
 
-get_global_clust_hamming <- function(cdr3, control) {
+get_global_clust_hamming <- function(cdr3, cdr3_dup, control) {
   
   get_pairdist <- function(x, a, len_a, global_max_hdist) {
     d <- stringdist(a = a[x], b = a[(x + 1):len_a], method = "hamming")
@@ -78,13 +78,26 @@ get_global_clust_hamming <- function(cdr3, control) {
                cdr3_len = cdr3_len,
                global_max_hdist = control$global_max_hdist,
                low_mem = control$low_mem)
-  
   hd <- do.call(rbind, hd)
+  
+  # if there are duplicated CDR3s add one entry
+  if(any(cdr3_dup==1)) {
+    q <- cdr3[which(cdr3_dup==1)]
+    hd_dup <- data.frame(from_cdr3 = q, 
+                         to_cdr3 = q,
+                         weight = 1,
+                         cweight = 1,
+                         nweight = 1,
+                         ncweight = 1,
+                         max_len = NA)
+    
+    hd <- rbind(hd, hd_dup)
+  }
   return(hd)
 }
 
 
-get_global_clust_blosum <- function(cdr3, control) {
+get_global_clust_blosum <- function(cdr3, cdr3_dup, control) {
   
   # computes BLOSUM62 score for pairs of sequences returned by blaster 
   get_bscore <- function(x, d, bm, db) {
@@ -115,6 +128,37 @@ get_global_clust_blosum <- function(cdr3, control) {
                       substitutionMatrix = bm, 
                       gapOpening = 10,
                       gapExtension = 4))
+  }
+  
+  get_bscore_dup <- function(x, cdr3, bm, trim) {
+    
+    bs <- stringDist(x = c(cdr3[x], cdr3[x]),
+                    method = "substitutionMatrix", 
+                    type = "global", 
+                    substitutionMatrix = bm, 
+                    gapOpening = 10,
+                    gapExtension = 4)
+    
+    a <- cdr3[x]
+    na <- nchar(a)
+    if((na-2*trim)<=0) {
+      bs_core <- NA
+    } 
+    else {
+      cdr3_core <- substr(x = a, start = trim+1, stop = nchar(a)-trim)
+      bs_core <- stringDist(x = c(cdr3_core, cdr3_core),
+                          method = "substitutionMatrix", 
+                          type = "global", 
+                          substitutionMatrix = bm, 
+                          gapOpening = 10,
+                          gapExtension = 4)
+    }
+    
+    
+    return(data.frame(from_cdr3 = cdr3[x],
+                      to_cdr3 = cdr3[x],
+                      weight = -bs,
+                      cweight = -bs_core))
   }
   
   db <- data.frame(Id = 1:length(cdr3), Seq = cdr3)
@@ -173,6 +217,18 @@ get_global_clust_blosum <- function(cdr3, control) {
                     weight = -o$bs,
                     cweight = -o$core_bs)
   
+  # if there are duplicated CDR3s add one entry
+  if(any(cdr3_dup==1)) {
+    q <- cdr3[which(cdr3_dup==1)]
+    out_dup <- do.call(rbind, lapply(X = 1:length(q),
+                                     FUN = get_bscore_dup,
+                                     cdr3 = q, 
+                                     bm = data_env[["BLOSUM62"]], 
+                                     trim = control$trim_flank_aa))
+    
+    out <- rbind(out, out_dup)
+  }
+  
   out$max_len <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
                        FUN = function(x) {return(max(nchar(x)))})
   out$nweight <- out$weight/out$max_len
@@ -182,16 +238,25 @@ get_global_clust_blosum <- function(cdr3, control) {
 
 
 get_global_clust <- function(cdr3, control) {
+  
+  cdr3 <- table(cdr3)
+  cdr3_dup <- ifelse(test = as.numeric(cdr3)>1, yes = 1, no = 0)
+  cdr3 <- names(cdr3)
+  
   # if global_pairs are provided as input use them, else compute them
   if(!is.null(control$global_pairs)) {
     g <- control$global_pairs
   }
   else {
     if(control$global_smart==TRUE) {
-      g <- get_global_clust_blosum(cdr3 = cdr3, control = control)
+      g <- get_global_clust_blosum(cdr3 = cdr3, 
+                                   cdr3_dup = cdr3_dup, 
+                                   control = control)
     }
     if(control$global_smart==FALSE) {
-      g <- get_global_clust_hamming(cdr3 = cdr3, control = control)
+      g <- get_global_clust_hamming(cdr3 = cdr3, 
+                                    cdr3_dup = cdr3_dup,
+                                    control = control)
     } 
   }
   return(g)
