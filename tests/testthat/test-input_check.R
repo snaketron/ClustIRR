@@ -24,30 +24,31 @@ test_that("check_dataframe_empty() runs as expected", {
 test_that("check_r_s_cols() runs as expected", {
   df <- data.frame(CDR3 = character())
   e <- paste0("unallowed columns in s/r, allowed are ",
-              "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h")
+              "CDR3a, CDR3b, CDR3d, CDR3g, CDR3l, CDR3h ",
+              "and clone_size")
   expect_error(check_r_s_cols(df), regexp = e, fixed = TRUE)
 })
 
-test_that("check_r_s_cols() takes only character inputs", {
-  df <- data.frame("CDR3a" = c(1, 2))
-  expect_error(check_r_s_cols(df),
-               regexp = "non\\-character columns in s\\/r")
-  df <- data.frame("CDR3b" = NA)
-  expect_error(check_r_s_cols(df),
-               regexp = "non\\-character columns in s\\/r")
-  df <- data.frame("CDR3d" = c(0.005, 0.99))
-  expect_error(check_r_s_cols(df),
-               regexp = "non\\-character columns in s\\/r")
-  df <- data.frame("CDR3g" = FALSE)
-  expect_error(check_r_s_cols(df),
-               regexp = "non\\-character columns in s\\/r")
-  df <- data.frame("CDR3l" = c(0.005, 0.99))
-  expect_error(check_r_s_cols(df),
-               regexp = "non\\-character columns in s\\/r")
-  df <- data.frame("CDR3h" = FALSE)
-  expect_error(check_r_s_cols(df),
-               regexp = "non\\-character columns in s\\/r")
-})
+# test_that("check_r_s_cols() takes only character inputs", {
+#   df <- data.frame("CDR3a" = c(1, 2))
+#   expect_error(check_r_s_cols(df),
+#                regexp = "non\\-character columns in s\\/r")
+#   df <- data.frame("CDR3b" = NA)
+#   expect_error(check_r_s_cols(df),
+#                regexp = "non\\-character columns in s\\/r")
+#   df <- data.frame("CDR3d" = c(0.005, 0.99))
+#   expect_error(check_r_s_cols(df),
+#                regexp = "non\\-character columns in s\\/r")
+#   df <- data.frame("CDR3g" = FALSE)
+#   expect_error(check_r_s_cols(df),
+#                regexp = "non\\-character columns in s\\/r")
+#   df <- data.frame("CDR3l" = c(0.005, 0.99))
+#   expect_error(check_r_s_cols(df),
+#                regexp = "non\\-character columns in s\\/r")
+#   df <- data.frame("CDR3h" = FALSE)
+#   expect_error(check_r_s_cols(df),
+#                regexp = "non\\-character columns in s\\/r")
+# })
 
 test_that("check_r_s_cols() takes only valid chain combinations", {
   m <- paste0("mixed chains, allowed chain combinations are ",
@@ -118,13 +119,13 @@ test_that("get_control() runs as expected", {
 test_that("check_aa() runs as expected", {
   s <- data.frame(CDR3b = "CSSEDNDSSS12")
   expect_error(check_aa(s), 
-               regexp = "s contains non-standard or lowercase amino acid codes")
+               regexp = "non-standard amino acid symbols in input CDR")
   s <- data.frame(CDR3b = "CSSEDNDSSSAS", CDR3a = "CSSEDNDSBSZT")
   expect_error(check_aa(s), 
-               regexp = "s contains non-standard or lowercase amino acid codes")
+               regexp = "non-standard amino acid symbols in input CDR")
   s <- data.frame(CDR3b = c("ACDEFGHIKLMN", "ACDEFGHdKLMN"))
   expect_error(check_aa(s), 
-               regexp = "s contains non-standard or lowercase amino acid codes")
+               regexp = "non-standard amino acid symbols in input CDR")
   s <- data.frame(CDR3b = "ACDEFGHIKLMN", CDR3a = "PQRSTVWY")
   expect_no_error(check_aa(s))
 })

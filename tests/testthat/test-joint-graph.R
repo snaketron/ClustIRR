@@ -10,11 +10,11 @@ x_2 <- cluster_irr(s_2, r)
 
 test_that("get_joint_graph() takes only clust_irr object as input", {
     expect_error(get_joint_graph(NA, NA),
-                 regexp = "input clust_irr is not class clust_irr")
+                 regexp = "clust_irrs must be a list of clust_irr objects")
     expect_error(plot_joint_graph(NA, NA),
-                 regexp = "input clust_irr is not class clust_irr")
+                 regexp = "clust_irrs must be a list of clust_irr objects")
     expect_error(plot_joint_graph(NA, NA, as_visnet = TRUE),
-                 regexp = "input clust_irr is not class clust_irr")
+                 regexp = "clust_irrs must be a list of clust_irr objects")
     
 })
 

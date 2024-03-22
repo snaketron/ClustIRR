@@ -49,7 +49,7 @@ test_that("s parameter takes only valid input", {
     ks = ks,
     cores = cores,
     control = control_input
-  ), regexp = "non\\-character columns in s\\/r")
+  ), regexp = "non-standard amino acid symbols in input CDR")
   df <- s
   df["CDR3b"] <- 42
   expect_error(cluster_irr(
@@ -58,7 +58,7 @@ test_that("s parameter takes only valid input", {
     ks = ks,
     cores = cores,
     control = control_input
-  ), regexp = "non\\-character columns in s\\/r")
+  ), regexp = "non-standard amino acid symbols in input CDR")
 })
 
 
@@ -92,7 +92,7 @@ test_that("r parameter takes only valid input", {
     ks = ks,
     cores = cores,
     control = control_input
-  ), regexp = "non\\-character columns in s\\/r")
+  ), regexp = "non-standard amino acid symbols in input CDR")
   df <- r
   df["CDR3b"] <- 42
   expect_error(cluster_irr(
@@ -101,7 +101,7 @@ test_that("r parameter takes only valid input", {
     ks = ks,
     cores = cores,
     control = control_input
-  ), regexp = "non\\-character columns in s\\/r")
+  ), regexp = "non-standard amino acid symbols in input CDR")
 })
 
 test_that("different combinations of s and r run as expected", {
@@ -120,13 +120,15 @@ test_that("different combinations of s and r run as expected", {
   base::colnames(r_cdr3a)[1] <- "CDR3c"
   # cdr3b column only in s
   expect_error(check_s_r(s, r_cdr3a), 
-               regexp = paste0("unallowed columns in s\\/r, allowed are ",
-                               "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h"))
+               regexp = paste0("unallowed columns in s/r, allowed are ",
+                               "CDR3a, CDR3b, CDR3d, CDR3g, CDR3l, CDR3h ",
+                               "and clone_size"))
   base::colnames(s_cdr3a)[1] <- "CDR3c"
   # cdr3b column only in s
   expect_error(check_s_r(s_cdr3a, r), 
                regexp = paste0("unallowed columns in s/r, allowed are ",
-                               "CDR3a CDR3b CDR3d CDR3g CDR3l CDR3h"))
+                               "CDR3a, CDR3b, CDR3d, CDR3g, CDR3l, CDR3h ",
+                               "and clone_size"))
 })
 
 test_that("ks parameter takes only valid input", {
