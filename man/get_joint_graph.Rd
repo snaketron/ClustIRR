@@ -38,9 +38,9 @@ The results is another \code{igraph} object.
 \examples{
 # load package input data
 data("CDR3ab")
-s_1 <- base::data.frame(CDR3b = CDR3ab[1:100, "CDR3b"])
-s_2 <- base::data.frame(CDR3b = CDR3ab[101:200, "CDR3b"])
-r <- base::data.frame(CDR3b = CDR3ab[1:500, "CDR3b"])
+s_1 <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"])
+s_2 <- data.frame(CDR3b = CDR3ab[101:200, "CDR3b"])
+r <- data.frame(CDR3b = CDR3ab[1:500, "CDR3b"])
 
 
 # run 1st analysis -> clust_irr object

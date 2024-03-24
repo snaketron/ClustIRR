@@ -22,16 +22,16 @@ and/or globally similar.
 \examples{
 # load package input data
 data("CDR3ab")
-s <- base::data.frame(CDR3b = CDR3ab[1:100, "CDR3b"])
-r <- base::data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
+s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], clone_size = 1)
+r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"], clone_size = 1)
 
 # artificially enrich motif 'RWGW' inside sample dataset
-base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RWGW"
+substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RWGW"
 
 # add an artificial clonal expansion of two sequences to the sample dataset
-s <- rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRADKPDGLDALETQYF",
-                                                 "CATSRAAKPDGLAALSTQYF"),
-                                           times = 5)))
+s <- rbind(s, data.frame(CDR3b = c("CATSRADKPDGLDALETQYF", 
+                                   "CATSRAAKPDGLAALSTQYF"),
+                         clone_size = 5)))
 
 # run ClustIRR analysis
 out <- cluster_irr(s = s,

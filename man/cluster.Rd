@@ -179,16 +179,16 @@ pairs, computed by a complementary approachs such as TCRdist.
 \examples{
 # load package input data
 data("CDR3ab")
-s <- data.frame(CDR3b = CDR3ab[1:1000, "CDR3b"])
-r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
+s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], clone_size = 1)
+r <- data.frame(CDR3b = CDR3ab[1:500, "CDR3b"], clone_size = 1)
 
 # artificially enrich motif 'RQWW' inside sample dataset
-base::substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
+substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RQWW"
 
 # add an artificial clonal expansion of two sequences to the sample dataset
-s <- base::rbind(s, base::data.frame(CDR3b = rep(x = c("CATSRAAKPDGLRALETQYF",
-                                    "CATSRAAKPDRQWWLSTQYF"),
-                                    times = 15)))
+s <- rbind(s, data.frame(CDR3b = c("CATSRAAKPDGLRALETQYF",
+                                   "CATSRAAKPDRQWWLSTQYF"),
+                         clone_size = 10))
 
 # run analysis
 out <- cluster_irr(s = s,
@@ -196,27 +196,30 @@ out <- cluster_irr(s = s,
                    ks = 4,
                    cores = 1,
                    control = list(
-                        global_smart = TRUE,
-                        global_max_hdist = 1,
-                        local_max_fdr = 0.05,
-                        local_min_ove = 2,
-                        local_min_o = 1,
-                        trim_flank_aa = 3,
-                        global_pairs = NULL,
-                        low_mem = FALSE))
+                       global_smart = TRUE,
+                       global_max_hdist = 1,
+                       local_max_fdr = 0.05,
+                       local_min_ove = 2,
+                       local_min_o = 1,
+                       trim_flank_aa = 3,
+                       global_pairs = NULL,
+                       low_mem = FALSE))
 
 # output class
-base::class(out)
+class(out)
 
 # output structure
-utils::str(out)
+str(out)
 
 # inspect motif enrichment results
-knitr::kable(utils::head(slot(out, "clust")$CDR3b$local$m))
+knitr::kable(head(slot(out, "clust")$CDR3b$local$m))
 
 # inspect which CDR3bs are globally similar
-knitr::kable(utils::head(slot(out, "clust")$CDR3b$global))
+knitr::kable(head(slot(out, "clust")$CDR3b$global))
 
 # plot graph
 plot_graph(out)
+
+# plot graph as visgraph
+plot_graph(out, as_visnet = TRUE)
 }

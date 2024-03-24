@@ -77,24 +77,31 @@ knitr::include_graphics("../inst/extdata/logo.png")
 
 ## Input
 
-The main input of `r Biocpkg("ClustIRR")` are two repertoires, i.e., sets of 
-amino acid sequences of the complementarity determining region 3 (CDR3). The 
-CDR3s may come from one T cell receptor chain (e.g., \ only CDR3$\alpha$s or 
-only CDR3$\beta$s) or from both chains (CDR3$\alpha\beta$). The two sets 
-represent two repertoires, and each element in the sets represents a T-cell:
+The main input of `r Biocpkg("ClustIRR")` are two repertoires: `s` and `r`:
 
-* `s`: IRR under investigation (case sample)
-* `r`: reference IRR (control/reference sample)
+* `s`: IRR under investigation (case)
+* `r`: reference IRR (control/reference)
 
-**Hint:** `s` and `r` may also contain CDR3s from $\gamma\delta$ T-cells 
-(CDR3$\gamma$ and CDR3$\delta$) or B-cells (CDR3H and CDR3L). This is 
-explained in case study 4.
+Both repertoires should be provided as data.frames. The rows in the 
+data.frames correspond to clones (group of cells derived from a common 
+parent cell by clonal expansion). `r Biocpkg("ClustIRR")` requires the 
+**CDR3 sequence** the **size**  of each clone.
 
-`r Biocpkg("ClustIRR")` does not perform any kind of clonotyping, the sequences
-supplied by the user are not collapsed before clustering. To integrate clone
-size information in the analysis, an optional `clone_size` column can be added
-to the input table.
+**CDR3 sequences**
 
+For each clone, `s` and `r`, must contain the amino acid sequences of the 
+corresponding complementarity determining regions 3 (CDR3s). We may have 
+the CDR3s from one T cell receptor chain (e.g., \ only CDR3$\alpha$s or 
+only CDR3$\beta$s) or from both chains (CDR3$\alpha\beta$). Similarly, we 
+may have CDR3s from $\gamma\delta$ T-cells (CDR3$\gamma$ and CDR3$\delta$) 
+or B-cells (CDR3H and CDR3L). This is explained in case study 4.
+  
+**clone size** 
+
+`s` and `r` may also contain the size of each clone. This is provided by the 
+column `clone_size`. If the clone sizes are not available, then we assume that
+`clone_size`=1.
+  
 Let's have a look at an example data set which we will use as input:
 
 ```{r}
@@ -103,11 +110,12 @@ data("CDR3ab")
 
 ```{r}
 # take the first 500 CDR3b sequences from the data -> s
-# s <- data.frame(CDR3b = CDR3ab$CDR3b[1:500])
-s <- data.frame(CDR3b = c(CDR3ab$CDR3b[1:500], "CASSSSPGDQEQFF"))
+s <- data.frame(CDR3b = c(CDR3ab$CDR3b[1:500], "CASSSSPGDQEQFF"),
+                clone_size = 1)
 
 # take 5000 CDR3b sequences 501:5500 from the data -> r
-r <- data.frame(CDR3b = CDR3ab$CDR3b[501:5500])
+r <- data.frame(CDR3b = CDR3ab$CDR3b[501:5500],
+                clone_size = 1)
 ```
 
 
@@ -124,11 +132,10 @@ str(r)
 
 ## Clustering
 
-`r Biocpkg("ClustIRR")` employs two clustering strategies:
+`r Biocpkg("ClustIRR")` employs two strategies for clustering:
 
-* **local** clustering: detects enrichment of motifs in `s` compared to `r`
-* **global** clustering: identifies pairs of CDR3s in `s` that have similar 
-sequences
+* **local**: detects enrichment of motifs in `s` compared to `r`
+* **global**: identifies pairs of CDR3s in `s` that have similar sequences
 
 The rationale behind these two clustering strategies is the following: two 
 identical CDR3 sequences have the same specificity. Similar CDR3 sequences 
@@ -159,8 +166,8 @@ colnames(stringdist::qgrams(cdr3, q = k))
 $k$-mers found in the **core region** of the CDR3 loop are more likely to 
 establish contact with an antigenic peptide than the $k$-mers found at the 
 flanks of the CDR3 sequence. Hence, the user is encouraged to remove a few 
-amino acids from the flanks of each CDR3 sequence. This can be done by changing
-the control input from `control$trim_flank_aa,` e.g.:
+amino acids from the flanks of each CDR3 sequence. This can be done by 
+changing the control input from `control$trim_flank_aa,` e.g.:
   
   * `control$trim_flank_aa = 0`: no trimming
   * `control$trim_flank_aa = 3`: trim three amino acids from both flanks of the 
@@ -193,36 +200,28 @@ satisfied:
 ### Global clustering
 
 For global clustering, `r Biocpkg("ClustIRR")` employs one of three strategies.
-To employ a specific global clustering strategy you must set the appropriate
-control parameters (`global_smart` and/or `global_pairs`)
+The user can select each strategy with the control parameters: `global_smart` 
+and/or `global_pairs`
 
 *Strategy 1:* if `control$global_smart = FALSE` 
 
-In this case, `r Biocpkg("ClustIRR")` quantifies the dissimilarity between 
-pairs of CDR3 sequences using Hamming distances. Two CDR3 sequences with 
-Hamming distance $\leq x$ are considered globally similar, where $x$ is the 
-user-defined threshold `control$global_max_hdist` (default = 1). 
+Here, `r Biocpkg("ClustIRR")` quantifies the dissimilarity between pairs of 
+CDR3 sequences using Hamming distances. Two CDR3 sequences with Hamming 
+distance $\leq x$ are considered globally similar, where $x$ is the user-
+defined threshold `control$global_max_hdist` (default = 1). 
 
 With this, `r Biocpkg("ClustIRR")` provides a very simple and intuitive 
-heuristic for identifying globally similar CDR3s. But this approach also 
+heuristic for identifying globally similar CDR3s. But, this approach also 
 has drawbacks: 
 
-1. CDR3 sequences with different lengths are not compared
-2. Hamming distance, by definition, does not take into account the properties 
-of the replaced amino acids
+1. CDR3 sequences with different lengths are by definition dissimilar
+2. the Hamming distance, by design, ignores the properties of the amino acids
 
 *Strategy 2:* if `control$global_smart = TRUE`
 
 In this case, `r Biocpkg("ClustIRR")` does pairwise alignment of CDR3 sequences
-and computes a BLOSUM62 score $B$. 
-
-Mean self-similarity score of amino acids in the BLOSUM62 matrix (diagonal 
-entries) is about +6. Empirically we know that CDR3 sequences are typically 
-short (e.g. 15 amino acids on average). If we multiply $15\cdot6$ we get $B=90$,
-i.e. we know that scores $B\approx100$ are associated with pairs of quite 
-similar CDR3 sequences. Hence, we transform $B$ to $B'=\max(0, \min(1, B/100))$,
-i.e. if $B\geq100 \rightarrow B'=1$ (high degree of global similarity), else if 
-$B\leq0 \rightarrow B'=0$ (low degree of global similarity), else $B'=B/100$.
+and computes a BLOSUM62 score $B$ that is normalized by the alignment 
+length $l$ $\rightarrow$ $NB = B/l$.
 
 *Strategy 3:* if `control$global_pairs` is specified by the user
 
@@ -310,16 +309,14 @@ knitr::kable(get_clustirr_clust(o)$CDR3b$global, row.names = FALSE)
 
 ## Putting it all together $\rightarrow$ graph
 
-To interpret the `r Biocpkg("ClustIRR")` output we can inspect the tables
-of locally/globally similar CDR3s. However, sometimes these tables can be
-massive and difficult to interpret. Hence, we provide the functions `get_graph`, 
-which allows us to generate an undirected graph (`r CRANpkg("igraph")` object) 
-from the main outputs of `r Biocpkg("ClustIRR")`, and `plot_graph` for 
-visualization of the graph.
+To interpret the `r Biocpkg("ClustIRR")` output we can inspect the tables 
+of locally/globally similar CDR3s. Furthermore, we provide the functions 
+`get_graph`, which generates an undirected graph (`r CRANpkg("igraph")` 
+object), and `plot_graph` for visualization of the graph.
 
-Each vertex in the graph is a T-cell clone, and we draw an edge between two 
-vertices if a) they are globally similar; or b) if they share an enriched 
-motif (locally similar). 
+Each vertex in the graph is a T-cell clone (row in the input data.frame for 
+repertorire `s`), and we draw an edge between two vertices if a) they are 
+globally similar; or b) if they share an enriched motif (locally similar). 
 
 Let's visualize the graph output for this case study:
 
@@ -332,12 +329,14 @@ plot_graph(clust_irr = o)
 
 ### Vertices
 
-The graph shows a cluster of 20 T-cell clones (vertices). These are the 20 
-clones with CDR3 sequences in which we inserted the motif *LEAR*. The remaining 
-clones (about 480) are shown as singleton vertices.
+The graph shows a cluster of T-cell clones (densely connected vertices). 
+These are the 20 clones with CDR3 sequences in which we inserted the motif 
+*LEAR*. All clones that have an enriched motif are connected in the graph, 
+i.e. enriched motifs give rise to cliques. The remaining clones (about 480)
+are shown as singleton vertices.
 
-We also wee two vertices connected by an edge. These are the two clones that
-are globally similar.
+At the bottom of the graph we see two vertices that are connected by an edge. 
+These are the two clones that are globally similar .
 
 We can also plot an **interactive** graph with `r CRANpkg("visNetwork")`. 
 
@@ -348,33 +347,14 @@ plot_graph(clust_irr = o, as_visnet = TRUE)
 
 ### Edges
 Between a pair of vertices, we draw an edge if: a) they are globally similar; 
-or b) they share an enriched motif. Furthermore, each chain type may have an
-edge if the repertoire contains paired information, e.g., on $\beta$ and 
-$\alpha$ chain CDR3 sequences.
-
-The **color**, **linetype** and **thickness** of the edges are determined as
-follows. 
-
-  * edge colors
-      
-      * purple: local CDR3 similarity
-      * green: global CDR3 similarity
-      * black: local and global CDR3 similarity
-      
-  * edge linetypes
-    
-      * dashed: similarity between CDR3$\beta$, CDR3$\delta$ and CDR3H
-      * dotted: similarity between CDR3$\alpha$, CDR3$\gamma$ and CDR3L
-      * solid: similarity between CDR3s from both chains (e.g. CDR3$\alpha$ 
-        and CDR3$\beta$)
-
-  * edge thickness: number of edges between two clones
+or b) they share an enriched motif. We can have multiple edges between a pair
+of vertices (clones) **for each chain**: local, global, local and global.
 
 
 # Case study 2: analysis of TCR repertoire with large expanded clone
 
-In this case study, we assume that the data contains a clone with 20 
-T-cells ($\approx$4% of the size of the initial repertoire). The T-cells 
+In this case study, we assume that the data contains a clone with 10 
+T-cells ($\approx$2% of the size of the initial repertoire). The T-cells 
 in the expanded clone have the same CDR3b sequence *CATSRPDGLAQYF*. 
 `r Biocpkg("ClustIRR")` should detect most motifs at the core of 
 *CATSRPDGLAQYF* as enriched while also reporting that all cells within 
@@ -384,7 +364,7 @@ Let's insert a clone in dataset `s`:
 
 ```{r}
 # create a clone of 10 T-cells
-clone <- data.frame(CDR3b = rep("CATSRPDGLAQYF", times = 20))
+clone <- data.frame(CDR3b = "CATSRPDGLAQYF", clone_size = 10)
 
 # append the clone to the original repertoire 's'
 s <- rbind(s, clone)
@@ -417,14 +397,12 @@ knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
 ## Global clustering results
 
 Once again, `r Biocpkg("ClustIRR")` finds the same pair of globally similar 
-CDR3 sequences. However, remember that this time our repertoire `s` contains 
-20 identical CDR3s belonging to the expanded clone's T-cells. Each pair 
-of CDR3 sequences in the clone are globally similar. Meanwhile, the CDR3 
-sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* differ by one amino 
-acid at position 4.
+CDR3 sequences. The CDR3 sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* 
+differ by one amino acid at position 4.
 
 Let's check how the global and local similarities are represented in the
-graph (see next section).
+graph (see next section). Can you find the vertex that corresponds to the 
+expanded clone?
 
 
 ## Graph output
@@ -437,10 +415,10 @@ plot_graph(clust_irr = o, as_visnet = TRUE)
 
 &nbsp;
 
-We see one connected component, which is identical to the one we saw in case 
-study 1. Furthermore, we see a large vertex. This represents the clonal 
-expansion, where the size of the vertex scales as the logarithm of the number 
-of T-cells in the clone.
+We see one connected component, which is identical to the one we saw in 
+case study 1. Furthermore, we see a large vertex. This represents the 
+clonal expansion, where the size of the vertex scales as the logarithm 
+of the number of T-cells in the clone.
 
 Clonally expanded cells are globally similar to each other. If the specific 
 clonal expansion is only found in `s` but not in `r`, then it is likely that
