@@ -31,7 +31,7 @@ substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RWGW"
 # add an artificial clonal expansion of two sequences to the sample dataset
 s <- rbind(s, data.frame(CDR3b = c("CATSRADKPDGLDALETQYF", 
                                    "CATSRAAKPDGLAALSTQYF"),
-                         clone_size = 5)))
+                         clone_size = 5))
 
 # run ClustIRR analysis
 out <- cluster_irr(s = s,

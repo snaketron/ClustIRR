@@ -682,13 +682,13 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
       #                                trim_flank_aa = trim_flank_aa,
       #                                chain = chain))
       ige[[count]] <- do.call(rbind,
-                              mclapply(X = (i+1):length(igs), 
-                                       i = i,
-                                       FUN = get_igg,
-                                       igs = igs,
-                                       trim_flank_aa = trim_flank_aa,
-                                       chain = chain,
-                                       mc.cores = cores))
+                              parallel::mclapply(X = (i+1):length(igs), 
+                                                 i = i,
+                                                 FUN = get_igg,
+                                                 igs = igs,
+                                                 trim_flank_aa = trim_flank_aa,
+                                                 chain = chain,
+                                                 mc.cores = cores))
       count <- count + 1
     }
   }
