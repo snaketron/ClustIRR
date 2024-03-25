@@ -421,7 +421,7 @@ test_that("cluster works with correct input", {
   ))
 })
 
-# test all versions with correct input and low_mem = true
+# test with correct input and low_mem = true
 test_that("cluster works with correct input in low_mem mode", {
   control_input_tmp <- control_input
   control_input_tmp$low_mem <- TRUE
@@ -435,7 +435,21 @@ test_that("cluster works with correct input in low_mem mode", {
   ))
 })
 
-# na checks
+# test with correct input and global_smart = TRUE
+test_that("cluster works with correct input and global smart mode", {
+    control_input_tmp <- control_input
+    control_input_tmp$global_smart <- TRUE
+    control_input_tmp$trim_flank_aa <- 0
+    expect_no_error(cluster_irr(
+        s = s,
+        r = r,
+        ks = ks,
+        cores = cores,
+        control = control_input_tmp
+    ))
+})
+
+# NA checks
 test_that("cluster works with NA included in s and/or r", {
   nas <- base::data.frame(CDR3b = c(NA, NA))
   s_na <- base::rbind(s, nas)
