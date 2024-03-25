@@ -29,26 +29,20 @@ test_that("check_r_s_cols() runs as expected", {
   expect_error(check_r_s_cols(df), regexp = e, fixed = TRUE)
 })
 
-# test_that("check_r_s_cols() takes only character inputs", {
-#   df <- data.frame("CDR3a" = c(1, 2))
-#   expect_error(check_r_s_cols(df),
-#                regexp = "non\\-character columns in s\\/r")
-#   df <- data.frame("CDR3b" = NA)
-#   expect_error(check_r_s_cols(df),
-#                regexp = "non\\-character columns in s\\/r")
-#   df <- data.frame("CDR3d" = c(0.005, 0.99))
-#   expect_error(check_r_s_cols(df),
-#                regexp = "non\\-character columns in s\\/r")
-#   df <- data.frame("CDR3g" = FALSE)
-#   expect_error(check_r_s_cols(df),
-#                regexp = "non\\-character columns in s\\/r")
-#   df <- data.frame("CDR3l" = c(0.005, 0.99))
-#   expect_error(check_r_s_cols(df),
-#                regexp = "non\\-character columns in s\\/r")
-#   df <- data.frame("CDR3h" = FALSE)
-#   expect_error(check_r_s_cols(df),
-#                regexp = "non\\-character columns in s\\/r")
-# })
+test_that("check_s_r() takes only character inputs", {
+  df <- data.frame("CDR3a" = c(1, 2))
+  expect_error(check_s_r(df),
+               regexp = "non-standard amino acid symbols in input CDR")
+  df <- data.frame("CDR3b" = NA)
+  expect_warning(check_s_r(df),
+               regexp = "s contains NA value")
+  df <- data.frame("CDR3d" = c(0.005, 0.99))
+  expect_error(check_s_r(df),
+               regexp = "non-standard amino acid symbols in input CDR")
+  df <- data.frame("CDR3l" = c(0.005, 0.99))
+  expect_error(check_s_r(df),
+               regexp = "non-standard amino acid symbols in input CDR")
+})
 
 test_that("check_r_s_cols() takes only valid chain combinations", {
   m <- paste0("mixed chains, allowed chain combinations are ",

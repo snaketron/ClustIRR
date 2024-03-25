@@ -97,7 +97,7 @@ get_graph <- function(clust_irr, sample_id = "S") {
       add_motif_edges <- function(x, ig, sample_id, chain) {
         xp <- utils::combn(x = paste0(sample_id, '|', x), m = 2)
         xp <- as.vector(xp)
-        return(igraph::add.edges(graph = ig, 
+        return(igraph::add_edges(graph = ig, 
                                  edges = xp, 
                                  weight = 1,
                                  cweight = 1,
@@ -128,7 +128,7 @@ get_graph <- function(clust_irr, sample_id = "S") {
       
       e <- as.vector(apply(X = ge[, c("from_cdr3", "to_cdr3")], 
                       MARGIN = 1, FUN = get_e, sample_id = sample_id))
-      ig <- igraph::add.edges(graph = ig, 
+      ig <- igraph::add_edges(graph = ig, 
                               edges = e, 
                               weight = ge$weight,
                               cweight = ge$cweight,
@@ -258,7 +258,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
   }
   
   get_v_e <- function(x, what) {
-    return(get.data.frame(x$graph, what = what))
+    return(as_data_frame(x$graph, what = what))
   }
   
   # check input
