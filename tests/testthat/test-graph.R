@@ -2,6 +2,22 @@ data("CDR3ab")
 s <- data.frame(CDR3b = CDR3ab[1:50, "CDR3b"])
 r <- data.frame(CDR3b = CDR3ab[1:10000, "CDR3b"])
 x <- suppressWarnings(cluster_irr(s, r))
+y <- suppressWarnings(cluster_irr(r, s))
+
+clust_irrs <- vector(mode = "list", length = 2)
+clust_irrs[[1]] <- x
+clust_irrs[[2]] <- y
+
+test_that("plot_joint_graph() takes only clust_irr object as input", {
+  expect_error(plot_joint_graph(NA),
+               regexp = "clust_irrs must be a list of clust_irr objects")
+})
+
+test_that("plot_joint_graph() works as expected", {
+  expect_no_error(plot_joint_graph(clust_irrs))
+  expect_no_error(plot_joint_graph(clust_irrs, as_visnet = TRUE))
+  expect_no_error(plot_joint_graph(clust_irrs, show_singletons = FALSE))
+})
 
 test_that("plot_graph() takes only clust_irr object as input", {
     expect_error(plot_graph(NA),
@@ -11,6 +27,7 @@ test_that("plot_graph() takes only clust_irr object as input", {
 test_that("plot_graph() warns if no local or global edges are found", {
     expect_no_error(plot_graph(x))
     expect_no_error(plot_graph(x, as_visnet = TRUE))
+    expect_no_error(plot_graph(x, as_visnet = TRUE, show_singletons = FALSE))
 })
 
 test_that("plot_graph() can handle edges of only one type", {

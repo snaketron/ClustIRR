@@ -1,14 +1,17 @@
 \name{plot_joint_graph}
 \alias{plot_joint_graph}
 \title{Plot joint ClustIRR graph}
-\usage{plot_joint_graph(clust_irrs, cores = 1, as_visnet = FALSE)}
+\usage{plot_joint_graph(clust_irrs, cores = 1, as_visnet=FALSE,
+show_singletons=TRUE)}
 \arguments{
 \item{clust_irrs}{list of two or mroe S4 object of type \code{clust_irr} 
 generated with the function \code{cluster_irr}}
 \item{cores}{integer, number of computer cores to use (default = 1)}
 \item{as_visnet}{logical, if \code{as_visnet}=TRUE we plot an interactive 
 graph with visNetwork. If \code{as_visnet}=FALSE, we plot a static graph 
-with igraph.}}
+with igraph.}
+\item{show_singletons}{logical, if show_singletons=TRUE we plot all vertices. 
+If show_singletons=FALSE, we plot only vertices connected by edges.}}
 \value{
 The output is an igraph plot.
 

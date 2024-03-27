@@ -1,12 +1,14 @@
 \name{plot_graph}
 \alias{plot_graph}
 \title{Plot ClustIRR graph}
-\usage{plot_graph(clust_irr, as_visnet=FALSE)}
+\usage{plot_graph(clust_irr, as_visnet=FALSE, show_singletons=TRUE)}
 \arguments{
 \item{clust_irr}{S4 object of type \code{clust_irr}, result of \code{clust_irr} 
 function}
 \item{as_visnet}{logical, if as_visnet=TRUE we plot an interactive graph with 
-visNetwork. If as_visnet=FALSE, we plot a static graph with igraph.}}
+visNetwork. If as_visnet=FALSE, we plot a static graph with igraph.}
+\item{show_singletons}{logical, if show_singletons=TRUE we plot all vertices. 
+If show_singletons=FALSE, we plot only vertices connected by edges.}}
 \value{
 The output is an igraph plot.
 
@@ -41,6 +43,6 @@ out <- cluster_irr(s = s,
                    control = list(trim_flank_aa = 3))
 
 # plot graph with vertices as clones
-p1 <- plot_graph(out, as_visnet=FALSE)
+p1 <- plot_graph(out, as_visnet=FALSE, show_singletons=TRUE)
 p1
 }

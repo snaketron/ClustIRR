@@ -23,6 +23,7 @@ knitr::opts_chunk$set(
 ```{r}
 library(ClustIRR)
 library(knitr)
+library(igraph)
 library(visNetwork)
 ```
 
@@ -344,6 +345,11 @@ We can also plot an **interactive** graph with `r CRANpkg("visNetwork")`.
 plot_graph(clust_irr = o, as_visnet = TRUE)
 ```
 
+To remove all vertices without edges from the graph, we can disable the option *show_singletons*.
+
+```{r, fig.width=5, fig.height=4, fig.align='center'}
+plot_graph(clust_irr = o, as_visnet = TRUE, show_singletons = FALSE)
+```
 
 ### Edges
 Between a pair of vertices, we draw an edge if: a) they are globally similar; 
@@ -624,7 +630,9 @@ to visualize them.
 
 ```{r, fig.width=6, fig.height=6}
 # beta & alpha chain
-plot_joint_graph(clust_irrs = clust_irrs, as_visnet = TRUE)
+plot_joint_graph(clust_irrs = clust_irrs, 
+                 as_visnet = TRUE, 
+                 show_singletons = FALSE)
 ```
 
 &nbsp;
