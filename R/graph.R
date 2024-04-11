@@ -342,6 +342,7 @@ plot_graph <- function(clust_irr, as_visnet = FALSE, show_singletons = TRUE) {
   ig <- get_graph(clust_irr = clust_irr)
   
   clones <- ig$clones
+
   if(is.null(ig$graph)) {
     warning("No graph to plot \n")
     return(list(graph = NA, clones = clones))
@@ -349,7 +350,7 @@ plot_graph <- function(clust_irr, as_visnet = FALSE, show_singletons = TRUE) {
   ig <- ig$graph
   
   if(!show_singletons){
-    ig <- delete_vertices(ig, which(degree(ig) == 0))
+    ig <- delete_vertices(ig, which(degree(ig) == 0 & V(ig)$clone_size <= 1))
   }
   
   ig <- config_vertices_plot(g = ig, is_jg = FALSE)
@@ -427,7 +428,8 @@ plot_joint_graph <- function(clust_irrs,
   }
   
   if(!show_singletons){
-    jg$graph <- delete_vertices(jg$graph, which(degree(jg$graph) == 0))
+    jg$graph <- delete_vertices(jg$graph, which(degree(jg$graph) == 0 &
+                                                  V(jg$graph)$clone_size <= 1))
   }
   
   # make graph look visually better
