@@ -343,7 +343,7 @@ We can plot an **interactive** graph with `r CRANpkg("visNetwork")`.
 plot_graph(clust_irr = o, as_visnet = TRUE)
 ```
 
-To remove all vertices without edges from the graph, we can disable the option *show_singletons*.
+To remove all vertices without edges from the graph, we can disable the option *show_singletons*. This does not remove vertices with clone_size bigger than 1.
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
 plot_graph(clust_irr = o, as_visnet = TRUE, show_singletons = FALSE)
@@ -518,7 +518,10 @@ Let's plot the joint graph:
 
 ```{r}
 # beta & alpha chain
-plot_joint_graph(clust_irrs = clust_irrs, cores = 1, as_visnet = TRUE)
+plot_joint_graph(clust_irrs = clust_irrs, 
+                 cores = 1, 
+                 as_visnet = TRUE,
+                 show_singletons = TRUE)
 ```
 
 &nbsp;
@@ -650,7 +653,7 @@ to visualize them.
 # beta & alpha chain
 plot_joint_graph(clust_irrs = clust_irrs, 
                  as_visnet = TRUE, 
-                 show_singletons = T)
+                 show_singletons = TRUE)
 ```
 
 &nbsp;
