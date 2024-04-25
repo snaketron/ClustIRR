@@ -625,9 +625,9 @@ get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
       return(NULL)
     }
     
-    # get blosum matrix from Biostrings
+    # get blosum matrix from pwalign
     data_env <- new.env(parent = emptyenv())
-    data("BLOSUM62", envir = data_env, package = "Biostrings")
+    data("BLOSUM62", envir = data_env, package = "pwalign")
     
     # compute BLSOUM62 score for matches
     o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 
