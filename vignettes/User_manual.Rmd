@@ -337,13 +337,29 @@ are shown as singleton vertices.
 We also see two vertices that are connected by an edge. 
 These are the two clones that are globally similar.
 
-We can plot an **interactive** graph with `r CRANpkg("visNetwork")`. 
+We can plot an **interactive** graph with `r CRANpkg("visNetwork")`. Hover or 
+click on vertices to see their respective CDR3 sequences. 
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
-plot_graph(clust_irr = o, as_visnet = TRUE)
+vis_g <- plot_graph(clust_irr = o, as_visnet = TRUE)
+vis_g
 ```
 
-To remove all vertices without edges from the graph, we can disable the option *show_singletons*. This does not remove vertices with clone_size bigger than 1.
+You can modify the default ClustIRR behavior and show any other vertex 
+attribute in the tooltips. In the next code block we set the tooltip as
+the concatenation of the CDR3 sequence and the clone size:
+
+```{r}
+vis_g$x$nodes$title <- paste0(vis_g$x$nodes$CDR3b, 
+                              ' (', vis_g$x$nodes$clone_size, ')')
+vis_g
+```
+
+
+Finally, you might want to focus on only the large connected vertices 
+in the graph. You can accomplish this by setting the input parameter 
+*show_singletons=FALSE*. This function will only remove vertices with 
+vertex degree = 0 (isolated vertices) and clone_size = 1.
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
 plot_graph(clust_irr = o, as_visnet = TRUE, show_singletons = FALSE)

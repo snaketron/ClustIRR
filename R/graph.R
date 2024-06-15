@@ -335,7 +335,9 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
 }
 
 
-plot_graph <- function(clust_irr, as_visnet = FALSE, show_singletons = TRUE) {
+plot_graph <- function(clust_irr, 
+                       as_visnet = FALSE, 
+                       show_singletons = TRUE) {
   
   check_clustirr(clust_irr = clust_irr)
   
@@ -371,14 +373,22 @@ plot_graph <- function(clust_irr, as_visnet = FALSE, show_singletons = TRUE) {
       }
     }
     
-    visIgraph(igraph = ig,
+    vi <- visIgraph(igraph = ig,
               idToLabel = TRUE,
               layout = "layout_components",
               randomSeed = 1234,
               physics = FALSE,
               smooth = FALSE,
               type = "square")
-  }
+    
+    # set vertex titles -> CDR sequences
+    cs <- get_chains(x = colnames(vi$x$nodes))
+    vi$x$nodes$title <- apply(X = vi$x$nodes[, cs, drop = FALSE], 
+                              y = colnames(vi$x$nodes)[cs],
+                              MARGIN = 1, FUN = function(x, y) {
+                                paste0(paste0(x, ':', y), collapse = ' ')})}
+  
+  return(vi)
 }
 
 
@@ -453,7 +463,9 @@ plot_joint_graph <- function(clust_irrs,
 }
         
 
-get_intergraph_edges_hamming <- function(igs, global_max_hdist, chains, cores) {
+get_intergraph_edges_hamming <- function(igs, 
+                                         global_max_hdist, 
+                                         chains, cores) {
   
   get_igg <- function(x, i, igs, global_max_hdist, chain) {
     
@@ -575,7 +587,10 @@ get_intergraph_edges_hamming <- function(igs, global_max_hdist, chains, cores) {
 }
 
 
-get_intergraph_edges_blosum <- function(igs, chains, cores, trim_flank_aa) {
+get_intergraph_edges_blosum <- function(igs,
+                                        chains, 
+                                        cores, 
+                                        trim_flank_aa) {
   
   get_bscore_trim <- function(x, s1, s2, bm, d, trim_flank_aa) {
     
