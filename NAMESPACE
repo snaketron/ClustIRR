@@ -23,7 +23,7 @@ importFrom(igraph, "V<-")
 importFrom(igraph, "E<-")
 importFrom(igraph, E)
 importFrom(igraph, add_edges)
-importFrom(Biostrings, stringDist)
+importFrom(pwalign, stringDist)
 importFrom(grDevices, hcl.colors)
 
 export(cluster_irr)
