@@ -383,12 +383,12 @@ plot_graph <- function(clust_irr,
     
     # set vertex titles -> CDR sequences
     cs <- get_chains(x = colnames(vi$x$nodes))
-    vi$x$nodes$title <- apply(X = vi$x$nodes[, cs, drop = FALSE], 
-                              y = colnames(vi$x$nodes)[cs],
+    vi$x$nodes$title <- apply(X = vi$x$nodes[, cs, drop = FALSE], y = cs,
                               MARGIN = 1, FUN = function(x, y) {
-                                paste0(paste0(x, ':', y), collapse = ' ')})}
-  
+                                paste0(paste0(y, ':', x), collapse = ' ')})
+    
   return(vi)
+  }
 }
 
 
@@ -725,4 +725,3 @@ get_intergraph_edges_blosum <- function(igs,
   
   return(ige)
 }
-

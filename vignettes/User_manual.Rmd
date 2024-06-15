@@ -355,9 +355,13 @@ vis_g$x$nodes$title <- paste0(vis_g$x$nodes$CDR3b,
 vis_g
 ```
 
+```{r}
+vi <- vis_g
+```
 
-Finally, you might want to focus on only the large connected vertices 
-in the graph. You can accomplish this by setting the input parameter 
+
+Finally, the user might be interested in focusing on only the large connected 
+vertices in the graph. You can accomplish this by setting the input parameter 
 *show_singletons=FALSE*. This function will only remove vertices with 
 vertex degree = 0 (isolated vertices) and clone_size = 1.
 
