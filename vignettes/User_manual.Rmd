@@ -11,13 +11,7 @@ vignette: >
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(
-    collapse = TRUE,
-    comment = "#>",
-    fig.height = 5,
-    fig.width = 5,
-    fig.align = "center"
-)
+knitr::opts_chunk$set(collapse = TRUE, fig.align = "center")
 ```
 
 ```{r}
@@ -321,6 +315,11 @@ Let's visualize the graph output for this case study:
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
 par(mai = c(0,0,0,0))
+ig <- get_graph(clust_irr = o)
+```
+
+
+```{r, fig.width=5, fig.height=4, fig.align='center'}
 plot_graph(clust_irr = o)
 ```
 
@@ -353,10 +352,6 @@ the concatenation of the CDR3 sequence and the clone size:
 vis_g$x$nodes$title <- paste0(vis_g$x$nodes$CDR3b, 
                               ' (', vis_g$x$nodes$clone_size, ')')
 vis_g
-```
-
-```{r}
-vi <- vis_g
 ```
 
 
@@ -546,6 +541,16 @@ plot_joint_graph(clust_irrs = clust_irrs,
 
 &nbsp;
 
+
+```{r}
+# beta & alpha chain
+o <- get_joint_graph(clust_irrs = clust_irrs)
+
+o$clones[1:5,]
+o$clones[1,]
+```
+
+
 ## How to interpret the joint graph?
 
 The clones of repertoire `S0` and `S1` are shown as red and yellow 
@@ -700,6 +705,46 @@ between clones from `P2_A` and `P2_B`, and only one connection `P1_A` and
 
 Within each repertoire, edges are drawn as explained earlier (not the case 
 in this particular graph). 
+
+
+
+```{r}
+jg <- get_joint_graph(clust_irrs = clust_irrs, cores = 1)
+
+require(igraph)
+V(jg$graph)
+
+# if(as_visnet == TRUE) {
+#     V(ig)$size <- V(ig)$size*5
+#     if(length(E(ig))==0) {
+#       message("no edges found in the graph, dummy self-edge added")
+#       # apparently if no edges, visnetwork can't plot
+#       ig <- add_edges(graph = ig, edges = c(V(ig)[1],V(ig)[1]))
+#     } 
+#     else {
+#       if(all(E(ig)$width == 1)==FALSE) {
+#         E(ig)$width <- 2*(1/(1+exp(-(-6-0.1*E(ig)$weight))))
+#       }
+#     }
+#     
+#     vi <- visIgraph(igraph = ig,
+#                     idToLabel = TRUE,
+#                     layout = "layout_components",
+#                     randomSeed = 1234,
+#                     physics = FALSE,
+#                     smooth = FALSE,
+#                     type = "square")
+#     
+#     # set vertex titles -> CDR sequences
+#     cs <- get_chains(x = colnames(vi$x$nodes))
+#     vi$x$nodes$title <- apply(X = vi$x$nodes[, cs, drop = FALSE], y = cs,
+#                               MARGIN = 1, FUN = function(x, y) {
+#                                 paste0(paste0(y, ':', x), collapse = ' ')})
+#     
+#     return(vi)
+#   }
+```
+
 
 
 ```{r session_info}

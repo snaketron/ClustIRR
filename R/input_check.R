@@ -172,6 +172,24 @@ check_global_smart <- function(global_smart) {
   check_logical(x = global_smart)
 }
 
+check_as_visnet <- function(as_visnet) {
+  if(missing(as_visnet)) {
+    stop("as_visnet missing")
+  }
+  check_singlevalue(x = as_visnet)
+  check_logical(x = as_visnet)
+}
+
+check_show_singletons <- function(show_singletons) {
+  if(missing(show_singletons)) {
+    stop("show_singletons missing")
+  }
+  check_singlevalue(x = show_singletons)
+  check_logical(x = show_singletons)
+}
+
+
+
 # Description:
 # Setup control list.
 # control_in: user generated list (if missing -> use default)

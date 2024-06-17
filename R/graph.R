@@ -212,7 +212,7 @@ get_graph <- function(clust_irr,
   ig <- build_graph(le = le, ge = ge, cs = cs, 
                     sample_id = sample_id, chains = chains)
   
-  return(list(graph = ig, clones = cs))
+  return(list(graph = ig, clones = cs, joint_graph = FALSE))
 }
 
 get_joint_graph <- function(clust_irrs, 
@@ -324,36 +324,58 @@ get_joint_graph <- function(clust_irrs,
   
   # build joint graph
   g <- graph_from_data_frame(df_e, directed=FALSE, vertices=df_v)
-  
-  # make graph look visually better
-  # g <- config_vertices_plot(g = g, is_jg = TRUE)
-  # g <- config_edges_plot(g = g, is_jg = TRUE)
-  
-  return(list(graph = g, clones = df_v))
+
+  return(list(graph = g, clones = df_v, joint_graph = TRUE))
 }
 
-plot_graph <- function(clust_irr, 
+plot_graph <- function(g, 
                        as_visnet = FALSE, 
                        show_singletons = TRUE) {
   
-  check_clustirr(clust_irr = clust_irr)
-  
-  ig <- get_graph(clust_irr = clust_irr)
-  
-  clones <- ig$clones
-
-  if(is.null(ig$graph)) {
-    warning("No graph to plot \n")
-    return(list(graph = NA, clones = clones))
+  check_g <- function(g) {
+    if(missing(g)) {
+      stop("missing input g")
+    }
+    if(is.list(g)==FALSE) {
+      stop("missing input g")
+    }
+    if(length(g)!=3) {
+      stop("missing input g with two objects")
+    }
+    if(all(names(g)==c("graph", "clones", "joint_graph"))==FALSE) {
+      stop("wrong input g")
+    }
+    if(is.data.frame(g$clones)==FALSE) {
+      stop("wrong input g")
+    }
+    if(is_igraph(g$graph)==FALSE) {
+      stop("wrong input g")
+    }
+    if(is.null(g$graph)) {
+      stop("wrong input g")
+    }
+    if(is.logical(g$joint_graph)==FALSE) {
+      stop("wrong input g")
+    }
   }
-  ig <- ig$graph
+  
+  check_g(g = g)
+  check_as_visnet(as_visnet)
+  check_show_singletons(show_singletons=show_singletons)
+  
+  # unpack g
+  clones <- g$clones
+  ig <- g$graph
+  is_jg <- g$joint_graph
   
   if(!show_singletons){
-    ig <- delete_vertices(ig, which(degree(ig) == 0 & V(ig)$clone_size <= 1))
+    k <- which(degree(ig) == 0 & V(ig)$clone_size <= 1)
+    if(length(k)!=0) {
+      ig <- delete_vertices(ig, k)
+    }
   }
   
-  ig <- config_vertices_plot(g = ig, is_jg = FALSE)
-  # plot
+  ig <- config_vertices_plot(g = ig, is_jg = is_jg)
   if(as_visnet == FALSE) {
     plot(ig, vertex.label = NA)
   }
@@ -389,84 +411,6 @@ plot_graph <- function(clust_irr,
   }
 }
 
-plot_joint_graph <- function(clust_irrs,
-                             cores = 1,
-                             as_visnet = FALSE,
-                             show_singletons = TRUE) {
-  
-  check_input <- function(clust_irrs) {
-    if(missing(clust_irrs)==TRUE) {
-      stop("clust_irrs input missing")
-    }
-    if(is.list(clust_irrs)==FALSE) {
-      stop("clust_irrs must be a list of clust_irr objects")
-    }
-    if(length(clust_irrs)<=1) {
-      stop("get_joint_graph needs >= 2 clust_irr outputs")
-    }
-    gmd <- numeric(length = length(clust_irrs))
-    for(i in 1:length(clust_irrs)) {
-      check_clustirr(clust_irr = clust_irrs[[i]])
-      gmd[i]<-get_clustirr_inputs(clust_irrs[[i]])$control$global_max_hdist
-    }
-    if(length(unique(gmd))!=1) {
-      stop("all global_max_hdist should be equal")
-    }
-    
-    # check if same chain names
-    cs <- colnames(get_clustirr_inputs(clust_irrs[[1]])$s)
-    for(i in 2:length(clust_irrs)) {
-      if(any(colnames(get_clustirr_inputs(clust_irrs[[i]])$s)!=cs)) {
-        stop("different chains in graphs")
-      }
-    }
-  }
-  
-  # check input
-  check_input(clust_irrs = clust_irrs)
-  
-  # check cores
-  check_cores(cores = cores)
-  
-  jg <- get_joint_graph(clust_irrs, cores = cores) 
-  if(is.null(jg$graph)) {
-    warning("No graph to plot \n")
-    return(jg)
-  }
-  
-  if(!show_singletons){
-    jg$graph <- delete_vertices(jg$graph, which(degree(jg$graph) == 0 &
-                                                  V(jg$graph)$clone_size <= 1))
-  }
-  
-  # make graph look visually better
-  jg$graph <- config_vertices_plot(g = jg$graph, is_jg = TRUE)
-  # jg$graph <- config_edges_plot(g = jg$graph, is_jg = TRUE)
-  
-  # plot
-  if(as_visnet == FALSE) {
-    plot(jg$graph, vertex.label = NA)
-  }
-  if(as_visnet == TRUE) {
-    V(jg$graph)$size <- V(jg$graph)$size*5
-    vi <- visIgraph(igraph = jg$graph,
-              idToLabel = TRUE,
-              layout = "layout_components",
-              randomSeed = 1234,
-              physics = FALSE,
-              smooth = FALSE,
-              type = "square")
-    
-    # set vertex titles -> CDR sequences
-    cs <- get_chains(x = colnames(vi$x$nodes))
-    vi$x$nodes$title <- apply(X = vi$x$nodes[, cs, drop = FALSE], y = cs,
-                              MARGIN = 1, FUN = function(x, y) {
-                                paste0(paste0("<b>", y, "</b>", ':', x), 
-                                       collapse = '<br>')})
-    
-    return(vi)
-  }
-}
         
 get_intergraph_edges_hamming <- function(igs, 
                                          global_max_hdist, 
@@ -860,7 +804,4 @@ get_db_matches <- function(cs, custom_db) {
   }
   return(cs)
 }
-
-
-
 

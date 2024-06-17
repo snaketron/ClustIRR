@@ -1,24 +1,24 @@
 \name{plot_graph}
 \alias{plot_graph}
 \title{Plot ClustIRR graph}
-\usage{plot_graph(clust_irr, as_visnet=FALSE, show_singletons=TRUE)}
+\usage{plot_graph(g, as_visnet=FALSE, show_singletons=TRUE)}
 \arguments{
-\item{clust_irr}{S4 object of type \code{clust_irr}, result of \code{clust_irr} 
-function}
-\item{as_visnet}{logical, if as_visnet=TRUE we plot an interactive graph with 
-visNetwork. If as_visnet=FALSE, we plot a static graph with igraph.}
-\item{show_singletons}{logical, if show_singletons=TRUE we plot all vertices. 
-If show_singletons=FALSE, we plot only vertices connected by edges.}}
+\item{g}{Object returned by  \code{get_graph} function}
+\item{as_visnet}{logical, if \code{as_visnet}=TRUE we plot an interactive graph 
+with visNetwork. If \code{as_visnet}=FALSE, we plot a static graph with igraph.}
+\item{show_singletons}{logical, if \code{show_singletons}=TRUE we plot all 
+vertices. If \code{show_singletons}=FALSE, we plot only vertices connected by 
+edges.}}
 \value{
-The output is an igraph plot.
+The output is an \code{igraph} or \code{visNetwork} plot.
 
 The size of the vertices increases linearly as the logarithm of the degree of 
 the clonal expansion (number of cells per clone) in the corresponding clones.
 }
 
 \description{
-This this function visualizes a graph. The input is \code{clust_irr} object
-created by the function \code{cluster_irr}.
+This function visualizes a graph. The input is \code{g} object
+created by the function \code{get_graph}.
 }
 
 \examples{
@@ -36,13 +36,14 @@ s <- rbind(s, data.frame(CDR3b = c("CATSRADKPDGLDALETQYF",
                          clone_size = 5))
 
 # run analysis
-out <- cluster_irr(s = s,
+ci <- cluster_irr(s = s,
                    r = r,
                    ks = 4,
                    cores = 1,
                    control = list(trim_flank_aa = 3))
+                   
+g <- get_graph(clust_irr = ci)
 
 # plot graph with vertices as clones
-p1 <- plot_graph(out, as_visnet=FALSE, show_singletons=TRUE)
-p1
+plot_graph(g, as_visnet=FALSE, show_singletons=TRUE)
 }
