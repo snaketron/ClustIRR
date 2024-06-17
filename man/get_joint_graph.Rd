@@ -1,11 +1,15 @@
 \name{get_joint_graph}
 \alias{get_joint_graph}
 \title{Joins two graphs obtained from two or more \code{clust_irr} objects}
-\usage{get_joint_graph(clust_irrs, cores=1)}
+\usage{get_joint_graph(clust_irrs, cores=1, custom_db = NULL)}
 \arguments{
 \item{clust_irrs}{A list of at least two S4 objects generated with the 
 function \code{cluster_irr}}
 \item{cores}{integer, number of computer cores to use (default = 1)}
+\item{custom_db}{data.frame, custom database with CDR3 sequences and their 
+matching antigens. The structure of custom_db must be identical to data(vdjdb).
+This is an optional input to annotate the clones. If \code{custom_db} is not 
+provided, ClustIRR will use internal databases. See description below.}
 }
 \value{
 The main output of this function is an \code{igraph} object. This object
@@ -27,12 +31,19 @@ clustering in the documentation of \code{cluster_irr}.
 The function \code{get_joint_graph} performs the following operation for
 a pair of graphs:
 
-First, it adds together (union) the vertices. Second, it performs global 
-clustering between the two graphs, i.e. it compares the CDR3 sequences of 
-the clones between the two graphs. If two clones have similar CDR3 sequences,
-then the corresponding vertices are connected by an edge. 
+First, it combines together the vertices. Second, it performs global 
+clustering between the two graphs, i.e. it compares the CDR3 sequences 
+of the clones between the two graphs. If two clones have similar CDR3 
+sequences, then the corresponding vertices are connected by an edge. 
 
-The results is another \code{igraph} object.
+The results is an \code{igraph} object.
+
+The function matches CDR3s from the clones in the graph with CDR3 with known 
+epitopes from these databases: VDJdb, McPAS-TCR and TCR3d. With the optional 
+input parameter \code{custom_db}, the user can provide additional databases.
+
+These can be visualized as graph features with the plotting functions 
+implemented in ClustIRR.
 }
 
 \examples{

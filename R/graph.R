@@ -1,6 +1,7 @@
 
 get_graph <- function(clust_irr, 
-                      sample_id = "S") {
+                      sample_id = "S",
+                      custom_db = NULL) {
   
   get_local_edges <- function(clust_irr, cs) {
     
@@ -167,6 +168,8 @@ get_graph <- function(clust_irr,
   
   check_clustirr(clust_irr = clust_irr)
   
+  custom_db <- check_custom_db(custom_db = custom_db)
+  
   # get chains
   chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irr)$s))
   
@@ -189,7 +192,8 @@ get_graph <- function(clust_irr,
   cs <- get_clones(sample_id = sample_id, x = s)
   
   # annotate cs with known CDR3-antigen data 
-  cs <- get_db_matches(cs = cs)
+  cs <- get_db_matches(cs = cs, 
+                       custom_db = custom_db)
   
   # get local and global edges between clones
   le <- get_local_edges(clust_irr = clust_irr, cs = cs)
@@ -212,7 +216,8 @@ get_graph <- function(clust_irr,
 }
 
 get_joint_graph <- function(clust_irrs, 
-                            cores = 1) {
+                            cores = 1,
+                            custom_db = NULL) {
   
   check_input <- function(clust_irrs) {
     if(missing(clust_irrs)==TRUE) {
@@ -738,14 +743,14 @@ get_clones <- function(sample_id, x) {
 
 # Description:
 # integrate clustirr with data from databases: VDJdb, tcr3d, mcpas-tcr
-get_db_matches <- function(cs) {
+get_db_matches <- function(cs, custom_db) {
  
   get_db_info <- function(cs, db, db_type, chain) {
     
     get_vdjdb_info <- function(x, cs, db, chain) {
       xs <- which(db[,chain] %in% cs[x,chain])
       
-      return(paste0("x=", x, ";db=VDJdb;chain=", chain, "<",
+      return(paste0("<db:VDJdb|chain:", chain, "|",
                     "Antigen_species:", 
                     paste0(db[xs, "Antigen_species"], collapse = ';'), "|",
                     "Antigen_gene:", 
@@ -759,7 +764,7 @@ get_db_matches <- function(cs) {
     get_tcr3d_info <- function(x, cs, db, chain) {
       xs <- which(db[,chain] %in% cs[x,chain])
       
-      return(paste0("x=", x, ";db=tcr3d;chain=", chain, "<",
+      return(paste0("<db:tcr3d|chain:", chain, "|",
                     "Antigen_species:", 
                     paste0(db[xs, "Antigen_species"], collapse = ';'), "|",
                     "Antigen_gene:", 
@@ -771,7 +776,7 @@ get_db_matches <- function(cs) {
     get_mcpas_info <- function(x, cs, db, chain) {
       xs <- which(db[,chain] %in% cs[x,chain])
       
-      return(paste0("x=", x, ";db=mcpas;chain=", chain, "<",
+      return(paste0("<db:mcpas|chain:", chain, "|",
                     "Antigen_species:", 
                     paste0(db[xs, "Antigen_species"], collapse = ';'), "|",
                     "Antigen_gene:", 
@@ -831,6 +836,10 @@ get_db_matches <- function(cs) {
   db <- list(vdjdb = load_data(d = "vdjdb"), 
              mcpas = load_data(d = "mcpas"), 
              tcr3d = load_data(d = "tcr3d"))
+  
+  if(is.null(custom_db)==FALSE) {
+    db[["custom"]] <- custom_db
+  }
   
   for(db_name in names(db)) {
     for(chain in chains) {

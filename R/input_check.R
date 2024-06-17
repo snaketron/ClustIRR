@@ -215,25 +215,28 @@ check_clustirr <- function(clust_irr) {
   }
 }
 
-# equal_controls <- function(clust_irrs) {
-#   
-#   get_vec <- function(x, key) {
-#     return(get_clustirr_inputs(x)$control[[key]])
-#   }
-#   
-#   control_keys <- c("global_smart", "global_max_hdist", "local_max_fdr",
-#                     "local_min_ove", "local_min_o", "trim_flank_aa")
-#   control_types <- c("global_smart", "global_max_hdist", "local_max_fdr",
-#                      "local_min_ove", "local_min_o", "trim_flank_aa")
-#   
-#   
-#   for(key in control_keys) {
-#     val <- unlist(lapply(X = clust_irrs, FUN = get_vec, key = key))
-#     if(length(unique(val)!=1) {
-#       stop(paste0("different controls:", key))
-#     }
-#   }
-# }
+
+check_custom_db <- function(custom_db) {
+  if(missing(custom_db)) {
+    return(NULL)
+  }
+  if(is.null(custom_db)) {
+    return(NULL)
+  }
+  
+  if(is.data.frame(custom_db)==FALSE) {
+    stop("custom_db must be a data.frame") 
+  }
+  if(nrow(custom_db)<=0) {
+    stop("custom_db must be a data.frame") 
+  }
+  data("tcr3d", package="ClustIRR")
+  if(all(colnames(custom_db) == colnames(tcr3d))==FALSE) {
+    stop("wrong columns in custom_db, see internal data tcr3d.")
+  }
+  return(custom_db)
+}
+
 
 #### Helper functions ####
 
