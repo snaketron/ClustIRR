@@ -30,7 +30,6 @@ export(cluster_irr)
 export(get_graph)
 export(get_joint_graph)
 export(plot_graph)
-export(plot_joint_graph)
 
 exportClasses(clust_irr)
 exportMethods(get_clustirr_clust)
