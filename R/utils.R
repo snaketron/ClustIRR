@@ -3,12 +3,12 @@
 # one by one.
 # x = columns(data_sample)
 get_chains <- function(x) {
-  js <- c(which(regexpr(pattern = "CDR3b", text = x) != -1),
-          which(regexpr(pattern = "CDR3a", text = x) != -1),
-          which(regexpr(pattern = "CDR3g", text = x) != -1),
-          which(regexpr(pattern = "CDR3d", text = x) != -1),
-          which(regexpr(pattern = "CDR3h", text = x) != -1),
-          which(regexpr(pattern = "CDR3l", text = x) != -1))
+  js <- c(which(x=="CDR3b"), 
+          which(x=="CDR3a"), 
+          which(x=="CDR3g"),
+          which(x=="CDR3d"), 
+          which(x=="CDR3h"), 
+          which(x=="CDR3l"))
   return(x[js])
 }
 

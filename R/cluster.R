@@ -101,3 +101,4 @@ get_clust <- function(x,
   
   return(list(local = l, global = g))
 }
+

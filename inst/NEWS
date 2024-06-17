@@ -21,3 +21,6 @@ Chainges in version 1.1.5 (20 Dec, 2023)
 
 Changes in version 1.1.10 (08 Jan, 2024)
 + New global clustering solution
+
+Changes in version 1.3.1 (17 Jun, 2024)
++ Stub functions for integration of data from VDJdb, TCR3d and MCPAS-TCR
