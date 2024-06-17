@@ -534,18 +534,13 @@ Let's plot the joint graph:
 
 ```{r}
 # beta & alpha chain
-jg <- get_joint_graph(clust_irrs = clust_irrs, 
-                      as_visnet = TRUE,
-                      show_singletons = TRUE)
+o <- get_joint_graph(clust_irrs = clust_irrs)
 ```
 
 &nbsp;
 
 
 ```{r}
-# beta & alpha chain
-o <- get_joint_graph(clust_irrs = clust_irrs)
-
 o$clones[1:5,]
 o$clones[1,]
 ```
@@ -676,9 +671,7 @@ to visualize them.
 
 ```{r, fig.width=6, fig.height=6}
 # beta & alpha chain
-plot_joint_graph(clust_irrs = clust_irrs, 
-                 as_visnet = TRUE, 
-                 show_singletons = TRUE)
+g <- get_joint_graph(clust_irrs = clust_irrs)
 ```
 
 &nbsp;
@@ -709,40 +702,7 @@ in this particular graph).
 
 
 ```{r}
-jg <- get_joint_graph(clust_irrs = clust_irrs, cores = 1)
-
-require(igraph)
-V(jg$graph)
-
-# if(as_visnet == TRUE) {
-#     V(ig)$size <- V(ig)$size*5
-#     if(length(E(ig))==0) {
-#       message("no edges found in the graph, dummy self-edge added")
-#       # apparently if no edges, visnetwork can't plot
-#       ig <- add_edges(graph = ig, edges = c(V(ig)[1],V(ig)[1]))
-#     } 
-#     else {
-#       if(all(E(ig)$width == 1)==FALSE) {
-#         E(ig)$width <- 2*(1/(1+exp(-(-6-0.1*E(ig)$weight))))
-#       }
-#     }
-#     
-#     vi <- visIgraph(igraph = ig,
-#                     idToLabel = TRUE,
-#                     layout = "layout_components",
-#                     randomSeed = 1234,
-#                     physics = FALSE,
-#                     smooth = FALSE,
-#                     type = "square")
-#     
-#     # set vertex titles -> CDR sequences
-#     cs <- get_chains(x = colnames(vi$x$nodes))
-#     vi$x$nodes$title <- apply(X = vi$x$nodes[, cs, drop = FALSE], y = cs,
-#                               MARGIN = 1, FUN = function(x, y) {
-#                                 paste0(paste0(y, ':', x), collapse = ' ')})
-#     
-#     return(vi)
-#   }
+plot_graph(g = g, as_visnet = T)
 ```
 
 
