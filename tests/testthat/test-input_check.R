@@ -91,7 +91,6 @@ test_that("check_s_r() runs as expected", {
   expect_no_error(check_s_r(s, r))
 })
 
-
 test_that("get_control() runs as expected", {
   control <- list(global_smart = TRUE,
                   global_max_hdist = 1,

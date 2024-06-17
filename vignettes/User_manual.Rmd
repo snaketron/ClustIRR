@@ -315,12 +315,12 @@ Let's visualize the graph output for this case study:
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
 par(mai = c(0,0,0,0))
-ig <- get_graph(clust_irr = o)
+g <- get_graph(clust_irr = o)
 ```
 
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
-plot_graph(clust_irr = o)
+plot_graph(g = g)
 ```
 
 &nbsp;
@@ -340,7 +340,7 @@ We can plot an **interactive** graph with `r CRANpkg("visNetwork")`. Hover or
 click on vertices to see their respective CDR3 sequences. 
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
-vis_g <- plot_graph(clust_irr = o, as_visnet = TRUE)
+vis_g <- plot_graph(g = g, as_visnet = TRUE)
 vis_g
 ```
 
@@ -361,7 +361,7 @@ vertices in the graph. You can accomplish this by setting the input parameter
 vertex degree = 0 (isolated vertices) and clone_size = 1.
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
-plot_graph(clust_irr = o, as_visnet = TRUE, show_singletons = FALSE)
+plot_graph(g = g, as_visnet = TRUE, show_singletons = FALSE)
 ```
 
 ### Edges
@@ -429,7 +429,8 @@ expanded clone?
 Let's plot the clustering results:
 
 ```{r}
-plot_graph(clust_irr = o, as_visnet = TRUE)
+g <- get_graph(clust_irr = o)
+plot_graph(g = g, as_visnet = TRUE)
 ```
 
 &nbsp;
@@ -533,10 +534,9 @@ Let's plot the joint graph:
 
 ```{r}
 # beta & alpha chain
-plot_joint_graph(clust_irrs = clust_irrs, 
-                 cores = 1, 
-                 as_visnet = TRUE,
-                 show_singletons = TRUE)
+jg <- get_joint_graph(clust_irrs = clust_irrs, 
+                      as_visnet = TRUE,
+                      show_singletons = TRUE)
 ```
 
 &nbsp;
