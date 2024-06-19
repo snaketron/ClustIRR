@@ -1,7 +1,6 @@
 # Download TCR3d data
 # https://tcr3d.ibbr.umd.edu/cancerseqs
 # https://tcr3d.ibbr.umd.edu/virusseqs
-# /home/sktron/Desktop/
 t <- read.csv("tcr3d_cancer.csv", sep = ",")
 t <- t[, c("CDR3.alpha.", "CDR3.beta.", "Cancer.BR.Type", "Antigen", "Reference")]
 colnames(t) <- c("CDR3a", "CDR3b", "Antigen_species", "Antigen_gene", "Reference")

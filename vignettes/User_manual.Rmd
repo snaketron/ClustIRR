@@ -10,16 +10,11 @@ vignette: >
     %\VignetteEncoding{UTF-8}
 ---
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(collapse = TRUE, fig.align = "center")
-```
-
 ```{r}
 library(ClustIRR)
 library(knitr)
 library(visNetwork)
 ```
-
 
 # Introduction
 Adaptive immune immunity relies on diverse immune receptor repertoires (IRRs:
@@ -78,14 +73,14 @@ The main input of `r Biocpkg("ClustIRR")` are two repertoires: `s` and `r`:
 
 Both repertoires should be provided as data.frames. The rows in the 
 data.frames correspond to clones (group of cells derived from a common 
-parent cell by clonal expansion). `r Biocpkg("ClustIRR")` requires the 
-**CDR3 sequence** and the **size**  of each clone.
+parent cell by clonal expansion). `r Biocpkg("ClustIRR")` takes as input 
+the **CDR3 amino acid  sequence** and the **size** of each clone.
 
 **CDR3 sequences**
 
 For each clone, `s` and `r`, must contain the amino acid sequences of the 
 corresponding complementarity determining regions 3 (CDR3s). We may have 
-the CDR3s from one T cell receptor chain (e.g., \ only CDR3$\alpha$s or 
+the CDR3s from one T cell receptor chain (e.g., only CDR3$\alpha$s or 
 only CDR3$\beta$s) or from both chains (CDR3$\alpha\beta$). Similarly, we 
 may have CDR3s from $\gamma\delta$ T-cells (CDR3$\gamma$ and CDR3$\delta$) 
 or B-cells (CDR3H and CDR3L). This is explained in case study 4.
@@ -99,7 +94,7 @@ column `clone_size`. If the clone sizes are not available, then we assume that
 Let's have a look at an example data set which we will use as input:
 
 ```{r}
-data("CDR3ab")
+data("CDR3ab", package = "ClustIRR")
 ```
 
 ```{r}
@@ -126,7 +121,7 @@ str(r)
 
 ## Clustering
 
-`r Biocpkg("ClustIRR")` employs two strategies for clustering:
+`r Biocpkg("ClustIRR")` employs two clustering strategies:
 
 * **local**: detects enrichment of motifs in `s` compared to `r`
 * **global**: identifies pairs of CDR3s in `s` that have similar sequences
@@ -134,7 +129,7 @@ str(r)
 The rationale behind these two clustering strategies is the following: two 
 identical CDR3 sequences have the same specificity. Similar CDR3 sequences 
 (e.g., CDR3 sequences that differ by only one amino acid) may have similar 
-specificity. Global clustering is designed to find pairs of CDR3s that are
+specificity. Global clustering is meant to find pairs of CDR3s that are
 globally (based on the complete CDR3 sequences) similar. 
 
 We also know that two CDR3s with significantly different sequences may still 
@@ -157,19 +152,19 @@ colnames(stringdist::qgrams(cdr3, q = ks))
 ```
 
 
-$k$-mers found in the **core region** of the CDR3 loop are more likely to 
-establish contact with an antigenic peptide than the $k$-mers found at the 
-flanks of the CDR3 sequence. Hence, the user is encouraged to remove a few 
-amino acids from the flanks of each CDR3 sequence. This can be done by 
-changing the control input from `control$trim_flank_aa,` e.g.:
+Empirically we know that $k$-mers in the **core** of a CDR3 are more likely 
+to establish contact with an antigenic peptide than $k$-mers in the flanks 
+of the CDR3. Hence, the user is encouraged to remove a few amino acids from 
+the flanks of each CDR3 sequence. This can be done by changing the control
+input from `control$trim_flank_aa,` e.g.:
   
   * `control$trim_flank_aa = 0`: no trimming
-  * `control$trim_flank_aa = 3`: trim three amino acids from both flanks of the 
-  CDR3 sequence
+  * `control$trim_flank_aa = 3`: trim three amino acids from both flanks 
+  of the CDR3 sequence
 
-An example of trimming CDR3 flanks and segmenting the core of the CDR3 sequence 
-into 4-mers is shown below. We now focus on five overlapping motifs found in 
-the core region of the `CASSTTTGTGELFF`.
+Below we show an example of the procedure that trims CDR3 flanks and segments 
+the core of the CDR3 sequence `CASSTTTGTGELFF` into 4-mers, the result of which 
+are five overlapping motifs:
 
 ```{r}
 t <- 3

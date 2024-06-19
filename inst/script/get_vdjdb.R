@@ -1,5 +1,5 @@
 # Download VDJdb .tsv file from: https://vdjdb.cdr3.net/
-t <- read.csv(file = "/home/sktron/Desktop/SearchTable-2024-06-15 20_15_54.437.tsv", sep = "\t")
+t <- read.csv(file = "SearchTable-2024-06-15 20_15_54.437.tsv", sep = "\t")
 
 tb <- t[t$Gene=="TRB", c("CDR3", "Species", "Epitope.species", 
                          "Epitope.gene", "Reference")]

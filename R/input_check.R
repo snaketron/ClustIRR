@@ -45,7 +45,6 @@ check_s_r <- function(s, r) {
   }
 }
 
-
 check_ks <- function(ks) {
   check_infinity(ks)
   check_numeric(ks)
@@ -188,7 +187,21 @@ check_show_singletons <- function(show_singletons) {
   check_logical(x = show_singletons)
 }
 
-
+check_select_by <- function(select_by) {
+  if(missing(select_by)) {
+    stop("select_by is missing")
+  }
+  check_singlevalue(x = select_by)
+  if(is.null(select_by) || is.na(select_by)) {
+    stop("select_by is NULL or NA")
+  }
+  if(is.character(select_by)==FALSE) {
+    stop("type of select_by must be character")
+  }
+  if(select_by %in% c("Ag_species", "Ag_gene") == FALSE) {
+    stop("select_by can be either Ag_species or Ag_gene")
+  }
+}
 
 # Description:
 # Setup control list.

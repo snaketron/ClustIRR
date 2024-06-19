@@ -192,8 +192,7 @@ get_graph <- function(clust_irr,
   cs <- get_clones(sample_id = sample_id, x = s)
   
   # annotate cs with known CDR3-antigen data 
-  cs <- get_db_matches(cs = cs, 
-                       custom_db = custom_db)
+  cs <- get_db_matches(cs = cs, custom_db = custom_db)
   
   # get local and global edges between clones
   le <- get_local_edges(clust_irr = clust_irr, cs = cs)
@@ -328,7 +327,8 @@ get_joint_graph <- function(clust_irrs,
   return(list(graph = g, clones = df_v, joint_graph = TRUE))
 }
 
-plot_graph <- function(g, 
+plot_graph <- function(g,
+                       select_by = "Ag_species",
                        as_visnet = FALSE, 
                        show_singletons = TRUE) {
   
@@ -362,9 +362,10 @@ plot_graph <- function(g,
   check_g(g = g)
   check_as_visnet(as_visnet)
   check_show_singletons(show_singletons=show_singletons)
+  check_select_by(select_by = select_by)
   
   # unpack g
-  clones <- g$clones
+  cs <- g$clones
   ig <- g$graph
   is_jg <- g$joint_graph
   
@@ -401,11 +402,18 @@ plot_graph <- function(g,
                     type = "square")
     
     # set vertex titles -> CDR sequences
-    cs <- get_chains(x = colnames(vi$x$nodes))
-    vi$x$nodes$title <- apply(X = vi$x$nodes[, cs, drop = FALSE], y = cs,
+    chains <- get_chains(x = colnames(vi$x$nodes))
+    vi$x$nodes$title <- apply(X = vi$x$nodes[, chains, drop = FALSE], 
+                              y = chains, 
                               MARGIN = 1, FUN = function(x, y) {
                                 paste0(paste0("<b>", y, "</b>", ':', x), 
                                        collapse = '<br>')})
+    
+    
+    u <- unique(unlist(strsplit(x=unique(cs[, select_by]),split = ',')))
+    vi <- vi %>% visOptions(selectedBy = list(variable = select_by,
+                                              values = u,
+                                              multiple = TRUE))
     
     return(vi)
   }
@@ -688,7 +696,7 @@ get_clones <- function(sample_id, x) {
 # Description:
 # integrate clustirr with data from databases: VDJdb, tcr3d, mcpas-tcr
 get_db_matches <- function(cs, custom_db) {
- 
+  
   get_db_info <- function(cs, db, db_type, chain) {
     
     get_vdjdb_info <- function(x, cs, db, chain) {
@@ -802,6 +810,35 @@ get_db_matches <- function(cs, custom_db) {
       }
     }
   }
+  
+  # get aggregate infos
+  x <- cs[, which(regexpr(pattern = "info_", text = colnames(cs))!=-1)]
+  a <- apply(X = x, MARGIN = 1, FUN = function(x, key) {
+    if(all(x=="")) {
+      return(list(ag_species = '', ag_gene = ''))
+    }
+    
+    ag_species <- c()
+    ag_gene <- c()
+    x <- x[x!=""]
+    for(i in 1:length(x)) {
+      y <- unlist(strsplit(x = x[i], split = "\\|"))
+      ag_species <- c(ag_species, unlist(strsplit(x = y[3], split = '\\;')))
+      ag_gene <- c(ag_gene, unlist(strsplit(x = y[4], split = '\\;')))
+    }
+    ag_species <- paste0(unique(gsub(pattern = "Antigen_species\\:", 
+                              replacement = '', x = ag_species)), 
+                         collapse = ',')
+    ag_gene <- paste0(unique(gsub(pattern = "Antigen_gene\\:", 
+                           replacement = '', x = ag_gene)),
+                      collapse = ',')
+    
+    return(list(ag_species = ag_species, ag_gene = ag_gene))
+  })
+  
+  cs$Ag_species <- unlist(lapply(X = a, FUN = function(x) {x[["ag_species"]]}))
+  cs$Ag_gene <- unlist(lapply(X = a, FUN = function(x) {x[["ag_gene"]]}))
+  
   return(cs)
 }
 

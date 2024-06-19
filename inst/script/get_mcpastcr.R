@@ -1,8 +1,8 @@
 # Download McPAS-TCR data
 # McPAS-TCR - http://friedmanlab.weizmann.ac.il/McPAS-TCR/
-t <- read.csv("/home/sktron/Desktop/McPAS-TCR.csv", sep = ",")
+t <- read.csv("McPAS-TCR.csv", sep = ",")
 t <- t[, c("CDR3.alpha.aa", "CDR3.beta.aa", "Species", "Pathology",
-           "Category", "Antigen.protein", "PubMed.ID")]
+           "Antigen.protein", "PubMed.ID")]
 t <- t[duplicated(t)==FALSE, ]
 
 colnames(t) <- c("CDR3a", "CDR3b", "CDR3_species", "Antigen_species",

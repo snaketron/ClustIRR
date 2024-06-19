@@ -1,14 +1,22 @@
 \name{plot_graph}
 \alias{plot_graph}
 \title{Plot ClustIRR graph}
-\usage{plot_graph(g, as_visnet=FALSE, show_singletons=TRUE)}
+\usage{plot_graph(g, 
+       select_by = "Ag_species",
+       as_visnet=FALSE,
+       show_singletons=TRUE)
+}
 \arguments{
 \item{g}{Object returned by  \code{get_graph} function}
+\item{select_by}{character string, two options are available: "Ag_species" or
+"Ag_gene". This will allow the user to highligh clones (nodes) in the graph that
+are associated with specific antigen species or genes.}
 \item{as_visnet}{logical, if \code{as_visnet}=TRUE we plot an interactive graph 
 with visNetwork. If \code{as_visnet}=FALSE, we plot a static graph with igraph.}
 \item{show_singletons}{logical, if \code{show_singletons}=TRUE we plot all 
 vertices. If \code{show_singletons}=FALSE, we plot only vertices connected by 
-edges.}}
+edges.}
+}
 \value{
 The output is an \code{igraph} or \code{visNetwork} plot.
 
