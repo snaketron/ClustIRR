@@ -217,9 +217,12 @@ knitr::kable(head(slot(out, "clust")$CDR3b$local$m))
 # inspect which CDR3bs are globally similar
 knitr::kable(head(slot(out, "clust")$CDR3b$global))
 
+# get graph
+g <- get_graph(out)
+
 # plot graph
-plot_graph(out)
+plot_graph(g)
 
 # plot graph as visgraph
-plot_graph(out, as_visnet = TRUE)
+plot_graph(g, as_visnet = TRUE)
 }

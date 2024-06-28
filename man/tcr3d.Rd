@@ -1,6 +1,6 @@
 \docType{data}
-\name{TCR3d}
-\alias{TCR3d}
+\name{tcr3d}
+\alias{tcr3d}
 \title{CDR3 sequences and their matching epitopes obtained from TCR3d}
 
 \format{

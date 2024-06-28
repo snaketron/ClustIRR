@@ -7,12 +7,17 @@
        show_singletons=TRUE)
 }
 \arguments{
-\item{g}{Object returned by  \code{get_graph} function}
-\item{select_by}{character string, two options are available: "Ag_species" or
-"Ag_gene". This will allow the user to highligh clones (nodes) in the graph that
-are associated with specific antigen species or genes.}
+\item{g}{Object returned by \code{get_graph} function}
 \item{as_visnet}{logical, if \code{as_visnet}=TRUE we plot an interactive graph 
 with visNetwork. If \code{as_visnet}=FALSE, we plot a static graph with igraph.}
+\item{select_by}{character string, two values are possible: "Ag_species" or
+"Ag_gene". This only has an effect if \code{as_visnet} = TRUE, i.e. if the graph
+is interactive. It will allow the user to highligh clones (nodes) in the graph
+that are associated with a specific antigenic specie or gene. The mapping 
+between CDR3 and antigens is extracted from databases, such as, VDJdb, 
+McPAS-TCR and TCR3d. This mapping is done by the function \code{get_graph}. If
+none of the clones in the graph are matched to a CDR3, then the user will
+have no options to select/highlight.}
 \item{show_singletons}{logical, if \code{show_singletons}=TRUE we plot all 
 vertices. If \code{show_singletons}=FALSE, we plot only vertices connected by 
 edges.}
@@ -25,7 +30,7 @@ the clonal expansion (number of cells per clone) in the corresponding clones.
 }
 
 \description{
-This function visualizes a graph. The input is \code{g} object
+This function visualizes a graph. The main input is \code{g} object
 created by the function \code{get_graph}.
 }
 

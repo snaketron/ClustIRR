@@ -261,8 +261,11 @@ check_custom_db <- function(custom_db) {
   if(nrow(custom_db)<=0) {
     stop("custom_db must be a data.frame") 
   }
-  data("tcr3d", package="ClustIRR")
-  if(all(colnames(custom_db) == colnames(tcr3d))==FALSE) {
+  
+  e <- new.env()
+  name <- data("tcr3d", package = "ClustIRR", envir = e)[1]
+  e <- e[[name]]
+  if(all(colnames(custom_db) == colnames(e))==FALSE) {
     stop("wrong columns in custom_db, see internal data tcr3d.")
   }
   return(custom_db)

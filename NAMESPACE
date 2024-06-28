@@ -25,7 +25,7 @@ importFrom(igraph, "E<-")
 importFrom(igraph, E)
 importFrom(igraph, add_edges)
 importFrom(grDevices, hcl.colors)
-importFrom(Biostrings, stringDist)
+importFrom(pwalign, stringDist)
 
 export(cluster_irr)
 export(get_graph)

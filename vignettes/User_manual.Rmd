@@ -700,6 +700,15 @@ in this particular graph).
 plot_graph(g = g, as_visnet = T)
 ```
 
+```{r}
+o <- cluster_irr(s = CDR3ab,
+                 ks = 4,
+                 cores = 1,
+                 control = list(global_smart = T,
+                                trim_flank_aa = 3))
+g <- get_graph(clust_irr = o)
+plot_graph(g, as_visnet = T)
+```
 
 
 ```{r session_info}

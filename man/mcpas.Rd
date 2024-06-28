@@ -1,6 +1,6 @@
 \docType{data}
-\name{McPAS-TCR}
-\alias{McPAS-TCR}
+\name{mcpas}
+\alias{mcpas}
 \title{CDR3 sequences and their matching epitopes obtained from McPAS-TCR}
 
 \format{

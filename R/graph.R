@@ -330,7 +330,8 @@ get_joint_graph <- function(clust_irrs,
 plot_graph <- function(g,
                        select_by = "Ag_species",
                        as_visnet = FALSE, 
-                       show_singletons = TRUE) {
+                       show_singletons = TRUE,
+                       node_opacity = 1) {
   
   check_g <- function(g) {
     if(missing(g)) {
@@ -378,7 +379,8 @@ plot_graph <- function(g,
   
   ig <- config_vertices_plot(g = ig, is_jg = is_jg)
   if(as_visnet == FALSE) {
-    plot(ig, vertex.label = NA)
+    plot(ig, vertex.label = NA, 
+         vertex.color = adjustcolor("black", alpha.f = node_opacity))
   }
   if(as_visnet == TRUE) {
     V(ig)$size <- V(ig)$size*5
@@ -596,9 +598,9 @@ get_intergraph_edges_blosum <- function(igs,
       return(NULL)
     }
     
-    # get blosum matrix from Biostrings
+    # get blosum matrix from pwalign
     data_env <- new.env(parent = emptyenv())
-    data("BLOSUM62", envir = data_env, package = "Biostrings")
+    data("BLOSUM62", envir = data_env, package = "pwalign")
     
     # compute BLSOUM62 score for matches
     o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 
