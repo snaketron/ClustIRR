@@ -697,17 +697,17 @@ in this particular graph).
 
 
 ```{r}
-plot_graph(g = g, as_visnet = T)
+plot_graph(g = g, as_visnet = TRUE)
 ```
 
 ```{r}
-o <- cluster_irr(s = CDR3ab,
+o <- cluster_irr(s = CDR3ab[1:1000, ],
                  ks = 4,
                  cores = 1,
-                 control = list(global_smart = T,
+                 control = list(global_smart = TRUE,
                                 trim_flank_aa = 3))
 g <- get_graph(clust_irr = o)
-plot_graph(g, as_visnet = T)
+plot_graph(g, as_visnet = TRUE)
 ```
 
 

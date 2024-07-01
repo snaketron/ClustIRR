@@ -856,7 +856,14 @@ get_joint_controls <- function(clust_irrs) {
       }
       
       c_ij <- vapply(X = names(c_i), c_i = c_i, c_j = c_j,
-                     FUN = function(x, c_i, c_j) {return(c_i[[x]]==c_j[[x]])}, 
+                     FUN = function(x, c_i, c_j) {
+                       if(is.null(c_i[[x]]) & is.null(c_j[[x]])) {
+                         return(TRUE)
+                       }
+                       if(is.na(c_i[[x]]) & is.na(c_j[[x]])) {
+                         return(TRUE)
+                       }
+                       return(c_i[[x]]==c_j[[x]])}, 
                      FUN.VALUE = logical(1))
       
       if(any(c_ij==FALSE)) {
