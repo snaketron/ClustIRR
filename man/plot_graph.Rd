@@ -1,10 +1,8 @@
 \name{plot_graph}
 \alias{plot_graph}
 \title{Plot ClustIRR graph}
-\usage{plot_graph(g, 
-       select_by = "Ag_species",
-       as_visnet=FALSE,
-       show_singletons=TRUE)
+\usage{plot_graph(g, select_by = "Ag_species", as_visnet=FALSE,
+    show_singletons=TRUE, node_opacity=1)
 }
 \arguments{
 \item{g}{Object returned by \code{get_graph} function}
@@ -21,6 +19,8 @@ have no options to select/highlight.}
 \item{show_singletons}{logical, if \code{show_singletons}=TRUE we plot all 
 vertices. If \code{show_singletons}=FALSE, we plot only vertices connected by 
 edges.}
+\item{node_opacity}{probability, controls the opacity of node colors. Lower 
+values corresponding to more transparent colors.}
 }
 \value{
 The output is an \code{igraph} or \code{visNetwork} plot.
@@ -58,5 +58,5 @@ ci <- cluster_irr(s = s,
 g <- get_graph(clust_irr = ci)
 
 # plot graph with vertices as clones
-plot_graph(g, as_visnet=FALSE, show_singletons=TRUE)
+plot_graph(g, as_visnet=FALSE, show_singletons=TRUE, node_opacity = 0.8)
 }

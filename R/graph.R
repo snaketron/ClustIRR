@@ -333,7 +333,7 @@ plot_graph <- function(g,
                        show_singletons = TRUE,
                        node_opacity = 1) {
   
-  check_g <- function(g) {
+  check_graph <- function(g) {
     if(missing(g)) {
       stop("missing input g")
     }
@@ -360,10 +360,11 @@ plot_graph <- function(g,
     }
   }
   
-  check_g(g = g)
-  check_as_visnet(as_visnet)
-  check_show_singletons(show_singletons=show_singletons)
+  check_graph(g = g)
+  check_as_visnet(as_visnet = as_visnet)
+  check_show_singletons(show_singletons = show_singletons)
   check_select_by(select_by = select_by)
+  check_node_opacity(node_opacity = node_opacity)
   
   # unpack g
   cs <- g$clones
@@ -379,8 +380,8 @@ plot_graph <- function(g,
   
   ig <- config_vertices_plot(g = ig, is_jg = is_jg)
   if(as_visnet == FALSE) {
-    plot(ig, vertex.label = NA, 
-         vertex.color = adjustcolor("black", alpha.f = node_opacity))
+    plot(ig, vertex.label = NA, vertex.color = adjustcolor(
+        "black", alpha.f = node_opacity))
   }
   if(as_visnet == TRUE) {
     V(ig)$size <- V(ig)$size*5
@@ -661,22 +662,15 @@ get_intergraph_edges_blosum <- function(igs,
   for(i in 1:(length(igs)-1)) {
     message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
     for(chain in chains) {
-      # ige[[count]] <- do.call(rbind,
-      #                         lapply(X = (i+1):length(igs), 
-      #                                i = i,
-      #                                FUN = get_igg,
-      #                                igs = igs,
-      #                                trim_flank_aa = trim_flank_aa,
-      #                                chain = chain))
-      ige[[count]] <- do.call(rbind,
-                              parallel::mclapply(X = (i+1):length(igs), 
-                                                 i = i,
-                                                 FUN = get_igg,
-                                                 igs = igs,
-                                                 trim_flank_aa = trim_flank_aa,
-                                                 chain = chain,
-                                                 mc.cores = cores))
-      count <- count + 1
+        ige[[count]] <- do.call(rbind,
+                                bplapply(X = (i+1):length(igs), 
+                                         i = i,
+                                         FUN = get_igg,
+                                         igs = igs,
+                                         trim_flank_aa = trim_flank_aa,
+                                         chain = chain,
+                                         BPPARAM=MulticoreParam(workers=cores)))
+        count <- count + 1
     }
   }
   ige <- do.call(rbind, ige)

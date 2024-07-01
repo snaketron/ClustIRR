@@ -203,6 +203,13 @@ check_select_by <- function(select_by) {
   }
 }
 
+check_node_opacity <- function(node_opacity) {
+    check_infinity(node_opacity)
+    check_numeric(node_opacity)
+    check_singlevalue(node_opacity)
+    check_probability(node_opacity)
+}
+
 # Description:
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
@@ -482,3 +489,9 @@ check_positive <- function(x) {
   }
 }
 
+check_probability <- function(x) {
+    w <- paste0(deparse(substitute(x)), " must be probability")
+    if(x < 0 | x > 1) {
+        stop(w)
+    }
+}

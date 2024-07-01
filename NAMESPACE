@@ -26,6 +26,8 @@ importFrom(igraph, E)
 importFrom(igraph, add_edges)
 importFrom(grDevices, hcl.colors)
 importFrom(pwalign, stringDist)
+importFrom(BiocParallel, bplapply)
+importFrom(BiocParallel, MulticoreParam)
 
 export(cluster_irr)
 export(get_graph)
