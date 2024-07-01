@@ -52,7 +52,6 @@ check_ks <- function(ks) {
   check_lessthan(ks, 1)
 }
 
-
 check_cores <- function(cores) {
   check_infinity(cores)
   check_numeric(cores)
@@ -212,6 +211,13 @@ check_global_min_identity <- function(global_min_identity) {
   check_probability(global_min_identity)
 }
 
+check_edit_dist <- function(edit_dist) {
+    check_infinity(edit_dist)
+    check_numeric(edit_dist)
+    check_wholenumber(edit_dist)
+    check_singlevalue(edit_dist)
+    check_lessthan(ks, 0)
+}
 
 # Description:
 # Setup control list.

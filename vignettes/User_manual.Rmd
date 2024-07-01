@@ -310,7 +310,7 @@ Let's visualize the graph output for this case study:
 
 ```{r, fig.width=5, fig.height=4, fig.align='center'}
 par(mai = c(0,0,0,0))
-g <- get_graph(clust_irr = o)
+g <- get_graph(clust_irr = o, edit_dist = 0)
 ```
 
 
