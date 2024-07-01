@@ -35,9 +35,7 @@ get_localclust <- function(cdr3,
 
     # 4. add pass flag -> TRUE if motif passes tests
     m$pass <- FALSE
-    m$pass[m$fdr <= control$local_max_fdr &
-        m$ove >= control$local_min_ove &
-        m$f_s >= control$local_min_o] <- TRUE
+    m$pass[m$fdr <= control$local_max_fdr & m$f_s >= control$local_min_o]<-TRUE
 
     # get the unique cdr3s and cdr3_cores
     us <- which(duplicated(cdr3)==FALSE)

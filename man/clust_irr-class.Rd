@@ -27,7 +27,7 @@ functions (e.g. get_graph, plot_graph, etc.). Below we provide a detailed
 description of the slots of \code{clust_irr}.
 \code{clust_irr} objects contain two sublists:
 \itemize{
-\item{clust:}{list, contains clustering results for each TCR/BCR chain. The
+\item{clust:}list, contains clustering results for each TCR/BCR chain. The
 results are stored in separate sub-list named appropriately (e.g. CDR3a, CDR3b, 
 CDR3g, etc.). In the following we who the typical structure of these lists:
 \itemize{
@@ -77,8 +77,8 @@ CDR3g, etc.). In the following we who the typical structure of these lists:
         normalized scores are shown in the columns \code{nweight} and 
         \code{ncweight}.
     }
-}
-\item{inputs:}{list, contains all user provided inputs}
+
+\item{inputs:}list, contains all user provided inputs
 }
 }
 
@@ -113,7 +113,6 @@ r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"])
 control <- list(global_smart = TRUE,
                 global_max_hdist = 1,
                 local_max_fdr = 0.05,
-                local_min_ove = 2,
                 local_min_o = 1,
                 trim_flank_aa = 3,
                 global_pairs = NULL,

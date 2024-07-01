@@ -11,7 +11,6 @@ ks <- c(2, 3, 4)
 control_input <- list(
   global_max_hdist = 1,
   local_max_fdr = 0.05,
-  local_min_ove = 2,
   local_min_o = 1,
   trim_flank_aa = 3,
   low_mem = FALSE,
@@ -278,34 +277,6 @@ test_that("control_input$local_max_fdr param takes only valid input", {
     cores = cores,
     control = control_input_tmp
   ), regexp = "local_max_fdr has to be <= 1")
-})
-
-test_that("control_input$local_min_ove parameter takes only valid input", {
-  control_input_tmp <- control_input
-  control_input_tmp$local_min_ove <- Inf # infinity
-  expect_error(cluster_irr(
-    s = s,
-    r = r,
-    ks = ks,
-    cores = cores,
-    control = control_input_tmp
-  ), regexp = "local_min_ove has to be a finite number")
-  control_input_tmp$local_min_ove <- "Everyone" # non-numeric
-  expect_error(cluster_irr(
-    s = s,
-    r = r,
-    ks = ks,
-    cores = cores,
-    control = control_input_tmp
-  ), regexp = "local_min_ove has to be numeric")
-  control_input_tmp$local_min_ove <- c(1, 2, 3) # multiple values
-  expect_error(cluster_irr(
-    s = s,
-    r = r,
-    ks = ks,
-    cores = cores,
-    control = control_input_tmp
-  ), regexp = "local_min_ove has to be a single value")
 })
 
 test_that("control_input$local_min_o parameter takes only valid input", {

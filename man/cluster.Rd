@@ -10,7 +10,6 @@ cluster_irr(
     control = list(global_smart = FALSE,
                    global_max_hdist = 1,
                    local_max_fdr = 0.05,
-                   local_min_ove = 2,
                    local_min_o = 1,
                    trim_flank_aa = 3,
                    global_pairs = NULL,
@@ -50,9 +49,6 @@ CDR3s as globally similar if their Hamming distance is smaller or equal to
 \code{global_max_hdist} = 1 (default)
 \item \code{local_max_fdr} - numeric, maximum False Discovery Rate (FDR) for
 the detection of enriched motifs. \code{local_max_fdr} = 0.05 (default)
-\item \code{local_min_ove} - numeric, minimum fold change between observed
-and expected relative abundances for the detection of enriched motifs.
-\code{local_min_ove} = 2 (default)
 \item \code{local_min_o} - numeric, minimum absolute frequency of a motif in
 the s in order for the motif to be used in the enrichment analysis.
 \code{local_min_o} = 1 (default)
@@ -199,7 +195,6 @@ out <- cluster_irr(s = s,
                        global_smart = TRUE,
                        global_max_hdist = 1,
                        local_max_fdr = 0.05,
-                       local_min_ove = 2,
                        local_min_o = 1,
                        trim_flank_aa = 3,
                        global_pairs = NULL,

@@ -8,7 +8,6 @@ input_check <- function(s,
   
   check_s_r(s = s, r = r)
   check_ks(ks)
-  check_local_min_ove(control$local_min_ove)
   check_cores(cores)
   check_global_max_hdist(control$global_max_hdist)
   check_local_max_fdr(control$local_max_fdr)
@@ -52,11 +51,6 @@ check_ks <- function(ks) {
   check_lessthan(ks, 1)
 }
 
-check_local_min_ove <- function(local_min_ove) {
-  check_infinity(local_min_ove)
-  check_numeric(local_min_ove)
-  check_singlevalue(local_min_ove)
-}
 
 check_cores <- function(cores) {
   check_infinity(cores)
@@ -217,7 +211,6 @@ get_control <- function(control_in) {
   control <- list(global_smart = TRUE,
                   global_max_hdist = 1,
                   local_max_fdr = 0.05,
-                  local_min_ove = 2,
                   local_min_o = 1,
                   trim_flank_aa = 0,
                   global_pairs = NULL,
