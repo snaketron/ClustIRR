@@ -9,6 +9,7 @@ cluster_irr(
     cores = 1,
     control = list(global_smart = FALSE,
                    global_max_hdist = 1,
+                   global_min_identity = 0.7,
                    local_max_fdr = 0.05,
                    local_min_o = 1,
                    trim_flank_aa = 3,
@@ -41,7 +42,11 @@ to control algorithm's behavior. See the details below:
 \itemize{
 \item \code{global_smart} - logical, should we use smart global clustering 
 based of BLOSUM62 scores (slower but more accurate; default) or less smart 
-global clustering based on Hamming distances (faster but less accurate) 
+global clustering based on Hamming distances (faster but less accurate)
+\item \code{global_min_identity} - probability, what is the minimum sequence
+identity between a pair of CDR3 sequences for them to even be considered for
+global similarity inspection (default = 0.7; 70 percent identity) This input
+is only used if \code{global_smart} = TRUE.
 \item \code{global_max_hdist} - integer, if \code{global_smart}=FALSE, then 
 \code{global_max_hdist} defines a Hamming distance (HD) threshold, i.e. two 
 CDR3s as globally similar if their Hamming distance is smaller or equal to 
@@ -109,7 +114,7 @@ CDR3g, etc.). In the following we who the typical structure of these lists:
                 obtained by trimming \code{trim_flank_aa} amino acids (user-
                 defined parameter). If \code{trim_flank_aa} = 0, then 
                 \code{cdr3} = \code{cdr3_core}
-            \item \code{motif} - enriched motif from \code{cdr3_core}
+                \item \code{motif} - enriched motif from \code{cdr3_core}
             }
         }
         \item \code{global} - data.frame, global clustering results. Pairs of
@@ -163,10 +168,24 @@ repertoire \code{r}. This is an outline of the local clustering procedure:
 CDR3 sequences in repertoire \code{s}. This is an outline of the global 
 clustering approaches implemented in ClustIRR:
 
-The default ClustIRR algorithm for global clustering is simple. For each pair 
-of equal-length CDR3 sequences \eqn{i} and \eqn{j} we compute the Hamming 
-distance \eqn{d_{ij}}. If \eqn{d_{ij}\leq} \code{global_max_hdist} (user-defined 
-input), then \eqn{i} and \eqn{j} are globally similar.
+If \code{global_smart}=FALSE
+
+For each pair of equal-length CDR3 sequences \eqn{i} and \eqn{j} we compute 
+the Hamming distance \eqn{d_{ij}}. If \eqn{d_{ij}\leq} \code{global_max_hdist} 
+(user-defined input), then \eqn{i} and \eqn{j} are globally similar.
+
+If \code{global_smart}=TRUE
+
+We find pairs of CDR3 sequences that satisfy a minimum sequence identity 
+defined by \code{global_min_identity}. Each pair of sequences are aligned.
+Then, we compute the length of the longest of the two CDR3 sequences (column 
+\code{max_len}). Then, we compute four alignment scores: a) \code{weight} -
+BLOSUM62 score of the aligned CDR3 sequences; b) \code{nweight} - BLOSUM62 
+score of the aligned CDR3 sequences normalized by \code{max_len}; c) 
+\code{cweight} - BLOSUM62 score of the aligned CDR3 cores (untrimmed part of 
+the CDR3 sequences); d) \code{ncweight} - BLOSUM62 score of the aligned CDR3 
+cores (untrimmed part of the CDR3 sequences) normalized by the length of the 
+longest core sequence.
 
 Alternatively, the user can provide a matrix of globally similar CDR3 sequence 
 pairs, computed by a complementary approachs such as TCRdist.

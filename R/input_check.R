@@ -16,6 +16,7 @@ input_check <- function(s,
   check_low_mem(control$low_mem)
   check_global_smart(control$global_smart)
   check_global_pairs(control$global_pairs, s)
+  check_global_min_identity(control$global_min_identity)
 }
 
 check_s_r <- function(s, r) {
@@ -204,12 +205,21 @@ check_node_opacity <- function(node_opacity) {
     check_probability(node_opacity)
 }
 
+check_global_min_identity <- function(global_min_identity) {
+  check_infinity(global_min_identity)
+  check_numeric(global_min_identity)
+  check_singlevalue(global_min_identity)
+  check_probability(global_min_identity)
+}
+
+
 # Description:
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
   control <- list(global_smart = TRUE,
                   global_max_hdist = 1,
+                  global_min_identity = 0.7,
                   local_max_fdr = 0.05,
                   local_min_o = 1,
                   trim_flank_aa = 0,

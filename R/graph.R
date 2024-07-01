@@ -118,7 +118,7 @@ get_graph <- function(clust_irr,
       }
       
       e <- as.vector(apply(X = ge[, c("from_cdr3", "to_cdr3")], 
-                      MARGIN = 1, FUN = get_e, sample_id = sample_id))
+                           MARGIN = 1, FUN = get_e, sample_id = sample_id))
       ig <- igraph::add_edges(graph = ig, 
                               edges = e, 
                               weight = ge$weight,
@@ -129,7 +129,7 @@ get_graph <- function(clust_irr,
                               type = "within-repertoire",
                               chain = chain,
                               clustering = "global")
-
+      
       return(ig)
     }
     
@@ -139,7 +139,7 @@ get_graph <- function(clust_irr,
                                 directed = FALSE,
                                 vertices = cs)
     ig <- delete_edges(ig, edges = 1)
- 
+    
     # add local edges
     if(length(le)!=0) {
       for(chain in chains) {
@@ -211,6 +211,7 @@ get_graph <- function(clust_irr,
   ig <- build_graph(le = le, ge = ge, cs = cs, 
                     sample_id = sample_id, chains = chains)
   
+  
   return(list(graph = ig, clones = cs, joint_graph = FALSE))
 }
 
@@ -267,12 +268,13 @@ get_joint_graph <- function(clust_irrs,
   # get clust_irrs names
   clust_irrs <- get_clust_irrs_names(clust_irrs = clust_irrs)
   
+  # get joint controls
+  ctrl <- get_joint_controls(clust_irrs = clust_irrs)
+  
   # get igs
   igs <- vector(mode = "list", length = length(clust_irrs))
   for(i in 1:length(clust_irrs)) {
-    
     message("creating graphs: ", i, "\n")
-    
     igs[[i]] <- get_graph(clust_irr = clust_irrs[[i]], 
                           sample_id = names(clust_irrs)[i])
   }
@@ -283,25 +285,21 @@ get_joint_graph <- function(clust_irrs,
   # get chains
   chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
   
-  if(get_clustirr_inputs(clust_irrs[[1]])$control$global_smart==FALSE) {
-    # get global_max_hdist
-    gmd <- get_clustirr_inputs(clust_irrs[[1]])$control$global_max_hdist
-    
-    # get intergraph edges (global)
-    ige <- get_intergraph_edges_hamming(igs = igs, 
-                                        global_max_hdist = gmd, 
-                                        chains = chains, 
-                                        cores = cores)
+  # get intergraph edges (global)
+  if(ctrl$global_smart==FALSE) {
+    ige <- get_intergraph_edges_hamming(
+      igs = igs, 
+      global_max_hdist=ctrl$global_max_hdist, 
+      chains = chains, 
+      cores = cores)
   } 
   else {
-    # get global_max_hdist
-    trim_flank_aa <- get_clustirr_inputs(clust_irrs[[1]])$control$trim_flank_aa
-    
-    # get intergraph edges (global)
-    ige <- get_intergraph_edges_blosum(igs = igs, 
-                                       chains = chains, 
-                                       cores = cores,
-                                       trim_flank_aa = trim_flank_aa)
+    ige <- get_intergraph_edges_blosum(
+      igs = igs, 
+      chains = chains, 
+      cores = cores,
+      trim_flank_aa = ctrl$trim_flank_aa,
+      global_min_identity=ctrl$global_min_identity)
   }
   
   # get the vertices/edges of the graph
@@ -323,7 +321,7 @@ get_joint_graph <- function(clust_irrs,
   
   # build joint graph
   g <- graph_from_data_frame(df_e, directed=FALSE, vertices=df_v)
-
+  
   return(list(graph = g, clones = df_v, joint_graph = TRUE))
 }
 
@@ -381,7 +379,7 @@ plot_graph <- function(g,
   ig <- config_vertices_plot(g = ig, is_jg = is_jg)
   if(as_visnet == FALSE) {
     plot(ig, vertex.label = NA, vertex.color = adjustcolor(
-        "black", alpha.f = node_opacity))
+      "black", alpha.f = node_opacity))
   }
   if(as_visnet == TRUE) {
     V(ig)$size <- V(ig)$size*5
@@ -422,10 +420,11 @@ plot_graph <- function(g,
   }
 }
 
-        
+
 get_intergraph_edges_hamming <- function(igs, 
                                          global_max_hdist, 
-                                         chains, cores) {
+                                         chains, 
+                                         cores) {
   
   get_igg <- function(x, i, igs, global_max_hdist, chain) {
     
@@ -549,7 +548,8 @@ get_intergraph_edges_hamming <- function(igs,
 get_intergraph_edges_blosum <- function(igs,
                                         chains, 
                                         cores, 
-                                        trim_flank_aa) {
+                                        trim_flank_aa,
+                                        global_min_identity) {
   
   get_bscore_trim <- function(x, s1, s2, bm, d, trim_flank_aa) {
     
@@ -581,7 +581,7 @@ get_intergraph_edges_blosum <- function(igs,
                       gapExtension = 4))
   }
   
-  get_blastr <- function(s1, s2, chain, trim_flank_aa) {
+  get_blastr <- function(s1, s2, chain, trim_flank_aa, global_min_identity) {
     s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name, 
                      len = nchar(s1[, chain]))
     s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name,
@@ -589,8 +589,8 @@ get_intergraph_edges_blosum <- function(igs,
     
     o <- blast(query = s1, 
                db = s2,
-               maxAccepts = 10000,
-               minIdentity = 0.80,
+               maxAccepts = 10^4,
+               minIdentity = global_min_identity,
                alphabet = "protein", 
                output_to_file = FALSE)
     
@@ -635,14 +635,15 @@ get_intergraph_edges_blosum <- function(igs,
     return(out)
   }
   
-  get_igg <- function(x, i, igs, chain, trim_flank_aa) {
+  get_igg <- function(x, i, igs, chain, trim_flank_aa, global_min_identity) {
     s1_name <- names(igs)[i]
     s2_name <- names(igs)[x]
     
     b <- get_blastr(s1 = igs[[i]]$clones, 
                     s2 = igs[[x]]$clones, 
                     chain = chain, 
-                    trim_flank_aa = trim_flank_aa)
+                    trim_flank_aa = trim_flank_aa,
+                    global_min_identity = global_min_identity)
     if(is.null(b)==FALSE && nrow(b)!=0) {
       b$chain <- chain
       b$sample <- paste0(s1_name, "|", s2_name)
@@ -662,15 +663,15 @@ get_intergraph_edges_blosum <- function(igs,
   for(i in 1:(length(igs)-1)) {
     message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
     for(chain in chains) {
-        ige[[count]] <- do.call(rbind,
-                                bplapply(X = (i+1):length(igs), 
-                                         i = i,
-                                         FUN = get_igg,
-                                         igs = igs,
-                                         trim_flank_aa = trim_flank_aa,
-                                         chain = chain,
-                                         BPPARAM=MulticoreParam(workers=cores)))
-        count <- count + 1
+      ige[[count]] <- do.call(rbind,
+                              bplapply(X = (i+1):length(igs), 
+                                       i = i,
+                                       FUN = get_igg,
+                                       igs = igs,
+                                       trim_flank_aa = trim_flank_aa,
+                                       chain = chain,
+                                       BPPARAM=MulticoreParam(workers=cores)))
+      count <- count + 1
     }
   }
   ige <- do.call(rbind, ige)
@@ -688,6 +689,7 @@ get_clones <- function(sample_id, x) {
   cs <- cs[, rev(colnames(cs))]
   return(cs)
 }
+
 
 # Description:
 # integrate clustirr with data from databases: VDJdb, tcr3d, mcpas-tcr
@@ -823,10 +825,10 @@ get_db_matches <- function(cs, custom_db) {
       ag_gene <- c(ag_gene, unlist(strsplit(x = y[4], split = '\\;')))
     }
     ag_species <- paste0(unique(gsub(pattern = "Antigen_species\\:", 
-                              replacement = '', x = ag_species)), 
+                                     replacement = '', x = ag_species)), 
                          collapse = ',')
     ag_gene <- paste0(unique(gsub(pattern = "Antigen_gene\\:", 
-                           replacement = '', x = ag_gene)),
+                                  replacement = '', x = ag_gene)),
                       collapse = ',')
     
     return(list(ag_species = ag_species, ag_gene = ag_gene))
@@ -836,5 +838,33 @@ get_db_matches <- function(cs, custom_db) {
   cs$Ag_gene <- unlist(lapply(X = a, FUN = function(x) {x[["ag_gene"]]}))
   
   return(cs)
+}
+
+
+# Description:
+# Compare the control lists of individual clust_irr objects. If they match,
+# then extract the control list from one list.
+get_joint_controls <- function(clust_irrs) {
+  # if these tests pass -> extract controls of any of the elements
+  for(i in 1:(length(clust_irrs)-1)) {
+    for(j in (i+1):length(clust_irrs)) {
+      c_i <- get_clustirr_inputs(clust_irrs[[i]])$control
+      c_j <- get_clustirr_inputs(clust_irrs[[j]])$control
+      
+      if(length(c_i)!=length(c_j)) {
+        stop("different controls used in individual clust_irrs")
+      }
+      
+      c_ij <- vapply(X = names(c_i), c_i = c_i, c_j = c_j,
+                     FUN = function(x, c_i, c_j) {return(c_i[[x]]==c_j[[x]])}, 
+                     FUN.VALUE = logical(1))
+      
+      if(any(c_ij==FALSE)) {
+        stop("different controls used in individual clust_irrs")
+      }
+    } 
+  }
+  
+  return(get_clustirr_inputs(x = clust_irrs[[1]])$control)
 }
 
