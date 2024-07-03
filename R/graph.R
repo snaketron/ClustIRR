@@ -304,22 +304,21 @@ get_joint_graph <- function(clust_irrs,
             global_max_hdist=ctrl$global_max_hdist, 
             chains = chains, 
             cores = cores)
-    } 
+    }
     else {
         ige <- get_intergraph_edges_blosum(
-            igs = igs, 
-            chains = chains, 
+            igs = igs,
+            chains = chains,
             cores = cores,
             trim_flank_aa = ctrl$trim_flank_aa,
             global_min_identity=ctrl$global_min_identity)
     }
-    
     # get the vertices/edges of the graph
     df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
     df_e <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "edges"))
     
     # these are the cols we want to keep in this order
-    cols <- c("from", "to", "weight", "cweight", "nweight", "ncweight", 
+    cols <- c("from", "to", "weight", "cweight", "nweight", "ncweight",
               "max_len", "type", "chain", "clustering")
     if(nrow(df_e)!=0) {
         if(is.null(ige)==FALSE && nrow(ige)!=0) {
@@ -569,7 +568,7 @@ get_intergraph_edges_blosum <- function(igs,
         if(length(js)==0) {
             return(NULL)
         }
-        is <- lapply(X = js, function(x, a, b) {
+        is <- lapply(X = js, a = a, b = b, FUN = function(x, a, b) {
             return(expand.grid(a$Id[a$Seq==x], b$Id[b$Seq==x]))
         })
         is <- do.call(rbind, is)
@@ -684,11 +683,11 @@ get_intergraph_edges_blosum <- function(igs,
                         chain = chain, 
                         trim_flank_aa = trim_flank_aa,
                         global_min_identity = global_min_identity)
+        
         if(is.null(b)==FALSE && nrow(b)!=0) {
             b$chain <- chain
             b$sample <- paste0(s1_name, "|", s2_name)
             b$type <- "between-repertoire"
-            b$chain <- chain
             b$clustering <- "global"
             return(b)
         }
