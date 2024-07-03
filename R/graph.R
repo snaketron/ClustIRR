@@ -1,6 +1,6 @@
 
 get_graph <- function(clust_irr, 
-                      sample_id = "S",
+                      sample_id,
                       custom_db = NULL,
                       edit_dist = 0) {
     
@@ -179,15 +179,15 @@ get_graph <- function(clust_irr,
     # cells
     s <- get_clustirr_inputs(clust_irr)$s
     
-    # sample id
-    if(missing(sample_id)) {
-        sample_id <- "S"
-    } else {
-        if(length(sample_id)!=1) {
-            stop("sample_id must be a character vector of size 1")
-        }
-        if(is.numeric(sample_id)|is.logical(sample_id)) {
-            sample_id <- as.character(sample_id)
+    # setting up the sample id
+    if(missing(sample_id)==FALSE) {
+        sample_id <- sample_id
+    } 
+    else {
+        if("sample_id" %in% names(get_clustirr_inputs(clust_irr))) {
+            sample_id <- get_clustirr_inputs(clust_irr)$sample_id
+        } else {
+            sample_id <- paste0("S", sample(x = 1:10^5, size = 1))
         }
     }
     
@@ -204,7 +204,8 @@ get_graph <- function(clust_irr,
     
     # build graph with only vertices
     if(length(le)==0 & is.null(ge)) {
-        ig <- graph_from_data_frame(d = data.frame(from=cs$name[1], to=cs$name[1]),
+        ig <- graph_from_data_frame(d = data.frame(from=cs$name[1], 
+                                                   to=cs$name[1]),
                                     directed = FALSE, vertices = cs)
         ig <- delete_edges(ig, edges = 1)
         
@@ -221,7 +222,8 @@ get_graph <- function(clust_irr,
 
 get_joint_graph <- function(clust_irrs, 
                             cores = 1,
-                            custom_db = NULL) {
+                            custom_db = NULL,
+                            edit_dist = 0) {
     
     check_input <- function(clust_irrs) {
         if(missing(clust_irrs)==TRUE) {
@@ -256,6 +258,11 @@ get_joint_graph <- function(clust_irrs,
         if(is.null(clust_irrs_names)) {
             names(clust_irrs) <- paste0("s", 1:length(clust_irrs))
         }
+        
+        for(i in 1:length(clust_irrs)) {
+            clust_irrs[[i]]@inputs[["sample_id"]] <- names(clust_irrs)[i]
+        }
+        
         return(clust_irrs)
     }
     
@@ -269,6 +276,9 @@ get_joint_graph <- function(clust_irrs,
     # check cores
     check_cores(cores = cores)
     
+    # check edit dist
+    check_edit_dist(edit_dist = edit_dist)
+    
     # get clust_irrs names
     clust_irrs <- get_clust_irrs_names(clust_irrs = clust_irrs)
     
@@ -276,14 +286,12 @@ get_joint_graph <- function(clust_irrs,
     ctrl <- get_joint_controls(clust_irrs = clust_irrs)
     
     # get igs
-    igs <- vector(mode = "list", length = length(clust_irrs))
-    for(i in 1:length(clust_irrs)) {
-        message("creating graphs: ", i, "\n")
-        igs[[i]] <- get_graph(clust_irr = clust_irrs[[i]], 
-                              sample_id = names(clust_irrs)[i])
-    }
-    
-    # rename igs
+    message("creating graphs: \n")
+    igs <- bplapply(X = clust_irrs,
+                    FUN = get_graph,
+                    custom_db = custom_db,
+                    edit_dist = edit_dist,
+                    BPPARAM = MulticoreParam(workers = cores))
     names(igs) <- names(clust_irrs)
     
     # get chains
@@ -309,6 +317,7 @@ get_joint_graph <- function(clust_irrs,
     # get the vertices/edges of the graph
     df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
     df_e <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "edges"))
+    
     # these are the cols we want to keep in this order
     cols <- c("from", "to", "weight", "cweight", "nweight", "ncweight", 
               "max_len", "type", "chain", "clustering")
@@ -324,7 +333,7 @@ get_joint_graph <- function(clust_irrs,
     }
     
     # build joint graph
-    g <- graph_from_data_frame(df_e, directed=FALSE, vertices=df_v)
+    g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
     
     return(list(graph = g, clones = df_v, joint_graph = TRUE))
 }
@@ -380,10 +389,10 @@ plot_graph <- function(g,
         }
     }
     
-    ig <- config_vertices_plot(g = ig, is_jg = is_jg)
+    ig <- config_vertices_plot(g = ig, is_jg = is_jg, 
+                               node_opacity = node_opacity)
     if(as_visnet == FALSE) {
-        plot(ig, vertex.label = NA, vertex.color = adjustcolor(
-            "black", alpha.f = node_opacity))
+        plot(ig, vertex.label = NA)
     }
     if(as_visnet == TRUE) {
         V(ig)$size <- V(ig)$size*5
@@ -555,6 +564,19 @@ get_intergraph_edges_blosum <- function(igs,
                                         trim_flank_aa,
                                         global_min_identity) {
     
+    get_identical_hits <- function(a, b) {
+        js <- intersect(a$Seq, b$Seq)
+        if(length(js)==0) {
+            return(NULL)
+        }
+        is <- lapply(X = js, function(x, a, b) {
+            return(expand.grid(a$Id[a$Seq==x], b$Id[b$Seq==x]))
+        })
+        is <- do.call(rbind, is)
+        colnames(is) <- c("QueryId", "TargetId")
+        return(is)
+    }
+    
     get_bscore_trim <- function(x, s1, s2, bm, d, trim_flank_aa) {
         
         a <- s1$Seq[d$QueryId[x]]
@@ -601,10 +623,23 @@ get_intergraph_edges_blosum <- function(igs,
         # if empty stop
         if(nrow(o)==0) {
             return(NULL)
+        } else {
+            # we only need these columns
+            o <- o[, c("QueryId", "TargetId")]
+            
+            # here make sure that short identical sequences are not thrown out
+            # if duplicated -> remove
+            oi <- get_identical_hits(a = s1, b = s2)
+            if(is.null(oi)==FALSE) {
+                o <- rbind(o, oi)
+                o <- o[duplicated(o)==FALSE, ]
+                rm(oi)
+            }
         }
         
         # get blosum matrix from pwalign
         data_env <- new.env(parent = emptyenv())
+        
         # data("BLOSUM62", envir = data_env, package = "pwalign")
         data("BLOSUM62", envir = data_env, package = "Biostrings")
         
@@ -676,7 +711,7 @@ get_intergraph_edges_blosum <- function(igs,
                 trim_flank_aa = trim_flank_aa,
                 global_min_identity = global_min_identity,
                 chain = chain,
-                BPPARAM=MulticoreParam(workers=cores)))
+                BPPARAM = MulticoreParam(workers = cores)))
             count <- count + 1
         }
     }

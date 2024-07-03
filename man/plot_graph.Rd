@@ -1,11 +1,15 @@
 \name{plot_graph}
 \alias{plot_graph}
 \title{Plot ClustIRR graph}
-\usage{plot_graph(g, select_by = "Ag_species", as_visnet=FALSE,
-    show_singletons=TRUE, node_opacity=1)
+\usage{plot_graph(g,
+           select_by = "Ag_species",
+           as_visnet = FALSE,
+           show_singletons = TRUE, 
+           node_opacity = 1)
 }
 \arguments{
-\item{g}{Object returned by \code{get_graph} function}
+\item{g}{Object returned by the functions \code{get_graph} or 
+\code{get_joint_graph}}
 \item{as_visnet}{logical, if \code{as_visnet}=TRUE we plot an interactive graph 
 with visNetwork. If \code{as_visnet}=FALSE, we plot a static graph with igraph.}
 \item{select_by}{character string, two values are possible: "Ag_species" or

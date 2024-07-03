@@ -54,19 +54,20 @@ config_edges_plot <- function(g, is_jg) {
   return(g)
 }
 
-config_vertices_plot <- function(g, is_jg) {
+config_vertices_plot <- function(g, is_jg, node_opacity) {
   # default features
   V(g)$size <- 1.5+log2(V(g)$clone_size)
   
   if(is_jg==TRUE) {
     V(g)$color_num <- as.numeric(as.factor(V(g)$sample))
     max_n <- max(V(g)$color_num)
-    V(g)$color <- hcl.colors(n=max(5, max_n), palette = "Roma")[V(g)$color_num]
+    V(g)$color <- hcl.colors(n=max(5, max_n), palette = "Roma",
+                             alpha = node_opacity)[V(g)$color_num]
     V(g)$frame.color <- V(g)$color
   } 
   else {
-    V(g)$color <- "black"
-    V(g)$frame.color <- "black"
+    V(g)$color <- vertex.color = adjustcolor("black", alpha.f = node_opacity)
+    V(g)$frame.color <- V(g)$color
   }
   
   return(g)
