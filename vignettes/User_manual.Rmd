@@ -697,7 +697,9 @@ in this particular graph).
 
 
 ```{r}
-plot_graph(g = g, as_visnet = TRUE)
+plot_graph(g = g, 
+           as_visnet = TRUE, 
+           node_opacity = 0.5)
 ```
 
 ```{r}

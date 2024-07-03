@@ -66,7 +66,7 @@ config_vertices_plot <- function(g, is_jg, node_opacity) {
     V(g)$frame.color <- V(g)$color
   } 
   else {
-    V(g)$color <- vertex.color = adjustcolor("black", alpha.f = node_opacity)
+    V(g)$color <- adjustcolor("black", alpha.f = node_opacity)
     V(g)$frame.color <- V(g)$color
   }
   
