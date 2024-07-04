@@ -86,28 +86,28 @@ get_graph <- function(clust_irr,
         
         add_local_edges <- function(le, ig, sample_id, chain) {
             
-            add_motif_edges <- function(x, ig, sample_id, chain) {
-                xp <- utils::combn(x = paste0(sample_id, '|', x), m = 2)
-                xp <- as.vector(xp)
-                return(igraph::add_edges(graph = ig, 
-                                         edges = xp, 
-                                         weight = 1,
-                                         cweight = 1,
-                                         nweight = 1,
-                                         ncweight = 1,
-                                         max_len = NA,
-                                         type = "within-repertoire",
-                                         chain = chain,
-                                         clustering = "local"))
-            }
+            xs <- unlist(lapply(X = le, sample_id = sample_id, chain = chain, 
+                                FUN = function(x, sample_id, chain) {
+                                    if(length(x)<=1) {
+                                        return(NULL)
+                                    }
+                                    xp <- utils::combn(x = paste0(
+                                        sample_id, '|', x), m = 2)
+                                    xp <- as.vector(xp)
+                                    return(xp)
+                                }))
             
-            for(i in 1:length(le)) {
-                # if only one element in le then do not add edge, else add
-                if(length(le[[i]])>1) {
-                    ig <- add_motif_edges(x = le[[i]], ig = ig, 
-                                          sample_id = sample_id,
-                                          chain = chain)
-                }
+            if(length(xs)!=0) {
+                ig <- igraph::add_edges(graph = ig,
+                                        edges = xs,
+                                        weight = 1,
+                                        cweight = 1,
+                                        nweight = 1,
+                                        ncweight = 1,
+                                        max_len = NA,
+                                        type = "within-repertoire",
+                                        chain = chain,
+                                        clustering = "local")
             }
             return(ig)
         }
@@ -142,6 +142,7 @@ get_graph <- function(clust_irr,
         ig <- delete_edges(ig, edges = 1)
         
         # add local edges
+        message("1/2: adding local edges... \n")
         if(length(le)!=0) {
             for(chain in chains) {
                 if(length(le[[chain]])!=0) {
@@ -153,6 +154,7 @@ get_graph <- function(clust_irr,
         }
         
         # add global edges
+        message("2/2: adding global edges... \n")
         if(is.null(ge)==FALSE && nrow(ge)!=0) {
             for(chain in chains) {
                 chain_ge <- ge[ge$chain == chain, ]
@@ -213,6 +215,7 @@ get_graph <- function(clust_irr,
     }
     
     # build graph
+    message("building graph... \n")
     ig <- build_graph(le = le, ge = ge, cs = cs, 
                       sample_id = sample_id, chains = chains)
     
@@ -286,7 +289,7 @@ get_joint_graph <- function(clust_irrs,
     ctrl <- get_joint_controls(clust_irrs = clust_irrs)
     
     # get igs
-    message("creating graphs: \n")
+    message("creating graphs... \n")
     igs <- bplapply(X = clust_irrs,
                     FUN = get_graph,
                     custom_db = custom_db,
