@@ -703,30 +703,29 @@ get_intergraph_edges_blosum <- function(igs,
     
     count <- 1
     for(i in 1:(length(igs)-1)) {
-        message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
-        for(chain in chains) {
-            # ige[[count]] <- do.call(rbind, lapply(
-            #     X = (i+1):length(igs), 
-            #     i = i,
-            #     FUN = get_igg,
-            #     igs = igs,
-            #     trim_flank_aa = trim_flank_aa,
-            #     global_min_identity = global_min_identity,
-            #     chain = chain))
-            ige[[count]] <- do.call(rbind, bplapply(
-                X = (i+1):length(igs),
-                i = i,
-                FUN = get_igg,
-                igs = igs,
-                trim_flank_aa = trim_flank_aa,
-                global_min_identity = global_min_identity,
-                chain = chain,
-                BPPARAM = MulticoreParam(workers = cores)))
-            count <- count + 1
-        }
+      message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
+      for(chain in chains) {
+        # ige[[count]] <- do.call(rbind, lapply(
+        #     X = (i+1):length(igs), 
+        #     i = i,
+        #     FUN = get_igg,
+        #     igs = igs,
+        #     trim_flank_aa = trim_flank_aa,
+        #     global_min_identity = global_min_identity,
+        #     chain = chain))
+        ige[[count]] <- do.call(rbind, bplapply(
+          X = (i+1):length(igs),
+          i = i,
+          FUN = get_igg,
+          igs = igs,
+          trim_flank_aa = trim_flank_aa,
+          global_min_identity = global_min_identity,
+          chain = chain,
+          BPPARAM = MulticoreParam(workers = cores)))
+        count <- count + 1
+      }
     }
     ige <- do.call(rbind, ige)
-    
     return(ige)
 }
 
