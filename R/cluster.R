@@ -31,16 +31,23 @@ cluster_irr <- function(s,
   
   # add ID to data
   s$id <- seq_len(length.out = nrow(s))
-  
+  future::plan(future::multisession, workers = cores)
+  clust <- future_lapply(X = chains, 
+                         FUN = get_clust,
+                         s = s, 
+                         r = r,
+                         ks = ks,
+                         control = control,
+                         global_only = global_only)
   # run analysis for each chain
-  clust <- bplapply(X = chains, 
-                    FUN = get_clust,
-                    s = s, 
-                    r = r,
-                    ks = ks,
-                    control = control,
-                    global_only = global_only,
-                    BPPARAM = MulticoreParam(workers = cores))
+  # clust <- bplapply(X = chains, 
+  #                   FUN = get_clust,
+  #                   s = s, 
+  #                   r = r,
+  #                   ks = ks,
+  #                   control = control,
+  #                   global_only = global_only,
+  #                   BPPARAM = MulticoreParam(workers = cores))
   names(clust) <- chains
   
   # setup clustirr object
