@@ -289,7 +289,7 @@ get_joint_graph <- function(clust_irrs,
     ctrl <- get_joint_controls(clust_irrs = clust_irrs)
     
     # get igs
-    message("creating graphs... \n")
+    message("start: graph creation... \n")
     igs <- bplapply(X = clust_irrs,
                     FUN = get_graph,
                     custom_db = custom_db,
@@ -299,7 +299,6 @@ get_joint_graph <- function(clust_irrs,
     
     # get chains
     chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
-    
     # get intergraph edges (global)
     if(ctrl$global_smart==FALSE) {
         ige <- get_intergraph_edges_hamming(
@@ -323,6 +322,8 @@ get_joint_graph <- function(clust_irrs,
     # these are the cols we want to keep in this order
     cols <- c("from", "to", "weight", "cweight", "nweight", "ncweight",
               "max_len", "type", "chain", "clustering")
+    
+    
     if(nrow(df_e)!=0) {
         if(is.null(ige)==FALSE && nrow(ige)!=0) {
             df_e <- rbind(df_e[, cols], ige[, cols])
@@ -492,7 +493,6 @@ get_intergraph_edges_hamming <- function(igs,
             hd <- do.call(rbind, hd)
             return(hd)
         }
-        
         
         s1_name <- names(igs)[i]
         s2_name <- names(igs)[x]
@@ -705,8 +705,16 @@ get_intergraph_edges_blosum <- function(igs,
     for(i in 1:(length(igs)-1)) {
         message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
         for(chain in chains) {
+            # ige[[count]] <- do.call(rbind, lapply(
+            #     X = (i+1):length(igs), 
+            #     i = i,
+            #     FUN = get_igg,
+            #     igs = igs,
+            #     trim_flank_aa = trim_flank_aa,
+            #     global_min_identity = global_min_identity,
+            #     chain = chain))
             ige[[count]] <- do.call(rbind, bplapply(
-                X = (i+1):length(igs), 
+                X = (i+1):length(igs),
                 i = i,
                 FUN = get_igg,
                 igs = igs,

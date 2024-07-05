@@ -33,14 +33,14 @@ cluster_irr <- function(s,
   s$id <- seq_len(length.out = nrow(s))
   
   # run analysis for each chain
-  clust <- lapply(X = chains, 
-                  FUN = get_clust,
-                  s = s, 
-                  r = r,
-                  ks = ks, 
-                  cores = cores, 
-                  control = control,
-                  global_only = global_only)
+  clust <- bplapply(X = chains, 
+                    FUN = get_clust,
+                    s = s, 
+                    r = r,
+                    ks = ks,
+                    control = control,
+                    global_only = global_only,
+                    BPPARAM = MulticoreParam(workers = cores))
   names(clust) <- chains
   
   # setup clustirr object
@@ -60,7 +60,6 @@ get_clust <- function(x,
                       s,
                       r,
                       ks,
-                      cores,
                       control,
                       global_only) {
   
