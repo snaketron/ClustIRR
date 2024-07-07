@@ -134,7 +134,6 @@ get_graph <- function(clust_irr,
             return(ig)
         }
         
-        
         ig <- graph_from_data_frame(d = data.frame(from = cs$name[1], 
                                                    to = cs$name[1]),
                                     directed = FALSE,
@@ -290,17 +289,11 @@ get_joint_graph <- function(clust_irrs,
     
     # get igs
     message("start: graph creation... \n")
-    future::plan(future::multisession, workers = cores)
+    future::plan(future::multisession, workers = I(cores))
     igs <- future_lapply(X = clust_irrs,
                          FUN = get_graph,
                          custom_db = custom_db,
                          edit_dist = edit_dist)
-    
-    # igs <- bplapply(X = clust_irrs,
-    #                 FUN = get_graph,
-    #                 custom_db = custom_db,
-    #                 edit_dist = edit_dist,
-    #                 BPPARAM = MulticoreParam(workers = cores))
     names(igs) <- names(clust_irrs)
     
     # get chains
@@ -608,15 +601,15 @@ get_intergraph_edges_blosum <- function(igs,
     
     get_bscore <- function(x, s1, s2, bm, d) {
         return(stringDist(x = c(s1$Seq[d$QueryId[x]], s2$Seq[d$TargetId[x]]),
-                          method = "substitutionMatrix", 
-                          type = "global", 
-                          substitutionMatrix = bm, 
+                          method = "substitutionMatrix",
+                          type = "global",
+                          substitutionMatrix = bm,
                           gapOpening = 10,
                           gapExtension = 4))
     }
     
     get_blastr <- function(s1, s2, chain, trim_flank_aa, global_min_identity) {
-        s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name, 
+        s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name,
                          len = nchar(s1[, chain]))
         s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name,
                          len = nchar(s2[, chain]))
@@ -625,7 +618,7 @@ get_intergraph_edges_blosum <- function(igs,
                    db = s2,
                    maxAccepts = 10^4,
                    minIdentity = global_min_identity,
-                   alphabet = "protein", 
+                   alphabet = "protein",
                    output_to_file = FALSE)
         
         # if empty stop
@@ -711,16 +704,7 @@ get_intergraph_edges_blosum <- function(igs,
     for(i in 1:(length(igs)-1)) {
       message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
       for(chain in chains) {
-        # ige[[count]] <- do.call(rbind, lapply(
-        #     X = (i+1):length(igs), 
-        #     i = i,
-        #     FUN = get_igg,
-        #     igs = igs,
-        #     trim_flank_aa = trim_flank_aa,
-        #     global_min_identity = global_min_identity,
-        #     chain = chain))
-        
-        future::plan(future::multisession, workers = cores)
+        future::plan(future::multisession, workers = I(cores))
         ige[[count]] <- do.call(rbind, future_lapply(
           X = (i+1):length(igs),
           i = i,
@@ -729,16 +713,6 @@ get_intergraph_edges_blosum <- function(igs,
           trim_flank_aa = trim_flank_aa,
           global_min_identity = global_min_identity,
           chain = chain))
-        
-        # ige[[count]] <- do.call(rbind, bplapply(
-        #   X = (i+1):length(igs),
-        #   i = i,
-        #   FUN = get_igg,
-        #   igs = igs,
-        #   trim_flank_aa = trim_flank_aa,
-        #   global_min_identity = global_min_identity,
-        #   chain = chain,
-        #   BPPARAM = MulticoreParam(workers = cores)))
         count <- count + 1
       }
     }
