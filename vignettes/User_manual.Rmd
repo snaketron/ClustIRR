@@ -666,7 +666,7 @@ to visualize them.
 
 ```{r, fig.width=6, fig.height=6}
 # beta & alpha chain
-g <- get_joint_graph(clust_irrs = clust_irrs)
+g <- get_joint_graph(clust_irrs = clust_irrs, cores = 1)
 ```
 
 &nbsp;

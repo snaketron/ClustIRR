@@ -141,7 +141,7 @@ get_graph <- function(clust_irr,
         ig <- delete_edges(ig, edges = 1)
         
         # add local edges
-        message("1/2: adding local edges... \n")
+        message("1/2 (", sample_id, "): adding local edges... \n")
         if(length(le)!=0) {
             for(chain in chains) {
                 if(length(le[[chain]])!=0) {
@@ -153,7 +153,7 @@ get_graph <- function(clust_irr,
         }
         
         # add global edges
-        message("2/2: adding global edges... \n")
+        message("2/2 (", sample_id, "): adding global edges... \n")
         if(is.null(ge)==FALSE && nrow(ge)!=0) {
             for(chain in chains) {
                 chain_ge <- ge[ge$chain == chain, ]
@@ -289,11 +289,11 @@ get_joint_graph <- function(clust_irrs,
     
     # get igs
     message("start: graph creation... \n")
-    future::plan(future::multisession, workers = I(cores))
-    igs <- future_lapply(X = clust_irrs,
-                         FUN = get_graph,
-                         custom_db = custom_db,
-                         edit_dist = edit_dist)
+    igs <- bplapply(X = clust_irrs,
+                    FUN = get_graph,
+                    custom_db = custom_db,
+                    edit_dist = edit_dist,
+                    BPPARAM = MulticoreParam(workers = cores))
     names(igs) <- names(clust_irrs)
     
     # get chains
@@ -702,19 +702,19 @@ get_intergraph_edges_blosum <- function(igs,
     
     count <- 1
     for(i in 1:(length(igs)-1)) {
-      message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
-      for(chain in chains) {
-        future::plan(future::multisession, workers = I(cores))
-        ige[[count]] <- do.call(rbind, future_lapply(
-          X = (i+1):length(igs),
-          i = i,
-          FUN = get_igg,
-          igs = igs,
-          trim_flank_aa = trim_flank_aa,
-          global_min_identity = global_min_identity,
-          chain = chain))
-        count <- count + 1
-      }
+        message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
+        for(chain in chains) {
+            ige[[count]] <- do.call(rbind, bplapply(
+                X = (i+1):length(igs),
+                i = i,
+                FUN = get_igg,
+                igs = igs,
+                trim_flank_aa = trim_flank_aa,
+                global_min_identity = global_min_identity,
+                chain = chain,
+                BPPARAM = MulticoreParam(workers = cores)))
+            count <- count + 1
+        }
     }
     ige <- do.call(rbind, ige)
     return(ige)

@@ -1,17 +1,17 @@
 Package: ClustIRR
 Type: Package
 Title: Clustering of immune receptor repertoires
-Version: 1.3.20
+Version: 1.3.21
 Authors@R: c(
     person("Simo", "Kitanovski", email = "simokitanovski@gmail.com", 
     role = c("aut", "cre"), comment=c(ORCID="0000-0003-2909-5376")),
     person("Kai", "Wollek", email = "kai.wollek@uni-duisburg-essen.de", 
     role = c("aut"), comment=c(ORCID="0009-0008-5941-9160")))
-Description: ClustIRR is a quantitative method for clustering of immune  
-    receptor repertoires (IRRs). The algorithm identifies groups of T or B 
-    cell receptors (TCRs or BCRs) with possibly similar specificity directly
-    from the sequences of their complementarity determining regions. ClustIRR 
-    uses graphs to visualize the specificity structures of IRRs.
+Description: ClustIRR clusters immune receptor repertoires (IRRs), and 
+    identifies groups of T or B cell receptors (TCRs or BCRs) with possibly 
+    similar specificity directly from the sequences of their complementarity 
+    determining regions. ClustIRR uses graphs to visualize the specificity 
+    structures of IRRs.
 License: GPL-3 + file LICENSE
 LazyData: false
 Depends:
@@ -26,8 +26,7 @@ Imports:
     blaster,
     grDevices,
     Biostrings,
-    future.apply,
-    future
+    BiocParallel
 Suggests:
     BiocStyle,
     knitr,
