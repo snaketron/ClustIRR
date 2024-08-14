@@ -288,12 +288,12 @@ get_joint_graph <- function(clust_irrs,
     ctrl <- get_joint_controls(clust_irrs = clust_irrs)
     
     # get igs
-    message("start: graph creation... \n")
-    igs <- bplapply(X = clust_irrs,
-                    FUN = get_graph,
-                    custom_db = custom_db,
-                    edit_dist = edit_dist,
-                    BPPARAM = MulticoreParam(workers = cores))
+    future::plan(future::multisession, workers = I(cores))
+    igs <- future_lapply(X = clust_irrs,
+                         FUN = get_graph,
+                         custom_db = custom_db,
+                         edit_dist = edit_dist,
+                         future.seed = TRUE)
     names(igs) <- names(clust_irrs)
     
     # get chains
@@ -704,7 +704,8 @@ get_intergraph_edges_blosum <- function(igs,
     for(i in 1:(length(igs)-1)) {
         message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
         for(chain in chains) {
-            ige[[count]] <- do.call(rbind, bplapply(
+            future::plan(future::multisession, workers = I(cores))
+            ige[[count]] <- do.call(rbind, future_lapply(
                 X = (i+1):length(igs),
                 i = i,
                 FUN = get_igg,
@@ -712,7 +713,7 @@ get_intergraph_edges_blosum <- function(igs,
                 trim_flank_aa = trim_flank_aa,
                 global_min_identity = global_min_identity,
                 chain = chain,
-                BPPARAM = MulticoreParam(workers = cores)))
+                future.seed = TRUE))
             count <- count + 1
         }
     }
