@@ -588,8 +588,12 @@ get_intergraph_edges_blosum <- function(igs,
             return(NA)
         }
         
-        a <- substr(x = a, start = trim_flank_aa+1, stop = nchar(a)-trim_flank_aa)
-        b <- substr(x = b, start = trim_flank_aa+1, stop = nchar(b)-trim_flank_aa)
+        a <- substr(x=a, start = trim_flank_aa+1, stop = nchar(a)-trim_flank_aa)
+        b <- substr(x=b, start = trim_flank_aa+1, stop = nchar(b)-trim_flank_aa)
+        
+        if(is.na(a)|is.na(b)) {
+            return(NA)
+        }
         
         return(stringDist(x = c(a, b),
                           method = "substitutionMatrix", 
@@ -600,7 +604,14 @@ get_intergraph_edges_blosum <- function(igs,
     }
     
     get_bscore <- function(x, s1, s2, bm, d) {
-        return(stringDist(x = c(s1$Seq[d$QueryId[x]], s2$Seq[d$TargetId[x]]),
+        a <- s1$Seq[d$QueryId[x]]
+        b <- s2$Seq[d$TargetId[x]]
+        
+        if(is.na(a)|is.na(b)) {
+            return(NA)
+        }
+        
+        return(stringDist(x = c(a, b),
                           method = "substitutionMatrix",
                           type = "global",
                           substitutionMatrix = bm,
