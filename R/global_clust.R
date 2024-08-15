@@ -101,7 +101,14 @@ get_global_clust_blosum <- function(cdr3, cdr3_dup, control) {
     
     # computes BLOSUM62 score for pairs of sequences returned by blaster 
     get_bscore <- function(x, d, bm, db) {
-        return(stringDist(x = c(db$Seq[d$QueryId[x]], db$Seq[d$TargetId[x]]),
+        a <- db$Seq[d$QueryId[x]]
+        b <- db$Seq[d$TargetId[x]]
+        
+        if(is.na(a)|is.na(b)) {
+            return(NA)
+        }
+        
+        return(stringDist(x = c(a, b),
                           method = "substitutionMatrix", 
                           type = "global", 
                           substitutionMatrix = bm, 
@@ -122,6 +129,10 @@ get_global_clust_blosum <- function(cdr3, cdr3_dup, control) {
         a <- substr(x = a, start = trim+1, stop = nchar(a)-trim)
         b <- substr(x = b, start = trim+1, stop = nchar(b)-trim)
         
+        if(is.na(a)|is.na(b)) {
+            return(NA)
+        }
+        
         return(stringDist(x = c(a, b),
                           method = "substitutionMatrix", 
                           type = "global", 
@@ -131,6 +142,13 @@ get_global_clust_blosum <- function(cdr3, cdr3_dup, control) {
     }
     
     get_bscore_dup <- function(x, cdr3, bm, trim) {
+        
+        if(is.na(cdr3[x])) {
+            return(data.frame(from_cdr3 = cdr3[x],
+                              to_cdr3 = cdr3[x],
+                              weight = NA,
+                              cweight = NA))
+        } 
         
         bs <- stringDist(x = c(cdr3[x], cdr3[x]),
                          method = "substitutionMatrix", 
@@ -145,16 +163,19 @@ get_global_clust_blosum <- function(cdr3, cdr3_dup, control) {
             bs_core <- NA
         } 
         else {
-            cdr3_core <- substr(x = a, start = trim+1, stop = nchar(a)-trim)
-            bs_core <- stringDist(x = c(cdr3_core, cdr3_core),
-                                  method = "substitutionMatrix", 
-                                  type = "global", 
-                                  substitutionMatrix = bm, 
-                                  gapOpening = 10,
-                                  gapExtension = 4)
+            cdr3_core <- substr(x = a, start = trim+1, stop = na-trim)
+            if(is.na(cdr3_core)) {
+                bs_core <- NA
+            } 
+            else {
+                bs_core <- stringDist(x = c(cdr3_core, cdr3_core),
+                                      method = "substitutionMatrix", 
+                                      type = "global", 
+                                      substitutionMatrix = bm, 
+                                      gapOpening = 10,
+                                      gapExtension = 4)
+            }
         }
-        
-        
         return(data.frame(from_cdr3 = cdr3[x],
                           to_cdr3 = cdr3[x],
                           weight = -bs,
@@ -183,7 +204,7 @@ get_global_clust_blosum <- function(cdr3, cdr3_dup, control) {
                  FUN = function(x) {paste0(sort(x), collapse = '-')})
     key_js <- which(duplicated(key)==FALSE)
     if(length(key_js)!=0) {
-        o <- o[key_js, ]
+        o <- o[key_js,,drop=FALSE]
     }
     
     # get blosum matrix from pwalign
