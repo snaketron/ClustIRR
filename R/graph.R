@@ -441,7 +441,7 @@ get_intergraph_edges_hamming <- function(igs,
                                          chains, 
                                          cores) {
     
-    get_igg <- function(x, i, igs, global_max_hdist, chain) {
+    get_igg <- function(x, ix, igs, global_max_hdist) {
         
         get_hd_row <- function(x, 
                                id_x, 
@@ -493,11 +493,11 @@ get_intergraph_edges_hamming <- function(igs,
             return(hd)
         }
         
-        s1_name <- names(igs)[i]
-        s2_name <- names(igs)[x]
-        
-        s1 <- igs[[i]]$clones
-        s2 <- igs[[x]]$clones
+        s1_name <- ix$name_i[x]
+        s2_name <- ix$name_j[x]
+        chain <- ix$chain[x]
+        s1 <- igs[[ix$index_i[x]]]$clones
+        s2 <- igs[[ix$index_j[x]]]$clones
         
         seq_x <- s1[,chain]
         seq_y <- s2[,chain]
@@ -537,23 +537,34 @@ get_intergraph_edges_hamming <- function(igs,
         return(NULL)
     }
     
-    # find global similarities between pairs of clone tables
-    ige <- vector(mode = "list", length = length(chains)*(length(igs)-1))
-    
-    count <- 1
-    for(i in 1:(length(igs)-1)) {
-        message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
-        for(chain in chains) {
-            ige[[count]] <- do.call(rbind,
-                                    lapply(X = (i+1):length(igs), 
-                                           i = i,
-                                           FUN = get_igg,
-                                           igs = igs,
-                                           chain = chain,
-                                           global_max_hdist = global_max_hdist))
-            count <- count + 1
+    get_ix <- function(xs, ns, chains) {
+        ix <- c()
+        for(i in 1:(xs-1)) {
+            for(j in (i+1):xs) {
+                for(c in chains) {
+                    ix <- rbind(ix, data.frame(index_i = i, 
+                                               index_j = j,  
+                                               name_i = ns[i],
+                                               name_j = ns[j],
+                                               chain = c))
+                }
+            }
         }
+        return(ix)
     }
+    
+    # indices 
+    ix <- get_ix(xs = length(igs), ns = names(igs), chains = chains)
+    
+    # find global similarities between pairs of clone tables
+    message("merging clust_irrs: ", nrow(ix), "\n")
+    future::plan(future::multisession, workers = I(cores))
+    ige <- future_lapply(X = 1:nrow(ix),
+                         ix = ix,
+                         FUN = get_igg,
+                         igs = igs,
+                         global_max_hdist = global_max_hdist,
+                         future.seed = TRUE)
     ige <- do.call(rbind, ige)
     
     return(ige)
@@ -687,13 +698,19 @@ get_intergraph_edges_blosum <- function(igs,
         return(out)
     }
     
-    get_igg <- function(x, i, igs, chain, trim_flank_aa, global_min_identity) {
-        s1_name <- names(igs)[i]
-        s2_name <- names(igs)[x]
+    get_igg <- function(x, ix, igs, trim_flank_aa, global_min_identity) {
         
-        b <- get_blastr(s1 = igs[[i]]$clones, 
-                        s2 = igs[[x]]$clones, 
-                        chain = chain, 
+        # prepare pair-rep data
+        s1_name <- ix$name_i[x]
+        s2_name <- ix$name_j[x]
+        chain <- ix$chain[x]
+        s1 <- igs[[ix$index_i[x]]]$clones
+        s2 <- igs[[ix$index_j[x]]]$clones
+        
+        # run 
+        b <- get_blastr(s1 = s1,
+                        s2 = s2,
+                        chain = chain,
                         trim_flank_aa = trim_flank_aa,
                         global_min_identity = global_min_identity)
         
@@ -708,27 +725,37 @@ get_intergraph_edges_blosum <- function(igs,
         return(NULL)
     }
     
-    # find global similarities between pairs of clone tables
-    ige <- vector(mode = "list", length = length(chains)*(length(igs)-1))
-    
-    count <- 1
-    for(i in 1:(length(igs)-1)) {
-        message("merging clust_irr index: ", i, "/", (length(igs)-1), "\n")
-        for(chain in chains) {
-            future::plan(future::multisession, workers = I(cores))
-            ige[[count]] <- do.call(rbind, future_lapply(
-                X = (i+1):length(igs),
-                i = i,
-                FUN = get_igg,
-                igs = igs,
-                trim_flank_aa = trim_flank_aa,
-                global_min_identity = global_min_identity,
-                chain = chain,
-                future.seed = TRUE))
-            count <- count + 1
+    get_ix <- function(xs, ns, chains) {
+        ix <- c()
+        for(i in 1:(xs-1)) {
+            for(j in (i+1):xs) {
+                for(c in chains) {
+                    ix <- rbind(ix, data.frame(index_i = i, 
+                                               index_j = j,  
+                                               name_i = ns[i],
+                                               name_j = ns[j],
+                                               chain = c))
+                }
+            }
         }
+        return(ix)
     }
+    
+    # indices 
+    ix <- get_ix(xs = length(igs), ns = names(igs), chains = chains)
+    
+    # find global similarities between pairs of clone tables
+    message("merging clust_irrs: ", nrow(ix), "\n")
+    future::plan(future::multisession, workers = I(cores))
+    ige <- future_lapply(X = 1:nrow(ix),
+                         ix = ix,
+                         FUN = get_igg,
+                         igs = igs,
+                         trim_flank_aa = trim_flank_aa,
+                         global_min_identity = global_min_identity,
+                         future.seed = TRUE)
     ige <- do.call(rbind, ige)
+    
     return(ige)
 }
 
