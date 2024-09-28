@@ -499,6 +499,9 @@ get_intergraph_edges_hamming <- function(igs,
         s1 <- igs[[ix$index_i[x]]]$clones
         s2 <- igs[[ix$index_j[x]]]$clones
         
+        message("joining:", x, ":", s1_name, '|', s2_name, "\n")
+        rm(igs)
+        
         seq_x <- s1[,chain]
         seq_y <- s2[,chain]
         id_x <- s1[,"name"] 
@@ -699,13 +702,15 @@ get_intergraph_edges_blosum <- function(igs,
     }
     
     get_igg <- function(x, ix, igs, trim_flank_aa, global_min_identity) {
-        
         # prepare pair-rep data
         s1_name <- ix$name_i[x]
         s2_name <- ix$name_j[x]
         chain <- ix$chain[x]
         s1 <- igs[[ix$index_i[x]]]$clones
         s2 <- igs[[ix$index_j[x]]]$clones
+        rm(igs)
+        
+        message("joining:", x, ":", s1_name, '|', s2_name, "\n")
         
         # run 
         b <- get_blastr(s1 = s1,
