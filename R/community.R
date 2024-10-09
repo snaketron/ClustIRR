@@ -16,11 +16,9 @@ get_communities <- function(g,
                                   algorithm = algorithm, 
                                   resolution = resolution)
     
-    
     message("3/4 community summary (cs)...")
     cs <- get_community_summary(g = cg, 
                                 chains = chains)
-    
     
     message("4/4 extracting community matrix (cm)...")
     cm <- get_community_matrix(g = cg)
@@ -32,7 +30,7 @@ get_communities <- function(g,
                    weight_type = weight_type, 
                    chains = chains)
     
-    return(cm = cm, cs = cs, g = cg, config = config)
+    return(list(cm = cm, cs = cs, g = cg, config = config))
 }
 
 
@@ -99,18 +97,17 @@ get_community_detection <- function(g,
                                     resolution) {
     
     if(algorithm == "louvain") {
-        c <- igraph::cluster_louvain(graph = g, 
-                                     weights = E(g)$weight, 
-                                     resolution = resolution)
+        c <- cluster_louvain(graph = g, 
+                             weights = E(g)$weight, 
+                             resolution = resolution)
         V(g)$community <- c$membership
     }
     if(algorithm == "leiden") {
-        c <- igraph::cluster_leiden(graph = g, 
-                                    weights = E(g)$weight, 
-                                    resolution = resolution)
+        c <- cluster_leiden(graph = g, 
+                            weights = E(g)$weight, 
+                            resolution = resolution)
         V(g)$community <- c$membership
     }
-    
     return(g)
 }
 
@@ -122,26 +119,26 @@ get_community_summary <- function(g, chains) {
         
         # number of cells
         vs_cells <- aggregate(clone_size~community+sample, data = vs, FUN = sum)
-        vs_cells <- reshape2::acast(data = vs_cells, formula = community~sample, 
-                                    value.var = "clone_size", fill = 0)
+        vs_cells <- acast(data = vs_cells, formula = community~sample, 
+                          value.var = "clone_size", fill = 0)
         vs_cells <- data.frame(vs_cells)
         vs_cells$n <- apply(X = vs_cells, MARGIN = 1, FUN = sum)
         colnames(vs_cells) <- paste0("cells_", colnames(vs_cells))
         vs_cells$community <- rownames(vs_cells)
         vs_cells$community <- as.numeric(as.character(vs_cells$community))
-        vs_cells <- vs_cells[order(vs_cells$community, decreasing = F), ]
+        vs_cells <- vs_cells[order(vs_cells$community, decreasing = FALSE), ]
         
         
         # number of clones
         vs_clones <- aggregate(f~community+sample, data = vs, FUN = sum)
-        vs_clones <- reshape2::acast(data = vs_clones, formula = community~sample, 
-                                     value.var = "f", fill = 0)
+        vs_clones <- acast(data = vs_clones, formula = community~sample, 
+                           value.var = "f", fill = 0)
         vs_clones <- data.frame(vs_clones)
         vs_clones$n <- apply(X = vs_clones, MARGIN = 1, FUN = sum)
         colnames(vs_clones) <- paste0("clones_", colnames(vs_clones))
         vs_clones$community <- rownames(vs_clones)
         vs_clones$community <- as.numeric(as.character(vs_clones$community))
-        vs_clones <- vs_clones[order(vs_clones$community, decreasing = F), ]
+        vs_clones <- vs_clones[order(vs_clones$community, decreasing = FALSE), ]
         
         # merge clones and cells
         vs_stats <- merge(x = vs_clones, y = vs_cells, by = "community")
@@ -151,13 +148,13 @@ get_community_summary <- function(g, chains) {
     get_es_stats <- function(es, vs, chains) {
         # add community id to 'from node'
         es <- merge(x = es, y = vs[, c("name", "community")], 
-                    by.x = "from", by.y = "name", all.x = T)
+                    by.x = "from", by.y = "name", all.x = TRUE)
         es$from_community <- es$community
         es$community <- NULL
         
         # add community id to 'to node'
         es <- merge(x = es, y = vs[, c("name", "community")], 
-                    by.x = "to", by.y = "name", all.x = T)
+                    by.x = "to", by.y = "name", all.x = TRUE)
         es$to_community <- es$community
         es$community <- NULL
         
@@ -184,7 +181,7 @@ get_community_summary <- function(g, chains) {
             
             # chain 1
             es_1 <- es[es$chain == chains[1], c("key", "weight", "community")]
-            es_1[, key_1] <- es_1$weight
+            es_1[, k1] <- es_1$weight
             
             # chain 2
             es_2 <- es[es$chain == chains[2], c("key", "weight", "community")]
@@ -257,21 +254,19 @@ get_community_summary <- function(g, chains) {
         return(edges_stats)
     }
     
-    es <- igraph::as_data_frame(x = g, what = "edges")
-    vs <- igraph::as_data_frame(x = g, what = "vertices")
+    es <- as_data_frame(x = g, what = "edges")
+    vs <- as_data_frame(x = g, what = "vertices")
     
     vs_stats <- get_vs_stats(vs = vs)
     es_stats <- get_es_stats(es = es, vs = vs, chains = chains)
     
-    gdc <- merge(x = vs_stats, y = edges_stats, by = "community", all.x = T)
-    gdc <- gdc[order(gdc$community, decreasing = F), ]
-    
-    
-    return(gcd)
+    o <- merge(x = vs_stats, y = es_stats, by = "community", all.x = TRUE)
+    o <- o[order(o$community, decreasing = FALSE), ]
+    return(o)
 }
 
 get_community_matrix <- function(g) {
-    vs <- igraph::as_data_frame(x = g, what = "vertices")
+    vs <- as_data_frame(x = g, what = "vertices")
     
     cm <- acast(data = vs, formula = community~sample, 
                value.var = "clone_size", 

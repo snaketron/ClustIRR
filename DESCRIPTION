@@ -27,7 +27,8 @@ Imports:
     grDevices,
     pwalign,
     future.apply,
-    future
+    future,
+    reshape2
 Suggests:
     BiocStyle,
     knitr,
