@@ -1,28 +1,28 @@
 
-get_communities <- function(g, 
-                            algorithm = "leiden", 
-                            resolution = 1,
-                            weight_type = "ncweight",
-                            chains) {
+detect_communities <- function(g, 
+                               algorithm = "leiden", 
+                               resolution = 1,
+                               weight_type = "ncweight",
+                               chains) {
     
-    message("1/4 formatting graph (g)...")
+    message("1/5 formatting graph (g)...")
     cg <- get_formatted_graph(g = g, 
                               weight_type = weight_type, 
                               chains = chains) 
     
-    
-    message("2/4 community detection...")
+    message("2/5 community detection...")
     cg <- get_community_detection(g = cg, 
                                   algorithm = algorithm, 
                                   resolution = resolution)
     
-    message("3/4 community summary (cs)...")
-    cs <- get_community_summary(g = cg, 
-                                chains = chains)
+    message("3/5 community summary (cs)...")
+    cs <- get_community_summary(g = cg, chains = chains)
     
-    message("4/4 extracting community matrix (cm)...")
+    message("4/5 extracting community matrix (cm)...")
     cm <- get_community_matrix(g = cg)
     
+    message("5/5 extracting vertices...")
+    vs <- as_data_frame(x = cg, what = "vertices")
     
     config <- list(input_g = g, 
                    algorithm = algorithm, 
@@ -30,7 +30,7 @@ get_communities <- function(g,
                    weight_type = weight_type, 
                    chains = chains)
     
-    return(list(cm = cm, cs = cs, g = cg, config = config))
+    return(list(cm = cm, cs = cs, vs = vs, g = cg, config = config))
 }
 
 
@@ -76,7 +76,6 @@ get_formatted_graph <- function(g,
     }
     
     if(is_simple(g)==FALSE) {
-        message("graph prep: edge aggregation... \n")
         g <- simplify(g, edge.attr.comb = list(weight = "sum",
                                                type = "first",
                                                chain = "concat",
@@ -234,7 +233,6 @@ get_community_summary <- function(g, chains) {
             
             edges_stats <- merge(x = merge(x = a, y = b, by = "community"),
                                  y = c, by = "community")
-            
         }
         if(length(chains)==1) {
             # keys
@@ -269,8 +267,8 @@ get_community_matrix <- function(g) {
     vs <- as_data_frame(x = g, what = "vertices")
     
     cm <- acast(data = vs, formula = community~sample, 
-               value.var = "clone_size", 
-               fun.aggregate = sum, fill = 0)
+                value.var = "clone_size", 
+                fun.aggregate = sum, fill = 0)
     
     return(cm)
 }
