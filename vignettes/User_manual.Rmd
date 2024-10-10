@@ -14,6 +14,7 @@ vignette: >
 library(ClustIRR)
 library(knitr)
 library(visNetwork)
+library(ggplot2)
 ```
 
 # Introduction
@@ -711,6 +712,160 @@ o <- cluster_irr(s = CDR3ab[1:1000, ],
 g <- get_graph(clust_irr = o)
 plot_graph(g, as_visnet = TRUE)
 ```
+
+
+# Detecting communities (densely connected subgraphs)
+
+
+# Case study 5: joint analysis of 4 TCR repertoires
+
+Imagine that we have a two patients, P1 and P2. From each patient 
+we have two IRRs, one before (A) and one after (B) treatment. 
+
+```{r}
+data("CDR3ab")
+
+get_clonal_expansion <- function(n, p_expanded) {
+  s <- sample(x = c(0, 1), size = n, prob = c(1-p_expanded, 
+                                              p_expanded), replace = T)
+  y <- vapply(X = s, FUN.VALUE = numeric(1), FUN = function(x) {
+    if(x == 0) {
+      return(rpois(n = 1, lambda = 0))
+    }
+    return(rpois(n = 1, lambda = 25))
+  })
+  return(y)
+}
+
+set.seed(12321)
+clone_size <- rpois(n = 300, lambda = 3)+1
+expansion_factor <- rbind(get_clonal_expansion(n = 300, p_expanded = 0),
+                          get_clonal_expansion(n = 300, p_expanded = 0.02),
+                          get_clonal_expansion(n = 300, p_expanded = 0.05),
+                          get_clonal_expansion(n = 300, p_expanded = 0))
+```
+
+
+```{r}
+P1_A <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
+                   CDR3b = CDR3ab$CDR3b[3001:3300],
+                   clone_size = ceiling(clone_size+expansion_factor[1,]))
+
+P1_B <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
+                   CDR3b = CDR3ab$CDR3b[3001:3300],
+                   clone_size = ceiling(clone_size+expansion_factor[2,]))
+
+# clonally expanded repertoire
+P2_A <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
+                   CDR3b = CDR3ab$CDR3b[3001:3300],
+                   clone_size = ceiling(clone_size+expansion_factor[3,]))
+
+P2_B <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
+                   CDR3b = CDR3ab$CDR3b[3001:3300],
+                   clone_size = ceiling(clone_size+expansion_factor[4,]))
+```
+
+
+```{r}
+clust_irrs <- vector(mode = "list", length = 4)
+names(clust_irrs) <- c("P1_A", "P1_B", "P2_A", "P2_B")
+
+clust_irrs[[1]] <- cluster_irr(s = P1_A, control = list(global_smart = TRUE))
+clust_irrs[[2]] <- cluster_irr(s = P1_B, control = list(global_smart = TRUE))
+clust_irrs[[3]] <- cluster_irr(s = P2_A, control = list(global_smart = TRUE))
+clust_irrs[[4]] <- cluster_irr(s = P2_B, control = list(global_smart = TRUE))
+```
+
+
+```{r, fig.width=6, fig.height=6}
+# beta & alpha chain
+g <- get_joint_graph(clust_irrs = clust_irrs, cores = 1)
+```
+
+
+```{r, fig.width=6, fig.height=6}
+plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
+```
+
+
+
+
+```{r}
+coms <- detect_communities(g = g$graph,
+                           algorithm = "leiden",
+                           resolution = 1,
+                           weight_type = "ncweight", 
+                           chains = c("CDR3a", "CDR3b"))
+```
+
+
+```{r, fig.width=5, fig.height=4}
+ggplot(data = coms$cs)+
+  geom_point(aes(x = w_CDR3b_mean, y = w_CDR3a_mean, 
+                 col = w_CDR3a_CDR3b_mean, size = cells_n))+
+  scale_color_continuous(breaks = scales::pretty_breaks(n = 3))+
+  theme_bw()+
+  theme(legend.position = "top")
+```
+
+
+```{r}
+com_freq <- data.frame(table(coms$vs$community))
+colnames(com_freq) <- c("community", "freq")
+com_freq <- com_freq[order(com_freq$freq, decreasing = T),]
+com_freq$rank <- 1:nrow(com_freq)
+```
+
+
+```{r}
+table(com_freq$freq)
+```
+
+
+```{r}
+c <- coms$vs[coms$vs$community %in% which(table(coms$vs$community)>1),]
+c <- c[,c("CDR3a", "CDR3b", "clone_size", "community", "Ag_species")]
+c <- c[order(c$community),]
+kable(c)
+```
+
+
+
+# Differential community occupancy
+
+```{r}
+d <- dco(cm = coms$cm,
+         mcmc_control = list(mcmc_warmup = 500,
+                             mcmc_iter = 1500,
+                             mcmc_chains = 4,
+                             mcmc_cores = 1,
+                             mcmc_algorithm = "NUTS",
+                             adapt_delta = 0.9,
+                             max_treedepth = 11))
+```
+
+
+
+```{r, fig.width=7, fig.height=6}
+b <- d$s$beta
+b$interesting <- ifelse(test = b$X2.5.<=0 & b$X97.5.>=0, yes = "-", no = "+")
+ggplot(data = b)+
+  facet_wrap(facets = ~sample, ncol = 2)+
+  geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5., 
+                    col = interesting), width =0)+
+  geom_point(aes(x = community, y = mean), size = 0.5)+
+  theme(legend.position = "top")+
+  scale_color_manual(values = c("darkgray", "black"))
+```
+
+
+```{r}
+ggplot(data = d$s$beta)+
+  facet_wrap(facets = ~sample)+
+  geom_histogram(aes(mean))
+```
+
+
 
 
 ```{r session_info}
