@@ -253,6 +253,7 @@ get_posterior_summaries <- function(cm, f) {
         return(s)
     }
 
+    browser()
     samples <- colnames(cm)
     o <- list(beta = get_sample_com_par(f = f, samples = samples, par = "beta"),
          beta_sigma = get_sample_par(f = f, par = "beta_sigma"),
