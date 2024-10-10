@@ -18,7 +18,7 @@ dco <- function(cm, mcmc_control) {
                   data = list(K = nrow(cm), N = ncol(cm), y=t(cm)),
                   chains = mcmc_control$mcmc_chains, 
                   cores = mcmc_control$mcmc_cores, 
-                  iter = mcmc_control$mcmc_steps, 
+                  iter = mcmc_control$mcmc_iter, 
                   warmup = mcmc_control$mcmc_warmup,
                   control = list(adapt_delta = mcmc_control$adapt_delta,
                                  max_treedepth = mcmc_control$max_treedepth),
@@ -37,34 +37,42 @@ dco <- function(cm, mcmc_control) {
 
 process_mcmc_control <- function(control_in) {
     
-    check_mcmc_steps <- function(mcmc_steps,
-                                 mcmc_warmup) {
+    check_mcmc_iter <- function(mcmc_iter,
+                                mcmc_warmup) {
         
-        if(length(mcmc_steps) != 1 |
-           length(mcmc_warmup) != 1) {
-            stop("mcmc_steps >= 500 & mcmc_warmup >= 100.")
+        if(length(mcmc_iter) != 1) {
+            stop("mcmc_iter must be a positive integer")
+        }
+        if(length(mcmc_warmup) != 1) {
+            stop("mcmc_warmup must be a positive integer")
         }
         
-        if(!is.numeric(mcmc_steps) |
-           !is.numeric(mcmc_warmup)) {
-            stop("mcmc_steps >= 500 & mcmc_warmup >= 100.")
+        if(is.numeric(mcmc_iter) == FALSE) {
+            stop("mcmc_iter must be a positive integer")
+        }
+        if(is.numeric(mcmc_warmup) == FALSE) {
+            stop("mcmc_warmup must be a positive integer")
+        }
+        
+        if(is.finite(mcmc_iter) == FALSE) {
+            stop("mcmc_iter must be a positive integer")
+        }
+        if(is.finite(mcmc_warmup) == FALSE) {
+            stop("mcmc_warmup must be a positive integer")
+        }
+        
+        if((abs(mcmc_iter - round(mcmc_iter)) 
+            < .Machine$double.eps^0.5) == FALSE) {
+            stop("mcmc_iter must be a positive integer")
+        }
+        if((abs(mcmc_warmup - round(mcmc_warmup)) 
+            < .Machine$double.eps^0.5) == FALSE) {
+            stop("mcmc_warmup must be a positive integer")
         }
         
         
-        if(is.finite(x = mcmc_steps)==FALSE |
-           is.finite(x = mcmc_warmup)==FALSE) {
-            stop("mcmc_steps >= 500 & mcmc_warmup >= 100.")
-        }
-        
-        
-        if(as.integer(x = mcmc_steps) < 500 |
-           as.integer(x = mcmc_warmup) < 100) {
-            stop("mcmc_steps >= 500 & mcmc_warmup >= 100.")
-        }
-        
-        
-        if(as.integer(x = mcmc_steps) <= as.integer(x = mcmc_warmup)) {
-            stop("mcmc_steps > mcmc_warmup")
+        if(mcmc_iter <= mcmc_warmup) {
+            stop("mcmc_iter must be larger than mcmc_warmup")
         }
     }
     
@@ -135,7 +143,8 @@ process_mcmc_control <- function(control_in) {
             stop("max_treedepth must be a positive integer")
         }
         
-        if(is.integer(max_treedepth)==FALSE) {
+        if((abs(max_treedepth - round(max_treedepth)) 
+            < .Machine$double.eps^0.5) == FALSE) {
             stop("max_treedepth must be a positive integer")
         }
         
@@ -153,18 +162,14 @@ process_mcmc_control <- function(control_in) {
             stop("mcmc_algorithm must be set to NUTS")
         }
         
-        if(is.finite(x = mcmc_algorithm) == FALSE) {
-            stop("mcmc_algorithm must be set to NUTS")
-        }
-        
         if(mcmc_algorithm!="NUTS") {
             stop("mcmc_algorithm must be set to NUTS")
         }
     }
     
-    
+ 
     control <- list(mcmc_warmup = 750,
-                    mcmc_steps = 1500,
+                    mcmc_iter = 1500,
                     mcmc_chains = 4,
                     mcmc_cores = 1,
                     mcmc_algorithm = "NUTS",
@@ -188,13 +193,13 @@ process_mcmc_control <- function(control_in) {
     }
     
     
-    check_mcmc_steps(mcmc_steps = control$mcmc_steps,
+    check_mcmc_iter(mcmc_iter = control$mcmc_iter,
                      mcmc_warmup = control$mcmc_warmup)
     check_mcmc_chains(mcmc_chains = control$mcmc_chains)
     check_mcmc_cores(mcmc_cores = control$mcmc_cores)
-    check_adapt_delta(adapt_delta = adapt_delta)
-    check_max_treedepth(max_treedepth = max_treedepth)
-    check_mcmc_algorithm(mcmc_algorithm = mcmc_algorithm)
+    check_adapt_delta(adapt_delta = control$adapt_delta)
+    check_max_treedepth(max_treedepth = control$max_treedepth)
+    check_mcmc_algorithm(mcmc_algorithm = control$mcmc_algorithm)
     return(control)
 }
 
@@ -253,14 +258,13 @@ get_posterior_summaries <- function(cm, f) {
         return(s)
     }
 
-    browser()
     samples <- colnames(cm)
     o <- list(beta = get_sample_com_par(f = f, samples = samples, par = "beta"),
-         beta_sigma = get_sample_par(f = f, par = "beta_sigma"),
-         alpha = get_com_par(f = f, par = "alpha"),
-         p = get_sample_com_par(f = f, samples = samples, par = "p"),
-         y_hat = get_sample_com_par(f = f, samples = samples, par = "p"),
-         kappa = get_global_par(f = f, par = "kappa"))
+              beta_sigma = get_sample_par(f = f, par = "beta_sigma"),
+              alpha = get_com_par(f = f, par = "alpha"),
+              p = get_sample_com_par(f = f, samples = samples, par = "p"),
+              y_hat = get_sample_com_par(f = f, samples = samples, par = "p"),
+              kappa = get_global_par(f = f, par = "kappa"))
     
     o$y_hat$y_obs <- c(cm)
     return(o)
