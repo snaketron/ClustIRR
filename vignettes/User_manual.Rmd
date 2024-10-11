@@ -782,7 +782,7 @@ d <- dco(community_matrix = coms$community_matrix,
 
 
 ```{r, fig.width=7, fig.height=6}
-b <- d$s$beta
+b <- d$posterior_summary$beta
 b$interesting <- ifelse(test = b$X2.5.<=0 & b$X97.5.>=0, yes = "-", no = "+")
 ggplot(data = b)+
   facet_wrap(facets = ~sample, ncol = 2)+
@@ -795,7 +795,7 @@ ggplot(data = b)+
 
 
 ```{r}
-ggplot(data = d$s$beta)+
+ggplot(data = d$posterior_summary$beta)+
   facet_wrap(facets = ~sample)+
   geom_histogram(aes(mean))
 ```
