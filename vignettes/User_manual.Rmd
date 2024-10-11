@@ -18,30 +18,30 @@ library(ggplot2)
 ```
 
 # Introduction
-Adaptive immune immunity relies on diverse immune receptor repertoires (IRRs:
-B- and T-cell receptor repertoires) to protect the host against genetically 
-diverse and rapidly evolving pathogens, such as viruses, bacteria, or cancers. 
-The B- and T-cell receptor (BCR/TCR) sequence diversity originates in part due 
-to V(D)J recombination, in which different germline-encoded genes are joined 
-to form immune receptors. As a result of this process, practically every newly 
-formed naive mature T cell and B cell is equipped with a distinct IR, and this 
-allows them to recognize distinct sets of antigens. 
+Adaptive immunity relies on diverse immune receptor repertoires (IRRs: B- and 
+T-cell receptor repertoires) to protect the host against genetically diverse 
+and rapidly evolving pathogens, such as viruses, bacteria, and cancers. The 
+sequence diversity of B- and T-cell receptors (BCRs and TCRs) originates, in 
+part, from V(D)J recombination, a process in which different germline-encoded 
+genes are joined to form unique immune receptors. As a result, practically 
+every newly formed naive mature T and B cell is equipped with a distinct 
+immune receptor (IR), enabling them to recognize unique sets of antigens.
 
-B-cells bind antigens directly via the complementarity determining regions 
-(CDR) of their BCRs, and T-cells recognize antigenic peptides presented 
-by major histocompatibility (MHC) molecules via the CDRs of their TCRs. 
-Antigen recognition may lead to B/T cell activation, and in such a case, 
-the cells start to proliferate rapidly, forming antigen-specific clones 
-that are capable of mounting effective immune response. 
+B cells bind antigens directly through the complementarity-determining regions 
+(CDRs) of their BCRs, while T cells recognize antigenic peptides presented by 
+major histocompatibility complex (MHC) molecules via the CDRs of their TCRs. 
+Antigen recognition can lead to B/T cell activation, causing these cells to 
+rapidly proliferate and form antigen-specific clones capable of mounting an 
+effective immune response.
 
-Recent studies have shown that similarity in TCR sequences implies shared 
-antigen specificity between receptors. Hence, by clustering of TCR sequences 
-of a repertoire derived by high-throughput sequencing (HT-seq), we can identify 
-groups of TCRs with shared antigen specificity, which is essential for the 
-development of cancer immunotherapies, vaccines, antiviral drugs, etc. 
+Recent studies have shown that sequence similarity between TCRs often 
+indicates shared antigen specificity. Therefore, by clustering TCR sequences 
+from high-throughput sequencing (HT-seq) data, we can identify groups of 
+TCRs with shared antigen specificity. This information is crucial for the 
+development of cancer immunotherapies, vaccines, and antiviral drugs.
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a computational method 
-for clustering of IRRs.
+for clustering IRRs.
 
 # Installation
 `r Biocpkg("ClustIRR")` is freely available as part of Bioconductor, filling
@@ -791,7 +791,7 @@ plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
 
 
 ```{r}
-coms <- detect_communities(g = g$graph,
+coms <- detect_communities(graph = g$graph,
                            algorithm = "leiden",
                            resolution = 1,
                            weight_type = "ncweight", 
@@ -800,7 +800,7 @@ coms <- detect_communities(g = g$graph,
 
 
 ```{r, fig.width=5, fig.height=4}
-ggplot(data = coms$cs)+
+ggplot(data = coms$community_summary)+
   geom_point(aes(x = w_CDR3b_mean, y = w_CDR3a_mean, 
                  col = w_CDR3a_CDR3b_mean, size = cells_n))+
   scale_color_continuous(breaks = scales::pretty_breaks(n = 3))+
@@ -810,7 +810,8 @@ ggplot(data = coms$cs)+
 
 
 ```{r}
-com_freq <- data.frame(table(coms$vs$community))
+node_summary <- coms$node_summary
+com_freq <- data.frame(table(node_summary$community))
 colnames(com_freq) <- c("community", "freq")
 com_freq <- com_freq[order(com_freq$freq, decreasing = T),]
 com_freq$rank <- 1:nrow(com_freq)
@@ -823,10 +824,7 @@ table(com_freq$freq)
 
 
 ```{r}
-c <- coms$vs[coms$vs$community %in% which(table(coms$vs$community)>1),]
-c <- c[,c("CDR3a", "CDR3b", "clone_size", "community", "Ag_species")]
-c <- c[order(c$community),]
-kable(c)
+kable(node_summary[,c("CDR3a", "CDR3b", "clone_size", "community", "Ag_species")])
 ```
 
 
@@ -834,7 +832,7 @@ kable(c)
 # Differential community occupancy
 
 ```{r}
-d <- dco(cm = coms$cm,
+d <- dco(community_matrix = coms$community_matrix,
          mcmc_control = list(mcmc_warmup = 500,
                              mcmc_iter = 1500,
                              mcmc_chains = 4,

@@ -1,21 +1,23 @@
 
-dco <- function(cm, mcmc_control) {
+dco <- function(community_matrix, mcmc_control) {
     
     # check control
     mcmc_control <- process_mcmc_control(control_in = mcmc_control)
 
-    if(ncol(cm)==1) {
-        stop("requirement for dco analysis not met: ncol(cm)>1")
+    if(ncol(community_matrix)==1) {
+        stop("requirement for dco analysis not met: ncol(community_matrix)>1")
     }
-    if(ncol(cm)==2) {
+    if(ncol(community_matrix)==2) {
         model <- stanmodels$dm_n2
     }
-    if(ncol(cm)>2) {
+    if(ncol(community_matrix)>2) {
         model <- stanmodels$dm
     }
     # fit
     f <- sampling(object = model,
-                  data = list(K = nrow(cm), N = ncol(cm), y=t(cm)),
+                  data = list(K = nrow(community_matrix), 
+                              N = ncol(community_matrix), 
+                              y=t(community_matrix)),
                   chains = mcmc_control$mcmc_chains, 
                   cores = mcmc_control$mcmc_cores, 
                   iter = mcmc_control$mcmc_iter, 
@@ -26,12 +28,13 @@ dco <- function(cm, mcmc_control) {
                   include = TRUE,
                   pars=c("alpha", "beta", "beta_sigma", "kappa", "p", "y_hat"))
     
-    
     # summaries
-    s <- get_posterior_summaries(cm = cm, f = f)
+    s <- get_posterior_summaries(cm = community_matrix, f = f)
     
-    
-    return(list(fit = f, s = s, cm = cm, mcmc_control = mcmc_control))
+    return(list(fit = f, 
+                posterior_summary = s, 
+                community_matrix = community_matrix, 
+                mcmc_control = mcmc_control))
 }
 
 

@@ -7,7 +7,7 @@ cluster_irr(
     r,
     ks = 4,
     cores = 1,
-    control = list(global_smart = FALSE,
+    control = list(global_smart = TRUE,
                    global_max_hdist = 1,
                    global_min_identity = 0.7,
                    local_max_fdr = 0.05,

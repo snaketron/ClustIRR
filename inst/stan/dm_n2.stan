@@ -41,9 +41,11 @@ model {
 
 generated quantities {
   int y_hat [N, K];
+  real log_lik [N];
   simplex [K] p [N];
   for(i in 1:N) {
     p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]*x[i]));
     y_hat[i] = multinomial_rng(p[i], sum(y[i]));
+    log_lik[i] = dm_explicit_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
   }
 }

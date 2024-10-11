@@ -1,12 +1,11 @@
-
-detect_communities <- function(g, 
+detect_communities <- function(graph, 
                                algorithm = "leiden", 
                                resolution = 1,
                                weight_type = "ncweight",
                                chains) {
     
     message("1/5 formatting graph (g)...")
-    cg <- get_formatted_graph(g = g, 
+    cg <- get_formatted_graph(g = graph, 
                               weight_type = weight_type, 
                               chains = chains) 
     
@@ -24,15 +23,19 @@ detect_communities <- function(g,
     message("5/5 extracting vertices...")
     vs <- as_data_frame(x = cg, what = "vertices")
     
-    config <- list(input_g = g, 
+    # save configs
+    config <- list(input_g = graph, 
                    algorithm = algorithm, 
                    resolution = resolution,
                    weight_type = weight_type, 
                    chains = chains)
     
-    return(list(cm = cm, cs = cs, vs = vs, g = cg, config = config))
+    return(list(community_matrix = cm, 
+                community_summary = cs, 
+                node_summary = vs, 
+                graph = cg, 
+                input_config = config))
 }
-
 
 get_formatted_graph <- function(g, 
                                 weight_type, 
