@@ -10,7 +10,7 @@ detect_communities(graph,
 }
 \arguments{
 \item{graph}{igraph object returned by \code{get_graph} or 
-\code{get_joint_graph}.
+\code{get_joint_graph}}.
 \item{algorithm}{graph-based community detection (GCD) algorithm. Two GCD 
 algorithms are available: leiden (default) or louvain.}
 \item{resolution}{clustering resolution (default = 1) for the GCD algorithm.}
@@ -18,7 +18,6 @@ algorithms are available: leiden (default) or louvain.}
 ncweight) should be used for GCD}
 \item{chains}{vector, which chains should be used for clustering? For instance,
 chains = "CDR3a", or chains = CDR3b or chains = c("CDR3a", "CDR3b").}
-}
 }
 \value{
 The output is a list with the folling elements:

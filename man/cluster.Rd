@@ -7,13 +7,12 @@ cluster_irr(
     r,
     ks = 4,
     cores = 1,
-    control = list(global_smart = TRUE,
+    control = list(global_hamming = FALSE,
                    global_max_hdist = 1,
                    global_min_identity = 0.7,
                    local_max_fdr = 0.05,
                    local_min_o = 1,
                    trim_flank_aa = 3,
-                   global_pairs = NULL,
                    low_mem = FALSE))
 }
 \arguments{
@@ -40,14 +39,13 @@ clustering using sample \code{s}}
 \item{control}{list, a named list of auxiliary parameters
 to control algorithm's behavior. See the details below:
 \itemize{
-\item \code{global_smart} - logical, should we use smart global clustering 
-based of BLOSUM62 scores (slower but more accurate; default) or less smart 
-global clustering based on Hamming distances (faster but less accurate)
+\item \code{global_hamming} - logical, should we use global clustering based
+based of Hamming distances (faster but less).
 \item \code{global_min_identity} - probability, what is the minimum sequence
 identity between a pair of CDR3 sequences for them to even be considered for
 global similarity inspection (default = 0.7; 70 percent identity) This input
-is only used if \code{global_smart} = TRUE.
-\item \code{global_max_hdist} - integer, if \code{global_smart}=FALSE, then 
+is only used if \code{global_hamming} = TRUE.
+\item \code{global_max_hdist} - integer, if \code{global_hamming}=TRUE, then 
 \code{global_max_hdist} defines a Hamming distance (HD) threshold, i.e. two 
 CDR3s as globally similar if their Hamming distance is smaller or equal to 
 \code{global_max_hdist} HD(\eqn{a}, \eqn{b}) \eqn{\leq} \code{global_max_hdist}.
@@ -63,17 +61,6 @@ from the flanks of all CDR3 sequences (only used for local clustering.
 \item \code{low_mem} - logical, allows low memory mode for global clustering.
 This will lead to increase in the CPU time but lead to a lower memory
 footprint. \code{low_mem} = \code{FALSE} (default)
-\item \code{global_pairs} - data.frame, pre-computed global pairs. If
-\code{global_pairs} is provided by the user, then global clustering is not
-performed. Instead the CDR3 pairs from \code{global_pairs} are used as global
-clustering pairs. \code{global_pairs} is a data.frame matrix with 4 columns.
-The first two columns, named, from_cdr3 and to_cdr3 contain pairs of CDR3 
-sequences that are considered globally similar. The third column, called
-weight, contains a similarity weight. If weights are not available they should 
-be set to 1. The fourth column, called chain, contains the chain immune 
-receptor in which the CDR3s are found: CDR3b or CDR3a [for \eqn{\alpha\beta} 
-TCRs]; CDR3g or CDR3d [for \eqn{\gamma\delta} TCRs]; or CDR3h or CDR3l 
-[for heavy/ligh chain BCRs].
 }
 }
 }
@@ -119,9 +106,9 @@ CDR3g, etc.). In the following we who the typical structure of these lists:
         }
         \item \code{global} - data.frame, global clustering results. Pairs of
         globally similar CDR3s are shown in each row (analogous to \code{lp}).
-        If \code{global_smart}=FALSE in the control, then global clustering is 
+        If \code{global_hamming}=TRUE in the control, then global clustering is 
         done based on Hamming distances and the remaining columns of this 
-        data.frame are not important. Else, if \code{global_smart}=FALSE, then
+        data.frame are not important. Else, if \code{global_hamming}=FALSE, then
         the remainig columns are relevant, i.e. global similarity scores are 
         shown for the complete CDR3 sequence pairs (column \code{weight}) or 
         their core (trimmed) CDR3 sequence part (column \code{cweight}). The 
@@ -168,13 +155,13 @@ repertoire \code{r}. This is an outline of the local clustering procedure:
 CDR3 sequences in repertoire \code{s}. This is an outline of the global 
 clustering approaches implemented in ClustIRR:
 
-If \code{global_smart}=FALSE
+If \code{global_hamming}=TRUE
 
 For each pair of equal-length CDR3 sequences \eqn{i} and \eqn{j} we compute 
 the Hamming distance \eqn{d_{ij}}. If \eqn{d_{ij}\leq} \code{global_max_hdist} 
 (user-defined input), then \eqn{i} and \eqn{j} are globally similar.
 
-If \code{global_smart}=TRUE
+If \code{global_hamming}=FALSE (default)
 
 We find pairs of CDR3 sequences that satisfy a minimum sequence identity 
 defined by \code{global_min_identity}. Each pair of sequences are aligned.
@@ -210,14 +197,12 @@ out <- cluster_irr(s = s,
                    r = r,
                    ks = 4,
                    cores = 1,
-                   control = list(
-                       global_smart = TRUE,
-                       global_max_hdist = 1,
-                       local_max_fdr = 0.05,
-                       local_min_o = 1,
-                       trim_flank_aa = 3,
-                       global_pairs = NULL,
-                       low_mem = FALSE))
+                   control = list(global_hamming = FALSE,
+                                  global_max_hdist = 1,
+                                  local_max_fdr = 0.05,
+                                  local_min_o = 1,
+                                  trim_flank_aa = 3,
+                                  low_mem = FALSE))
 
 # output class
 class(out)

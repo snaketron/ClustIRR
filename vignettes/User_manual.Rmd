@@ -58,8 +58,9 @@ BiocManager::install("ClustIRR")
 ```
 
 # ClustIRR algorithm
-The algorithm of `r Biocpkg("ClustIRR")` performs clustering of IRR sequences 
-to find groups of receptors with similar specificity. 
+The algorithm of `r Biocpkg("ClustIRR")` performs 1. clustering of IRR 
+sequences to find groups of receptors with similar specificity; and employs
+a Bayesian model to quantify differential community occupancy between IRRs.
 
 ```{r graphic, echo = FALSE, fig.align="left", out.width='90%'}
 knitr::include_graphics("../inst/extdata/logo.png")
@@ -67,30 +68,20 @@ knitr::include_graphics("../inst/extdata/logo.png")
 
 ## Input
 
-The main input of `r Biocpkg("ClustIRR")` are two repertoires: `s` and `r`:
+The main input of `r Biocpkg("ClustIRR")` is one IRR (`s`), or two IRRs (`s`
+and `r`).
 
-* `s`: IRR under investigation (case/sample)
-* `r`: reference IRR (control/reference)
+* `s`: IRR under investigation (e.g. IRR after treatment)
+* `r`: control IRR (e.g. IRR before treatment)
 
-Both repertoires should be provided as data.frames. The rows in the 
-data.frames correspond to clones (group of cells derived from a common 
-parent cell by clonal expansion). `r Biocpkg("ClustIRR")` takes as input 
-the **CDR3 amino acid  sequence** and the **size** of each clone.
+`s` and `r` should be provided as data.frames with matching columns. The rows 
+in the data.frames correspond to **clones** (group of cells derived from a 
+common parent cell by clonal expansion). We need the following data from each
+clone:
 
-**CDR3 sequences**
-
-For each clone, `s` and `r`, must contain the amino acid sequences of the 
-corresponding complementarity determining regions 3 (CDR3s). We may have 
-the CDR3s from one T cell receptor chain (e.g., only CDR3$\alpha$s or 
-only CDR3$\beta$s) or from both chains (CDR3$\alpha\beta$). Similarly, we 
-may have CDR3s from $\gamma\delta$ T-cells (CDR3$\gamma$ and CDR3$\delta$) 
-or B-cells (CDR3H and CDR3L). This is explained in case study 4.
-  
-**clone size** 
-
-`s` and `r` may also contain the size of each clone. This is provided by the 
-column `clone_size`. If the clone sizes are not available, then we assume that
-`clone_size` = 1.
+  * **amino acid sequence/s** of the complementarity determining regions 3 
+  from one or both chains (paired).
+  * **size** = frequency of cells in the clone
   
 Let's have a look at an example data set which we will use as input:
 
@@ -99,13 +90,15 @@ data("CDR3ab", package = "ClustIRR")
 ```
 
 ```{r}
-# take the first 500 CDR3b sequences from the data -> s
-s <- data.frame(CDR3b = c(CDR3ab$CDR3b[1:500], "CASSSSPGDQEQFF"),
-                clone_size = 1)
+# get 500 CDR3a and CDR3b pairs from the data -> s
+s <- data.frame(CDR3a = CDR3ab$CDR3a[1:500],
+                CDR3b = CDR3ab$CDR3b[1:500], 
+                clone_size=1)
 
-# take 5000 CDR3b sequences 501:5500 from the data -> r
-r <- data.frame(CDR3b = CDR3ab$CDR3b[501:5500],
-                clone_size = 1)
+# get 500 CDR3a and CDR3b pairs from the data -> r
+r <- data.frame(CDR3a = CDR3ab$CDR3a[501:1000],
+                CDR3b = CDR3ab$CDR3b[501:1000], 
+                clone_size=1)
 ```
 
 
@@ -122,15 +115,12 @@ str(r)
 
 ## Clustering
 
-`r Biocpkg("ClustIRR")` employs two clustering strategies:
-
-* **local**: detects enrichment of motifs in `s` compared to `r`
-* **global**: identifies pairs of CDR3s in `s` that have similar sequences
+`r Biocpkg("ClustIRR")` employs **global** and **local** clustering strategies.
 
 The rationale behind these two clustering strategies is the following: two 
 identical CDR3 sequences have the same specificity. Similar CDR3 sequences 
-(e.g., CDR3 sequences that differ by only one amino acid) may have similar 
-specificity. Global clustering is meant to find pairs of CDR3s that are
+(e.g., CDR3 sequences that differ by only one amino acid) may also have the
+same specificity. Global clustering is meant to find pairs of CDR3s that are
 globally (based on the complete CDR3 sequences) similar. 
 
 We also know that two CDR3s with significantly different sequences may still 
@@ -138,90 +128,41 @@ recognize the same peptide[^1] if they share a motif in their core regions
 (e.g., identical 4-mer). Such "useful" motifs may be enriched in `s`  but not 
 in `r`, and local clustering aims to identify them.
 
-
-### Local clustering
-
-CDR3 sequences are segmented into overlapping **motifs** ($k$-mers), where $k$ 
-is specified by setting the input $ks = 4$. 
-
-Example of segmenting CDR3 sequence into 4-mers:
-
-```{r}
-cdr3 <- "CASSTTTGTGELFF"
-ks <- 4
-colnames(stringdist::qgrams(cdr3, q = ks))
-```
-
-
-Empirically we know that $k$-mers in the **core** of a CDR3 are more likely 
-to establish contact with an antigenic peptide than $k$-mers in the flanks 
-of the CDR3. Hence, the user is encouraged to remove a few amino acids from 
-the flanks of each CDR3 sequence. This can be done by changing the control
-input from `control$trim_flank_aa,` e.g.:
-  
-  * `control$trim_flank_aa = 0`: no trimming
-  * `control$trim_flank_aa = 3`: trim three amino acids from both flanks 
-  of the CDR3 sequence
-
-Below we show an example of the procedure that trims CDR3 flanks and segments 
-the core of the CDR3 sequence `CASSTTTGTGELFF` into 4-mers, the result of which 
-are five overlapping motifs:
-
-```{r}
-t <- 3
-cdr3_trimmed <- substr(x = cdr3, start = t + 1, stop = nchar(cdr3) - t)
-colnames(stringdist::qgrams(cdr3_trimmed, q = ks))
-```
- 
-
-A motif is considered enriched if the following (user-defined) criteria are 
-satisfied:
-
-1. `control$local_min_o`: minimum motif frequency in `s`
-2. `control$local_min_ove`: minimum ratio of observed vs. expected (OvE) 
-    relative motif frequency, with $OvE=\dfrac{f_s}{n_s}/\dfrac{f_r}{n_r}$
-    * $f_{s}$ and $f_{r}$: motif frequencies in repertoires `s` and `r`
-    * $n_{s}$ and $n_{r}$: total number of motifs in repertoires `s` and `r`
-      
-3. `control$local_max_fdr`: maximum false discovery rate (FDR). Corrected 
-    p-value, computed by a one-sided Fisher's exact test (effectively a 
-    hypergeometric test).
+While global clustering is always employed by `r Biocpkg("ClustIRR")`, local
+clustering is only used when the user provides as input both `s` and `r`.
 
 
 ### Global clustering
-
 For global clustering, `r Biocpkg("ClustIRR")` employs one of three strategies.
-The user can select each strategy with the control parameters: `global_smart` 
-and `global_pairs`
 
-*Strategy 1:* if `control$global_smart = FALSE` (default)
+*Strategy 1:* default
 
-Here, `r Biocpkg("ClustIRR")` quantifies the dissimilarity between pairs of 
-CDR3 sequences using Hamming distances. Two CDR3 sequences with Hamming 
-distance $\leq x$ are considered globally similar, where $x$ is the user-
-defined threshold `control$global_max_hdist` (default = 1). 
+Given $N$ CDR3 sequences, `r Biocpkg("ClustIRR")` performs pairwise 
+Needleman-Wunsch alignment of CDR3 pairs. It then computes a BLOSUM62 
+similarity score $B$ for each pair, which is normalized by the length 
+of length of the longer CDR3 sequence $L$ $\rightarrow$ $NB=B/L$.
 
-With this, `r Biocpkg("ClustIRR")` provides a very simple and intuitive 
-heuristic for identifying globally similar CDR3s. But, this approach also 
-has drawbacks: 
+This strategy is computational costly!
+
+It involves $N^2$ pairwise comparisons, where each comparison has a 
+complexity approximately equal to $L^2$ (the time complexity of the 
+Needleman-Wunsch algorithm). To mitigate this challenge, we only consider 
+pairs of CDR3 sequences with sequence identity $\geq$ 70%. This threshold 
+may be modified by the user. For the remaining pairs we consider $NB=0$.
+
+*Strategy 2:* if `control$global_hamming = TRUE`
+
+Alternatively, `r Biocpkg("ClustIRR")` quantifies the dissimilarity between 
+pairs of CDR3 sequences using Hamming distances. Two CDR3 sequences with 
+Hamming distance $\leq x$ are considered globally similar, where $x$ is an 
+user-defined threshold (input `control$global_max_hdist`, default = 1). 
+
+This is a computationally and conceptually simple strategy, which also has 
+drawbacks:
 
 1. CDR3 sequences with different lengths are by definition dissimilar
-2. the Hamming distance, by design, ignores the properties of the amino acids
-
-*Strategy 2:* if `control$global_smart = TRUE`
-
-In this case, `r Biocpkg("ClustIRR")` does pairwise alignment of CDR3 sequences
-and computes a BLOSUM62 score $B$ that is normalized by the alignment 
-length $l$ $\rightarrow$ $NB = B/l$.
-
-*Strategy 3:* if `control$global_pairs` is specified by the user
-
-`r Biocpkg("ClustIRR")` also provides a second input option (see red input 
-in `r Biocpkg("ClustIRR")` workflow), which allows the user to provide a 
-data.frame containing globally similar CDR3 sequences computed by complementary
-approaches (e.g., *tcrdist*). This input can be provided via the input 
-parameter `control$global_pairs`. In this case, global clustering is not
-performed by `r Biocpkg("ClustIRR")`.
+2. the properties of the replaced amino acids are not considered by the 
+Hamming distance
 
 
 ## Output
@@ -379,7 +320,9 @@ Let's insert a clone in data set `s`:
 
 ```{r}
 # create a clone of 10 T-cells
-clone <- data.frame(CDR3b = "CATSRPDGLAQYF", clone_size = 10)
+clone <- data.frame(CDR3a = "CASEIKDASLSVS",
+                    CDR3b = "CATSRPDGLAQYF", 
+                    clone_size = 10)
 
 # append the clone to the original repertoire 's'
 s <- rbind(s, clone)
@@ -392,8 +335,7 @@ o <- cluster_irr(s = s,
                  r = r,
                  ks = 4,
                  cores = 1,
-                 control = list(global_smart = FALSE,
-                                trim_flank_aa = 3))
+                 control = list(trim_flank_aa = 3))
 ```
 
 ## Local clustering results
@@ -513,8 +455,7 @@ clust_irrs <- vector(mode = "list", length = 2)
 names(clust_irrs) <- c("S1", "S0")
 
 clust_irrs[[1]] <- cluster_irr(s = S1, r = S0,
-                               control = list(global_smart = FALSE,
-                                              trim_flank_aa = 3))
+                               control = list(trim_flank_aa = 3))
 ```
 
 Second, we will do the reverse, i.e. we will inspect the specificity structure
@@ -522,8 +463,7 @@ of repertoire `S0` (`s`=`S0`) compared to `S1` (`r`=`S1`).
 
 ```{r}
 clust_irrs[[2]] <- cluster_irr(s = S0, r = S1,
-                               control = list(global_smart = FALSE,
-                                              trim_flank_aa = 3))
+                               control = list(trim_flank_aa = 3))
 ```
 
 Let's plot the joint graph:
@@ -707,8 +647,7 @@ plot_graph(g = g,
 o <- cluster_irr(s = CDR3ab[1:1000, ],
                  ks = 4,
                  cores = 1,
-                 control = list(global_smart = TRUE,
-                                trim_flank_aa = 3))
+                 control = list(trim_flank_aa = 3))
 g <- get_graph(clust_irr = o)
 plot_graph(g, as_visnet = TRUE)
 ```
@@ -767,13 +706,11 @@ P2_B <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
 
 
 ```{r}
-clust_irrs <- vector(mode = "list", length = 4)
+clust_irrs <- c(cluster_irr(s = P1_A), 
+                cluster_irr(s = P1_B),
+                cluster_irr(s = P2_A), 
+                cluster_irr(s = P2_B))
 names(clust_irrs) <- c("P1_A", "P1_B", "P2_A", "P2_B")
-
-clust_irrs[[1]] <- cluster_irr(s = P1_A, control = list(global_smart = TRUE))
-clust_irrs[[2]] <- cluster_irr(s = P1_B, control = list(global_smart = TRUE))
-clust_irrs[[3]] <- cluster_irr(s = P2_A, control = list(global_smart = TRUE))
-clust_irrs[[4]] <- cluster_irr(s = P2_B, control = list(global_smart = TRUE))
 ```
 
 

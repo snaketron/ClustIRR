@@ -265,21 +265,16 @@ get_global_clust <- function(cdr3, control) {
     cdr3_dup <- ifelse(test = as.numeric(cdr3)>1, yes = 1, no = 0)
     cdr3 <- names(cdr3)
     
-    # if global_pairs are provided as input use them, else compute them
-    if(!is.null(control$global_pairs)) {
-        g <- control$global_pairs
+    if(control$global_hamming==FALSE) {
+        g <- get_global_clust_blosum(cdr3 = cdr3, 
+                                     cdr3_dup = cdr3_dup, 
+                                     control = control)
     }
-    else {
-        if(control$global_smart==TRUE) {
-            g <- get_global_clust_blosum(cdr3 = cdr3, 
-                                         cdr3_dup = cdr3_dup, 
-                                         control = control)
-        }
-        if(control$global_smart==FALSE) {
-            g <- get_global_clust_hamming(cdr3 = cdr3, 
-                                          cdr3_dup = cdr3_dup,
-                                          control = control)
-        } 
+    if(control$global_hamming==FALSE) {
+        g <- get_global_clust_hamming(cdr3 = cdr3, 
+                                      cdr3_dup = cdr3_dup,
+                                      control = control)
     }
+    
     return(g)
 }

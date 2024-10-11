@@ -14,8 +14,7 @@ control_input <- list(
   local_min_o = 1,
   trim_flank_aa = 3,
   low_mem = FALSE,
-  global_pairs = NULL,
-  global_smart = FALSE)
+  global_hamming = FALSE)
 
 
 # check everything for all three versions of the algorithm
@@ -406,10 +405,10 @@ test_that("cluster works with correct input in low_mem mode", {
   ))
 })
 
-# test with correct input and global_smart = TRUE
-test_that("cluster works with correct input and global smart mode", {
+# test with correct input and global_hamming = TRUE
+test_that("cluster works with correct input and global hamming dist mode", {
     control_input_tmp <- control_input
-    control_input_tmp$global_smart <- TRUE
+    control_input_tmp$global_hamming <- FALSE
     control_input_tmp$trim_flank_aa <- 0
     expect_no_error(cluster_irr(
         s = s,

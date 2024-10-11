@@ -92,13 +92,12 @@ test_that("check_s_r() runs as expected", {
 })
 
 test_that("get_control() runs as expected", {
-  control <- list(global_smart = TRUE,
+  control <- list(global_hamming = FALSE,
                   global_max_hdist = 1,
                   global_min_identity = 0.7,
                   local_max_fdr = 0.05,
                   local_min_o = 1,
                   trim_flank_aa = 0,
-                  global_pairs = NULL,
                   low_mem = FALSE)
   
   expect_equal(get_control(NULL), control)

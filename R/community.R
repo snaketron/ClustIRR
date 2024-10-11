@@ -15,7 +15,8 @@ detect_communities <- function(graph,
                                   resolution = resolution)
     
     message("3/5 community summary (cs)...")
-    cs <- get_community_summary(g = cg, chains = chains)
+    V(graph)$community <- V(cg)$community
+    cs <- get_community_summary(g = graph, chains = chains)
     
     message("4/5 extracting community matrix (cm)...")
     cm <- get_community_matrix(g = cg)

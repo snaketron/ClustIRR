@@ -299,7 +299,7 @@ get_joint_graph <- function(clust_irrs,
     # get chains
     chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
     # get intergraph edges (global)
-    if(ctrl$global_smart==FALSE) {
+    if(ctrl$global_hamming==TRUE) {
         ige <- get_intergraph_edges_hamming(
             igs = igs, 
             global_max_hdist=ctrl$global_max_hdist, 
