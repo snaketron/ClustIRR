@@ -13,7 +13,9 @@ dco <- function(community_matrix, mcmc_control) {
     if(ncol(community_matrix)>2) {
         model <- stanmodels$dm
     }
+    
     # fit
+    message("1/2 fit...")
     f <- sampling(object = model,
                   data = list(K = nrow(community_matrix), 
                               N = ncol(community_matrix), 
@@ -27,9 +29,9 @@ dco <- function(community_matrix, mcmc_control) {
                   algorithm = mcmc_control$mcmc_algorithm,
                   include = TRUE,
                   pars=c("alpha", "beta", "kappa", "p", "y_hat"))
-                         #"beta_mu", "beta_sigma",
-                         
+    
     # summaries
+    message("2/2 posterior summary...")
     s <- get_posterior_summaries(cm = community_matrix, f = f)
     
     return(list(fit = f, 
@@ -263,14 +265,15 @@ get_posterior_summaries <- function(cm, f) {
     }
 
     samples <- colnames(cm)
+    
     o <- list(beta = get_sample_com_par(f = f, samples = samples, par = "beta"),
               alpha = get_com_par(f = f, par = "alpha"),
               p = get_sample_com_par(f = f, samples = samples, par = "p"),
               y_hat=get_sample_com_par(f = f, samples = samples, par = "y_hat"),
               kappa = get_global_par(f = f, par = "kappa"))
-    #beta_mu = get_sample_par(f = f, par = "beta_mu"),
-    #beta_sigma = get_sample_par(f = f, par = "beta_sigma"),
+    
     o$y_hat$y_obs <- c(cm)
+    
     return(o)
 }
 

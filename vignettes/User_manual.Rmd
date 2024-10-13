@@ -11,8 +11,9 @@ vignette: >
 ---
 
 ```{r}
-library(ClustIRR)
 library(knitr)
+library(ClustIRR)
+library(rstan)
 library(visNetwork)
 library(ggplot2)
 library(ggrepel)
@@ -370,9 +371,8 @@ ggplot(data = n)+
 ```
 
 ```{r, echo=FALSE, include=FALSE}
-rm(t, ks, coms, cdr3_trimmed, cdr3,
-   s, r, node_summary, n, gcd, g, c,
-   community_summary, community_matrix)
+rm(t, ks, coms, cdr3_trimmed, cdr3, s, r, node_summary, n, 
+   gcd, g, c, community_summary, community_matrix)
 ```
 
 
@@ -452,7 +452,7 @@ algorithms, such as Leiden or Louvain. As input for GCD we can use `nweight`
 or `ncweight` (default) between CDR3a, CDR3b or both CDR3a and CDR3b. 
 
 ```{r}
-gcd <- detect_communities(graph = g$graph, 
+gcd <- detect_communities(graph = g$graph,
                           weight_type = "ncweight",
                           algorithm = "leiden",
                           resolution = 1,
@@ -467,8 +467,6 @@ ggplot(data = gcd$community_summary)+
 ```
 
 
-
-
 ```{r}
 community_matrix <- gcd$community_matrix
 head(community_matrix)
@@ -479,13 +477,13 @@ head(community_matrix)
 
 ```{r}
 d <- dco(community_matrix = community_matrix,
-         mcmc_control = list(mcmc_warmup = 500,
+         mcmc_control = list(mcmc_warmup = 500, 
                              mcmc_iter = 1500,
-                             mcmc_chains = 4,
-                             mcmc_cores = 1,
+                             mcmc_chains = 3, 
+                             mcmc_cores = 1, 
                              mcmc_algorithm = "NUTS",
-                             adapt_delta = 0.9,
-                             max_treedepth = 11))
+                             adapt_delta = 0.9, 
+                             max_treedepth = 10))
 ```
 
 
@@ -506,7 +504,8 @@ ggplot(data = d$posterior_summary$y_hat)+
 
 ```{r, fig.width=6, fig.height=4}
 beta <- d$posterior_summary$beta
-beta$interesting <- ifelse(test = beta$X2.5.<=0 & beta$X97.5.>=0, yes = "-", no = "+")
+beta$interesting <- ifelse(test = beta$X2.5.<=0 & beta$X97.5.>=0, 
+                           yes = "-", no = "+")
 ggplot(data = beta)+
   geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5., 
                     col = interesting), width =0)+
