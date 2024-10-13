@@ -210,7 +210,6 @@ get_global_clust_blosum <- function(cdr3, cdr3_dup, control) {
     # get blosum matrix from pwalign
     data_env <- new.env(parent = emptyenv())
     data("BLOSUM62", envir = data_env, package = "pwalign")
-    # data("BLOSUM62", envir = data_env, package = "Biostrings")
     
     # compute BLSOUM62 score for matches
     o$bs <- vapply(X = 1:nrow(o), 
@@ -269,8 +268,7 @@ get_global_clust <- function(cdr3, control) {
         g <- get_global_clust_blosum(cdr3 = cdr3, 
                                      cdr3_dup = cdr3_dup, 
                                      control = control)
-    }
-    if(control$global_hamming==FALSE) {
+    } else {
         g <- get_global_clust_hamming(cdr3 = cdr3, 
                                       cdr3_dup = cdr3_dup,
                                       control = control)

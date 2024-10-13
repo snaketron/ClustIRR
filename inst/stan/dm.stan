@@ -16,23 +16,14 @@ data {
 parameters {
   real <lower=0> kappa;
   vector [K] alpha;
-  vector<lower=0> [N] beta_sigma;
-  vector [K] beta_z [N];
-}
-
-transformed parameters {
   vector [K] beta [N];
-  for(i in 1:N) {
-    beta[i] = 0 + beta_sigma[i]*beta_z[i];
-  }
 }
 
 model {
   target += exponential_lpdf(2+kappa|0.01);
   target += normal_lpdf(alpha|0,3);
   for(i in 1:N) {
-    target += cauchy_lpdf(beta_sigma[i]|0, 1);
-    target += normal_lpdf(beta_z[i]|0,1);
+    target += normal_lpdf(beta[i]|0, 1);
     target += dm_explicit_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
   }
 }

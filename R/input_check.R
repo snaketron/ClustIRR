@@ -158,13 +158,13 @@ check_edit_dist <- function(edit_dist) {
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
-  control <- list(global_hamming = FALSE,
-                  global_max_hdist = 1,
-                  global_min_identity = 0.7,
-                  local_max_fdr = 0.05,
-                  local_min_o = 1,
-                  trim_flank_aa = 0,
-                  low_mem = FALSE)
+  control = list(global_hamming = FALSE,
+                 global_max_hdist = 1,
+                 global_min_identity = 0.7,
+                 local_max_fdr = 0.05,
+                 local_min_o = 1,
+                 trim_flank_aa = 3,
+                 low_mem = FALSE)
   
   # if missing control_in -> use default values
   if(missing(control_in) || is.null(control_in)) {

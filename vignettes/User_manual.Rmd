@@ -15,6 +15,7 @@ library(ClustIRR)
 library(knitr)
 library(visNetwork)
 library(ggplot2)
+library(ggrepel)
 ```
 
 # Introduction
@@ -75,13 +76,14 @@ and `r`).
 * `r`: control IRR (e.g. IRR before treatment)
 
 `s` and `r` should be provided as data.frames with matching columns. The rows 
-in the data.frames correspond to **clones** (group of cells derived from a 
-common parent cell by clonal expansion). We need the following data from each
-clone:
+in the data.frames correspond to **clones** (clone = group of cells derived 
+from a common parent cell by clonal expansion). We use the following data 
+from each clone:
 
   * **amino acid sequence/s** of the complementarity determining regions 3 
-  from one or both chains (paired).
-  * **size** = frequency of cells in the clone
+  from one or both chains (e.g. CDR3$\alpha$ and CDR3$\beta$ from $\alpha\beta$ 
+  TCRs).
+  * **size** = frequency of cells that belong to the clone
   
 Let's have a look at an example data set which we will use as input:
 
@@ -133,22 +135,33 @@ clustering is only used when the user provides as input both `s` and `r`.
 
 
 ### Global clustering
-For global clustering, `r Biocpkg("ClustIRR")` employs one of three strategies.
+For global clustering, `r Biocpkg("ClustIRR")` employs one of two strategies.
 
 *Strategy 1:* default
 
-Given $N$ CDR3 sequences, `r Biocpkg("ClustIRR")` performs pairwise 
-Needleman-Wunsch alignment of CDR3 pairs. It then computes a BLOSUM62 
-similarity score $B$ for each pair, which is normalized by the length 
-of length of the longer CDR3 sequence $L$ $\rightarrow$ $NB=B/L$.
+Given $N$ CDR3 sequences, `r Biocpkg("ClustIRR")` performs $n^2$ pairwise 
+Needleman-Wunsch alignments. For pair $i$, it computes a BLOSUM62 similarity 
+score $b_i$. To ensure that the similarity scores are comparable across pairs 
+of CDR3s with different lengths, we divide $b_i$ with $l_i$, the maximum length 
+of the longer CDR3 sequence in $i$: 
 
-This strategy is computational costly!
+$b'_i = \dfrac{b_i}{l_i} = \dfrac{b_i}{\max(m_i, k_i)}$
 
-It involves $N^2$ pairwise comparisons, where each comparison has a 
-complexity approximately equal to $L^2$ (the time complexity of the 
-Needleman-Wunsch algorithm). To mitigate this challenge, we only consider 
-pairs of CDR3 sequences with sequence identity $\geq$ 70%. This threshold 
-may be modified by the user. For the remaining pairs we consider $NB=0$.
+with $m_i$ and $k_i$ as the lengths of the two CDR3 sequences in pair $i$; and 
+$b'_i$ as the normalized similarity score.
+
+This strategy is computationally very expensive!
+
+The Needleman-Wunsch algorithm has a time complexity $O(mk)$. Empirically we
+know that $m \approx k$, and the typical values of $m$ and $k$ range between 
+6 and 20 (mean = 13). This operation has to be performed $n^2$ times. Therefore,
+the time complexity of this procedure is approximately $O(m^2n^2)$.
+
+For large IRRs with $n>10^6$, which is common nowadays, this algorithm 
+requires significant computational resources. To mitigate this challenge, 
+we only consider pairs of CDR3 sequences with sequence identity $\geq$ 70%. 
+This threshold may be modified by the user (by modifying the input parameter 
+`control$global_min_identity`). For the remaining pairs we consider $b'_i=0$.
 
 *Strategy 2:* if `control$global_hamming = TRUE`
 
@@ -164,6 +177,47 @@ drawbacks:
 2. the properties of the replaced amino acids are not considered by the 
 Hamming distance
 
+### Local clustering
+
+CDR3 sequences are segmented into overlapping **motifs** ($k$-mers), where $k$ 
+is specified by setting the input `ks`. 
+
+Example of segmenting CDR3 sequence into 4-mers:
+
+```{r}
+cdr3 <- "CASSTTTGTGELFF"
+ks <- 4
+colnames(stringdist::qgrams(cdr3, q = ks))
+```
+
+Empirically we know that $k$-mers in the **core** of a CDR3 are more likely 
+to establish contact with an antigenic peptide than $k$-mers in the flanks 
+of the CDR3. Hence, the user is encouraged to remove a few amino acids from 
+the flanks of each CDR3 sequence. This can be done by changing the control
+input from `control$trim_flank_aa,` e.g.:
+  
+  * `control$trim_flank_aa = 0`: no trimming
+  * `control$trim_flank_aa = 3`: trim three amino acids from both flanks 
+  of the CDR3 sequence (default)
+
+In the next code block we trim CDR3 flanks and segment the core of the CDR3 
+sequence `CASSTTTGTGELFF` into 4-mers. The result are five overlapping motifs:
+
+```{r}
+t <- 3
+cdr3_trimmed <- substr(x = cdr3, start = t + 1, stop = nchar(cdr3) - t)
+colnames(stringdist::qgrams(cdr3_trimmed, q = ks))
+```
+ 
+
+A motif is considered statistically enriched in `s` compared to `r` if the 
+following (user-defined) criteria are satisfied:
+
+1. `control$local_min_o`: minimum motif frequency in `s`
+      
+2. `control$local_max_fdr`: maximum false discovery rate (FDR). Corrected 
+    p-value, computed by a one-sided Fisher's exact test (hypergeometric 
+    test).
 
 ## Output
 
@@ -178,541 +232,206 @@ We will describe the inputs, outputs, and the algorithm of
 `r Biocpkg("ClustIRR")` with the help of the following case studies. 
 
 
-# Case study 1: simple TCR repertoire analysis with `r Biocpkg("ClustIRR")`
-
-In this example, we will insert the motif *LEAR* in the core regions of the 
-first 20 CDR3b sequences of repertoire `s`. With this, we simulate enrichment 
-of this motif. 
-
-This motif is not enriched in repertoire `r`, and `r Biocpkg("ClustIRR")` 
-should be able to detect *LEAR* as enriched:
+# Case study 1: analysis of **one** TCR repertoire
+In this example, we will investigate one $\alpha\beta$ TCR repertoire with
+$n=1000$ clones, created from the example dataset `CDR3ab`.
 
 ```{r}
-# insert motif LEAR
-substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
+# get CDR3ab example data
+data("CDR3ab", package = "ClustIRR")
 ```
-
-
-... and then we perform clustering with `r Biocpkg("ClustIRR")`:
 
 ```{r}
-o <- cluster_irr(s = s, r = r)
+# create a repertoire with 1000 alpha-beta CDR3 pairs
+s <- data.frame(CDR3a = CDR3ab$CDR3a[1:1000], 
+                CDR3b = CDR3ab$CDR3b[1:1000])
 ```
 
-
-## Local clustering results
-In the following table we see that `r Biocpkg("ClustIRR")` has detected 
-enrichment of *LEAR* in `s` compared to `r`: 
+## **Step 1.** `cluster_irr` performs global clustering of TCRs
 
 ```{r}
-# extract local motifs
-local_motifs <- get_clustirr_clust(o)$CDR3b$local$m
-
-# display only passed motifs
-knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
+# perform clustirr analysis
+c <- cluster_irr(s = s, control = list(global_min_identity = 0.7))
 ```
 
-Interestingly, the motif *LLEA* is also enriched. This is probably because 
-*LLEA* and *LEAR* share the substring *LEA*, hence, the enrichment of *LLEA* 
-can be seen as a byproduct of the inserted motif *LEAR*.
+In the next, we show the global clustering results for CDR3a and CDR3b 
+sequences (separately). Each row is a pair of CDR3 sequences from the 
+repertoire. For each pair we have the following metrics:
 
-This can also be seen from the lower frequency of *LLEA* ($f_s$ = 5) in `s` 
-compared to *LEAR* ($f_s$ = 20). For *LEAR* we see FDR $\approx 10^{-15}$, 
-which is significantly smaller than the FDR $\approx 10^{-2}$ observed for 
-*LLEA*. Finally, for *LEAR* we see OvE $\approx 100$, whereas for *LLEA*'s  
-OvE $=\infty$ (*LLEA* has $f_r$ = 0, which results in a division by 0 when 
-calculating OvE). 
-
-
-## Global clustering results
-
-In our data we had only one pair of globally similar CDR3 sequences, i.e.
-the CDR3 sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* which differ 
-by one amino acid at position 4. `r Biocpkg("ClustIRR")` has identified this:
-
-```{r}
-# display globally similar pairs
-knitr::kable(get_clustirr_clust(o)$CDR3b$global, row.names = FALSE)
-```
-
-## Putting it all together $\rightarrow$ graph
-
-To interpret the `r Biocpkg("ClustIRR")` output we can inspect the tables 
-of locally/globally similar CDR3s. Furthermore, we provide the functions 
-`get_graph`, which generates an undirected graph (`r CRANpkg("igraph")` 
-object), and `plot_graph` for visualization of the graph.
-
-Each vertex in the graph is a T-cell clone (row in the input data.frame for 
-repertoire `s`), and we draw an edge between two vertices if they are 
-globally similar or if they share an enriched motif (locally similar).
-Multiple edges for global and local similarity between two vertices are 
-possible.
-
-Let's visualize the graph output for this case study:
-
-```{r, fig.width=5, fig.height=4, fig.align='center'}
-par(mai = c(0,0,0,0))
-g <- get_graph(clust_irr = o, edit_dist = 0)
-```
-
-
-```{r, fig.width=5, fig.height=4, fig.align='center'}
-plot_graph(g = g)
-```
-
-&nbsp;
-
-### Vertices
-
-The graph shows a cluster of T-cell clones (densely connected vertices). 
-These are the 20 clones with CDR3 sequences in which we inserted the motif 
-*LEAR*. All clones that have an enriched motif are connected in the graph, 
-i.e. enriched motifs give rise to cliques. The remaining clones (about 480)
-are shown as singleton vertices.
-
-We also see two vertices that are connected by an edge. 
-These are the two clones that are globally similar.
-
-We can plot an **interactive** graph with `r CRANpkg("visNetwork")`. Hover or 
-click on vertices to see their respective CDR3 sequences. 
-
-```{r, fig.width=5, fig.height=4, fig.align='center'}
-vis_g <- plot_graph(g = g, as_visnet = TRUE)
-vis_g
-```
-
-You can modify the default ClustIRR behavior and show any other vertex 
-attribute in the tooltips. In the next code block we set the tooltip as
-the concatenation of the CDR3 sequence and the clone size:
-
-```{r}
-vis_g$x$nodes$title <- paste0(vis_g$x$nodes$CDR3b, 
-                              ' (', vis_g$x$nodes$clone_size, ')')
-vis_g
-```
-
-
-Finally, the user might be interested in focusing on only the large connected 
-vertices in the graph. You can accomplish this by setting the input parameter 
-*show_singletons=FALSE*. This function will only remove vertices with 
-vertex degree = 0 (isolated vertices) and clone_size = 1.
-
-```{r, fig.width=5, fig.height=4, fig.align='center'}
-plot_graph(g = g, as_visnet = TRUE, show_singletons = FALSE)
-```
-
-### Edges
-Between a pair of vertices, we draw an edge if: a) they are globally similar; 
-or b) they share an enriched motif. We can have multiple edges between a pair
-of vertices (clones) **for each chain**: local, global, local and global.
-
-
-# Case study 2: analysis of TCR repertoire with large expanded clone
-
-In this case study, we assume that the data contains a clone with 10 
-T-cells ($\approx$ 2% of the size of the initial repertoire). All T-cells 
-in the expanded clone have the same CDR3b sequence *CATSRPDGLAQYF*. 
-`r Biocpkg("ClustIRR")` should detect most motifs at the core of 
-*CATSRPDGLAQYF* as enriched while also reporting that all cells within 
-`s` have globally similar (in fact identical) CDR3b sequences.
-
-Let's insert a clone in data set `s`:
-
-```{r}
-# create a clone of 10 T-cells
-clone <- data.frame(CDR3a = "CASEIKDASLSVS",
-                    CDR3b = "CATSRPDGLAQYF", 
-                    clone_size = 10)
-
-# append the clone to the original repertoire 's'
-s <- rbind(s, clone)
-```
-
-... and once again perform clustering with `r Biocpkg("ClustIRR")`:
-
-```{r}
-o <- cluster_irr(s = s,
-                 r = r,
-                 ks = 4,
-                 cores = 1,
-                 control = list(trim_flank_aa = 3))
-```
-
-## Local clustering results
-`r Biocpkg("ClustIRR")` once again reports enrichment of *LEAR*, but also of 
-many additional motifs that are part of the core of *CATSRPDGLAQYF*, such as 
-*DGLA*, *PDGL*, *RPDG*, *SRPG*, etc.
-
-```{r, fig.align='center'}
-# extract local motifs
-local_motifs <- get_clustirr_clust(o)$CDR3b$local$m
-
-# display only passed motifs
-knitr::kable(local_motifs[local_motifs$pass == TRUE, ], row.names = FALSE)
-```
-
-## Global clustering results
-
-Once again, `r Biocpkg("ClustIRR")` finds the same pair of globally similar 
-CDR3 sequences. The CDR3 sequences *CAS**S**PLEARGYTF* and *CAS**R**PLEARGYTF* 
-differ by one amino acid at position 4.
-
-Let's check how the global and local similarities are represented in the
-graph (see next section). Can you find the vertex that corresponds to the 
-expanded clone?
-
-
-## Graph output
-
-Let's plot the clustering results:
-
-```{r}
-g <- get_graph(clust_irr = o)
-plot_graph(g = g, as_visnet = TRUE)
-```
-
-&nbsp;
-
-We see one connected component, which is identical to the one we saw in 
-case study 1. Furthermore, we see a large vertex. This represents the 
-clonal expansion, where the size of the vertex scales as the logarithm 
-of the number of T-cells in the clone.
-
-Clonally expanded cells are globally similar to each other. If the specific 
-clonal expansion is only found in `s` but not in `r`, then it is likely that
-we will also see an enrichment of certain motifs from the core of the 
-corresponding CDR3 sequences. In summary, CDR3s of expanded clones are similar 
-in terms of the global sequences but may also be locally similar.
-
-
-# Case study 3: analysis of TCR repertoire with paired $\alpha\beta$ TCR chains
-
-Single-cell technology allows us to sequence entire TCR repertoires, and
-to extract the sequences of both TCR chains: $\beta$ and $\alpha$.
-
-`r Biocpkg("ClustIRR")` can analyze such data. Clustering is performed 
-separately using the CDR3 sequences of each chain.
-
-Let's create the input data. We create two repertoires: 
-
-  * repertoire `S0`: 100 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
-  * repertoire `S1`: 1,000 CDR3$\beta$ and CDR3$\alpha$ sequence pairs. 
+  * `weight`: BLOSUM62 score of the **complete** CDR3 alignment
+  * `cweight`: BLOSUM62 score of CDR3 cores
+  * `max_len`: length of the longer CDR3 sequence in the pair
+  * `nweight`, `ncweight`: normalized `weight` and `cweight` by `max_len`
   
-Imagine that `S0` and `S1` are two TCR repertoires of a cancer patient, 
-sequenced before and after cancer therapy, respectively.
+The results for CDR3a:
 
 ```{r}
-data("CDR3ab")
-
-S0 <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
-                 CDR3b = CDR3ab$CDR3b[3001:3100],
-                 clone_size = c(50, 10, rep(1, times = 98)))
-
-S1 <- data.frame(CDR3a = CDR3ab$CDR3a[5001:5200],
-                 CDR3b = CDR3ab$CDR3b[5001:5200],
-                 clone_size = c(20, rep(1, times = 199)))
-
-# create a clone of 15 T-cells
-clone <- data.frame(CDR3a = "CASSQPGTDHGYTF",
-                    CDR3b = "CASSPQGREATGELFF", 
-                    clone_size = 15)
-
-# append the clone to the original repertoire 'S0'
-S0 <- rbind(S0, clone)
-
-# insert motif LEAR into S0
-substr(x = S0$CDR3b[1:20], start = 6, stop = 9) <- "LEAR"
-
-# insert motif WWWW  into S1
-substr(x = S1$CDR3b[1], start = 5, stop = 8) <- "WWWW"
+kable(head(c@clust$CDR3a$global, n = 10), digits = 2)
 ```
 
-TCR repertoire `S0` has 
 
-  * two enriched motifs: *LEAR* and *LLEA*
-  * two expanded clones:
-      * clone `S0-1`: 50 T-cells (CDR3a: CASSFGPYGSQPQHF, CDR3b: CASSRDAGNTIYF)
-      * clone `S0-2`: 15 T-cells (CDR3a: CASSQPGTDHGYTF, CDR3b: 
-      CASSPQGREATGELFF)
-      * clone `S0-3`: 10 T-cells (CDR3a: CATSRLRQGLNEKLFF, CDR3b: CASGGGLAYEQYF)
-
-TCR repertoire `S1` has 
-
-  * one enriched motif: *WWWW*
-  * one expanded clone: 
-      * clone `S1-1`: 20 T-cells (CDR3a: CASSQPGTDHGYTF, CDR3b: 
-      CASSPQGREATGELFF)
-
-
-
-We will perform two sets of analysis with `r Biocpkg("ClustIRR")`.
-
-First, we will inspect how the specificity structure of repertoire `S1` 
-(`s`=`S1`) is modulated compare to repertoire `S0` (`r`=`S0`).
+... the same table as CDR3b sequence pairs:
 
 ```{r}
-clust_irrs <- vector(mode = "list", length = 2)
-names(clust_irrs) <- c("S1", "S0")
-
-clust_irrs[[1]] <- cluster_irr(s = S1, r = S0,
-                               control = list(trim_flank_aa = 3))
+kable(head(c@clust$CDR3a$global, n = 10), digits = 2)
 ```
 
-Second, we will do the reverse, i.e. we will inspect the specificity structure
-of repertoire `S0` (`s`=`S0`) compared to `S1` (`r`=`S1`).
+## **Step 2.** `get_graph` and `plot_graph` visualize specificity structure
+We can also plot a graph of the global specificity structure in this TCR 
+repertoire. 
+
+Warning! The graph is complex! 
 
 ```{r}
-clust_irrs[[2]] <- cluster_irr(s = S0, r = S1,
-                               control = list(trim_flank_aa = 3))
-```
-
-Let's plot the joint graph:
-
-```{r}
-# beta & alpha chain
-o <- get_joint_graph(clust_irrs = clust_irrs)
-```
-
-&nbsp;
-
-
-```{r}
-o$clones[1:5,]
-o$clones[1,]
-```
-
-
-## How to interpret the joint graph?
-
-The clones of repertoire `S0` and `S1` are shown as red and yellow 
-vertices, respectively. 
-
-Repertoire `S0` contains three expanded clones. Hence, we see three large 
-red vertices. Repertoire `S1` contains only one expanded clone shown as 
-a large yellow vertex. The remaining vertices are small and likely contain a 
-single T-cell.
-
-Within each repertoire, the edges are drawn as explained earlier. 
-
-Meanwhile, in the joint graph we also have edges between the vertices from 
-both repertoires. These will be drawn, if a pair of clones in `S0` and `S1` 
-have globally similar or equal CDR3 sequences. In this particular example, the
-vertices that represents the expanded clones `S0-2` and  `S1-1` (large red 
-and yellow vertices) are connected by such an edge.
-
-
-
-# Case study 4: analysis of TCR repertoires with paired $\gamma\delta$ chains
-
-`r Biocpkg("ClustIRR")` can be employed to study the specificity structure of:
-
-  * $\alpha\beta$ chain TCR repertoires
-  * $\gamma\delta$ chain TCR repertoires
-  * heavy(H)/light(L) chain BCR repertoires
-
-To carry out this analysis, the user must appropriately configure the 
-inputs. Here we demonstrate this point. The rest of the clustering analysis 
-proceeds similarly as outlined in case studies 1-3.
-
-## Configuring the input
-To analyze $\alpha\beta$ chain TCR repertoires, the input data sets `s` and `r`
-are required to have one or both (e.g., if we have paired data as explained in
-case study 3) of the columns: `CDR3a` and `CDR3b`.
-
-For the analysis of $\gamma\delta$ chain TCR repertoires the columns `CDR3g` 
-and `CDR3d` have to be specified. For the analysis of heavy(H)/light(L) 
-chain BCR repertoires `r Biocpkg("ClustIRR")` uses the two columns CDR3h and 
-CDR3l.
-
-
-Dummy example, where we take the `CDR3ab` data set as input and simply rename 
-the columns:
-
-```{r, eval=F}
-data("CDR3ab")
-
-# gamma/delta chain TCR data -> notice CDR3g and CDR3d columns of 's' and 'r'
-s <- data.frame(CDR3g = CDR3ab$CDR3a[4501:5000],
-                      CDR3d = CDR3ab$CDR3b[4501:5000])
-
-r <- data.frame(CDR3g = CDR3ab$CDR3a[5001:10000],
-                      CDR3d = CDR3ab$CDR3b[5001:10000])
-
-```
-
-```{r, eval=F}
-data("CDR3ab")
-
-# heavy/light chain BCR data -> notice CDR3h and CDR3l columns of 's' and 'r'
-s <- data.frame(CDR3h = CDR3ab$CDR3a[4501:5000],
-                      CDR3l = CDR3ab$CDR3b[4501:5000])
-
-r <- data.frame(CDR3h = CDR3ab$CDR3a[5001:10000],
-                      CDR3l = CDR3ab$CDR3b[5001:10000])
-
-```
-
-The rest of the analysis proceeds as usual, i.e., by calling the function
-`cluster_irr`.
-
-
-# Case study 5: joint analysis of 4 TCR repertoires
-
-Imagine that we have a two patients, P1 and P2. From each patient 
-we have two IRRs, one before (A) and one after (B) treatment. 
-
-```{r}
-data("CDR3ab")
-
-P1_A <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3100],
-                   CDR3b = CDR3ab$CDR3b[3001:3100],
-                   clone_size = rpois(n = 100, lambda = 1)+1)
-
-P1_B <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 3101:3200)],
-                   CDR3b = CDR3ab$CDR3b[c(3100, 3101:3200)],
-                   clone_size = rpois(n = 101, lambda = 1)+1)
-
-# clone_size column -> poisson distributed
+g <- get_graph(clust_irr = c, sample_id = "S1")
 ```
 
 ```{r}
-P2_A <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
-                   CDR3b = CDR3ab$CDR3b[c(3100, 4001:4100)])
-
-P2_B <- data.frame(CDR3a = CDR3ab$CDR3a[c(3100, 4001:4100)],
-                   CDR3b = CDR3ab$CDR3b[c(3100, 4001:4100)])
-
-# no clone_size column -> default clone_size = 1
-```
-
-We can analyze the specificity structure of IRR A and B by performing 
-clustering with `r Biocpkg("ClustIRR")`. Here we perform two analyses: 
-A vs B and B vs. A, which allows us to find enriched motifs from either
-direction. The results are stored in a list of size 4. When `r` is set to 
-`NULL`, only global clustering is performed.
-
-```{r}
-clust_irrs <- vector(mode = "list", length = 4)
-names(clust_irrs) <- c("P1_A", "P1_B", "P2_A", "P2_B")
-
-clust_irrs[[1]] <- cluster_irr(s = P1_A, r = NULL)
-clust_irrs[[2]] <- cluster_irr(s = P1_B, r = NULL)
-clust_irrs[[3]] <- cluster_irr(s = P2_A, r = NULL)
-clust_irrs[[4]] <- cluster_irr(s = P2_B, r = NULL)
-```
-
-`r Biocpkg("ClustIRR")` provides the unique opportunity to merge the four 
-graphs (in fact: as many `r Biocpkg("ClustIRR")` outputs as we want) and 
-to visualize them.
-
-```{r, fig.width=6, fig.height=6}
-# beta & alpha chain
-g <- get_joint_graph(clust_irrs = clust_irrs, cores = 1)
-```
-
-&nbsp;
-
-## How to interpret the joint graph?
-
-Clones are color-coded according to the four input repertoires:
-
-* `P1_A` = red
-* `P1_B` = yellow
-* `P2_A` = green
-* `P2_B` = blue
-
-The clones present in both samples from the same patient are shown as connected 
-vertices. 
-
-Clones with larger clone size appear as bigger vertices than clones 
-with smaller clone size.
-
-Similarities between clones from different repertoires are drawn as edges 
-between different colored vertices. In this case, we can see many connections 
-between clones from `P2_A` and `P2_B`, and only one connection `P1_A` and 
-`P1_B`, which also connects to clones from `P2_A` and `P2_B`.
-
-Within each repertoire, edges are drawn as explained earlier (not the case 
-in this particular graph). 
-
-
-
-```{r}
-plot_graph(g = g, 
-           as_visnet = TRUE, 
-           node_opacity = 0.5)
-```
-
-```{r}
-o <- cluster_irr(s = CDR3ab[1:1000, ],
-                 ks = 4,
-                 cores = 1,
-                 control = list(trim_flank_aa = 3))
-g <- get_graph(clust_irr = o)
 plot_graph(g, as_visnet = TRUE)
 ```
 
+## **Step 3.** `detect_communities` identifies graph communities
+Are there densely connected sets of nodes (=communities) in this graph? 
 
-# Detecting communities (densely connected subgraphs)
-
-
-# Case study 5: joint analysis of 4 TCR repertoires
-
-Imagine that we have a two patients, P1 and P2. From each patient 
-we have two IRRs, one before (A) and one after (B) treatment. 
+To answer this question we can use graph-based community detection (GCD) 
+algorithms, such as Leiden or Louvain. As input for GCD we can use `nweight` 
+or `ncweight` (default) between CDR3a, CDR3b or both CDR3a and CDR3b. 
 
 ```{r}
-data("CDR3ab")
+gcd <- detect_communities(graph = g$graph, 
+                          weight_type = "ncweight",
+                          algorithm = "leiden",
+                          resolution = 1,
+                          chains = c("CDR3a", "CDR3b"))
+```
 
+
+The `community_matrix` object is a count matrix with communities as rows 
+and IRRs (here 1 sample) as columns. The counts are number of cells (sum 
+of `clone_size` of nodes in community) in each community and sample.
+
+```{r}
+community_matrix <- gcd$community_matrix
+head(community_matrix)
+```
+
+Most communities are made up of one cell, while some contain 2 or 3 cells. 
+
+```{r}
+table(community_matrix)
+```
+
+Lets look at the clones in these communities. For this we can access the 
+data.frame `node_summary`.
+
+```{r}
+node_summary <- gcd$node_summary
+kable(head(node_summary))
+```
+
+Which nodes are found in communities with at least 3 cells?
+
+```{r}
+# interesting coms
+coms <- which(community_matrix>=3)
+```
+
+
+```{r}
+n <- node_summary[node_summary$community %in% coms,
+                  c("sample", "community", "clone_size", "CDR3b", "CDR3a")]
+n <- n[order(n$community),]
+kable(n)
+```
+
+What is the contribution of CDR3a and CDR3b to the formation of 
+these communities? To answer this question we can access the object 
+`community_summary`.
+
+```{r}
+community_summary <- gcd$community_summary
+```
+
+In two communities CDR3b appears to have high contribution, and in one CDR3a. 
+Please compare these results with the data.frame `node_summary` (shown above).
+
+```{r, fig.width=3, fig.height=3}
+n <- community_summary[community_summary$community %in% coms, 
+                       c("community", "w_CDR3a_mean", "w_CDR3b_mean", 
+                         "w_CDR3a_CDR3b_mean")]
+
+ggplot(data = n)+
+  geom_point(aes(x = w_CDR3a_mean, y = w_CDR3b_mean))+
+  geom_text_repel(aes(x = w_CDR3a_mean, y = w_CDR3b_mean, label = community),
+                  min.segment.length = 0)+
+  xlab(label = "CDR3a ncweight")+
+  ylab(label = "CDR3b ncweight")+
+  theme_bw(base_size = 10)
+```
+
+```{r, echo=FALSE, include=FALSE}
+rm(t, ks, coms, cdr3_trimmed, cdr3,
+   s, r, node_summary, n, gcd, g, c,
+   community_summary, community_matrix)
+```
+
+
+
+# Case study 2: analysis of **two** TCR repertoires
+Imagine that we have two samples from one patient: before (a) and after (b) 
+treatment. 
+
+
+```{r}
+# repertoire size
+n <- 300
+
+# before
+a <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], CDR3b = CDR3ab$CDR3b[1:n])
+# after
+b <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], CDR3b = CDR3ab$CDR3b[1:n])
+```
+
+```{r}
 get_clonal_expansion <- function(n, p_expanded) {
   s <- sample(x = c(0, 1), size = n, prob = c(1-p_expanded, 
                                               p_expanded), replace = T)
   y <- vapply(X = s, FUN.VALUE = numeric(1), FUN = function(x) {
     if(x == 0) {
-      return(rpois(n = 1, lambda = 0))
+      return(rpois(n = 1, lambda = 0.5))
     }
-    return(rpois(n = 1, lambda = 25))
+    return(rpois(n = 1, lambda = 50))
   })
   return(y)
 }
-
-set.seed(12321)
-clone_size <- rpois(n = 300, lambda = 3)+1
-expansion_factor <- rbind(get_clonal_expansion(n = 300, p_expanded = 0),
-                          get_clonal_expansion(n = 300, p_expanded = 0.02),
-                          get_clonal_expansion(n = 300, p_expanded = 0.05),
-                          get_clonal_expansion(n = 300, p_expanded = 0))
 ```
+
 
 
 ```{r}
-P1_A <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
-                   CDR3b = CDR3ab$CDR3b[3001:3300],
-                   clone_size = ceiling(clone_size+expansion_factor[1,]))
+# simulate expansion of specific communities
+set.seed(1243)
+clone_size <- rpois(n = n, lambda = 3)+1
+expansion_factor <- rbind(get_clonal_expansion(n = n, p_expanded = 0),
+                          get_clonal_expansion(n = n, p_expanded = 0.02))
 
-P1_B <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
-                   CDR3b = CDR3ab$CDR3b[3001:3300],
-                   clone_size = ceiling(clone_size+expansion_factor[2,]))
-
-# clonally expanded repertoire
-P2_A <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
-                   CDR3b = CDR3ab$CDR3b[3001:3300],
-                   clone_size = ceiling(clone_size+expansion_factor[3,]))
-
-P2_B <- data.frame(CDR3a = CDR3ab$CDR3a[3001:3300],
-                   CDR3b = CDR3ab$CDR3b[3001:3300],
-                   clone_size = ceiling(clone_size+expansion_factor[4,]))
+a$clone_size <- clone_size+expansion_factor[1,]
+b$clone_size <- clone_size+expansion_factor[2,]
 ```
 
+
+## **Step 1.** `cluster_irr` does global clustering of TCRs in each repertoire
 
 ```{r}
-clust_irrs <- c(cluster_irr(s = P1_A), 
-                cluster_irr(s = P1_B),
-                cluster_irr(s = P2_A), 
-                cluster_irr(s = P2_B))
-names(clust_irrs) <- c("P1_A", "P1_B", "P2_A", "P2_B")
+# per
+clust_irrs <- c(cluster_irr(s = a), cluster_irr(s = b))
+names(clust_irrs) <- c("a", "b")
 ```
 
+
+## **Step 2.** `get_graph` and `plot_graph` visualize specificity structures
+We can also plot a graph of the global specificity structure in TCR repertoire 
+a and b. 
 
 ```{r, fig.width=6, fig.height=6}
 # beta & alpha chain
@@ -725,51 +444,41 @@ plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
 ```
 
 
+## **Step 3.** `detect_communities` identifies communities in the graph 
+Are there densely connected sets of nodes (=communities) in this graph? 
 
+To answer this question we can use graph-based community detection (GCD) 
+algorithms, such as Leiden or Louvain. As input for GCD we can use `nweight` 
+or `ncweight` (default) between CDR3a, CDR3b or both CDR3a and CDR3b. 
 
 ```{r}
-coms <- detect_communities(graph = g$graph,
-                           algorithm = "leiden",
-                           resolution = 1,
-                           weight_type = "ncweight", 
-                           chains = c("CDR3a", "CDR3b"))
+gcd <- detect_communities(graph = g$graph, 
+                          weight_type = "ncweight",
+                          algorithm = "leiden",
+                          resolution = 1,
+                          chains = c("CDR3a", "CDR3b"))
 ```
 
 
-```{r, fig.width=5, fig.height=4}
-ggplot(data = coms$community_summary)+
-  geom_point(aes(x = w_CDR3b_mean, y = w_CDR3a_mean, 
-                 col = w_CDR3a_CDR3b_mean, size = cells_n))+
-  scale_color_continuous(breaks = scales::pretty_breaks(n = 3))+
-  theme_bw()+
-  theme(legend.position = "top")
-```
-
-
-```{r}
-node_summary <- coms$node_summary
-com_freq <- data.frame(table(node_summary$community))
-colnames(com_freq) <- c("community", "freq")
-com_freq <- com_freq[order(com_freq$freq, decreasing = T),]
-com_freq$rank <- 1:nrow(com_freq)
-```
-
-
-```{r}
-table(com_freq$freq)
-```
-
-
-```{r}
-kable(node_summary[,c("CDR3a", "CDR3b", "clone_size", "community", "Ag_species")])
+```{r, fig.width=4, fig.height=4}
+ggplot(data = gcd$community_summary)+
+  geom_point(aes(x = cells_a, y = cells_b))+
+  theme_bw(base_size = 10)
 ```
 
 
 
-# Differential community occupancy
 
 ```{r}
-d <- dco(community_matrix = coms$community_matrix,
+community_matrix <- gcd$community_matrix
+head(community_matrix)
+```
+
+
+## **Step 4.** `dco` performs differential community occupancy (DCO) analysis
+
+```{r}
+d <- dco(community_matrix = community_matrix,
          mcmc_control = list(mcmc_warmup = 500,
                              mcmc_iter = 1500,
                              mcmc_chains = 4,
@@ -781,26 +490,41 @@ d <- dco(community_matrix = coms$community_matrix,
 
 
 
-```{r, fig.width=7, fig.height=6}
-b <- d$posterior_summary$beta
-b$interesting <- ifelse(test = b$X2.5.<=0 & b$X97.5.>=0, yes = "-", no = "+")
-ggplot(data = b)+
-  facet_wrap(facets = ~sample, ncol = 2)+
+```{r, fig.width=6, fig.height=2.5}
+ggplot(data = d$posterior_summary$y_hat)+
+  facet_wrap(facets = ~sample, nrow = 1, scales = "free")+
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = "gray")+
+  geom_errorbar(aes(x = y_obs, y = mean, ymin = X2.5., ymax = X97.5.), 
+                col = "darkgray", width=0)+
+  geom_point(aes(x = y_obs, y = mean), size = 0.8)+
+  xlab(label = "observed y")+
+  ylab(label = "predicted y (and 95% HDI)")+
+  theme_bw(base_size = 10)
+```
+
+
+
+```{r, fig.width=6, fig.height=4}
+beta <- d$posterior_summary$beta
+beta$interesting <- ifelse(test = beta$X2.5.<=0 & beta$X97.5.>=0, yes = "-", no = "+")
+ggplot(data = beta)+
   geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5., 
                     col = interesting), width =0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
-  theme(legend.position = "top")+
-  scale_color_manual(values = c("darkgray", "black"))
+  theme_bw(base_size = 10)+
+  theme(legend.position = "none")+
+  scale_color_manual(values = c("darkgray", "black"))+
+  ylab(label = expression(beta))
 ```
 
+Distribution of mean $\beta$s
 
-```{r}
+```{r, fig.width=4, fig.height=3}
 ggplot(data = d$posterior_summary$beta)+
-  facet_wrap(facets = ~sample)+
-  geom_histogram(aes(mean))
+  geom_histogram(aes(mean), bins = 100)+
+  xlab(label = expression(beta))+
+  theme_bw(base_size = 10)
 ```
-
-
 
 
 ```{r session_info}

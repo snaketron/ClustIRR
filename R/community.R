@@ -16,7 +16,9 @@ detect_communities <- function(graph,
     
     message("3/5 community summary (cs)...")
     V(graph)$community <- V(cg)$community
-    cs <- get_community_summary(g = graph, chains = chains)
+    cs <- get_community_summary(g = graph, 
+                                chains = chains,
+                                weight_type = weight_type)
     
     message("4/5 extracting community matrix (cm)...")
     cm <- get_community_matrix(g = cg)
@@ -114,7 +116,7 @@ get_community_detection <- function(g,
     return(g)
 }
 
-get_community_summary <- function(g, chains) {
+get_community_summary <- function(g, chains, weight_type) {
     
     get_vs_stats <- function(vs) {
         
@@ -148,7 +150,7 @@ get_community_summary <- function(g, chains) {
         return(vs_stats)
     }
     
-    get_es_stats <- function(es, vs, chains) {
+    get_es_stats <- function(es, vs, chains, weight_type) {
         # add community id to 'from node'
         es <- merge(x = es, y = vs[, c("name", "community")], 
                     by.x = "from", by.y = "name", all.x = TRUE)
@@ -173,6 +175,9 @@ get_community_summary <- function(g, chains) {
         es$key <- apply(X = es[,c("from", "to")], MARGIN = 1, FUN=function(x) {
             return(paste0(sort(x), collapse = '-'))
         })
+        
+        # set weight
+        es$weight <- es[, weight_type]
         
         if(length(chains)==2) {
             # keys
@@ -260,7 +265,10 @@ get_community_summary <- function(g, chains) {
     vs <- as_data_frame(x = g, what = "vertices")
     
     vs_stats <- get_vs_stats(vs = vs)
-    es_stats <- get_es_stats(es = es, vs = vs, chains = chains)
+    es_stats <- get_es_stats(es = es, 
+                             vs = vs, 
+                             chains = chains,
+                             weight_type = weight_type)
     
     o <- merge(x = vs_stats, y = es_stats, by = "community", all.x = TRUE)
     o <- o[order(o$community, decreasing = FALSE), ]
