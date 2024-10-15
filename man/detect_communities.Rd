@@ -1,6 +1,10 @@
 \name{detect_communities}
 \alias{detect_communities}
 \title{Graph-based community detection}
+\description{
+This algorithm detects densely connected groups of nodes in a immune receptor
+repertoire (IRR) specificity graph
+}
 \usage{
 detect_communities(graph,
                    algorithm = "leiden", 
@@ -30,48 +34,42 @@ are provided as columnscontains all user provided.}
 \item{graph}{igraph object, processed graph object}
 \item{input_config}{list, inputs provided as list.}
 }
-
-\description{
-This algorithm finds densely connected groups of nodes in IRR specificity 
-graph.
-}
-
 \examples{
 # load package input data
 data("CDR3ab")
-s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], clone_size = 1)
-r <- data.frame(CDR3b = CDR3ab[1:5000, "CDR3b"], clone_size = 1)
+a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
+                  CDR3b = CDR3ab[1:500, "CDR3b"],
+                  clone_size = 1,
+                  sample = "a")
 
-# artificially enrich motif 'RWGW' inside sample dataset
-substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RWGW"
-
-# add an artificial clonal expansion of two sequences to the sample dataset
-s <- rbind(s, data.frame(CDR3b = c("CATSRADKPDGLDALETQYF", 
-                                   "CATSRAAKPDGLAALSTQYF"),
-                         clone_size = 5))
+b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
+                  CDR3b = CDR3ab[401:900, "CDR3b"],
+                  clone_size = 1,
+                  sample = "b")
+b$clone_size[1] <- 20
 
 # run ClustIRR analysis
-out <- cluster_irr(s = s,
-                   r = r,
-                   ks = 4,
-                   cores = 1,
-                   control = list(trim_flank_aa = 3))
+c <- c(cluster_irr(s = a), cluster_irr(s = b))
 
-# get graph
-g <- get_graph(out)
+# get joint graph
+jg <- get_joint_graph(clust_irrs = c)
 
 # detect communities
-coms <- detect_communities(graph = g$graph, chains = "CDR3b")
+gcd <- detect_communities(graph = jg$graph, 
+                          algorithm = "leiden",
+                          resolution = 1,
+                          weight_type = "ncweight",
+                          chains = c("CDR3a", "CDR3b"))
 
 # look at outputs
-names(coms)
+names(gcd)
 
 # look at the community matrix
-head(coms$community_matrix)
+head(gcd$community_matrix)
 
 # look at the community summary
-head(coms$community_summary)
+head(gcd$community_summary)
 
 # look at the node summary
-head(coms$node_summary)
+head(gcd$node_summary)
 }

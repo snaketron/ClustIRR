@@ -70,23 +70,14 @@ databases with CDR3 sequences and their cognate antigens.
 \examples{
 # load package input data
 data("CDR3ab")
-s_1 <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"])
-s_2 <- data.frame(CDR3b = CDR3ab[101:200, "CDR3b"])
-r <- data.frame(CDR3b = CDR3ab[1:500, "CDR3b"])
+a <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "a", clone_size = 1)
+b <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "b", clone_size = 1)
 
-
-# run 1st analysis -> clust_irr object
-o_1 <- cluster_irr(s = s_1, r = r, ks = 4)
-
-# run 2nd analysis -> clust_irr object
-o_2 <- cluster_irr(s = s_2, r = r, ks = 4)
-
-# join clust_irr objects in a list               
-clust_irrs <- c(o_1, o_2)
-names(clust_irrs) <- c("C1", "C2")
+# run ClustIRR analysis
+c <- c(cluster_irr(s = a), cluster_irr(s = b))
 
 # get graph
-g <- get_joint_graph(clust_irrs = clust_irrs)
+g <- get_joint_graph(clust_irrs = c)
 
 names(g)
 }

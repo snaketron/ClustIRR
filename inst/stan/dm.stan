@@ -1,5 +1,5 @@
 functions {
-  real dm_explicit_lpmf(int[] y, vector alpha) {
+  real dm_lpmf(int[] y, vector alpha) {
     real sum_alpha = sum(alpha);
     return lgamma(sum_alpha) - lgamma(sum(y) + sum_alpha)
            + lgamma(sum(y)+1) - sum(lgamma(to_vector(y)+1))
@@ -11,6 +11,7 @@ data {
   int K; // categories
   int N; // number of samples
   int y [N, K]; // counts matrix
+  int x [2]; // not used
 }
 
 parameters {
@@ -24,7 +25,7 @@ model {
   target += normal_lpdf(alpha|0,3);
   for(i in 1:N) {
     target += normal_lpdf(beta[i]|0, 1);
-    target += dm_explicit_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
+    target += dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
   }
 }
 
@@ -35,6 +36,6 @@ generated quantities {
   for(i in 1:N) {
     p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]));
     y_hat[i] = multinomial_rng(p[i], sum(y[i]));
-    log_lik[i] = dm_explicit_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
+    log_lik[i] = dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
   }
 }

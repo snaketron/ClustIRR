@@ -42,17 +42,10 @@ get_trimmed_flanks <- function(x, flank_size) {
 # This function packs the results into clust_irr object
 get_clustirr_output_obj <- function(clust, 
                                     s,
-                                    r,
-                                    ks, 
-                                    cores, 
                                     control) {
   
-  return(new("clust_irr", clust = clust,
-             inputs = list(s = s, 
-                           r = r, 
-                           ks = ks, 
-                           cores = cores,
-                           control = control)))
+  return(new("clust_irr", 
+             clust = clust, inputs = list(s = s, control = control)))
 }
 
 
@@ -64,6 +57,18 @@ get_clone_size <- function(x) {
   }
   if(("clone_size" %in% colnames(x))==FALSE) {
     x$clone_size <- 1
+    return(x)
+  }
+  return(x)
+}
+
+get_sample <- function(x) {
+  # clone size addition
+  if(is.null(x)==TRUE) {
+    return(NULL) 
+  }
+  if(("sample" %in% colnames(x))==FALSE) {
+    x$sample <- paste0("S", sample(x = 1:10^5, size = 1))
     return(x)
   }
   return(x)

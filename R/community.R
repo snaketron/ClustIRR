@@ -110,7 +110,7 @@ get_community_detection <- function(g,
     if(algorithm == "leiden") {
         c <- cluster_leiden(graph = g, 
                             weights = E(g)$weight, 
-                            resolution = resolution)
+                            resolution_parameter = resolution)
         V(g)$community <- c$membership
     }
     return(g)
@@ -151,6 +151,10 @@ get_community_summary <- function(g, chains, weight_type) {
     }
     
     get_es_stats <- function(es, vs, chains, weight_type) {
+        
+        # keep only global
+        es <- es[es$clustering == "global", ]
+        
         # add community id to 'from node'
         es <- merge(x = es, y = vs[, c("name", "community")], 
                     by.x = "from", by.y = "name", all.x = TRUE)

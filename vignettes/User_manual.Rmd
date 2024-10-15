@@ -13,7 +13,7 @@ vignette: >
 ```{r}
 library(knitr)
 library(ClustIRR)
-library(rstan)
+library(igraph)
 library(visNetwork)
 library(ggplot2)
 library(ggrepel)
@@ -70,16 +70,11 @@ knitr::include_graphics("../inst/extdata/logo.png")
 
 ## Input
 
-The main input of `r Biocpkg("ClustIRR")` is one IRR (`s`), or two IRRs (`s`
-and `r`).
+The main input of `r Biocpkg("ClustIRR")` is an IRR (`s`).
 
-* `s`: IRR under investigation (e.g. IRR after treatment)
-* `r`: control IRR (e.g. IRR before treatment)
-
-`s` and `r` should be provided as data.frames with matching columns. The rows 
-in the data.frames correspond to **clones** (clone = group of cells derived 
-from a common parent cell by clonal expansion). We use the following data 
-from each clone:
+`s`should be provided as data.frame. The rows in the data.frame correspond 
+to **clones** (clone = group of cells derived from a common parent cell by 
+clonal expansion). We use the following data from each clone:
 
   * **amino acid sequence/s** of the complementarity determining regions 3 
   from one or both chains (e.g. CDR3$\alpha$ and CDR3$\beta$ from $\alpha\beta$ 
@@ -96,12 +91,8 @@ data("CDR3ab", package = "ClustIRR")
 # get 500 CDR3a and CDR3b pairs from the data -> s
 s <- data.frame(CDR3a = CDR3ab$CDR3a[1:500],
                 CDR3b = CDR3ab$CDR3b[1:500], 
-                clone_size=1)
-
-# get 500 CDR3a and CDR3b pairs from the data -> r
-r <- data.frame(CDR3a = CDR3ab$CDR3a[501:1000],
-                CDR3b = CDR3ab$CDR3b[501:1000], 
-                clone_size=1)
+                clone_size=1,
+                sample = "A")
 ```
 
 
@@ -109,54 +100,36 @@ r <- data.frame(CDR3a = CDR3ab$CDR3a[501:1000],
 str(s)
 ```
 
+## **Step 1.** TCR clustering with `cluster_irr`
+In a given IRR, we assume that two CDR3 having identical sequences will 
+recognize the same sets of antigens. Meanwhile, we also know that similar 
+CDR3 sequences (e.g., CDR3 sequences which differ by only one amino acid) 
+may also have common specificity. `r Biocpkg("ClustIRR")` employs clustering 
+to find groups of CDR3s which are **globally similar** (based on the complete 
+CDR3 sequences). 
 
-```{r}
-str(r)
-```
+For this we employs one of two strategies.
 
-
-
-## Clustering
-
-`r Biocpkg("ClustIRR")` employs **global** and **local** clustering strategies.
-
-The rationale behind these two clustering strategies is the following: two 
-identical CDR3 sequences have the same specificity. Similar CDR3 sequences 
-(e.g., CDR3 sequences that differ by only one amino acid) may also have the
-same specificity. Global clustering is meant to find pairs of CDR3s that are
-globally (based on the complete CDR3 sequences) similar. 
-
-We also know that two CDR3s with significantly different sequences may still 
-recognize the same peptide[^1] if they share a motif in their core regions 
-(e.g., identical 4-mer). Such "useful" motifs may be enriched in `s`  but not 
-in `r`, and local clustering aims to identify them.
-
-While global clustering is always employed by `r Biocpkg("ClustIRR")`, local
-clustering is only used when the user provides as input both `s` and `r`.
-
-
-### Global clustering
-For global clustering, `r Biocpkg("ClustIRR")` employs one of two strategies.
-
-*Strategy 1:* default
+*Strategy A:* default
 
 Given $N$ CDR3 sequences, `r Biocpkg("ClustIRR")` performs $n^2$ pairwise 
 Needleman-Wunsch alignments. For pair $i$, it computes a BLOSUM62 similarity 
 score $b_i$. To ensure that the similarity scores are comparable across pairs 
-of CDR3s with different lengths, we divide $b_i$ with $l_i$, the maximum length 
-of the longer CDR3 sequence in $i$: 
+of CDR3s with different lengths, we divide $b_i$ with $l_i$, the maximum 
+length of the longer CDR3 sequence in $i$: 
 
 $b'_i = \dfrac{b_i}{l_i} = \dfrac{b_i}{\max(m_i, k_i)}$
 
-with $m_i$ and $k_i$ as the lengths of the two CDR3 sequences in pair $i$; and 
-$b'_i$ as the normalized similarity score.
+with $m_i$ and $k_i$ as the lengths of the two CDR3 sequences in pair $i$; 
+and $b'_i$ as the normalized similarity score.
 
 This strategy is computationally very expensive!
 
-The Needleman-Wunsch algorithm has a time complexity $O(mk)$. Empirically we
-know that $m \approx k$, and the typical values of $m$ and $k$ range between 
-6 and 20 (mean = 13). This operation has to be performed $n^2$ times. Therefore,
-the time complexity of this procedure is approximately $O(m^2n^2)$.
+The Needleman-Wunsch algorithm has a time complexity $O(mk)$. Empirically 
+we know that $m \approx k$, and the typical values of $m$ and $k$ range 
+between 6 and 20 (mean = 13). This operation has to be performed $n^2$ 
+times. Therefore, the time complexity of this procedure is approximately 
+$O(m^2n^2)$.
 
 For large IRRs with $n>10^6$, which is common nowadays, this algorithm 
 requires significant computational resources. To mitigate this challenge, 
@@ -164,7 +137,7 @@ we only consider pairs of CDR3 sequences with sequence identity $\geq$ 70%.
 This threshold may be modified by the user (by modifying the input parameter 
 `control$global_min_identity`). For the remaining pairs we consider $b'_i=0$.
 
-*Strategy 2:* if `control$global_hamming = TRUE`
+*Strategy B:* if `control$global_hamming = TRUE`
 
 Alternatively, `r Biocpkg("ClustIRR")` quantifies the dissimilarity between 
 pairs of CDR3 sequences using Hamming distances. Two CDR3 sequences with 
@@ -178,64 +151,57 @@ drawbacks:
 2. the properties of the replaced amino acids are not considered by the 
 Hamming distance
 
-### Local clustering
-
-CDR3 sequences are segmented into overlapping **motifs** ($k$-mers), where $k$ 
-is specified by setting the input `ks`. 
-
-Example of segmenting CDR3 sequence into 4-mers:
-
-```{r}
-cdr3 <- "CASSTTTGTGELFF"
-ks <- 4
-colnames(stringdist::qgrams(cdr3, q = ks))
-```
-
-Empirically we know that $k$-mers in the **core** of a CDR3 are more likely 
-to establish contact with an antigenic peptide than $k$-mers in the flanks 
-of the CDR3. Hence, the user is encouraged to remove a few amino acids from 
-the flanks of each CDR3 sequence. This can be done by changing the control
-input from `control$trim_flank_aa,` e.g.:
-  
-  * `control$trim_flank_aa = 0`: no trimming
-  * `control$trim_flank_aa = 3`: trim three amino acids from both flanks 
-  of the CDR3 sequence (default)
-
-In the next code block we trim CDR3 flanks and segment the core of the CDR3 
-sequence `CASSTTTGTGELFF` into 4-mers. The result are five overlapping motifs:
-
-```{r}
-t <- 3
-cdr3_trimmed <- substr(x = cdr3, start = t + 1, stop = nchar(cdr3) - t)
-colnames(stringdist::qgrams(cdr3_trimmed, q = ks))
-```
- 
-
-A motif is considered statistically enriched in `s` compared to `r` if the 
-following (user-defined) criteria are satisfied:
-
-1. `control$local_min_o`: minimum motif frequency in `s`
-      
-2. `control$local_max_fdr`: maximum false discovery rate (FDR). Corrected 
-    p-value, computed by a one-sided Fisher's exact test (hypergeometric 
-    test).
-
-## Output
-
-The main function in `r Biocpkg("ClustIRR")` is `cluster_irr`. This function 
+*Output*: global TCR clustering is done with the function `clust_irr` which 
 returns an S4 object of class `clust_irr`. The object contains two sublists 
 (slots):
 
-1. clustering results: tables and lists
+1. chain-specific clustering results: tables and lists
 2. processed inputs: processed form of the input data (`s`) and parameters
 
-We will describe the inputs, outputs, and the algorithm of 
-`r Biocpkg("ClustIRR")` with the help of the following case studies. 
+
+## **Step 2.** building a graph with `get_graph` or `get_joint_graph`
+Next, `r Biocpkg("ClustIRR")` builds a graph. If we analyze one IRR, then
+we may employ the function `get_graph`, which converts the `clust_irr` object
+into an `igraph` object. Meanwhile, if we are analyzing two ore more IRRs, 
+then we can use the function `get_joint_graph` to generate a joint `igraph`
+object.
+
+The graphs have *nodes* and *weighted edges*:
+
+  * nodes: clones from each IRR. Each clone attribute (clone size, CDR3 
+  sequences, etc) is provided as node attribute
+  * edges: connections between nodes (clones) within each IRR (computed in 
+  step 1.), and between IRRs (computed by get_joint_graph if multiple IRRs 
+  are provided), with edge weights set according to the normalized similarity 
+  score $b'_i$
+  
+**Output**: the output of `get_graph` or `get_joint_graph`is an `igraph` 
+object. This allows us to use `igraph` functions to evaluate different 
+properties of the graph, such as, the distribution of edge weights, or the
+node degree distribution.
+
+**Important note**: `r Biocpkg("ClustIRR")` provides the function 
+`get_graph_dummy`, which allows the user to skip  step. 1 of the algorithm.
+The inputs of this function is IRR `s` (same as before) and a data frame 
+containing the (symbolic) edge list. This enables seamless integration of 
+`r Biocpkg("ClustIRR")` with computational pipelines that employ other IRR 
+clustering approaches, such as gliph[^1], TCRdist3[^2], GIANA[^3], etc.
+
+
+## **Step 3.** community detection
+
+
+## **Step 4.** differential community occypancy
+
+
+## **Step 5.** output visualization and annotation
+
+
 
 
 # Case study 1: analysis of **one** TCR repertoire
 In this example, we will investigate one $\alpha\beta$ TCR repertoire with
-$n=1000$ clones, created from the example dataset `CDR3ab`.
+$n=500$ clones, created from the example dataset `CDR3ab`.
 
 ```{r}
 # get CDR3ab example data
@@ -243,9 +209,11 @@ data("CDR3ab", package = "ClustIRR")
 ```
 
 ```{r}
-# create a repertoire with 1000 alpha-beta CDR3 pairs
-s <- data.frame(CDR3a = CDR3ab$CDR3a[1:1000], 
-                CDR3b = CDR3ab$CDR3b[1:1000])
+# create a repertoire with 500 alpha-beta CDR3 pairs
+s <- data.frame(CDR3a = CDR3ab$CDR3a[1:500], 
+                CDR3b = CDR3ab$CDR3b[1:500],
+                clone_size = 1,
+                sample = "A")
 ```
 
 ## **Step 1.** `cluster_irr` performs global clustering of TCRs
@@ -267,36 +235,51 @@ repertoire. For each pair we have the following metrics:
 The results for CDR3a:
 
 ```{r}
-kable(head(c@clust$CDR3a$global, n = 10), digits = 2)
+kable(head(c@clust$CDR3a, n = 15), digits = 2)
 ```
 
 
 ... the same table as CDR3b sequence pairs:
 
 ```{r}
-kable(head(c@clust$CDR3a$global, n = 10), digits = 2)
+kable(head(c@clust$CDR3a, n = 15), digits = 2)
 ```
+
 
 ## **Step 2.** `get_graph` and `plot_graph` visualize specificity structure
 We can also plot a graph of the global specificity structure in this TCR 
 repertoire. 
 
-Warning! The graph is complex! 
+**Warning! The graph is complex!**
 
 ```{r}
-g <- get_graph(clust_irr = c, sample_id = "S1")
+g <- get_graph(clust_irr = c)
 ```
 
 ```{r}
 plot_graph(g, as_visnet = TRUE)
 ```
 
+
+The graph is an `igraph` object. We can use the `igraph` functions to inspect 
+different properties of the graph, such as, the distribution of edge weights 
+(shown below). Notice, that the edge weights vary drastically between the 
+edges.
+
+```{r, fig.width=6, fig.height=4.5}
+par(mfrow = c(2,2))
+hist(E(g$graph)$weight, main = "weight")
+hist(E(g$graph)$nweight, main = "nweight")
+hist(E(g$graph)$cweight, main = "cweight")
+hist(E(g$graph)$ncweight, main = "ncweight")
+```
+
 ## **Step 3.** `detect_communities` identifies graph communities
 Are there densely connected sets of nodes (=communities) in this graph? 
 
 To answer this question we can use graph-based community detection (GCD) 
-algorithms, such as Leiden or Louvain. As input for GCD we can use `nweight` 
-or `ncweight` (default) between CDR3a, CDR3b or both CDR3a and CDR3b. 
+algorithms, such as Leiden or Louvain. As input for GCD we will use the 
+`ncweight` (default) between CDR3a, CDR3b or both CDR3a and CDR3b. 
 
 ```{r}
 gcd <- detect_communities(graph = g$graph, 
@@ -330,11 +313,11 @@ node_summary <- gcd$node_summary
 kable(head(node_summary))
 ```
 
-Which nodes are found in communities with at least 3 cells?
+Which nodes are found in communities with at least 4 cells?
 
 ```{r}
 # interesting coms
-coms <- which(community_matrix>=3)
+coms <- which(community_matrix>=4)
 ```
 
 
@@ -364,14 +347,14 @@ n <- community_summary[community_summary$community %in% coms,
 ggplot(data = n)+
   geom_point(aes(x = w_CDR3a_mean, y = w_CDR3b_mean))+
   geom_text_repel(aes(x = w_CDR3a_mean, y = w_CDR3b_mean, label = community),
-                  min.segment.length = 0)+
+                  min.segment.length = 0, col = "darkgray")+
   xlab(label = "CDR3a ncweight")+
   ylab(label = "CDR3b ncweight")+
   theme_bw(base_size = 10)
 ```
 
 ```{r, echo=FALSE, include=FALSE}
-rm(t, ks, coms, cdr3_trimmed, cdr3, s, r, node_summary, n, 
+rm(t, ks, coms, cdr3_trimmed, cdr3, s, node_summary, n, 
    gcd, g, c, community_summary, community_matrix)
 ```
 
@@ -387,9 +370,13 @@ treatment.
 n <- 300
 
 # before
-a <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], CDR3b = CDR3ab$CDR3b[1:n])
+a <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
+                CDR3b = CDR3ab$CDR3b[1:n],
+                sample = "a")
 # after
-b <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], CDR3b = CDR3ab$CDR3b[1:n])
+b <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
+                CDR3b = CDR3ab$CDR3b[1:n],
+                sample = "b")
 ```
 
 ```{r}
@@ -406,8 +393,6 @@ get_clonal_expansion <- function(n, p_expanded) {
 }
 ```
 
-
-
 ```{r}
 # simulate expansion of specific communities
 set.seed(1243)
@@ -423,9 +408,8 @@ b$clone_size <- clone_size+expansion_factor[2,]
 ## **Step 1.** `cluster_irr` does global clustering of TCRs in each repertoire
 
 ```{r}
-# per
+# run cluster_irr on each IRR and join the results
 clust_irrs <- c(cluster_irr(s = a), cluster_irr(s = b))
-names(clust_irrs) <- c("a", "b")
 ```
 
 
@@ -442,6 +426,7 @@ g <- get_joint_graph(clust_irrs = clust_irrs, cores = 1)
 ```{r, fig.width=6, fig.height=6}
 plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
 ```
+
 
 
 ## **Step 3.** `detect_communities` identifies communities in the graph 
@@ -477,12 +462,12 @@ head(community_matrix)
 
 ```{r}
 d <- dco(community_matrix = community_matrix,
-         mcmc_control = list(mcmc_warmup = 500, 
+         mcmc_control = list(mcmc_warmup = 500,
                              mcmc_iter = 1500,
-                             mcmc_chains = 3, 
-                             mcmc_cores = 1, 
+                             mcmc_chains = 3,
+                             mcmc_cores = 1,
                              mcmc_algorithm = "NUTS",
-                             adapt_delta = 0.9, 
+                             adapt_delta = 0.9,
                              max_treedepth = 10))
 ```
 
@@ -492,7 +477,7 @@ d <- dco(community_matrix = community_matrix,
 ggplot(data = d$posterior_summary$y_hat)+
   facet_wrap(facets = ~sample, nrow = 1, scales = "free")+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = "gray")+
-  geom_errorbar(aes(x = y_obs, y = mean, ymin = X2.5., ymax = X97.5.), 
+  geom_errorbar(aes(x = y_obs, y = mean, ymin = X2.5., ymax = X97.5.),
                 col = "darkgray", width=0)+
   geom_point(aes(x = y_obs, y = mean), size = 0.8)+
   xlab(label = "observed y")+
@@ -504,10 +489,10 @@ ggplot(data = d$posterior_summary$y_hat)+
 
 ```{r, fig.width=6, fig.height=4}
 beta <- d$posterior_summary$beta
-beta$interesting <- ifelse(test = beta$X2.5.<=0 & beta$X97.5.>=0, 
+beta$interesting <- ifelse(test = beta$X2.5.<=0 & beta$X97.5.>=0,
                            yes = "-", no = "+")
 ggplot(data = beta)+
-  geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5., 
+  geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5.,
                     col = interesting), width =0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
@@ -533,3 +518,9 @@ utils::sessionInfo()
 
 [^1]: Glanville, Jacob, et al. "Identifying specificity groups in the T cell 
 receptor repertoire." Nature 547.7661 (2017): 94-98.
+[^2]: Mayer-Blackwell, Koshlan, et al. "TCR meta-clonotypes for biomarker 
+discovery with tcrdist3 enabled identification of public, HLA-restricted 
+clusters of SARS-CoV-2 TCRs." Elife 10 (2021): e68605.
+[^3]: Zhang, Hongyi, Xiaowei Zhan, and Bo Li. "GIANA allows computationally-
+efficient TCR clustering and multi-disease repertoire classification by 
+isometric transformation." Nature communications 12.1 (2021): 4699.

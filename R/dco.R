@@ -1,6 +1,5 @@
 
 dco <- function(community_matrix, mcmc_control) {
-    
     # check control
     mcmc_control <- process_mcmc_control(control_in = mcmc_control)
 
@@ -19,7 +18,8 @@ dco <- function(community_matrix, mcmc_control) {
     f <- sampling(object = model,
                   data = list(K = nrow(community_matrix), 
                               N = ncol(community_matrix), 
-                              y=t(community_matrix)),
+                              y = t(community_matrix),
+                              x = c(-1, +1)),
                   chains = mcmc_control$mcmc_chains, 
                   cores = mcmc_control$mcmc_cores, 
                   iter = mcmc_control$mcmc_iter, 
@@ -28,8 +28,7 @@ dco <- function(community_matrix, mcmc_control) {
                                  max_treedepth = mcmc_control$max_treedepth),
                   algorithm = mcmc_control$mcmc_algorithm,
                   include = TRUE,
-                  pars=c("alpha", "beta", "kappa", "p", "y_hat"))
-    
+                  pars = c("alpha", "beta", "kappa", "p", "y_hat"))
     # summaries
     message("2/2 posterior summary...")
     s <- get_posterior_summaries(cm = community_matrix, f = f)
@@ -217,7 +216,7 @@ get_posterior_summaries <- function(cm, f) {
         
         # maintain original index order
         s$i <- 1:nrow(s)
-        
+        browser()
         m <- rownames(s)
         m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
         

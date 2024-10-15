@@ -1,54 +1,23 @@
 # Description:
 # Check user provided input and generate errors and warnings, if necessary
-input_check <- function(s,
-                        r,
-                        ks,
-                        cores,
-                        control) {
+input_check <- function(s, control) {
   
-  check_s_r(s = s, r = r)
-  check_ks(ks)
-  check_cores(cores)
+  check_s(s = s)
   check_global_max_hdist(control$global_max_hdist)
-  check_local_max_fdr(control$local_max_fdr)
-  check_local_min_o(control$local_min_o)
   check_trim_flank_aa(control$trim_flank_aa)
   check_low_mem(control$low_mem)
   check_global_hamming(control$global_hamming)
   check_global_min_identity(control$global_min_identity)
 }
 
-check_s_r <- function(s, r) {
+check_s <- function(s) {
   check_missing(s)
   check_dataframe(s)
-  check_r_s_cols(s)
+  check_s_cols(s)
   check_rowcount(s)
   check_dataframe_na(s)
   check_dataframe_empty(s)
   check_aa(s)
-  
-  if(missing(r)||is.null(r)) {
-    message("missing input r, global clustering mode only")
-  } 
-  else {
-    check_dataframe(r)
-    check_r_s_cols(r)
-    check_rowcount(r)
-    check_dataframe_na(r)
-    check_dataframe_empty(r)
-    check_aa(r)
-    
-    if(!all(sort(colnames(s)) == sort(colnames(r)))) {
-      stop("s has to contain the same columns as r")
-    }
-  }
-}
-
-check_ks <- function(ks) {
-  check_infinity(ks)
-  check_numeric(ks)
-  check_wholenumber(ks)
-  check_lessthan(ks, 1)
 }
 
 check_cores <- function(cores) {
@@ -65,21 +34,6 @@ check_global_max_hdist <- function(global_max_hdist) {
   check_wholenumber(global_max_hdist)
   check_singlevalue(global_max_hdist)
   check_lessthan(global_max_hdist, 1)
-}
-
-check_local_max_fdr <- function(local_max_fdr) {
-  check_infinity(local_max_fdr)
-  check_numeric(local_max_fdr)
-  check_singlevalue(local_max_fdr)
-  check_lessthan(local_max_fdr, 0)
-  check_greaterthan(local_max_fdr, 1)
-}
-
-check_local_min_o <- function(local_min_o) { # kmer_mindepth
-  check_infinity(local_min_o)
-  check_numeric(local_min_o)
-  check_wholenumber(local_min_o)
-  check_singlevalue(local_min_o)
 }
 
 check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size
@@ -161,8 +115,6 @@ get_control <- function(control_in) {
   control = list(global_hamming = FALSE,
                  global_max_hdist = 1,
                  global_min_identity = 0.7,
-                 local_max_fdr = 0.05,
-                 local_min_o = 1,
                  trim_flank_aa = 3,
                  low_mem = FALSE)
   
@@ -241,27 +193,28 @@ check_dataframe <- function(x) {
   }
 }
 
-check_r_s_cols <- function(x) {
-  if(!any(colnames(x) %in% c("clone_size", 
-                             paste0("CDR3", c("a","b","g","d","l","h"))))) {
-    s <- paste0("unallowed columns in s/r, allowed are ",
-                "CDR3a, CDR3b, CDR3d, CDR3g, CDR3l, CDR3h and clone_size")  
-    stop(s)
+check_s_cols <- function(x) {
+  chains <- paste0("CDR3", c("a","b","g","d","l","h"))
+  if(!any(colnames(x) %in% c("clone_size", "sample", chains))) {
+    stop(paste0("allowed columns in s: ", chains, " clone_size and sample"))
   }
-  if((any(colnames(x) %in% c("CDR3a", "CDR3b"))==TRUE &
-      all(colnames(x) %in% c("CDR3a", "CDR3b", "clone_size"))==FALSE)|
-     (any(colnames(x) %in% c("CDR3g", "CDR3d"))==TRUE &
-      all(colnames(x) %in% c("CDR3g", "CDR3d", "clone_size"))==FALSE)|
-     (any(colnames(x) %in% c("CDR3l", "CDR3h"))==TRUE &
-      all(colnames(x) %in% c("CDR3l", "CDR3h", "clone_size"))==FALSE)) {
-    s <- paste0("mixed chains, allowed chain combinations are ",
-                "CDR3a x CDR3b, CDR3d x CDR3g, CDR3l x CDR3h")
-    stop(s)
+  if((any(colnames(x) %in% chains[1:2])==TRUE &
+      all(colnames(x) %in% c(chains[1:2], "clone_size", "sample"))==FALSE)|
+     (any(colnames(x) %in% chains[3:4])==TRUE &
+      all(colnames(x) %in% c(chains[3:4], "clone_size", "sample"))==FALSE)|
+     (any(colnames(x) %in% chains[5:6])==TRUE &
+      all(colnames(x) %in% c(chains[5:6], "clone_size", "sample"))==FALSE)) {
+    stop(paste0("allowed chain pairs: CDR3a-CDR3b CDR3d-CDR3g CDR3l-CDR3h"))
   }
   
   if(any(colnames(x) == "clone_size")) {
     if(any(is.numeric(x$clone_size)==FALSE)) {
       stop("clone_size must be numeric")
+    }
+  }
+  if(any(colnames(x) == "sample")) {
+    if(any(is.character(x$sample)==FALSE)) {
+      stop("sample must be character")
     }
   }
 }
