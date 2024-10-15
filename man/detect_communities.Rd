@@ -36,7 +36,7 @@ are provided as columnscontains all user provided.}
 }
 \examples{
 # load package input data
-data("CDR3ab")
+data("CDR3ab", package = "ClustIRR")
 a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
                   CDR3b = CDR3ab[1:500, "CDR3b"],
                   clone_size = 1,

@@ -227,7 +227,7 @@ get_joint_graph <- function(clust_irrs,
             chains = chains,
             cores = cores,
             trim_flank_aa = ctrl$trim_flank_aa,
-            global_min_identity=ctrl$global_min_identity)
+            gmi=ctrl$gmi)
     }
     # get the vertices/edges of the graph
     df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
@@ -498,7 +498,7 @@ get_intergraph_edges_blosum <- function(igs,
                                         chains, 
                                         cores, 
                                         trim_flank_aa,
-                                        global_min_identity) {
+                                        gmi) {
     
     get_identical_hits <- function(a, b) {
         js <- intersect(a$Seq, b$Seq)
@@ -554,7 +554,7 @@ get_intergraph_edges_blosum <- function(igs,
                           gapExtension = 4))
     }
     
-    get_blastr <- function(s1, s2, chain, trim_flank_aa, global_min_identity) {
+    get_blastr <- function(s1, s2, chain, trim_flank_aa, gmi) {
         s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name,
                          len = nchar(s1[, chain]))
         s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name,
@@ -563,7 +563,7 @@ get_intergraph_edges_blosum <- function(igs,
         o <- blast(query = s1, 
                    db = s2,
                    maxAccepts = 10^4,
-                   minIdentity = global_min_identity,
+                   minIdentity = gmi,
                    alphabet = "protein",
                    output_to_file = FALSE)
         
@@ -622,7 +622,7 @@ get_intergraph_edges_blosum <- function(igs,
         return(out)
     }
     
-    get_igg <- function(x, ix, igs, trim_flank_aa, global_min_identity) {
+    get_igg <- function(x, ix, igs, trim_flank_aa, gmi) {
         # prepare pair-rep data
         s1_name <- ix$name_i[x]
         s2_name <- ix$name_j[x]
@@ -638,7 +638,7 @@ get_intergraph_edges_blosum <- function(igs,
                         s2 = s2,
                         chain = chain,
                         trim_flank_aa = trim_flank_aa,
-                        global_min_identity = global_min_identity)
+                        gmi = gmi)
         
         if(is.null(b)==FALSE && nrow(b)!=0) {
             b$chain <- chain
@@ -678,7 +678,7 @@ get_intergraph_edges_blosum <- function(igs,
                          FUN = get_igg,
                          igs = igs,
                          trim_flank_aa = trim_flank_aa,
-                         global_min_identity = global_min_identity,
+                         gmi = gmi,
                          future.seed = TRUE)
     ige <- do.call(rbind, ige)
     

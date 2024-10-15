@@ -69,7 +69,7 @@ databases with CDR3 sequences and their cognate antigens.
 
 \examples{
 # load package input data
-data("CDR3ab")
+data("CDR3ab", package = "ClustIRR")
 a <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "a", clone_size = 1)
 b <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "b", clone_size = 1)
 

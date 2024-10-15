@@ -1,5 +1,5 @@
 cluster_irr <- function(s,
-                        control = list(global_min_identity = 0.7,
+                        control = list(gmi = 0.7,
                                        trim_flank_aa = 3,
                                        global_hamming = FALSE,
                                        global_max_hdist = 1,

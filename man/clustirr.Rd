@@ -8,7 +8,7 @@ output are pairs of similar CDR3 sequences and their similarity scores.
 }
 \usage{
 cluster_irr(s,
-            control = list(global_min_identity = 0.7,
+            control = list(gmi = 0.7,
                            trim_flank_aa = 3,
                            global_hamming = FALSE,
                            global_max_hdist = 1,
@@ -36,8 +36,8 @@ following see a list of possible chains:.
 \item{control}{a named list of auxiliary parameters to control the 
 algorithm's behavior. See the details below:
 \itemize{
-\item \code{global_min_identity} - probability, what is the minimum sequence
-identity between a pair of CDR3 sequences for them to even be considered for
+\item \code{gmi} - probability, what is the global minimum sequence identity 
+(gmi) between a pair of CDR3 sequences for them to even be considered for
 global similarity inspection (default = 0.7; 70 percent identity) This input
 is only used if \code{global_hamming} = TRUE.
 \item \code{trim_flank_aa} - integer, how many amino acids should be trimmed
@@ -121,7 +121,7 @@ For large IRRs with \eqn{n>10^6}, which are routinely generated nowadays,
 this algorithm requires significant computational resources. To mitigate 
 this challenge, we only consider pairs of CDR3 sequences with sequence 
 identity \eqn{\geq} 70\%. This threshold may be modified by the user (by 
-modifying the control parameter \code{global_min_identity}). For the 
+modifying the control parameter \code{gmi}). For the 
 remaining pairs we consider \eqn{b'_i=0}.
 
 \bold{Strategy B: if control$global_hamming = TRUE}
@@ -144,7 +144,7 @@ globally similar.
 
 \examples{
 # load package input data
-data("CDR3ab")
+data("CDR3ab", package = "ClustIRR")
 s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
 
 # run analysis

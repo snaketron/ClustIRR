@@ -72,7 +72,7 @@ The output is an S4 object of class \code{clust_irr}
 
 \examples{
 # load package input data
-data("CDR3ab")
+data("CDR3ab", package = "ClustIRR")
 s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
 
 # run analysis
@@ -90,9 +90,9 @@ knitr::kable(head(slot(c, "clust")$CDR3b))
 
 # clust_irr S4 object generated 'manually' from the individual results
 new_clust_irr <- new("clust_irr", 
-                     clust = slot(object = clust_irr_output, name = "clust"),
-                     inputs = slot(object = clust_irr_output, name = "inputs"))
+                     clust = slot(object = c, name = "clust"),
+                     inputs = slot(object = c, name = "inputs"))
 
 # we should get identical outputs
-identical(x = new_clust_irr, y = clust_irr_output)
+identical(x = new_clust_irr, y = c)
 }

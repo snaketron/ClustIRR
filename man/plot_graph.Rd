@@ -40,26 +40,19 @@ created by the function \code{get_graph}.
 
 \examples{
 # load package input data
-data("CDR3ab")
-s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], clone_size = 1)
-r <- data.frame(CDR3b = CDR3ab[1:500, "CDR3b"], clone_size = 1)
+data("CDR3ab", package = "ClustIRR")
+s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
 
-# artificially enrich motif 'RWGW' inside sample dataset
-substr(x = s$CDR3b[1:20], start = 6, stop = 9) <- "RWGW"
+# run ClustIRR analysis
+out <- cluster_irr(s = s,
+                   control = list(gmi = 0.7,
+                                  trim_flank_aa = 3,
+                                  global_hamming = FALSE,
+                                  global_max_hdist = 1,
+                                  low_mem = FALSE))
 
-# add an artificial clonal expansion of two sequences to the sample dataset
-s <- rbind(s, data.frame(CDR3b = c("CATSRADKPDGLDALETQYF", 
-                                   "CATSRAAKPDGLAALSTQYF"),
-                         clone_size = 5))
-
-# run analysis
-ci <- cluster_irr(s = s,
-                   r = r,
-                   ks = 4,
-                   cores = 1,
-                   control = list(trim_flank_aa = 3))
-                   
-g <- get_graph(clust_irr = ci)
+# get graph
+g <- get_graph(clust_irr = out)
 
 # plot graph with vertices as clones
 plot_graph(g, as_visnet=FALSE, show_singletons=TRUE, node_opacity = 0.8)

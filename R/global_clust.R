@@ -188,7 +188,7 @@ get_global_clust_blosum <- function(cdr3, cdr3_dup, control) {
     o <- blast(query = db, 
                db = db,
                maxAccepts = 10^4,
-               minIdentity = control$global_min_identity,
+               minIdentity = control$gmi,
                alphabet = "protein", 
                output_to_file = FALSE)
     

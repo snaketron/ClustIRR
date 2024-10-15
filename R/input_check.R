@@ -7,7 +7,7 @@ input_check <- function(s, control) {
   check_trim_flank_aa(control$trim_flank_aa)
   check_low_mem(control$low_mem)
   check_global_hamming(control$global_hamming)
-  check_global_min_identity(control$global_min_identity)
+  check_gmi(control$gmi)
 }
 
 check_s <- function(s) {
@@ -93,11 +93,11 @@ check_node_opacity <- function(node_opacity) {
     check_probability(node_opacity)
 }
 
-check_global_min_identity <- function(global_min_identity) {
-  check_infinity(global_min_identity)
-  check_numeric(global_min_identity)
-  check_singlevalue(global_min_identity)
-  check_probability(global_min_identity)
+check_gmi <- function(gmi) {
+  check_infinity(gmi)
+  check_numeric(gmi)
+  check_singlevalue(gmi)
+  check_probability(gmi)
 }
 
 check_edit_dist <- function(edit_dist) {
@@ -112,10 +112,10 @@ check_edit_dist <- function(edit_dist) {
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
-  control = list(global_hamming = FALSE,
-                 global_max_hdist = 1,
-                 global_min_identity = 0.7,
+  control = list(gmi = 0.7,
                  trim_flank_aa = 3,
+                 global_hamming = FALSE,
+                 global_max_hdist = 1,
                  low_mem = FALSE)
   
   # if missing control_in -> use default values
@@ -187,7 +187,7 @@ check_aa <- function(x) {
 }
 
 check_dataframe <- function(x) {
-  w <- paste0(deparse(substitute(x)), " has to be of type data frame")
+  w <- paste0(deparse(substitute(x)), " has to be a dataframe")
   if(!is.data.frame(x)) {
     stop(w)
   }
@@ -215,6 +215,9 @@ check_s_cols <- function(x) {
   if(any(colnames(x) == "sample")) {
     if(any(is.character(x$sample)==FALSE)) {
       stop("sample must be character")
+    }
+    if(length(unique(x$sample))!=1) {
+      stop("multiple sample ids found")
     }
   }
 }
@@ -325,7 +328,7 @@ check_matrix_type <- function(x, type) {
 check_missing <- function(x) {
   w <- paste0(
     deparse(substitute(x)),
-    " parameter is missing"
+    " is missing"
   )
   if(missing(x) || is.null(x)) {
     stop(w)
