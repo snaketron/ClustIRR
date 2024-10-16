@@ -31,6 +31,15 @@ test_that("s parameter takes only valid input", {
   s$sample <- "a"
   expect_no_error(cluster_irr(s))
   
+  
+  # test s
+  s <- CDR3ab[1:100,]
+  s$clone_size <- 1
+  s$sample <- "a"
+  s$CDR3b[1] <- NA
+  expect_warning(cluster_irr(s = s))
+  
+  
   # test sample
   data("CDR3ab", package = "ClustIRR")
   s <- CDR3ab[1:100,]

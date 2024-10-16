@@ -28,7 +28,7 @@ dco <- function(community_matrix, mcmc_control) {
                                  max_treedepth = mcmc_control$max_treedepth),
                   algorithm = mcmc_control$mcmc_algorithm,
                   include = TRUE,
-                  pars = c("alpha", "beta", "kappa", "p", "y_hat"))
+                  pars = c("alpha", "beta", "kappa", "p", "y_hat", "log_lik"))
     # summaries
     message("2/2 posterior summary...")
     s <- get_posterior_summaries(cm = community_matrix, f = f)
@@ -216,7 +216,6 @@ get_posterior_summaries <- function(cm, f) {
         
         # maintain original index order
         s$i <- 1:nrow(s)
-        browser()
         m <- rownames(s)
         m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
         

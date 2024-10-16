@@ -445,12 +445,18 @@ gcd <- detect_communities(graph = g$graph,
 ```
 
 
+How many cells from IRR a (x-axis) and IRR b (y-axis) are there in each 
+community (point)?
+
 ```{r, fig.width=4, fig.height=4}
 ggplot(data = gcd$community_summary)+
   geom_point(aes(x = cells_a, y = cells_b))+
   theme_bw(base_size = 10)
 ```
 
+
+The number of cells in each IRR and community are stored as cells in the 
+matrix `community_matrix`. Rows are communities, and columns are IRRs
 
 ```{r}
 community_matrix <- gcd$community_matrix
@@ -459,6 +465,9 @@ head(community_matrix)
 
 
 ## **Step 4.** `dco` performs differential community occupancy (DCO) analysis
+Do we see growing or shrinking communities between the IRRs? We employ a
+Bayesian model to quantify whether communities grow ($\beta$ > 0) or shrink 
+($\beta$ < 0)
 
 ```{r}
 d <- dco(community_matrix = community_matrix,
@@ -472,6 +481,7 @@ d <- dco(community_matrix = community_matrix,
 ```
 
 
+## **Step 5.** posterior predictive check
 
 ```{r, fig.width=6, fig.height=2.5}
 ggplot(data = d$posterior_summary$y_hat)+
@@ -486,6 +496,7 @@ ggplot(data = d$posterior_summary$y_hat)+
 ```
 
 
+## **Step 6.** $\beta$ parameters
 
 ```{r, fig.width=6, fig.height=4}
 beta <- d$posterior_summary$beta
