@@ -25,8 +25,9 @@ chains = "CDR3a", or chains = CDR3b or chains = c("CDR3a", "CDR3b").}
 }
 \value{
 The output is a list with the folling elements:
-\item{community_matrix}{matrix, rows are communities, columns are repertoires,
-matrix entries are numbers of cells in each community and repertoire.}
+\item{community_occupancy_matrix}{matrix, rows are communities, columns 
+are repertoires, matrix entries are numbers of cells in each community and 
+repertoire.}
 \item{community_summary}{data.frame, rows are communities and their properties
 are provided as columns.}
 \item{node_summary}{data.frame, rows are nodes (clones) and their properties 
@@ -64,8 +65,8 @@ gcd <- detect_communities(graph = jg$graph,
 # look at outputs
 names(gcd)
 
-# look at the community matrix
-head(gcd$community_matrix)
+# look at the community occupancymatrix
+head(community_occupancy_matrix)
 
 # look at the community summary
 head(gcd$community_summary)

@@ -7,11 +7,12 @@ enrichment/depletion of individual communities in each sample using a Bayesian
 hierarchical model.
 }
 \usage{
-dco(community_matrix, mcmc_control)
+dco(community_occupancy_matrix, mcmc_control)
 }
 \arguments{
-\item{community_matrix}{matrix, rows are communities, columns are repertoires,
-matrix entries are numbers of cells in each community and repertoire.}
+\item{community_occupancy_matrix}{matrix, rows are communities, columns 
+are repertoires, matrix entries are numbers of cells in each community and 
+repertoire.}
 \item{mcmc_control}{list, configurations for the Markov Chain Monte Carlo 
 (MCMC) simulation.}
 \itemize{
@@ -30,8 +31,9 @@ The output is a list with the folling elements:
 \item{fit}{stan object, model fit}
 \item{posterior_summary}{nested list with data.frames, summary of model 
 parameter fits}
-\item{community_matrix}{matrix, rows are communities, columns are repertoires,
-matrix entries are numbers of cells in each community and repertoire}
+\item{community_occupancy_matrix}{matrix, rows are communities, columns are 
+repertoires, matrix entries are numbers of cells in each community and 
+repertoire.}
 \item{mcmc_control}{list, mcmc configuration inputs provided as list.}
 }
 
@@ -66,7 +68,7 @@ gcd <- detect_communities(graph = jg$graph,
 names(gcd)
 
 # look at the community matrix
-head(gcd$community_matrix)
+head(gcd$community_occupancy_matrix)
 
 # look at the community summary
 head(gcd$community_summary)
@@ -75,7 +77,7 @@ head(gcd$community_summary)
 head(gcd$node_summary)
 
 # differential community occupancy analysis
-dco <- dco(community_matrix = gcd$community_matrix)
+dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
 
 names(dco)
 }

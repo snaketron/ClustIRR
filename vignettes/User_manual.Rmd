@@ -290,19 +290,19 @@ gcd <- detect_communities(graph = g$graph,
 ```
 
 
-The `community_matrix` object is a count matrix with communities as rows 
-and IRRs (here 1 sample) as columns. The counts are number of cells (sum 
-of `clone_size` of nodes in community) in each community and sample.
+The `community_occupancy_matrix` object is a count matrix with communities 
+as rows and IRRs (here 1 sample) as columns. The counts are number of cells 
+(sum of `clone_size` of nodes in community) in each community and sample.
 
 ```{r}
-community_matrix <- gcd$community_matrix
-head(community_matrix)
+community_occupancy_matrix <- gcd$community_occupancy_matrix
+head(community_occupancy_matrix)
 ```
 
 Most communities are made up of one cell, while some contain 2 or 3 cells. 
 
 ```{r}
-table(community_matrix)
+table(community_occupancy_matrix)
 ```
 
 Lets look at the clones in these communities. For this we can access the 
@@ -317,7 +317,7 @@ Which nodes are found in communities with at least 4 cells?
 
 ```{r}
 # interesting coms
-coms <- which(community_matrix>=4)
+coms <- which(community_occupancy_matrix>=4)
 ```
 
 
@@ -355,7 +355,7 @@ ggplot(data = n)+
 
 ```{r, echo=FALSE, include=FALSE}
 rm(t, ks, coms, cdr3_trimmed, cdr3, s, node_summary, n, 
-   gcd, g, c, community_summary, community_matrix)
+   gcd, g, c, community_summary, community_occupancy_matrix)
 ```
 
 
@@ -456,11 +456,12 @@ ggplot(data = gcd$community_summary)+
 
 
 The number of cells in each IRR and community are stored as cells in the 
-matrix `community_matrix`. Rows are communities, and columns are IRRs
+matrix `community_occupancy_matrix`. Rows are communities, and columns 
+are IRRs
 
 ```{r}
-community_matrix <- gcd$community_matrix
-head(community_matrix)
+community_occupancy_matrix <- gcd$community_occupancy_matrix
+head(community_occupancy_matrix)
 ```
 
 
@@ -470,7 +471,7 @@ Bayesian model to quantify whether communities grow ($\beta$ > 0) or shrink
 ($\beta$ < 0)
 
 ```{r}
-d <- dco(community_matrix = community_matrix,
+d <- dco(community_occupancy_matrix = community_occupancy_matrix,
          mcmc_control = list(mcmc_warmup = 500,
                              mcmc_iter = 1500,
                              mcmc_chains = 3,

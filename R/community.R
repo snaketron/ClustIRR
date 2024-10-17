@@ -33,7 +33,7 @@ detect_communities <- function(graph,
                    weight_type = weight_type, 
                    chains = chains)
     
-    return(list(community_matrix = cm, 
+    return(list(community_occupancy_matrix = cm, 
                 community_summary = cs, 
                 node_summary = vs, 
                 graph = cg, 

@@ -1,24 +1,25 @@
 
-dco <- function(community_matrix, mcmc_control) {
+dco <- function(community_occupancy_matrix, 
+                mcmc_control) {
     # check control
     mcmc_control <- process_mcmc_control(control_in = mcmc_control)
 
-    if(ncol(community_matrix)==1) {
-        stop("requirement for dco analysis not met: ncol(community_matrix)>1")
+    if(ncol(community_occupancy_matrix)==1) {
+        stop("ncol(community_occupancy_matrix) must be >1")
     }
-    if(ncol(community_matrix)==2) {
+    if(ncol(community_occupancy_matrix)==2) {
         model <- stanmodels$dm_n2
     }
-    if(ncol(community_matrix)>2) {
+    if(ncol(community_occupancy_matrix)>2) {
         model <- stanmodels$dm
     }
     
     # fit
     message("1/2 fit...")
     f <- sampling(object = model,
-                  data = list(K = nrow(community_matrix), 
-                              N = ncol(community_matrix), 
-                              y = t(community_matrix),
+                  data = list(K = nrow(community_occupancy_matrix), 
+                              N = ncol(community_occupancy_matrix), 
+                              y = t(community_occupancy_matrix),
                               x = c(-1, +1)),
                   chains = mcmc_control$mcmc_chains, 
                   cores = mcmc_control$mcmc_cores, 
@@ -31,11 +32,11 @@ dco <- function(community_matrix, mcmc_control) {
                   pars = c("alpha", "beta", "kappa", "p", "y_hat", "log_lik"))
     # summaries
     message("2/2 posterior summary...")
-    s <- get_posterior_summaries(cm = community_matrix, f = f)
+    s <- get_posterior_summaries(cm = community_occupancy_matrix, f = f)
     
     return(list(fit = f, 
                 posterior_summary = s, 
-                community_matrix = community_matrix, 
+                community_occupancy_matrix = community_occupancy_matrix, 
                 mcmc_control = mcmc_control))
 }
 
