@@ -17,6 +17,7 @@ library(igraph)
 library(visNetwork)
 library(ggplot2)
 library(ggrepel)
+library(patchwork)
 ```
 
 # Introduction
@@ -430,7 +431,7 @@ plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
 
 
 ## **Step 3.** `detect_communities` identifies communities in the graph 
-Are there densely connected sets of nodes (=communities) in this graph? 
+Are there densely connected sets of nodes (=**communities**) in this graph? 
 
 To answer this question we can use graph-based community detection (GCD) 
 algorithms, such as Leiden or Louvain. As input for GCD we can use `nweight` 
@@ -445,12 +446,12 @@ gcd <- detect_communities(graph = g$graph,
 ```
 
 
-How many cells from IRR a (x-axis) and IRR b (y-axis) are there in each 
+How many cells from IRR `a` (x-axis) and IRR `b` (y-axis) are there in each 
 community (point)?
 
 ```{r, fig.width=4, fig.height=4}
 ggplot(data = gcd$community_summary)+
-  geom_point(aes(x = cells_a, y = cells_b))+
+  geom_point(aes(x = cells_a, y = cells_b), shape = 21)+
   theme_bw(base_size = 10)
 ```
 
@@ -466,9 +467,12 @@ head(community_occupancy_matrix)
 
 
 ## **Step 4.** `dco` performs differential community occupancy (DCO) analysis
-Do we see growing or shrinking communities between the IRRs? We employ a
-Bayesian model to quantify whether communities grow ($\beta$ > 0) or shrink 
-($\beta$ < 0)
+Do we see **growing** or **shrinking** communities in a given IRRs? 
+
+We employ a Bayesian model to quantify (using the parameter $\beta$) the 
+relative abundance (occupancy) of individual communities. From this we can
+also perform DCO analysis between two IRRs (e.g. before/after treatment or
+from two or more biological conditions)
 
 ```{r}
 d <- dco(community_occupancy_matrix = community_occupancy_matrix,
@@ -483,6 +487,19 @@ d <- dco(community_occupancy_matrix = community_occupancy_matrix,
 
 
 ## **Step 5.** posterior predictive check
+Before we can start interpreting the model results, we have to make sure
+that the model is valid. One standard approach is to check whether our 
+model can retrodict the observed data (community occupancy matrix) which 
+was used to fit model parameters.
+
+General idea of posterior predictive checks:
+
+  1. fit model based on data $y$
+  2. simulate new data $\hat{y}$
+  3. compare $y$ and $\hat{y}$
+  
+ClustIRR provides $y$ and $\hat{y}$ of each IRR, which we can visualize
+with ggplot:
 
 ```{r, fig.width=6, fig.height=2.5}
 ggplot(data = d$posterior_summary$y_hat)+
@@ -498,6 +515,9 @@ ggplot(data = d$posterior_summary$y_hat)+
 
 
 ## **Step 6.** $\beta$ parameters
+Notice that some (about 2%) $\beta$ coefficients are far from $\beta=0$.
+
+**Remember: we simulated clonal expansion in 2% of the communities!**
 
 ```{r, fig.width=6, fig.height=4}
 beta <- d$posterior_summary$beta
@@ -521,6 +541,226 @@ ggplot(data = d$posterior_summary$beta)+
   xlab(label = expression(beta))+
   theme_bw(base_size = 10)
 ```
+
+
+
+
+
+
+# Case study 3: analysis of **three** TCR repertoires
+Imagine that we have three IRRs, `a`, `b` and `c`, obtained from one patient 
+at three timepoints.
+
+
+```{r}
+# repertoire size
+n <- 200
+
+# a
+a <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
+                CDR3b = CDR3ab$CDR3b[1:n],
+                sample = "a")
+# b
+b <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
+                CDR3b = CDR3ab$CDR3b[1:n],
+                sample = "b")
+
+# c
+c <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
+                CDR3b = CDR3ab$CDR3b[1:n],
+                sample = "c")
+```
+
+```{r}
+get_clonal_expansion <- function(n, p_expanded) {
+  s <- sample(x = c(0, 1), size = n, prob = c(1-p_expanded, 
+                                              p_expanded), replace = T)
+  y <- vapply(X = s, FUN.VALUE = numeric(1), FUN = function(x) {
+    if(x == 0) {
+      return(rpois(n = 1, lambda = 0.5))
+    }
+    return(rpois(n = 1, lambda = 50))
+  })
+  return(y)
+}
+```
+
+```{r}
+# simulate expansion of specific communities
+set.seed(1243)
+clone_size <- rpois(n = n, lambda = 3)+1
+expansion_factor <- get_clonal_expansion(n = n, p_expanded = 0.02)
+
+a$clone_size <- clone_size
+b$clone_size <- clone_size+expansion_factor*1
+c$clone_size <- clone_size+expansion_factor*2
+```
+
+
+## **Step 1.** `cluster_irr` does global clustering of TCRs in each repertoire
+
+```{r}
+# run cluster_irr on each IRR and join the results
+clust_irrs <- c(cluster_irr(s = a), cluster_irr(s = b), cluster_irr(s = c))
+```
+
+
+## **Step 2.** `get_graph` and `plot_graph` visualize specificity structures
+We can also plot a graph of the global specificity structure in TCR repertoire 
+a and b. 
+
+```{r, fig.width=6, fig.height=6}
+# beta & alpha chain
+g <- get_joint_graph(clust_irrs = clust_irrs, cores = 1)
+```
+
+
+```{r, fig.width=6, fig.height=6}
+plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
+```
+
+
+
+## **Step 3.** `detect_communities` identifies communities in the graph 
+Are there densely connected sets of nodes (=**communities**) in this graph? 
+
+To answer this question we can use graph-based community detection (GCD) 
+algorithms, such as Leiden or Louvain. As input for GCD we can use `nweight` 
+or `ncweight` (default) between CDR3a, CDR3b or both CDR3a and CDR3b. 
+
+```{r}
+gcd <- detect_communities(graph = g$graph,
+                          weight_type = "ncweight",
+                          algorithm = "leiden",
+                          resolution = 1,
+                          chains = c("CDR3a", "CDR3b"))
+```
+
+
+How many cells in each community from the three IRRs? 
+
+  * panel A: `a` vs `b`
+  * panel B: `a` vs `c`
+  * panel C: `b` vs `c`
+
+```{r, fig.width=7, fig.height=2.5}
+(ggplot(data = gcd$community_summary)+
+   geom_point(aes(x = cells_a, y = cells_b), shape = 21)+
+   theme_bw(base_size = 10))|
+  (ggplot(data = gcd$community_summary)+
+     geom_point(aes(x = cells_a, y = cells_c), shape = 21)+
+     theme_bw(base_size = 10))|
+  (ggplot(data = gcd$community_summary)+
+     geom_point(aes(x = cells_b, y = cells_c), shape = 21)+
+     theme_bw(base_size = 10))+
+  plot_annotation(tag_level = 'A')
+```
+
+
+The number of cells in each IRR and community are stored as cells in the 
+matrix `community_occupancy_matrix`. Rows are communities, and columns 
+are IRRs
+
+```{r}
+community_occupancy_matrix <- gcd$community_occupancy_matrix
+head(community_occupancy_matrix)
+```
+
+
+## **Step 4.** `dco` performs differential community occupancy (DCO) analysis
+Do we see **growing** or **shrinking** communities in a given IRRs? 
+
+We employ a Bayesian model to quantify (using the parameter $\beta$) the 
+relative abundance (occupancy) of individual communities. From this we can
+also perform DCO analysis between two IRRs (e.g. before/after treatment or
+from two or more biological conditions)
+
+```{r}
+d <- dco(community_occupancy_matrix = community_occupancy_matrix,
+         mcmc_control = list(mcmc_warmup = 500,
+                             mcmc_iter = 1500,
+                             mcmc_chains = 3,
+                             mcmc_cores = 1,
+                             mcmc_algorithm = "NUTS",
+                             adapt_delta = 0.9,
+                             max_treedepth = 11))
+```
+
+
+## **Step 5.** posterior predictive check
+Before we can start interpreting the model results, we have to make sure
+that the model is valid. One standard approach is to check whether our 
+model can retrodict the observed data (community occupancy matrix) which 
+was used to fit model parameters.
+
+General idea of posterior predictive checks:
+
+  1. fit model based on data $y$
+  2. simulate new data $\hat{y}$
+  3. compare $y$ and $\hat{y}$
+  
+ClustIRR provides $y$ and $\hat{y}$ of each IRR, which we can visualize
+with ggplot:
+
+```{r, fig.width=6, fig.height=2.5}
+ggplot(data = d$posterior_summary$y_hat)+
+  facet_wrap(facets = ~sample, nrow = 1, scales = "free")+
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = "gray")+
+  geom_errorbar(aes(x = y_obs, y = mean, ymin = X2.5., ymax = X97.5.),
+                col = "darkgray", width=0)+
+  geom_point(aes(x = y_obs, y = mean), size = 0.8)+
+  xlab(label = "observed y")+
+  ylab(label = "predicted y (and 95% HDI)")+
+  theme_bw(base_size = 10)
+```
+
+
+## **Step 6.** $\beta$ parameters
+Notice that some (about 2%) $\beta$ coefficients are far from $\beta=0$.
+
+**Remember: we simulated clonal expansion in 2% of the communities!**
+
+```{r, fig.width=6, fig.height=7}
+beta <- d$posterior_summary$beta
+ggplot(data = beta)+
+  facet_wrap(facets = ~sample, ncol = 1)+
+  geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5.,
+                    col = sample), width = 0)+
+  geom_point(aes(x = community, y = mean, col = sample), size = 0.5)+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "top")+
+  ylab(label = expression(beta))+
+  scale_x_continuous(expand = c(0,0))
+```
+
+## **Step 7.** $\delta$ parameters
+If a given community $i$ is differentially expressed between two 
+AIRRs, a and b, then we expect to observe a difference in the credible
+values of $\beta^{a}_{i}$ and $\beta^{b}_{i}$. We define this difference
+as parameter $\delta^{a-b}_{i}$:
+
+$\delta^{a-b}_{i} = \beta^{a}_{i}-\beta^{b}_{i}$ 
+
+Lets look at $\delta^{a-b}$, $\delta^{a-c}$ and $\delta^{b-c}$ for different
+communities. This information is stored in the object `delta`. We see clear
+differences ($\delta!=0$) for at least 3 communities.
+
+**Remember: we simulated clonal expansion in $\approx$ 2% of the communities!**
+
+```{r, fig.width=6, fig.height=7}
+delta <- d$posterior_summary$delta
+delta <- delta[delta$contrast %in% c("a-b", "a-c", "b-c"), ]
+
+ggplot(data = delta)+
+  facet_wrap(facets = ~contrast, ncol = 1)+
+  geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5.), width = 0)+
+  geom_point(aes(x = community, y = mean), size = 0.5)+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "top")+
+  ylab(label = expression(beta))+
+  scale_x_continuous(expand = c(0,0))
+```
+
 
 
 ```{r session_info}

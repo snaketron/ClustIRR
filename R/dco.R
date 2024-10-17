@@ -1,17 +1,19 @@
 
-dco <- function(community_occupancy_matrix, 
-                mcmc_control) {
+dco <- function(community_occupancy_matrix, mcmc_control) {
     # check control
     mcmc_control <- process_mcmc_control(control_in = mcmc_control)
 
-    if(ncol(community_occupancy_matrix)==1) {
+    n <- ncol(community_occupancy_matrix)
+    if(n==1) {
         stop("ncol(community_occupancy_matrix) must be >1")
     }
-    if(ncol(community_occupancy_matrix)==2) {
+    if(n==2) {
         model <- stanmodels$dm_n2
+        pars <- c("alpha", "beta", "kappa", "p", "y_hat", "log_lik")
     }
-    if(ncol(community_occupancy_matrix)>2) {
+    if(n>2) {
         model <- stanmodels$dm
+        pars <- c("alpha", "beta", "delta", "kappa", "p", "y_hat", "log_lik")
     }
     
     # fit
@@ -29,7 +31,7 @@ dco <- function(community_occupancy_matrix,
                                  max_treedepth = mcmc_control$max_treedepth),
                   algorithm = mcmc_control$mcmc_algorithm,
                   include = TRUE,
-                  pars = c("alpha", "beta", "kappa", "p", "y_hat", "log_lik"))
+                  pars = pars)
     # summaries
     message("2/2 posterior summary...")
     s <- get_posterior_summaries(cm = community_occupancy_matrix, f = f)
@@ -212,7 +214,7 @@ process_mcmc_control <- function(control_in) {
 
 get_posterior_summaries <- function(cm, f) {
     
-    get_sample_com_par <- function(f, samples, par) {
+    post_sample_com <- function(f, samples, par) {
         s <- data.frame(summary(f, par = par)$summary)
         
         # maintain original index order
@@ -235,7 +237,7 @@ get_posterior_summaries <- function(cm, f) {
         return(s)
     }
     
-    get_com_par <- function(f, par) {
+    post_com <- function(f, par) {
         s <- data.frame(summary(f, par = par)$summary)
         
         m <- rownames(s)
@@ -244,7 +246,7 @@ get_posterior_summaries <- function(cm, f) {
         return(s)
     }
     
-    get_sample_par <- function(f, par) {
+    post_sample <- function(f, par) {
         s <- data.frame(summary(f, par = par)$summary)
         
         m <- rownames(s)
@@ -257,22 +259,58 @@ get_posterior_summaries <- function(cm, f) {
         return(s)
     }
     
-    get_global_par <- function(f, par) {
+    post_global <- function(f, par) {
         s <- data.frame(summary(f, par = par)$summary)
         s$par <- rownames(s)
+        return(s)
+    }
+    
+    post_delta <- function(f, samples, par) {
+        
+        if(length(samples)==2) {
+            return(NA)
+        }
+        
+        s <- data.frame(summary(f, par = par)$summary)
+        
+        # maintain original index order
+        s$i <- 1:nrow(s)
+        m <- rownames(s)
+        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
+        
+        m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+        s$s_1 <- as.numeric(m[,1])
+        s$s_2 <- as.numeric(m[,2])
+        s$community <- as.numeric(m[,3])
+        
+        meta <- data.frame(s = 1:length(samples), sample_1 = samples)
+        s <- merge(x = s, y = meta, by.x = "s_1", by.y = "s", all.x = T)
+        meta <- data.frame(s = 1:length(samples), sample_2 = samples)
+        s <- merge(x = s, y = meta, by.x = "s_2", by.y = "s", all.x = T)
+        s$s_1 <- NULL
+        s$s_2 <- NULL
+        s <- s[order(s$i, decreasing = F),]
+        
+        # remove self-distance
+        s <- s[s$sample_1!=s$sample_2,]
+        s$i <- NULL
+        
+        s$contrast <- paste0(s$sample_1, '-', s$sample_2)
+        
         return(s)
     }
 
     samples <- colnames(cm)
     
-    o <- list(beta = get_sample_com_par(f = f, samples = samples, par = "beta"),
-              alpha = get_com_par(f = f, par = "alpha"),
-              p = get_sample_com_par(f = f, samples = samples, par = "p"),
-              y_hat=get_sample_com_par(f = f, samples = samples, par = "y_hat"),
-              kappa = get_global_par(f = f, par = "kappa"))
+    o <- list(beta = post_sample_com(f = f, samples = samples, par = "beta"),
+              alpha = post_com(f = f, par = "alpha"),
+              p = post_sample_com(f = f, samples = samples, par = "p"),
+              y_hat = post_sample_com(f = f, samples = samples, par = "y_hat"),
+              kappa = post_global(f = f, par = "kappa"),
+              delta = post_delta(f = f, samples = samples, par = "delta"))
     
     o$y_hat$y_obs <- c(cm)
-    
+
     return(o)
 }
 

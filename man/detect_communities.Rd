@@ -66,7 +66,7 @@ gcd <- detect_communities(graph = jg$graph,
 names(gcd)
 
 # look at the community occupancymatrix
-head(community_occupancy_matrix)
+head(gcd$community_occupancy_matrix)
 
 # look at the community summary
 head(gcd$community_summary)

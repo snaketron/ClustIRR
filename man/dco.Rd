@@ -30,7 +30,9 @@ tree size in NUTS should have.
 The output is a list with the folling elements:
 \item{fit}{stan object, model fit}
 \item{posterior_summary}{nested list with data.frames, summary of model 
-parameter fits}
+parameters, including their means, medians, 95\% credible intervals, etc.
+Predicted observations (y_hat), which are useful for posterior predictive
+checks are also provided.}
 \item{community_occupancy_matrix}{matrix, rows are communities, columns are 
 repertoires, matrix entries are numbers of cells in each community and 
 repertoire.}
