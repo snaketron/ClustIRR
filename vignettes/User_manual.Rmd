@@ -498,14 +498,14 @@ General idea of posterior predictive checks:
   2. simulate new data $\hat{y}$
   3. compare $y$ and $\hat{y}$
   
-ClustIRR provides $y$ and $\hat{y}$ of each IRR, which we can visualize
-with ggplot:
+`r Biocpkg("ClustIRR")` provides $y$ and $\hat{y}$ of each IRR, which we 
+can visualize with ggplot:
 
 ```{r, fig.width=6, fig.height=2.5}
 ggplot(data = d$posterior_summary$y_hat)+
   facet_wrap(facets = ~sample, nrow = 1, scales = "free")+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = "gray")+
-  geom_errorbar(aes(x = y_obs, y = mean, ymin = X2.5., ymax = X97.5.),
+  geom_errorbar(aes(x = y_obs, y = mean, ymin = L95, ymax = H95),
                 col = "darkgray", width=0)+
   geom_point(aes(x = y_obs, y = mean), size = 0.8)+
   xlab(label = "observed y")+
@@ -521,16 +521,17 @@ Notice that some (about 2%) $\beta$ coefficients are far from $\beta=0$.
 
 ```{r, fig.width=6, fig.height=4}
 beta <- d$posterior_summary$beta
-beta$interesting <- ifelse(test = beta$X2.5.<=0 & beta$X97.5.>=0,
+beta$interesting <- ifelse(test = beta$L95<=0 & beta$H95>=0,
                            yes = "-", no = "+")
 ggplot(data = beta)+
-  geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5.,
+  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95,
                     col = interesting), width =0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
   theme(legend.position = "none")+
   scale_color_manual(values = c("darkgray", "black"))+
-  ylab(label = expression(beta))
+  ylab(label = expression(beta))+
+  scale_x_continuous(expand = c(0,0))
 ```
 
 Distribution of mean $\beta$s
@@ -682,7 +683,7 @@ d <- dco(community_occupancy_matrix = community_occupancy_matrix,
                              mcmc_chains = 3,
                              mcmc_cores = 1,
                              mcmc_algorithm = "NUTS",
-                             adapt_delta = 0.9,
+                             adapt_delta = 0.95,
                              max_treedepth = 11))
 ```
 
@@ -699,14 +700,14 @@ General idea of posterior predictive checks:
   2. simulate new data $\hat{y}$
   3. compare $y$ and $\hat{y}$
   
-ClustIRR provides $y$ and $\hat{y}$ of each IRR, which we can visualize
-with ggplot:
+`r Biocpkg("ClustIRR")` provides $y$ and $\hat{y}$ of each IRR, which we 
+can visualize with ggplot:
 
 ```{r, fig.width=6, fig.height=2.5}
 ggplot(data = d$posterior_summary$y_hat)+
   facet_wrap(facets = ~sample, nrow = 1, scales = "free")+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = "gray")+
-  geom_errorbar(aes(x = y_obs, y = mean, ymin = X2.5., ymax = X97.5.),
+  geom_errorbar(aes(x = y_obs, y = mean, ymin = L95, ymax = H95),
                 col = "darkgray", width=0)+
   geom_point(aes(x = y_obs, y = mean), size = 0.8)+
   xlab(label = "observed y")+
@@ -724,7 +725,7 @@ Notice that some (about 2%) $\beta$ coefficients are far from $\beta=0$.
 beta <- d$posterior_summary$beta
 ggplot(data = beta)+
   facet_wrap(facets = ~sample, ncol = 1)+
-  geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5.,
+  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95,
                     col = sample), width = 0)+
   geom_point(aes(x = community, y = mean, col = sample), size = 0.5)+
   theme_bw(base_size = 10)+
@@ -753,7 +754,7 @@ delta <- delta[delta$contrast %in% c("a-b", "a-c", "b-c"), ]
 
 ggplot(data = delta)+
   facet_wrap(facets = ~contrast, ncol = 1)+
-  geom_errorbar(aes(x = community, y = mean, ymin = X2.5., ymax = X97.5.), width = 0)+
+  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), width=0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
   theme(legend.position = "top")+

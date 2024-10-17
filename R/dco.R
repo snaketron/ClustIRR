@@ -215,7 +215,10 @@ process_mcmc_control <- function(control_in) {
 get_posterior_summaries <- function(cm, f) {
     
     post_sample_com <- function(f, samples, par) {
+        
         s <- data.frame(summary(f, par = par)$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         # maintain original index order
         s$i <- 1:nrow(s)
@@ -230,15 +233,18 @@ get_posterior_summaries <- function(cm, f) {
             s$s <- as.numeric(m[,1])
             s$community <- as.numeric(m[,2])
             meta <- data.frame(s = 1:length(samples), sample = samples)
-            s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = T)
-            s <- s[order(s$i, decreasing = F),]
+            s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = TRUE)
+            s <- s[order(s$i, decreasing = FALSE),]
         }
         
         return(s)
     }
     
     post_com <- function(f, par) {
+        
         s <- data.frame(summary(f, par = par)$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         m <- rownames(s)
         m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
@@ -247,20 +253,27 @@ get_posterior_summaries <- function(cm, f) {
     }
     
     post_sample <- function(f, par) {
+        
         s <- data.frame(summary(f, par = par)$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         m <- rownames(s)
         m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
         
         s$s <- as.numeric(m)
         meta <- data.frame(s = 1:length(samples), sample = samples)
-        s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = T)
+        s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = TRUE)
         
         return(s)
     }
     
     post_global <- function(f, par) {
+        
         s <- data.frame(summary(f, par = par)$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+        
         s$par <- rownames(s)
         return(s)
     }
@@ -271,7 +284,26 @@ get_posterior_summaries <- function(cm, f) {
             return(NA)
         }
         
+        get_meta <- function(samples) {
+            m <- c()
+            k <- 1
+            for(i in 1:(length(samples)-1)) {
+                for(j in (i+1):length(samples)) {
+                    m <- rbind(m, data.frame(k = k, 
+                                             sample_1 = samples[i],
+                                             sample_2 = samples[j]))
+                    k <- k + 1
+                }   
+            }
+            m$contrast <- paste0(m$sample_1, '-', m$sample_2)
+            return(m)
+        }
+        
+        meta <- get_meta(samples = samples)
+        
         s <- data.frame(summary(f, par = par)$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         # maintain original index order
         s$i <- 1:nrow(s)
@@ -279,22 +311,25 @@ get_posterior_summaries <- function(cm, f) {
         m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
         
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
-        s$s_1 <- as.numeric(m[,1])
-        s$s_2 <- as.numeric(m[,2])
-        s$community <- as.numeric(m[,3])
+        s$k <- as.numeric(m[,1])
+        s$community <- as.numeric(m[,2])
         
-        meta <- data.frame(s = 1:length(samples), sample_1 = samples)
-        s <- merge(x = s, y = meta, by.x = "s_1", by.y = "s", all.x = T)
-        meta <- data.frame(s = 1:length(samples), sample_2 = samples)
-        s <- merge(x = s, y = meta, by.x = "s_2", by.y = "s", all.x = T)
-        s$s_1 <- NULL
-        s$s_2 <- NULL
+        s <- merge(x = s, y = meta, by.x = "k", by.y = "k", all.x = T)
         s <- s[order(s$i, decreasing = F),]
-        
-        # remove self-distance
-        s <- s[s$sample_1!=s$sample_2,]
         s$i <- NULL
         
+        # get reverse effects
+        sr <- s
+        sr$mean <- sr$mean*-1
+        sr$median <- sr$median*-1
+        sr$L95 <- sr$L95*-1
+        sr$H95 <- sr$H95*-1
+        x <- sr$sample_1
+        y <- sr$sample_2
+        sr$sample_2 <- x
+        sr$sample_1 <- y
+        
+        s <- rbind(s, sr)
         s$contrast <- paste0(s$sample_1, '-', s$sample_2)
         
         return(s)
