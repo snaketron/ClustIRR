@@ -1,11 +1,9 @@
 ---
-title: "Introduction to ClustIRR"
-author: "Kai Wollek and Simo Kitanovski"
-date: "`r Sys.Date()`"
+title: "Analysis of immune receptor repertoires with ClustIRR"
 output:
     BiocStyle::html_document
 vignette: >
-    %\VignetteIndexEntry{Introduction to ClustIRR}
+    %\VignetteIndexEntry{Analysis of immune receptor repertoires with ClustIRR}
     %\VignetteEngine{knitr::rmarkdown}
     %\VignetteEncoding{UTF-8}
 ---
@@ -14,7 +12,6 @@ vignette: >
 library(knitr)
 library(ClustIRR)
 library(igraph)
-library(visNetwork)
 library(ggplot2)
 library(ggrepel)
 library(patchwork)

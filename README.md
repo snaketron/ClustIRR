@@ -1,13 +1,13 @@
 # ClustIRR: Clustering of Immune Receptor Repertoires
 
 ## Overview 
-ClustIRR is a quantitative method designed for the clustering of immune 
-receptor repertoires (IRRs). It identifies groups of T cell or B cell 
-receptors (TCRs or BCRs) that share antigen specificity across different 
-biological conditions or longitudinal samples. Using a Bayesian hierarchical 
-model, ClustIRR performs differential cluster occupancy (DCO) analysis to 
-detect specificity clusters that are expanding or contracting in response 
-to each biological condition.
+ClustIRR analyzes repertoires of B- and T-cell receptors. It begins the 
+analysis by identifying communities (i.e., specificity groups) of immune 
+receptors with similar specificities, based on the sequences of their 
+complementarity determining regions (CDRs). Next, it employs a Bayesian 
+probabilistic models to quantify differential community occupancy (DCO) 
+between repertoires, allowing the identification of expanding or contracting 
+communities in response to factors such as infection or cancer treatment.
 
 ## How to use ClustIRR
 ClustIRR is an R-package available from Bioconductor: 
