@@ -281,7 +281,30 @@ get_posterior_summaries <- function(cm, f) {
     post_delta <- function(f, samples, par) {
         
         if(length(samples)==2) {
-            return(NA)
+            s <- data.frame(summary(f, par = "beta")$summary)
+            s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+            colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+            
+            # maintain original index order
+            m <- rownames(s)
+            m <- gsub(pattern = paste0("beta","\\[|\\]"), 
+                      replacement = '', x = m)
+            s$community <- as.numeric(m)
+            s$sample_1 <- samples[1]
+            s$sample_2 <- samples[2]
+            
+            # get reverse effects
+            sr <- s
+            sr$mean <- sr$mean*-1
+            sr$median <- sr$median*-1
+            sr$L95 <- sr$L95*-1
+            sr$H95 <- sr$H95*-1
+            sr$sample_1 <- samples[2]
+            sr$sample_2 <- samples[1]
+            
+            s <- rbind(s, sr)
+            s$contrast <- paste0(s$sample_1, '-', s$sample_2)
+            return(s)
         }
         
         get_meta <- function(samples) {

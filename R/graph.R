@@ -1,8 +1,6 @@
 
-get_graph <- function(clust_irr, 
-                      custom_db = NULL, 
-                      edit_dist = 0) {
-
+get_graph <- function(clust_irr) {
+    
     get_edges <- function(clust_irr, cs) {
         eg <- vector(mode="list", length = length(get_clustirr_clust(clust_irr)))
         names(eg) <- names(get_clustirr_clust(clust_irr))
@@ -21,8 +19,9 @@ get_graph <- function(clust_irr,
                 
                 # remove duplicated ids
                 g <- g[g$from_clone_id != g$to_clone_id, ]
-                g$key <- apply(X = g[, c("from_clone_id", "to_clone_id")], MARGIN = 1, 
-                               FUN = function(x) {return(paste0(sort(x),collapse='|'))})
+                g$key <- apply(X = g[, c("from_clone_id", "to_clone_id")], 
+                               MARGIN = 1, FUN = function(x) {
+                                   return(paste0(sort(x),collapse='|'))})
                 g <- g[duplicated(g$key)==FALSE,]
                 g$key <- NULL
                 
@@ -32,7 +31,8 @@ get_graph <- function(clust_irr,
                                   nweight = g[,"nweight"],
                                   cweight = g[,"cweight"],
                                   ncweight = g[,"ncweight"],
-                                  max_len = g[, "max_len"],
+                                  max_len = g[,"max_len"],
+                                  max_clen = g[,"max_clen"],
                                   motif = NA,
                                   chain = chain,
                                   type = "global")
@@ -57,8 +57,8 @@ get_graph <- function(clust_irr,
             }
             
             ve <- as.vector(apply(X = e[, c("from_cdr3", "to_cdr3")], 
-                                 MARGIN = 1, FUN = get_e, 
-                                 sample_id = sample_id))
+                                  MARGIN = 1, FUN = get_e, 
+                                  sample_id = sample_id))
             ig <- igraph::add_edges(graph = ig, 
                                     edges = ve, 
                                     weight = e$weight,
@@ -66,6 +66,7 @@ get_graph <- function(clust_irr,
                                     nweight = e$nweight,
                                     ncweight = e$ncweight,
                                     max_len = e$max_len,
+                                    max_clen = e$max_clen,
                                     type = "within-repertoire",
                                     chain = chain,
                                     clustering = "global")
@@ -97,10 +98,6 @@ get_graph <- function(clust_irr,
     
     check_clustirr(clust_irr = clust_irr)
     
-    custom_db <- check_custom_db(custom_db = custom_db)
-    
-    check_edit_dist(edit_dist = edit_dist)
-    
     # get chains
     chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irr)$s))
     
@@ -113,17 +110,13 @@ get_graph <- function(clust_irr,
     # get clones
     cs <- get_clones(sample_id = sample_id, x = s)
     
-    # annotate cs with known CDR3-antigen data 
-    cs <- get_db_matches(cs = cs, custom_db = custom_db, 
-                         edit_dist = edit_dist)
-    
     # get edges between clones
     e <- get_edges(clust_irr = clust_irr, cs = cs)
     
     # build graph with only vertices
     if(is.null(e)) {
         ig <- graph_from_data_frame(d = data.frame(from=cs$name[1], 
-                                                   to=cs$name[1]),
+                                                   to=cs$name[1]), 
                                     directed = FALSE, vertices = cs)
         ig <- delete_edges(ig, edges = 1)
         
@@ -137,10 +130,7 @@ get_graph <- function(clust_irr,
     return(list(graph = ig, clones = cs, joint_graph = FALSE))
 }
 
-get_joint_graph <- function(clust_irrs, 
-                            cores = 1, 
-                            custom_db = NULL, 
-                            edit_dist = 0) {
+get_joint_graph <- function(clust_irrs, cores = 1) {
     
     check_input <- function(clust_irrs) {
         if(missing(clust_irrs)==TRUE) {
@@ -152,13 +142,8 @@ get_joint_graph <- function(clust_irrs,
         if(length(clust_irrs)<=1) {
             stop("get_joint_graph needs >= 2 clust_irr outputs")
         }
-        gmd <- numeric(length = length(clust_irrs))
         for(i in 1:length(clust_irrs)) {
             check_clustirr(clust_irr = clust_irrs[[i]])
-            gmd[i]<-get_clustirr_inputs(clust_irrs[[i]])$control$global_max_hdist
-        }
-        if(length(unique(gmd))!=1) {
-            stop("all global_max_hdist should be equal")
         }
         
         # check if same chain names
@@ -193,9 +178,6 @@ get_joint_graph <- function(clust_irrs,
     # check cores
     check_cores(cores = cores)
     
-    # check edit dist
-    check_edit_dist(edit_dist = edit_dist)
-    
     # get clust_irrs names
     clust_irrs <- get_clust_irrs_names(clust_irrs = clust_irrs)
     
@@ -204,39 +186,25 @@ get_joint_graph <- function(clust_irrs,
     
     # get igs
     future::plan(future::multisession, workers = I(cores))
-    igs <- future_lapply(X = clust_irrs,
-                         FUN = get_graph,
-                         custom_db = custom_db,
-                         edit_dist = edit_dist,
-                         future.seed = TRUE)
+    igs <- future_lapply(X = clust_irrs, FUN = get_graph, future.seed = TRUE)
     names(igs) <- names(clust_irrs)
     
     # get chains
     chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
-    # get intergraph edges (global)
-    if(ctrl$global_hamming==TRUE) {
-        ige <- get_intergraph_edges_hamming(
-            igs = igs, 
-            global_max_hdist=ctrl$global_max_hdist, 
-            chains = chains, 
-            cores = cores)
-    }
-    else {
-        ige <- get_intergraph_edges_blosum(
-            igs = igs,
-            chains = chains,
-            cores = cores,
-            trim_flank_aa = ctrl$trim_flank_aa,
-            gmi=ctrl$gmi)
-    }
+    
+    ige <- get_intergraph_edges(igs = igs,
+                                chains = chains,
+                                cores = cores,
+                                trim_flank_aa = ctrl$trim_flank_aa,
+                                gmi=ctrl$gmi)
+    
     # get the vertices/edges of the graph
     df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
     df_e <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "edges"))
     
     # these are the cols we want to keep in this order
     cols <- c("from", "to", "weight", "cweight", "nweight", "ncweight",
-              "max_len", "type", "chain", "clustering")
-    
+              "max_len", "max_clen", "type", "chain", "clustering")
     
     if(nrow(df_e)!=0) {
         if(is.null(ige)==FALSE && nrow(ige)!=0) {
@@ -254,12 +222,6 @@ get_joint_graph <- function(clust_irrs,
     
     return(list(graph = g, clones = df_v, joint_graph = TRUE))
 }
-
-get_graph_dummy <- function(s, e) {
-    # s must have CDR3a, b, clone_size, sample
-    # e must have from, to, weight, chain, clustering (inferred from sample)
-}
-
 
 plot_graph <- function(g,
                        select_by = "Ag_species",
@@ -356,149 +318,11 @@ plot_graph <- function(g,
     }
 }
 
-
-get_intergraph_edges_hamming <- function(igs, 
-                                         global_max_hdist, 
-                                         chains, 
-                                         cores) {
-    
-    get_igg <- function(x, ix, igs, global_max_hdist) {
-        
-        get_hd_row <- function(x, 
-                               id_x, 
-                               id_y, 
-                               seq_x, 
-                               seq_y,
-                               sample_x,
-                               sample_y,
-                               global_max_hdist) {
-            d <- stringdist(a = seq_x[x], b = seq_y, method = "hamming")
-            js <- which(d <= global_max_hdist)
-            if(length(js) == 0) {
-                return(NULL)
-            }
-            return(data.frame(from = id_x[x], 
-                              to = id_y[js],
-                              sample_x = sample_x, 
-                              sample_y = sample_y))
-        }
-        
-        get_hd <- function(x, 
-                           id_x, 
-                           id_y, 
-                           seq_x, 
-                           seq_y, 
-                           len_x, 
-                           len_y, 
-                           sample_x,
-                           sample_y,
-                           global_max_hdist) {
-            
-            is_x <- which(len_x == x)
-            is_y <- which(len_y == x)
-            
-            if(length(is_x)==0|length(is_y)==0) {
-                return(NULL)
-            }
-            
-            hd <- lapply(X = seq_along(is_x),
-                         FUN = get_hd_row,
-                         id_x = id_x[is_x], 
-                         id_y = id_y[is_y], 
-                         seq_x = seq_x[is_x], 
-                         seq_y = seq_y[is_y],
-                         sample_x = sample_x,
-                         sample_y = sample_y,
-                         global_max_hdist = global_max_hdist)
-            hd <- do.call(rbind, hd)
-            return(hd)
-        }
-        
-        s1_name <- ix$name_i[x]
-        s2_name <- ix$name_j[x]
-        chain <- ix$chain[x]
-        s1 <- igs[[ix$index_i[x]]]$clones
-        s2 <- igs[[ix$index_j[x]]]$clones
-        
-        message("joining:", x, ":", s1_name, '|', s2_name, "\n")
-        rm(igs)
-        
-        seq_x <- s1[,chain]
-        seq_y <- s2[,chain]
-        id_x <- s1[,"name"] 
-        id_y <- s2[,"name"]
-        len_x <- nchar(seq_x)
-        len_y <- nchar(seq_y)
-        
-        hd <- lapply(X = unique(c(len_x, len_y)),
-                     FUN = get_hd,
-                     id_x = id_x,
-                     id_y = id_y,
-                     seq_x = seq_x,
-                     seq_y = seq_y,
-                     len_x = len_x,
-                     len_y = len_y,
-                     sample_x = s1_name,
-                     sample_y = s2_name,
-                     global_max_hdist = global_max_hdist)
-        
-        hd <- do.call(rbind, hd)
-        if(is.null(hd)==FALSE && nrow(hd)!=0) {
-            hd$chain <- chain
-            hd$sample <- paste0(hd$sample_x, "|", hd$sample_y)
-            hd$sample_x <- NULL
-            hd$sample_y <- NULL
-            hd$weight <- 1
-            hd$cweight <- 1
-            hd$nweight <- 1
-            hd$ncweight <- 1
-            hd$max_len <- NA
-            hd$type <- "between-repertoire"
-            hd$chain <- chain
-            hd$clustering <- "global"
-            return(hd)
-        }
-        return(NULL)
-    }
-    
-    get_ix <- function(xs, ns, chains) {
-        ix <- c()
-        for(i in 1:(xs-1)) {
-            for(j in (i+1):xs) {
-                for(c in chains) {
-                    ix <- rbind(ix, data.frame(index_i = i, 
-                                               index_j = j,  
-                                               name_i = ns[i],
-                                               name_j = ns[j],
-                                               chain = c))
-                }
-            }
-        }
-        return(ix)
-    }
-    
-    # indices 
-    ix <- get_ix(xs = length(igs), ns = names(igs), chains = chains)
-    
-    # find global similarities between pairs of clone tables
-    message("merging clust_irrs: ", nrow(ix), "\n")
-    future::plan(future::multisession, workers = I(cores))
-    ige <- future_lapply(X = 1:nrow(ix),
-                         ix = ix,
-                         FUN = get_igg,
-                         igs = igs,
-                         global_max_hdist = global_max_hdist,
-                         future.seed = TRUE)
-    ige <- do.call(rbind, ige)
-    
-    return(ige)
-}
-
-get_intergraph_edges_blosum <- function(igs,
-                                        chains, 
-                                        cores, 
-                                        trim_flank_aa,
-                                        gmi) {
+get_intergraph_edges <- function(igs,
+                                 chains, 
+                                 cores, 
+                                 trim_flank_aa,
+                                 gmi) {
     
     get_identical_hits <- function(a, b) {
         js <- intersect(a$Seq, b$Seq)
@@ -588,7 +412,6 @@ get_intergraph_edges_blosum <- function(igs,
         data_env <- new.env(parent = emptyenv())
         
         data("BLOSUM62", envir = data_env, package = "pwalign")
-        # data("BLOSUM62", envir = data_env, package = "Biostrings")
         
         # compute BLSOUM62 score for matches
         o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 
@@ -614,10 +437,13 @@ get_intergraph_edges_blosum <- function(igs,
         
         len_s1 <- s1$len[o$QueryId]
         len_s2 <- s2$len[o$TargetId]
+        
         max_len <- ifelse(test = len_s1 >= len_s2, yes = len_s1, no = len_s2)
         out$max_len <- max_len
+        out$max_clen <- max(max_len-2*trim_flank_aa, 0)
+        
         out$nweight <- out$weight/out$max_len
-        out$ncweight <- out$cweight/out$max_len
+        out$ncweight <- out$cweight/out$max_clen
         
         return(out)
     }
@@ -685,7 +511,6 @@ get_intergraph_edges_blosum <- function(igs,
     return(ige)
 }
 
-
 get_clones <- function(sample_id, x) {
     cs <- x
     cs$id <- NULL
@@ -695,204 +520,6 @@ get_clones <- function(sample_id, x) {
     cs <- cs[, rev(colnames(cs))]
     return(cs)
 }
-
-
-# Description:
-# integrate clustirr with data from databases: VDJdb, tcr3d, mcpas-tcr
-get_db_matches <- function(cs, custom_db, edit_dist) {
-    
-    get_db_info <- function(cs, db, db_type, chain, index) {
-        
-        get_vdjdb_info <- function(x, cs, db, chain, index) {
-            if(x == "") {
-                return("")
-            }
-            xs <- as.numeric(unlist(strsplit(index[x], split = "\\|")))
-            
-            return(paste0("<db:VDJdb|chain:", chain, "|",
-                          "Antigen_species:", 
-                          paste0(db[xs, "Antigen_species"], collapse = ';'),"|",
-                          "Antigen_gene:", 
-                          paste0(db[xs, "Antigen_gene"], collapse = ';'), "|",
-                          "CDR3_species:", 
-                          paste0(db[xs, "CDR3_species"], collapse = ';'), "|",
-                          "Reference:", 
-                          paste0(db[xs, "PMID"], collapse = ';'), ">"))
-        }
-        
-        get_tcr3d_info <- function(x, cs, db, chain, index) {
-            if(x == "") {
-                return("")
-            }
-            xs <- as.numeric(unlist(strsplit(index[x], split = "\\|")))
-            
-            return(paste0("<db:tcr3d|chain:", chain, "|",
-                          "Antigen_species:", 
-                          paste0(db[xs, "Antigen_species"], collapse = ';'),"|",
-                          "Antigen_gene:", 
-                          paste0(db[xs, "Antigen_gene"], collapse = ';'), "|",
-                          "Reference:", 
-                          paste0(db[xs, "Reference"], collapse = ';'), ">"))
-        }
-        
-        get_mcpas_info <- function(x, cs, db, chain, index) {
-            if(x == "") {
-                return("")
-            }
-            xs <- as.numeric(unlist(strsplit(index[x], split = "\\|")))
-            
-            return(paste0("<db:mcpas|chain:", chain, "|",
-                          "Antigen_species:", 
-                          paste0(db[xs, "Antigen_species"], collapse = ';'),"|",
-                          "Antigen_gene:", 
-                          paste0(db[xs, "Antigen_gene"], collapse = ';'), "|",
-                          "CDR3_species:", 
-                          paste0(db[xs, "CDR3_species"], collapse = ';'), "|",
-                          "Reference:", 
-                          paste0(db[xs, "Reference"], collapse = ';'), ">"))
-        }
-        
-        if(db_type == "vdjdb") {
-            return(vapply(X = 1:nrow(cs), 
-                          FUN = get_vdjdb_info, 
-                          cs = cs,
-                          db = db[,c(chain, "CDR3_species", "Antigen_species", 
-                                     "Antigen_gene", "Reference")],
-                          chain = chain,
-                          index = index,
-                          FUN.VALUE = character(1)))
-            
-            return(unlist(lapply(X=which(cs[,paste0("db_vdjdb_", chain)]==1),
-                                 cs=cs,
-                                 db=db[,c(chain, "CDR3_species", 
-                                          "Antigen_species", 
-                                          "Antigen_gene", 
-                                          "Reference")],
-                                 chain = chain,
-                                 index = index,
-                                 FUN=get_vdjdb_info)))
-        }
-        if(db_type == "tcr3d") {
-            return(unlist(lapply(X = 1:nrow(cs),
-                                 cs = cs,
-                                 db = db[,c(chain, "Antigen_species", 
-                                            "Antigen_gene", 
-                                            "Reference")],
-                                 chain = chain,
-                                 index = index,
-                                 FUN = get_tcr3d_info)))
-        }
-        if(db_type == "mcpas") {
-            return(unlist(lapply(X = 1:nrow(cs),
-                                 cs = cs,
-                                 db = db[,c(chain, "CDR3_species",
-                                            "Antigen_species", 
-                                            "Antigen_gene", 
-                                            "Reference")],
-                                 chain = chain,
-                                 index = index,
-                                 FUN = get_mcpas_info)))
-        }
-    }
-    
-    get_db_index <- function(x, a, b, d) {
-        z <- which(stringdist(a=a,b=b[x],method="lv")<=d)
-        if(length(z)!=0) {
-            return(paste0(z, collapse = '|'))
-        }
-        return('')
-    }
-    
-    load_data <- function(d) {
-        
-        e <- new.env()
-        if(d=="vdjdb") {
-            name <- data("vdjdb", package = "ClustIRR", envir = e)[1]
-        }
-        if(d=="mcpas") {
-            name <- data("mcpas", package = "ClustIRR", envir = e)[1]
-        }
-        if(d=="tcr3d") {
-            name <- data("tcr3d", package = "ClustIRR", envir = e)[1]
-        }
-        return(e[[name]])
-    }
-    
-    # what type of chaisn are there in the data -> use them to match DBs
-    chains <- get_chains(x = colnames(cs))
-    
-    # load DBs and pack into one list -> db
-    db <- list(vdjdb = load_data(d = "vdjdb"), 
-               mcpas = load_data(d = "mcpas"), 
-               tcr3d = load_data(d = "tcr3d"))
-    
-    if(is.null(custom_db)==FALSE) {
-        db[["custom"]] <- custom_db
-    }
-    
-    for(db_name in names(db)) {
-        for(chain in chains) {
-            key_db <- paste0("db_", db_name, "_", chain)
-            key_index <- paste0("index_", db_name, "_", chain)
-            key_info <- paste0("info_", db_name, "_", chain)
-            
-            cs[, key_db] <- 0
-            cs[, key_index] <- ''
-            cs[, key_info] <- ''
-            
-            # insert indices
-            cs[, key_index] <- vapply(X = 1:nrow(cs), 
-                                      a = db[[db_name]][, chain],
-                                      b = cs[, chain],
-                                      d = edit_dist,
-                                      FUN.VALUE = character(1), 
-                                      FUN = get_db_index)
-            
-            cs[cs[, key_index]!='', key_db] <- 1
-            
-            if(any(cs[,key_db]==1)) {
-                cs[, key_info] <- get_db_info(cs = cs,
-                                              db_type = db_name,
-                                              db = db[[db_name]],
-                                              index = cs[, key_index],
-                                              chain = chain)
-            }
-            
-            cs[, key_index] <- NULL
-        }
-    }
-    
-    # get aggregate infos
-    x <- cs[, which(regexpr(pattern = "info_", text = colnames(cs))!=-1)]
-    a <- apply(X = x, MARGIN = 1, FUN = function(x, key) {
-        if(all(x=="")) {
-            return(list(ag_species = '', ag_gene = ''))
-        }
-        
-        ag_species <- c()
-        ag_gene <- c()
-        x <- x[x!=""]
-        for(i in 1:length(x)) {
-            y <- unlist(strsplit(x = x[i], split = "\\|"))
-            ag_species <- c(ag_species, unlist(strsplit(x = y[3], split = '\\;')))
-            ag_gene <- c(ag_gene, unlist(strsplit(x = y[4], split = '\\;')))
-        }
-        ag_species <- paste0(unique(gsub(pattern = "Antigen_species\\:", 
-                                         replacement = '', x = ag_species)), 
-                             collapse = ',')
-        ag_gene <- paste0(unique(gsub(pattern = "Antigen_gene\\:", 
-                                      replacement = '', x = ag_gene)),
-                          collapse = ',')
-        
-        return(list(ag_species = ag_species, ag_gene = ag_gene))
-    })
-    
-    cs$Ag_species <- unlist(lapply(X = a, FUN = function(x) {x[["ag_species"]]}))
-    cs$Ag_gene <- unlist(lapply(X = a, FUN = function(x) {x[["ag_gene"]]}))
-    
-    return(cs)
-}
-
 
 # Description:
 # Compare the control lists of individual clust_irr objects. If they match,

@@ -30,22 +30,17 @@ contains two sublists:
 \itemize{
 \item{\code{clust}, list, contains clustering results for each IR chain. 
 The results are stored as data.frame in separate sub-list named appropriately 
-(e.g. CDR3a, CDR3b, CDR3g, etc.). 
+(e.g. CDR3a, CDR3b, CDR3g, etc.). Each row in the data.frames contains a pair 
+of CDR3s.
 
-Each row in the data.frames contains a pair of globally similar CDR3s.
-If \code{global_hamming}=TRUE in the control, then global clustering is 
-done based on Hamming distances, then the remaining columns of this 
-data.frame are not important. 
-
-Otherwise, the remainig columns are relevant, i.e. global similarity scores 
-are shown for the complete CDR3 sequences (column \code{weight}) or their 
-cores (column \code{cweight}). The column \code{max_len} stores the the maximum 
-length in each pair of CDR3 sequences, and is used to normalize the scores 
+The remaining columns contain similarity scores for the complete CDR3 sequences 
+(column \code{weight}) or their cores (column \code{cweight}). The columns 
+\code{max_len} and \code{max_clen} store the length of the longer CDR3 and 
+CDR3 core sequence in the pair, and these used to normalize the scores 
 \code{weight} and \code{cweight}: the normalized scores are shown in the 
 columns \code{nweight} and \code{ncweight}}
 
-\item{\code{inputs}, list, contains all user provided inputs (see 
-\bold{Arguments})}
+\item{\code{inputs}, list, contains all user provided inputs (see Arguments)}
 }
 }
 

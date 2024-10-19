@@ -1,13 +1,11 @@
 # Description:
 # Check user provided input and generate errors and warnings, if necessary
 input_check <- function(s, control) {
-  
   check_s(s = s)
-  check_global_max_hdist(control$global_max_hdist)
   check_trim_flank_aa(control$trim_flank_aa)
-  check_low_mem(control$low_mem)
-  check_global_hamming(control$global_hamming)
   check_gmi(control$gmi)
+  check_db_custom(db_custom = control$db_custom)
+  check_db_dist(db_dist = control$db_dist)
 }
 
 check_s <- function(s) {
@@ -28,30 +26,12 @@ check_cores <- function(cores) {
   check_lessthan(cores, 1)
 }
 
-check_global_max_hdist <- function(global_max_hdist) {
-  check_infinity(global_max_hdist)
-  check_numeric(global_max_hdist)
-  check_wholenumber(global_max_hdist)
-  check_singlevalue(global_max_hdist)
-  check_lessthan(global_max_hdist, 1)
-}
-
 check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size
   check_singlevalue(trim_flank_aa)
   check_infinity(trim_flank_aa)
   check_numeric(trim_flank_aa)
   check_wholenumber(trim_flank_aa)
   check_positive(trim_flank_aa)
-}
-
-check_low_mem <- function(low_mem) {
-  check_singlevalue(x = low_mem)
-  check_logical(x = low_mem)
-}
-
-check_global_hamming <- function(global_hamming) {
-  check_singlevalue(x = global_hamming)
-  check_logical(x = global_hamming)
 }
 
 check_as_visnet <- function(as_visnet) {
@@ -100,23 +80,14 @@ check_gmi <- function(gmi) {
   check_probability(gmi)
 }
 
-check_edit_dist <- function(edit_dist) {
-    check_infinity(edit_dist)
-    check_numeric(edit_dist)
-    check_wholenumber(edit_dist)
-    check_singlevalue(edit_dist)
-    check_lessthan(edit_dist, 0)
-}
-
 # Description:
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
   control = list(gmi = 0.7,
                  trim_flank_aa = 3,
-                 global_hamming = FALSE,
-                 global_max_hdist = 1,
-                 low_mem = FALSE)
+                 db_dist = 0,
+                 db_custom = NULL)
   
   # if missing control_in -> use default values
   if(missing(control_in) || is.null(control_in)) {
@@ -149,28 +120,36 @@ check_clustirr <- function(clust_irr) {
 }
 
 
-check_custom_db <- function(custom_db) {
-  if(missing(custom_db)) {
+check_db_custom <- function(db_custom) {
+  if(missing(db_custom)) {
     return(NULL)
   }
-  if(is.null(custom_db)) {
+  if(is.null(db_custom)) {
     return(NULL)
   }
   
-  if(is.data.frame(custom_db)==FALSE) {
-    stop("custom_db must be a data.frame") 
+  if(is.data.frame(db_custom)==FALSE) {
+    stop("db_custom must be a data.frame") 
   }
-  if(nrow(custom_db)<=0) {
-    stop("custom_db must be a data.frame") 
+  if(nrow(db_custom)<=0) {
+    stop("db_custom must be a data.frame") 
   }
   
   e <- new.env()
   name <- data("tcr3d", package = "ClustIRR", envir = e)[1]
   e <- e[[name]]
-  if(all(colnames(custom_db) == colnames(e))==FALSE) {
-    stop("wrong columns in custom_db, see internal data tcr3d.")
+  if(all(colnames(db_custom) == colnames(e))==FALSE) {
+    stop("wrong columns in db_custom, see internal data tcr3d.")
   }
-  return(custom_db)
+}
+
+
+check_db_dist <- function(db_dist) {
+  check_infinity(db_dist)
+  check_numeric(db_dist)
+  check_wholenumber(db_dist)
+  check_singlevalue(db_dist)
+  check_lessthan(db_dist, 0)
 }
 
 

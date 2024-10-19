@@ -44,12 +44,7 @@ data("CDR3ab", package = "ClustIRR")
 s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
 
 # run ClustIRR analysis
-out <- cluster_irr(s = s,
-                   control = list(gmi = 0.7,
-                                  trim_flank_aa = 3,
-                                  global_hamming = FALSE,
-                                  global_max_hdist = 1,
-                                  low_mem = FALSE))
+out <- cluster_irr(s = s)
 
 # get graph
 g <- get_graph(clust_irr = out)
