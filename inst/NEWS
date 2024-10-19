@@ -33,3 +33,6 @@ Changes in version 1.3.25 (10 Oct, 2024)
    * community detection
    * Stan model-based differential community occupancy
    * supporting functions
+   
+Changes in version 1.3.34 (19 Oct, 2024)
++ Stable version but not tested
