@@ -45,7 +45,7 @@ map CDR3 sequences from the input (\code{s}) to their cognate antigens. The
 structure of \code{db_custom} must be identical to that in data(vdjdb). 
 ClustIRR will use the internal databases if \code{db_custom}=NULL (default).
 Three databases (\bold{data only from human CDR3}) are integrated in ClustIRR: 
-\code{VDJdb}, \code{tcr3d} and \code{mcpas-tcr}. 
+\code{VDJdb}, \code{TCR3d} and \code{McPAS-TCR}. 
 \item \code{db_dist}: we compute edit distances between CDR3 sequences from 
 the sample and from a database (e.g. VDJdb). If a particular distance is 
 smaller than or equal to \code{edit_dist}, then we annotate the sample CDR3

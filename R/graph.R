@@ -182,7 +182,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     clust_irrs <- get_clust_irrs_names(clust_irrs = clust_irrs)
     
     # get joint controls
-    ctrl <- get_joint_controls(clust_irrs = clust_irrs)
+    control <- get_joint_controls(clust_irrs = clust_irrs)
     
     # get igs
     future::plan(future::multisession, workers = I(cores))
@@ -195,8 +195,8 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     ige <- get_intergraph_edges(igs = igs,
                                 chains = chains,
                                 cores = cores,
-                                trim_flank_aa = ctrl$trim_flank_aa,
-                                gmi=ctrl$gmi)
+                                trim_flank_aa = control$trim_flank_aa,
+                                gmi = control$gmi)
     
     # get the vertices/edges of the graph
     df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
