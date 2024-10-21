@@ -37,6 +37,7 @@ importFrom(igraph, cluster_louvain)
 importFrom(igraph, cluster_leiden)
 importFrom(igraph, simplify)
 importFrom(igraph, is_simple)
+importFrom(igraph, subgraph)
 
 export(cluster_irr)
 export(get_graph)

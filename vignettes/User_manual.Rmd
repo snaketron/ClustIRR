@@ -420,7 +420,14 @@ kable(head(gcd$community_summary), digits = 2)
 ```
 
 What is the contribution of CDR3a and CDR3b weights to the formation of
-communities?
+communities? 
+
+Notice the big dot at coordinatex 0,0. Communities made up 
+from a single node have no within-community edges $\rightarrow$ 
+
+  * `w_CDR3a` = 0
+  * `w_CDR3b` = 0
+  * `w` = 0
 
 ```{r, fig.width=6, fig.height=4}
 ggplot(data = gcd$community_summary)+

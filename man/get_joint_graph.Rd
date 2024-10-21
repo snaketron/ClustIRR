@@ -29,7 +29,7 @@ algorithm for drawing edges between nodes within an IRR (see function
 
 6. return a logical \code{joint_graph}=TRUE
 }
-}
+
 \value{
 The main output is an \code{igraph} object.
 }
