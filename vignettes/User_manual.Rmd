@@ -114,8 +114,8 @@ a <- data.frame(CDR3a = CDR3ab$CDR3a[1:n],
                 sample = "a")
 
 # get 200 CDR3a and CDR3b pairs from the data -> IRR b
-b <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
-                CDR3b = CDR3ab$CDR3b[1:n], 
+b <- data.frame(CDR3a = CDR3ab$CDR3a[101:(n+100)], 
+                CDR3b = CDR3ab$CDR3b[101:(n+100)], 
                 clone_size=rpois(n = n, lambda = 3)+1, 
                 sample = "b")
 ```
@@ -162,46 +162,6 @@ of each CDR3 sequences. These are then aligned and scored based on the
 same algorithm, yielding for each pair of CDR3 cores a normalized
 alignment scores $\bar{\omega}_c$.
 
-To compute the similarity score between TCR clones, $i$ and $j$, we
-compute the average alignment score from their CDR3$\alpha$ and
-CDR3$\beta$ alignment scores (**notice:** in the next, I will use
-TCR$\alpha\beta$ as an example. However, this approach can also be used
-to compare TCR$\gamma\delta$ or BCR*IgH-IgL* clones): \begin{align}
-    \omega(i,j)=\dfrac{{\bar{\omega}}^\alpha + {\bar{\omega}}^\beta}{2}
-    \qquad\text{or}\qquad
-    \omega(i,j)=\dfrac{{\bar{\omega}}^\alpha_c + {\bar{\omega}}^\beta_c}{2},
-\end{align} where $\bar{\omega}^\alpha$ and $\bar{\omega}^\beta$ are the
-alignment scores for the CDR3$\alpha$ and CDR3$\beta$ sequences,
-respectively; and $\bar{\omega}^\alpha_c$ and $\bar{\omega}^\beta_c$ are
-the alignment scores for the CDR3$\alpha$ and CDR3$\beta$ cores,
-respectively. Based on this metric, the contributions of CDR3$\alpha$
-and CDR3$\beta$ towards the overall similarity of the TCR clones are
-assigned equal weights.
-
-**Important note**: If the data contains CDR3 sequences from only one
-chain, such as CDR3$\beta$, then $\omega(i,j)$ is defined as
-\begin{align}
-    \omega(i,j)={\bar{\omega}}^\beta
-    \qquad\text{or}\qquad
-    \omega(i,j)={\bar{\omega}}^\beta_c
-\end{align}
-
-`r Biocpkg("ClustIRR")` provides two additional metrics for computing
-similarity scores between TCR clones, including a *strict metric*, which
-assigns high similarity score to a pair of TCR clones only if both of
-their CDR3$\alpha$ and CDR3$\beta$ sequence pairs are similar
-\begin{align}
-    \omega^s(i,j) = \min({\bar{\omega}}^\alpha, {\bar{\omega}}^\beta)
-    \qquad\text{or}\qquad
-    \omega^s(i,j) = \min({\bar{\omega}}^\alpha_c, {\bar{\omega}}^\beta_c),
-\end{align} and a *loose metric*, which assigns high similarity score to
-a pair of TCR clones if either of their CDR3$\alpha$ and CDR3$\beta$
-sequence pairs are similar \begin{align}
-    \omega^l(i,j) = \max({\bar{\omega}}^\alpha, {\bar{\omega}}^\beta)
-    \qquad\text{or}\qquad
-    \omega^l(i,j) = \max({\bar{\omega}}^\alpha_c, {\bar{\omega}}^\beta_c),
-\end{align}
-
 **This strategy is computationally very expensive!**
 
 For large IRRs with $n>10^6$ this algorithm requires significant
@@ -213,7 +173,8 @@ considered as a database of amino acid sequences against which the query
 is compared. CDR3 sequences which share at least 70% sequence identity
 (user parameter `control$gmi`) with the query are selected, and only
 these are aligned with query CDR3. For the remaining CDR3 pairs we
-assume $\omega(i,j)=0$.
+assume $\bar{\omega}=0$.
+
 
 ### Example
 Step 1. involves calling the function `clust_irr` which returns an S4 object 
@@ -230,12 +191,12 @@ Next, we show the chain-specific similarity scores between CDR3s
 sequences. Each row is a pair of CDR3 sequences from the repertoire. 
 For each pair we have the following metrics:
 
--   `max_len` and `max_clen`: length of the longer CDR3 sequence and
-    CDR3 core sequence in the pair
--   `weight`: BLOSUM62 score of the **complete** CDR3 alignment
--   `cweight`: BLOSUM62 score of CDR3 **cores**
--   `nweight`: normalized `weight` by `max_len`
--   `ncweight`: normalized `cweight` and `max_clen`
+-   `max_len`: length of the longer CDR3 sequence in the pair
+-   `max_clen`:  length of the longer CDR3 core sequence in the pair
+-   `weight`: $\omega$ = BLOSUM62 score of the **complete** CDR3 alignment
+-   `cweight`= $\omega_c$: BLOSUM62 score of CDR3 **cores**
+-   `nweight` = $\bar{\omega}$: normalized `weight` by `max_len`
+-   `ncweight` = $\bar{\omega}_c$: normalized `cweight` by `max_clen`
 
 The results for CDR3a:
 
@@ -272,8 +233,8 @@ then we may employ the function `get_graph`, which converts the
 `clust_irr` object into an `igraph` object. Meanwhile, if we are
 analyzing two ore more IRRs, then we can use the function
 `get_joint_graph` to generate a joint `igraph` object. In this case,
-edges between TCR clones from different IRRs are computed using the same
-procedure outlined in step 1.
+edges between TCR clones from different IRRs are computed using the 
+same procedure outlined in step 1.
 
 The graphs have *nodes* and *weighted edges*:
 
@@ -339,23 +300,77 @@ employ other IRR clustering approaches, such as gliph, TCRdist3, GIANA,
 and others.
 
 ## **Step 3.** community detection
-
 `r Biocpkg("ClustIRR")` employs graph-based community detection (GCD)
 algorithms, such as Louvain or Leiden, to identify densely connected
 communities.
+
+But first, we must decide how to compute a similarity between two nodes,
+$i$ and $j$, (e.g. TCR clones) based on the similarity scores between their 
+CDR3 sequences (compute in step 1.). We will refer to this metric as 
+$\omega(i,j)$.
+
+### Scenario 1: we have CDR3 sequences from one chain, e.g. CDR3$\beta$
+If the data contains CDR3 sequences from only one chain, such as CDR3$\beta$, 
+then $\omega(i,j)$ is defined as
+\begin{align}
+    \omega(i,j)={\bar{\omega}}^\beta
+    \qquad\text{or}\qquad
+    \omega(i,j)={\bar{\omega}}^\beta_c
+\end{align}
+The user can decide among the two definitions by specifying 
+`weight` = "ncweight" (default; $\omega(i,j)=\bar{\omega_c}$) 
+or `weight` = "nweight" (default; $\omega(i,j)=\bar{\omega}$).
+
+### Scenario 2: we have CDR3 sequences from both chains (paired data)
+To compute the similarity score between TCR clones, $i$ and $j$, we
+compute the average alignment score from their CDR3$\alpha$ and
+CDR3$\beta$ alignment scores (in the next, I will use TCR$\alpha\beta$ 
+as an example, however, this approach can also be used to compare 
+TCR$\gamma\delta$ or BCR*IgH-IgL* clones): 
+\begin{align}
+    \omega(i,j)=\dfrac{{\bar{\omega}}^\alpha + {\bar{\omega}}^\beta}{2}
+    \qquad\text{or}\qquad
+    \omega(i,j)=\dfrac{{\bar{\omega}}^\alpha_c + {\bar{\omega}}^\beta_c}{2},
+\end{align} 
+where $\bar{\omega}^\alpha$ and $\bar{\omega}^\beta$ are the
+alignment scores for the CDR3$\alpha$ and CDR3$\beta$ sequences,
+respectively; and $\bar{\omega}^\alpha_c$ and $\bar{\omega}^\beta_c$ are
+the alignment scores for the CDR3$\alpha$ and CDR3$\beta$ cores,
+respectively. Based on this metric, the contributions of CDR3$\alpha$
+and CDR3$\beta$ towards the overall similarity of the TCR clones are
+assigned equal weights.
+
+`r Biocpkg("ClustIRR")` provides two additional metrics for computing
+similarity scores between TCR clones, including a *strict metric*, which
+assigns high similarity score to a pair of TCR clones only if both of
+their CDR3$\alpha$ and CDR3$\beta$ sequence pairs are similar
+\begin{align}
+    \omega^s(i,j) = \min({\bar{\omega}}^\alpha, {\bar{\omega}}^\beta)
+    \qquad\text{or}\qquad
+    \omega^s(i,j) = \min({\bar{\omega}}^\alpha_c, {\bar{\omega}}^\beta_c),
+\end{align} and a *loose metric*, which assigns high similarity score to
+a pair of TCR clones if either of their CDR3$\alpha$ and CDR3$\beta$
+sequence pairs are similar \begin{align}
+    \omega^l(i,j) = \max({\bar{\omega}}^\alpha, {\bar{\omega}}^\beta)
+    \qquad\text{or}\qquad
+    \omega^l(i,j) = \max({\bar{\omega}}^\alpha_c, {\bar{\omega}}^\beta_c),
+\end{align}
+
 
 The user has the following options:
 
 -   `algorithm`: "leiden" (default) or "louvain"
 -   `resolution`: GCD resolution = 1 (default)
--   `weight_type`: "ncweight" (default) or "nweight"
+-   `weight`: "ncweight" (default) or "nweight"
+-   `metric`: "average" (default), "strict" or "loose"
 -   `chains`: "CDR3a" or "CDR3b" or c("CDR3a", "CDR3b")
 
 ```{r}
 gcd <- detect_communities(graph = g$graph, 
                           algorithm = "leiden",
                           resolution = 1,
-                          weight_type = "ncweight",
+                          weight = "ncweight",
+                          metric = "average",
                           chains = c("CDR3a", "CDR3b"))
 ```
 
@@ -387,8 +402,18 @@ plot(x = gcd$community_occupancy_matrix[, "a"],
      ylab = "community occupancy [cells in IRR b]")
 ```
 
-Also see `community_summary` if you want to see the frequency of clones
-or cells in each community (per IRR), their mean edge weights, etc.
+Also see `community_summary`. Here we provide community-specific summaries,
+as rows, including: 
+
+  * `clones_a`, `clone_b`, `clones_n`: the frequency of clones in the community
+  coming from IRR a, b and in total (n)
+  * `cells_a`, `cells_b`, `cells_n`: the frequency of cell in the community
+  coming from IRR a, b and in total (n)
+  * `w`: the mean inter-clone similarity ($\omega(i,j)$)
+  * `w_CDR3a`, `w_CDR3b`: the contributions of CDR3$\alpha$ and CDR3$\beta$ 
+  to `w`
+  * `n_CDR3a`, `n_CDR3b`: number of edges between CDR3$\alpha$ and CDR3$\beta$ 
+  sequences
 
 ```{r}
 kable(head(gcd$community_summary), digits = 2)
@@ -399,7 +424,7 @@ communities?
 
 ```{r, fig.width=6, fig.height=4}
 ggplot(data = gcd$community_summary)+
-  geom_point(aes(x = w_CDR3a_mean, y = w_CDR3b_mean, size = cells_n), shape=21)+
+  geom_point(aes(x = w_CDR3a, y = w_CDR3b, size = cells_n), shape=21)+
   xlab(label = "CDR3a ncweight")+
   ylab(label = "CDR3b ncweight")+
   scale_size_continuous(range = c(0.5, 5))+
@@ -582,7 +607,7 @@ CDR3b.
 
 ```{r}
 gcd <- detect_communities(graph = g$graph,
-                          weight_type = "ncweight",
+                          weight = "ncweight",
                           algorithm = "leiden",
                           resolution = 1,
                           chains = c("CDR3a", "CDR3b"))

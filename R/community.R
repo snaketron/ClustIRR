@@ -1,12 +1,21 @@
 detect_communities <- function(graph, 
                                algorithm = "leiden", 
                                resolution = 1,
-                               weight_type = "ncweight",
+                               weight = "ncweight",
+                               metric = "average",
                                chains) {
     
+    check_inputs(graph = graph,
+                 algorithm = algorithm, 
+                 resolution = resolution,
+                 weight = weight, 
+                 metric = metric, 
+                 chains = chains)
+    
     message("1/5 formatting graph (g)...")
-    cg <- get_formatted_graph(g = graph, 
-                              weight_type = weight_type, 
+    cg <- get_formatted_graph(graph = graph, 
+                              weight = weight, 
+                              metric = metric,
                               chains = chains) 
     
     message("2/5 community detection...")
@@ -15,10 +24,7 @@ detect_communities <- function(graph,
                                   resolution = resolution)
     
     message("3/5 community summary (cs)...")
-    V(graph)$community <- V(cg)$community
-    cs <- get_community_summary(g = graph, 
-                                chains = chains,
-                                weight_type = weight_type)
+    cs <- get_community_summary(g = cg, chains = chains)
     
     message("4/5 extracting community matrix (cm)...")
     cm <- get_community_matrix(g = cg)
@@ -30,7 +36,8 @@ detect_communities <- function(graph,
     config <- list(input_g = graph, 
                    algorithm = algorithm, 
                    resolution = resolution,
-                   weight_type = weight_type, 
+                   weight = weight, 
+                   metric = metric,
                    chains = chains)
     
     return(list(community_occupancy_matrix = cm, 
@@ -40,61 +47,61 @@ detect_communities <- function(graph,
                 input_config = config))
 }
 
-get_formatted_graph <- function(g, 
-                                weight_type, 
+get_formatted_graph <- function(graph, 
+                                weight,
+                                metric,
                                 chains) {
     
-    set_weight <- function(g, weight_type) {
-        if(weight_type == "cweight") {
-            E(g)$weight <- E(g)$cweight
+    set_weight <- function(graph, weight) {
+        if(weight == "ncweight") {
+            E(graph)$weight <- E(graph)$ncweight
         }
-        if(weight_type == "ncweight") {
-            E(g)$weight <- E(g)$ncweight
+        if(weight == "nweight") {
+            E(graph)$weight <- E(graph)$nweight
         }
-        if(weight_type == "weight") {
-            E(g)$weight <- E(g)$ncweight
-        }
-        if(weight_type == "nweight") {
-            E(g)$weight <- E(g)$cweight
-        }
-        return(g)
+        return(graph)
     }
     
-    set_chain <- function(g, chains) {
-        i <- which(!E(g)$chain %in% chains)
+    set_chain <- function(graph, chains) {
+        i <- which(!E(graph)$chain %in% chains)
         if(length(i)!=0) {
-            g <- delete_edges(graph = g, i)
+            graph <- delete_edges(graph = graph, i)
         }
-        return(g)
+        return(graph)
     }
     
-    set_concat <- function(x) {
-        paste0(unique(sort(x)), collapse = '+')
+    graph <- set_weight(graph = graph, weight = weight)
+    graph <- set_chain(graph = graph, chains = chains)
+    
+    if(is_simple(graph)==FALSE) {
+        graph <- simplify(graph, edge.attr.comb = list(weight = "concat",
+                                                       chain = "concat",
+                                                       "ignore"))
+        
+        if(metric == "average") {
+            E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
+                                      FUN = function(x) {return(sum(x)/2)})
+        }
+        if(metric == "strict") {
+            E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
+                                      FUN = function(x) {
+                                          if(length(x)==2) {
+                                              return(min(x))
+                                          }
+                                          return(min(x,0))})
+        }
+        if(metric == "loose") {
+            E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
+                                      FUN = function(x) {
+                                          if(length(x)==2) {
+                                              return(max(x))
+                                          }
+                                          return(max(x,0))})
+        }
     }
     
-    g <- set_weight(g = g, weight_type = weight_type)
-    g <- set_chain(g = g, chains = chains)
-    
-    # global graph
-    i <- which(E(g)$clustering == "local")
-    if(length(i)!=0) {
-        g <- delete_edges(graph = g, i)
-    }
-    
-    if(is_simple(g)==FALSE) {
-        g <- simplify(g, edge.attr.comb = list(weight = "sum",
-                                               type = "first",
-                                               chain = "concat",
-                                               clustering = "concat",
-                                               "ignore"))
-        # average weight
-        E(g)$weight <- E(g)$weight/2
-        E(g)$clustering <- unlist(lapply(X = E(g)$clustering, FUN = set_concat))
-        E(g)$chain <- unlist(lapply(X = E(g)$chain, FUN = set_concat))
-    }
-    
-    g <- delete_edges(graph = g, which(E(g)$weight <= 0))
-    return(g)
+    graph <- delete_edges(graph = graph, which(E(graph)$w <= 0))
+    return(graph)
 }
 
 get_community_detection <- function(g, 
@@ -102,23 +109,23 @@ get_community_detection <- function(g,
                                     resolution) {
     
     if(algorithm == "louvain") {
-        c <- cluster_louvain(graph = g, 
-                             weights = E(g)$weight, 
+        c <- cluster_louvain(graph = g, weights = E(g)$w, 
                              resolution = resolution)
         V(g)$community <- c$membership
     }
     if(algorithm == "leiden") {
-        c <- cluster_leiden(graph = g, 
-                            weights = E(g)$weight, 
+        c <- cluster_leiden(graph = g, weights = E(g)$w, 
                             resolution_parameter = resolution)
         V(g)$community <- c$membership
     }
     return(g)
 }
 
-get_community_summary <- function(g, chains, weight_type) {
+get_community_summary <- function(g, 
+                                  chains, 
+                                  metric) {
     
-    get_vs_stats <- function(vs) {
+    get_vstats <- function(vs) {
         
         vs$f <- 1
         
@@ -150,131 +157,55 @@ get_community_summary <- function(g, chains, weight_type) {
         return(vs_stats)
     }
     
-    get_es_stats <- function(es, vs, chains, weight_type) {
+    get_estats <- function(x, g, chains) {
+        sg <- subgraph(graph = g, vids = which(V(g)$community==x))
         
-        # keep only global
-        es <- es[es$clustering == "global", ]
-        
-        # add community id to 'from node'
-        es <- merge(x = es, y = vs[, c("name", "community")], 
-                    by.x = "from", by.y = "name", all.x = TRUE)
-        es$from_community <- es$community
-        es$community <- NULL
-        
-        # add community id to 'to node'
-        es <- merge(x = es, y = vs[, c("name", "community")], 
-                    by.x = "to", by.y = "name", all.x = TRUE)
-        es$to_community <- es$community
-        es$community <- NULL
-        
-        # within-community stats is what we care about
-        es <- es[which(es$from_community == es$to_community), ]
-        if(nrow(es)!=0) {
-            es$n_edges <- 1
-            es$community <- es$from_community
-        } else {
-            stop("no edges to summarize")
+        if(length(sg)==1) {
+            v <- numeric(length = length(chains)*2+1)
+            names(v) <- c("w", paste0("w_", chains), paste0("n_", chains))
+            v <- c(x, v)
+            names(v)[1] <- "community"
+            return(v)
         }
         
-        es$key <- apply(X = es[,c("from", "to")], MARGIN = 1, FUN=function(x) {
-            return(paste0(sort(x), collapse = '-'))
-        })
+        es <- as_data_frame(x = sg, what = "edges")
+        l <- lapply(X = 1:nrow(es), es = es, chains, 
+                    FUN = function(x, es, chains) {
+                        v <- numeric(length = length(chains)*2+1)
+                        names(v) <- c("w", paste0("w_", chains), 
+                                      paste0("n_", chains))
+                        for(c in chains) {
+                            i <- which(es$chain[[x]]==c)
+                            if(length(i)==0) {
+                                v[paste0("w_", c)] <- 0
+                                v[paste0("n_", c)] <- 0
+                            } else {
+                                v["w"] <- es$w[[x]][i]
+                                v[paste0("w_", c)] <- es$weight[[x]][i]
+                                v[paste0("n_", c)] <- 1
+                            }
+                        }
+                        return(v)
+                    })
+        l <- data.frame(do.call(rbind, l))
+        l <- c(x, colMeans(l[,which(regexpr(pattern = "w", 
+                                            text = colnames(l))!=-1)]),
+               colSums(l[,which(regexpr(pattern = "n", 
+                                        text = colnames(l))!=-1)]))
+        names(l)[1] <- "community"
+        return(l)
+    } 
         
-        # set weight
-        es$weight <- es[, weight_type]
-        
-        if(length(chains)==2) {
-            # keys
-            k1 <- paste0("w_", chains[1])
-            k2 <- paste0("w_", chains[2])
-            k12 <- paste0("w_", chains[1], '_', chains[2])
-            n1 <- paste0("n_", chains[1])
-            n2 <- paste0("n_", chains[2])
-            
-            # chain 1
-            es_1 <- es[es$chain == chains[1], c("key", "weight", "community")]
-            es_1[, k1] <- es_1$weight
-            
-            # chain 2
-            es_2 <- es[es$chain == chains[2], c("key", "weight", "community")]
-            es_2[, k2] <- es_2$weight
-            
-            # merge chains
-            es_w <- merge(x = es_1[c("key", k1, "community")], 
-                          y = es_2[c("key", k2, "community")], 
-                          by = c("key", "community"),
-                          all = TRUE)
-            
-            es_w[, n1] <- ifelse(test = is.na(es_w[, k1])|es_w[, k1]<0, 
-                                 yes = 0, no = 1)
-            es_w[, n2] <- ifelse(test = is.na(es_w[, k2])|es_w[, k2]<0, 
-                                 yes = 0, no = 1)
-            
-            es_w[, k1] <- ifelse(test = is.na(es_w[, k1])|es_w[, k1]<0, 
-                                 yes = 0, no = es_w[, k1])
-            es_w[, k2] <- ifelse(test = is.na(es_w[, k2])|es_w[, k2]<0, 
-                                 yes = 0, no = es_w[, k2])
-            es_w[, k12] <- (es_w[, k1]+es_w[, k2])/2
-            
-            
-            a <- merge(
-                x = merge(
-                    x = aggregate(es_w[[k1]]~community, data = es_w, FUN=mean),
-                    y = aggregate(es_w[[k1]]~community, data = es_w, FUN=var),
-                    by = "community"),
-                y = aggregate(es_w[[n1]]~community, data = es_w, FUN = sum),
-                by = "community")
-            colnames(a) <- c("community", paste0(k1, "_mean"), 
-                             paste0(k1, "_var"), n1)
-            
-            b <- merge(
-                x = merge(
-                    x = aggregate(es_w[[k2]]~community, data = es_w, FUN=mean),
-                    y = aggregate(es_w[[k2]]~community, data = es_w, FUN=var),
-                    by = "community"),
-                y = aggregate(es_w[[n2]]~community, data = es_w, FUN = sum),
-                by = "community")
-            colnames(b) <- c("community", paste0(k2, "_mean"), 
-                             paste0(k2, "_var"), n2)
-            
-            c <- merge(
-                x = aggregate(es_w[[k12]]~community, data = es_w, FUN=mean),
-                y = aggregate(es_w[[k12]]~community, data = es_w, FUN=var),
-                by = "community")
-            colnames(c) <- c("community", paste0(k12, "_mean"), 
-                             paste0(k12, "_var"))
-            
-            edges_stats <- merge(x = merge(x = a, y = b, by = "community"),
-                                 y = c, by = "community")
-        }
-        if(length(chains)==1) {
-            # keys
-            k1 <- paste0("w_",chains[1])
-            n1 <- paste0("n_",chains[1])
-            
-            es_w <- es[es$chain == chains[1], c("key", "weight", "community")]
-            es_w[, k1] <- es_w$weight
-            es_w <- es_w[c("key", k1, "community")]
-            
-            es_w[, n1] <- ifelse(test = is.na(es_w[, k1])|es_w[, k1]<0, 
-                                 yes = 0, no = 1)
-            
-            edges_stats <- es_w
-        }
-        
-        return(edges_stats)
-    }
+    # get community statistics on edges
+    es <- lapply(X = unique(V(g)$community), g = g, 
+                 chains = chains, FUN = get_estats)
+    es <- data.frame(do.call(rbind, es))
     
-    es <- as_data_frame(x = g, what = "edges")
-    vs <- as_data_frame(x = g, what = "vertices")
+    # get community statistics on vertices
+    vs <- get_vstats(vs = as_data_frame(x = g, what = "vertices"))
     
-    vs_stats <- get_vs_stats(vs = vs)
-    es_stats <- get_es_stats(es = es, 
-                             vs = vs, 
-                             chains = chains,
-                             weight_type = weight_type)
-    
-    o <- merge(x = vs_stats, y = es_stats, by = "community", all.x = TRUE)
+    # merge results
+    o <- merge(x = vs, y = es, by = "community", all.x = TRUE)
     o <- o[order(o$community, decreasing = FALSE), ]
     return(o)
 }
@@ -287,4 +218,102 @@ get_community_matrix <- function(g) {
                 fun.aggregate = sum, fill = 0)
     
     return(cm)
+}
+
+check_inputs <- function(graph, 
+                         algorithm, 
+                         resolution,
+                         weight, 
+                         metric, 
+                         chains) {
+    
+    
+    # check graph
+    if(missing(graph)) {
+        stop("graph must be an igraph object")
+    }
+    if(is_igraph(graph)==FALSE) {
+        stop("graph must be an igraph object")
+    }
+    
+    # check algorithm
+    if(missing(algorithm)) {
+        stop("algorithm must be louvain or leiden")
+    }
+    if(length(algorithm)!=1) {
+        stop("algorithm must be louvain or leiden")
+    }
+    if(is.character(algorithm)==FALSE) {
+        stop("algorithm must be character")
+    }
+    if(!algorithm %in% c("louvain", "leiden")) {
+        stop("algorithm must be louvain or leiden")
+    }
+    
+    
+    # check resolution
+    if(missing(resolution)) {
+        stop("resolution must be a number > 0")
+    }
+    if(length(resolution)!=1) {
+        stop("resolution must be a number > 0")
+    }
+    if(is.numeric(resolution)==FALSE) {
+        stop("resolution must be a number > 0")
+    }
+    if(is.finite(resolution)==FALSE) {
+        stop("resolution must be a number > 0")
+    }
+    if(resolution<=0) {
+        stop("resolution must be a number > 0")
+    }
+    
+    
+    # check weight
+    if(missing(weight)) {
+        stop("weight must be ncweight or nweight")
+    }
+    if(length(weight)!=1) {
+        stop("weight must be ncweight or nweight")
+    }
+    if(is.character(weight)==FALSE) {
+        stop("weight must be character")
+    }
+    if(!weight %in% c("ncweight", "nweight")) {
+        stop("weight must be ncweight or nweight")
+    }
+    
+    
+    
+    # check metric
+    if(missing(metric)) {
+        stop("metric must be average, strict or loose")
+    }
+    if(length(metric)!=1) {
+        stop("metric must be average, strict or loose")
+    }
+    if(is.character(metric)==FALSE) {
+        stop("metric must be character")
+    }
+    if(!metric %in% c("average", "strict", "loose")) {
+        stop("metric must be average, strict or loose")
+    }
+    
+    
+    
+    # check chains
+    if(missing(chains)) {
+        stop("chains must be a character vector")
+    }
+    if(length(chains)<1 | length(chains)>2) {
+        stop("chains must be a character vector")
+    }
+    if(is.character(chains)==FALSE) {
+        stop("chains must be a character vector")
+    }
+    if(any(chains %in% c("CDR3a", "CDR3b", "CDR3g", 
+                         "CDR3d", "CDR3h", "CDR3l"))==FALSE) {
+        stop("chains must be a character vector")
+    }
+    
 }

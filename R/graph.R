@@ -130,6 +130,7 @@ get_graph <- function(clust_irr) {
     return(list(graph = ig, clones = cs, joint_graph = FALSE))
 }
 
+
 get_joint_graph <- function(clust_irrs, cores = 1) {
     
     check_input <- function(clust_irrs) {
@@ -222,6 +223,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     
     return(list(graph = g, clones = df_v, joint_graph = TRUE))
 }
+
 
 plot_graph <- function(g,
                        select_by = "Ag_species",
