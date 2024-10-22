@@ -53,10 +53,10 @@ immunotherapies, vaccines, and antiviral drugs, which can help us
 improve these treatments.
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a computational method
-which detects communities of immune receptors with similar specificity;
-and employs Bayesian models to quantify differential community occupancy
-between IRRs from different biological conditions (e.g. before and after
-cancer treatment).
+that detects communities of immune receptors with similar specificity and 
+employs Bayesian models to quantify differential community occupancy between 
+IRRs from different biological conditions (e.g. before and after cancer 
+treatment).
 
 # Installation
 
@@ -86,14 +86,15 @@ be provided as data.frame. The rows in the data.frame correspond to
 **clones** (clone = group of cells derived from a common parent cell by
 clonal expansion). We use the following data from each clone:
 
--   **amino acid sequence/s** of the complementarity determining regions
+-   **Amino acid sequences** of the complementarity determining regions
     3 from one or both chains (e.g. CDR3$\alpha$ and CDR3$\beta$ from
     $\alpha\beta$ TCRs).
--   **clone size** = the frequency of cells that belong to the clone
+-   **Clone size**, which refers to the frequency of cells that belong to 
+    the clone.
 
 In a typical scenario, the user will have more than one IRR (see
 workflow). For instance, the user will analyze longitudinal IRR data,
-i.e. two or three IRRs taken at different time points; or across
+i.e., two or three IRRs taken at different time points; or across
 different biological conditions.
 
 Let's have a look at an example IRR: two TCR$\alpha\beta$ repertoires
@@ -291,13 +292,6 @@ g <- get_joint_graph(clust_irrs = c(c_a, c_b))
 plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
 ```
 
-**Important note**: `r Biocpkg("ClustIRR")` provides the function
-`get_graph_dummy`, which allows the user to skip step. 1 of the
-algorithm. The inputs of this function is IRR `s` (same as before) and a
-data frame containing the (symbolic) edge list. This enables seamless
-integration of `r Biocpkg("ClustIRR")` with computational pipelines that
-employ other IRR clustering approaches, such as gliph, TCRdist3, GIANA,
-and others.
 
 ## **Step 3.** community detection
 `r Biocpkg("ClustIRR")` employs graph-based community detection (GCD)
@@ -445,6 +439,7 @@ Node-specific (TCR clone-specific) summaries are provided in
 kable(head(gcd$node_summary), digits = 2)
 ```
 
+
 ## **Step 4.** differential community occupancy (DCO)
 
 Do we see **growing** or **shrinking** communities in a given IRRs?
@@ -508,9 +503,11 @@ ggplot(data = d$posterior_summary$y_hat)+
 ```
 
 ## **Step 6.** $\delta$ parameters
+We can compare DAC in two directions: $a$ vs. $b$ **or** $b$ vs. $a$ 
 
-```{r, fig.width=6, fig.height=3}
+```{r, fig.width=6, fig.height=4}
 ggplot(data = d$posterior_summary$delta)+
+  facet_wrap(facets = ~contrast, ncol = 1)+
   geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
                 col = "darkgray", width =0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
@@ -532,6 +529,15 @@ ggplot(data = d$posterior_summary$delta)+
 ```{r, echo=FALSE, include=FALSE}
 rm(a, b, c_a, c_b, d, e, g, gcd, n)
 ```
+
+
+## Conclusion: you can also use **custom** community occupancy matrix for DCO!
+The function `dco` takes as its main input a community occupancy matrix.
+This enables users who are accustomed to using complementary algorithm 
+for detecting specificity groups, such as, GLIPH, TCRdist3, GIANA, and 
+iSMART, to skip steps 1-3 of the `r Biocpkg("ClustIRR")` workflow, and 
+to proceed with analysis for DCO.
+
 
 # Case study: analysis of **three** TCR repertoires
 
