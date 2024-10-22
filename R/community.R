@@ -12,7 +12,7 @@ detect_communities <- function(graph,
                  metric = metric, 
                  chains = chains)
     
-    message("1/5 formatting graph (g)...")
+    message("1/5 formatting graph...")
     cg <- get_formatted_graph(graph = graph, 
                               weight = weight, 
                               metric = metric,
@@ -23,13 +23,13 @@ detect_communities <- function(graph,
                                   algorithm = algorithm, 
                                   resolution = resolution)
     
-    message("3/5 community summary (cs)...")
+    message("3/5 community summary)...")
     cs <- get_community_summary(g = cg, chains = chains)
     
-    message("4/5 extracting community matrix (cm)...")
+    message("4/5 extracting community occupancy matrix...")
     cm <- get_community_matrix(g = cg)
     
-    message("5/5 extracting vertices...")
+    message("5/5 extracting nodes")
     vs <- as_data_frame(x = cg, what = "vertices")
     
     # save configs
@@ -101,6 +101,8 @@ get_formatted_graph <- function(graph,
     }
     
     graph <- delete_edges(graph = graph, which(E(graph)$w <= 0))
+    # if trim*2 > CDR3 lengths -> NA
+    graph <- delete_edges(graph = graph, which(is.na(E(graph)$w)))
     return(graph)
 }
 
