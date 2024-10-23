@@ -117,7 +117,7 @@ get_community_detection <- function(g,
     }
     if(algorithm == "leiden") {
         c <- cluster_leiden(graph = g, weights = E(g)$w, 
-                            resolution = resolution,
+                            resolution_parameter = resolution,
                             n_iterations = 10)
         V(g)$community <- c$membership
     }
