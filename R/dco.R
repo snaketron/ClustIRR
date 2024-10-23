@@ -297,8 +297,10 @@ get_posterior_summaries <- function(cm, f) {
             sr <- s
             sr$mean <- sr$mean*-1
             sr$median <- sr$median*-1
-            sr$L95 <- sr$L95*-1
-            sr$H95 <- sr$H95*-1
+            x <- sr$L95*-1
+            y <- sr$H95*-1
+            sr$L95 <- y
+            sr$H95 <- x
             sr$sample_1 <- samples[2]
             sr$sample_2 <- samples[1]
             
@@ -345,8 +347,10 @@ get_posterior_summaries <- function(cm, f) {
         sr <- s
         sr$mean <- sr$mean*-1
         sr$median <- sr$median*-1
-        sr$L95 <- sr$L95*-1
-        sr$H95 <- sr$H95*-1
+        x <- sr$L95*-1
+        y <- sr$H95*-1
+        sr$L95 <- y
+        sr$H95 <- x
         x <- sr$sample_1
         y <- sr$sample_2
         sr$sample_2 <- x
