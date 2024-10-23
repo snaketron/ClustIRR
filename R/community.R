@@ -23,7 +23,7 @@ detect_communities <- function(graph,
                                   algorithm = algorithm, 
                                   resolution = resolution)
     
-    message("3/5 community summary)...")
+    message("3/5 community summary...")
     cs <- get_community_summary(g = cg, chains = chains)
     
     message("4/5 extracting community occupancy matrix...")
@@ -117,7 +117,8 @@ get_community_detection <- function(g,
     }
     if(algorithm == "leiden") {
         c <- cluster_leiden(graph = g, weights = E(g)$w, 
-                            resolution_parameter = resolution)
+                            resolution = resolution,
+                            n_iterations = 10)
         V(g)$community <- c$membership
     }
     return(g)
