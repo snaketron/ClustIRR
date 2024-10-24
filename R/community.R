@@ -73,31 +73,29 @@ get_formatted_graph <- function(graph,
     graph <- set_weight(graph = graph, weight = weight)
     graph <- set_chain(graph = graph, chains = chains)
     
-    if(is_simple(graph)==FALSE) {
-        graph <- simplify(graph, edge.attr.comb = list(weight = "concat",
-                                                       chain = "concat",
-                                                       "ignore"))
-        
-        if(metric == "average") {
-            E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
-                                      FUN = function(x) {return(sum(x)/2)})
-        }
-        if(metric == "strict") {
-            E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
-                                      FUN = function(x) {
-                                          if(length(x)==2) {
-                                              return(min(x))
-                                          }
-                                          return(min(x,0))})
-        }
-        if(metric == "loose") {
-            E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
-                                      FUN = function(x) {
-                                          if(length(x)==2) {
-                                              return(max(x))
-                                          }
-                                          return(max(x,0))})
-        }
+    graph <- simplify(graph, edge.attr.comb = list(weight = "concat",
+                                                   chain = "concat",
+                                                   "ignore"))
+    
+    if(metric == "average") {
+        E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
+                             FUN = function(x) {return(sum(x)/2)})
+    }
+    if(metric == "strict") {
+        E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
+                             FUN = function(x) {
+                                 if(length(x)==2) {
+                                     return(min(x))
+                                 }
+                                 return(min(x,0))})
+    }
+    if(metric == "loose") {
+        E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
+                             FUN = function(x) {
+                                 if(length(x)==2) {
+                                     return(max(x))
+                                 }
+                                 return(max(x,0))})
     }
     
     graph <- delete_edges(graph = graph, which(E(graph)$w <= 0))
@@ -200,7 +198,7 @@ get_community_summary <- function(g,
         names(l)[1] <- "community"
         return(l)
     } 
-        
+    
     # get community statistics on edges
     es <- lapply(X = unique(V(g)$community), g = g, 
                  chains = chains, FUN = get_estats)
