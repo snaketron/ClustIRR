@@ -194,7 +194,8 @@ get_community_summary <- function(g,
         l <- c(x, colMeans(l[,which(regexpr(pattern = "w", 
                                             text = colnames(l))!=-1)]),
                colSums(l[,which(regexpr(pattern = "n", 
-                                        text = colnames(l))!=-1)]))
+                                        text = colnames(l))!=-1), drop=FALSE]))
+        
         names(l)[1] <- "community"
         return(l)
     } 
