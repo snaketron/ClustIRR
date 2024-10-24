@@ -111,12 +111,14 @@ get_community_detection <- function(g,
                                     resolution) {
     
     if(algorithm == "louvain") {
-        c <- cluster_louvain(graph = g, weights = E(g)$w, 
+        c <- cluster_louvain(graph = g, 
+                             weights = E(g)$w, 
                              resolution = resolution)
         V(g)$community <- c$membership
     }
     if(algorithm == "leiden") {
-        c <- cluster_leiden(graph = g, weights = E(g)$w, 
+        c <- cluster_leiden(graph = g, 
+                            weights = E(g)$w, 
                             resolution_parameter = resolution,
                             n_iterations = 10)
         V(g)$community <- c$membership

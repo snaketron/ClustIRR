@@ -214,6 +214,7 @@ get_blosum <- function(cdr3, cdr3_dup, control) {
   out$max_clen <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
                         trim = control$trim_flank_aa, 
                         FUN = function(x, trim) {return(max(nchar(x)-trim*2))})
+  out$max_clen <- ifelse(test=out$max_clen<0, yes = 0, no = out$max_clen)
   
   
   out$nweight <- out$weight/out$max_len

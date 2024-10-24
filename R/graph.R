@@ -442,7 +442,8 @@ get_intergraph_edges <- function(igs,
         
         max_len <- ifelse(test = len_s1 >= len_s2, yes = len_s1, no = len_s2)
         out$max_len <- max_len
-        out$max_clen <- max(max_len-2*trim_flank_aa, 0)
+        out$max_clen <- max_len-(2*trim_flank_aa)
+        out$max_clen <- ifelse(test=out$max_clen<0, yes = 0, no = out$max_clen)
         
         out$nweight <- out$weight/out$max_len
         out$ncweight <- out$cweight/out$max_clen
