@@ -18,9 +18,11 @@ cluster_irr <- function(s,
   s$id <- seq_len(length.out = nrow(s))
   
   # annotate s with known CDR3-antigen data 
+  message("[1/2] annotating CDR3s... \n")
   s <- match_db(cs = s, control = control)
   
   # do clustering
+  message("[2/2] clust_irr... \n")
   clust <- lapply(X = chains, FUN = get_clust, s = s, control = control)
   names(clust) <- chains
   
@@ -322,7 +324,11 @@ match_db <- function(cs, control) {
   }
   
   get_db_index <- function(x, a, b, d) {
-    z <- which(stringdist(a=a,b=b[x],method="lv")<=d)
+    if(d==0) {
+      z <- which(a==b[x])
+    } else {
+      z <- which(stringdist(a=a,b=b[x],method="lv")<=d)
+    }
     if(length(z)!=0) {
       return(paste0(z, collapse = '|'))
     }
