@@ -19,7 +19,7 @@ repertoire.}
 \item mcmc_warmup = 750; number of MCMC warmups
 \item mcmc_iter = 1500; number of MCMC iterations
 \item mcmc_chains = 4; number of MCMC chains
-\item mcmc_chains = 1; number of computer cores 
+\item mcmc_cores = 1; number of computer cores 
 \item mcmc_algorithm = "NUTS"; which MCMC algorithm to use
 \item adapt_delta = 0.95; MCMC step size
 \item max_treedepth = 12; the max value, in exponents of 2, of what the binary 

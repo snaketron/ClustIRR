@@ -328,11 +328,13 @@ get_intergraph_edges <- function(igs,
     
     get_identical_hits <- function(a, b) {
         js <- intersect(a$Seq, b$Seq)
+        js <- js[is.na(js)==FALSE]
         if(length(js)==0) {
             return(NULL)
         }
         is <- lapply(X = js, a = a, b = b, FUN = function(x, a, b) {
-            return(expand.grid(a$Id[a$Seq==x], b$Id[b$Seq==x]))
+            return(expand.grid(a$Id[which(a$Seq==x)], 
+                               b$Id[which(b$Seq==x)]))
         })
         is <- do.call(rbind, is)
         colnames(is) <- c("QueryId", "TargetId")
@@ -345,6 +347,9 @@ get_intergraph_edges <- function(igs,
         b <- s2$Seq[d$TargetId[x]]
         na <- nchar(a)
         nb <- nchar(b)
+        if(is.na(na)|is.na(nb)) {
+            return(NA)
+        }
         if((na-2*trim_flank_aa)<=0 | (nb-2*trim_flank_aa)<=0) {
             return(NA)
         }
@@ -352,6 +357,9 @@ get_intergraph_edges <- function(igs,
         a <- substr(x=a, start = trim_flank_aa+1, stop = nchar(a)-trim_flank_aa)
         b <- substr(x=b, start = trim_flank_aa+1, stop = nchar(b)-trim_flank_aa)
         
+        if(is.na(a)|is.na(b)) {
+            return(NA)
+        }
         if(is.na(a)|is.na(b)) {
             return(NA)
         }
@@ -392,6 +400,9 @@ get_intergraph_edges <- function(igs,
                    minIdentity = gmi,
                    alphabet = "protein",
                    output_to_file = FALSE)
+        
+        o <- o[is.na(o$QueryMatchSeq)==FALSE&
+                   is.na(o$TargetMatchSeq)==FALSE,]
         
         # if empty stop
         if(nrow(o)==0) {
@@ -498,7 +509,6 @@ get_intergraph_edges <- function(igs,
     
     # indices 
     ix <- get_ix(xs = length(igs), ns = names(igs), chains = chains)
-    
     # find global similarities between pairs of clone tables
     message("merging clust_irrs: ", nrow(ix), "\n")
     future::plan(future::multisession, workers = I(cores))
