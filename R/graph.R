@@ -238,15 +238,6 @@ plot_graph <- function(g,
         if(is.list(g)==FALSE) {
             stop("missing input g")
         }
-        if(length(g)!=3) {
-            stop("missing input g with two objects")
-        }
-        if(all(names(g)==c("graph", "clones", "joint_graph"))==FALSE) {
-            stop("wrong input g")
-        }
-        if(is.data.frame(g$clones)==FALSE) {
-            stop("wrong input g")
-        }
         if(is_igraph(g$graph)==FALSE) {
             stop("wrong input g")
         }
@@ -265,8 +256,8 @@ plot_graph <- function(g,
     check_node_opacity(node_opacity = node_opacity)
     
     # unpack g
-    cs <- g$clones
     ig <- g$graph
+    cs <- as_data_frame(ig, what = "vertices")
     is_jg <- g$joint_graph
     
     if(!show_singletons){

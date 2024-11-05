@@ -303,8 +303,7 @@ get_posterior_summaries <- function(cm, f) {
             
             
             # merge
-            s <- merge(x = s, y = p[, c("k", "community", "pmax")], 
-                       by = c("k", "community"))
+            s <- merge(x = s, y = p[, c("community", "pmax")],by=c("community"))
             s <- s[order(s$i, decreasing = F),]
             s$i <- NULL
             
@@ -406,5 +405,3 @@ get_posterior_summaries <- function(cm, f) {
     
     return(o)
 }
-
-summary(f)$summary
