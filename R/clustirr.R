@@ -160,7 +160,6 @@ get_blosum <- function(cdr3, cdr3_dup, control) {
   if(nrow(o)==0) {
     return(NULL)
   }
-  
   key <- apply(X = o[,c("QueryId", "TargetId")], MARGIN = 1, 
                FUN = function(x) {paste0(sort(x), collapse = '-')})
   key_js <- which(duplicated(key)==FALSE)

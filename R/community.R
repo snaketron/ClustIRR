@@ -12,24 +12,24 @@ detect_communities <- function(graph,
                  metric = metric, 
                  chains = chains)
     
-    message("1/5 formatting graph...")
+    message("[1/5] formatting graph...")
     cg <- get_formatted_graph(graph = graph, 
                               weight = weight, 
                               metric = metric,
                               chains = chains) 
     
-    message("2/5 community detection...")
+    message("[2/5] community detection...")
     cg <- get_community_detection(g = cg, 
                                   algorithm = algorithm, 
                                   resolution = resolution)
     
-    message("3/5 community summary...")
+    message("[3/5] community summary...")
     cs <- get_community_summary(g = cg, chains = chains)
     
-    message("4/5 extracting community occupancy matrix...")
+    message("[4/5] extracting community occupancy matrix...")
     cm <- get_community_matrix(g = cg)
     
-    message("5/5 extracting nodes")
+    message("[5/5] extracting nodes")
     vs <- as_data_frame(x = cg, what = "vertices")
     
     # save configs
