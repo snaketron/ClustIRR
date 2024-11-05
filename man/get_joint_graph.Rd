@@ -25,7 +25,7 @@ algorithm for drawing edges between nodes within an IRR (see function
 
 4. return a joint graph as \code{igraph} object
 
-5. return a data.frame with all clones (graph nodes)
+5. return the input clustirr object list
 
 6. return a logical \code{joint_graph}=TRUE
 }

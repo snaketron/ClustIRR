@@ -221,7 +221,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     # build joint graph
     g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
     
-    return(list(graph = g, clones = df_v, joint_graph = TRUE))
+    return(list(graph = g, clust_irrs = clust_irrs, joint_graph = TRUE))
 }
 
 

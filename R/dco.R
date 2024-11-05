@@ -281,17 +281,33 @@ get_posterior_summaries <- function(cm, f) {
     post_delta <- function(f, samples, par) {
         
         if(length(samples)==2) {
+            # pmax statistics
+            p <- as_draws(f)
+            p <- subset_draws(p, variable = "beta")
+            p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
+            p$community <- as.numeric(gsub(pattern = "beta\\[|\\]", 
+                                           replacement = '', x = p$variable))
+            
             s <- data.frame(summary(f, par = "beta")$summary)
             s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
             colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+            s$i <- 1:nrow(s)
+            
             
             # maintain original index order
             m <- rownames(s)
-            m <- gsub(pattern = paste0("beta","\\[|\\]"), 
-                      replacement = '', x = m)
+            m <- gsub(pattern = "beta\\[|\\]", replacement = '', x = m)
             s$community <- as.numeric(m)
             s$sample_1 <- samples[1]
             s$sample_2 <- samples[2]
+            
+            
+            # merge
+            s <- merge(x = s, y = p[, c("k", "community", "pmax")], 
+                       by = c("k", "community"))
+            s <- s[order(s$i, decreasing = F),]
+            s$i <- NULL
+            
             
             # get reverse effects
             sr <- s
@@ -326,6 +342,18 @@ get_posterior_summaries <- function(cm, f) {
         
         meta <- get_meta(samples = samples)
         
+        # pmax
+        p <- as_draws(f)
+        p <- subset_draws(p, variable = par)
+        p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
+        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', 
+                  x = p$variable)
+        m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+        p$k <- as.numeric(m[,1])
+        p$community <- as.numeric(m[,2])
+        
+        
+        # main summary
         s <- data.frame(summary(f, par = par)$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
@@ -334,14 +362,17 @@ get_posterior_summaries <- function(cm, f) {
         s$i <- 1:nrow(s)
         m <- rownames(s)
         m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
-        
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         s$k <- as.numeric(m[,1])
         s$community <- as.numeric(m[,2])
         
+        
+        s <- merge(x = s, y = p[,c("k", "community", "pmax")], 
+                   by = c("k", "community"))
         s <- merge(x = s, y = meta, by.x = "k", by.y = "k", all.x = T)
         s <- s[order(s$i, decreasing = F),]
         s$i <- NULL
+        
         
         # get reverse effects
         sr <- s
@@ -372,7 +403,8 @@ get_posterior_summaries <- function(cm, f) {
               delta = post_delta(f = f, samples = samples, par = "delta"))
     
     o$y_hat$y_obs <- c(cm)
-
+    
     return(o)
 }
 
+summary(f)$summary

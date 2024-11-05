@@ -39,6 +39,10 @@ importFrom(igraph, simplify)
 importFrom(igraph, is_simple)
 importFrom(igraph, subgraph)
 
+importFrom(posterior, as_draws)
+importFrom(posterior, subset_draws)
+importFrom(posterior, summarise_draws)
+
 export(cluster_irr)
 export(get_graph)
 export(get_joint_graph)
