@@ -657,7 +657,7 @@ head(community_occupancy_matrix)
 
 ## **Step 4.** `dco` performs differential community occupancy (DCO) analysis
 
-Do we see **growing** or **shrinking** communities in a given IRRs?
+Do we see **expanding** or **shrinking** communities in a given IRRs?
 
 We employ a Bayesian model to quantify the relative abundance
 (occupancy) of individual communities, and the differential community

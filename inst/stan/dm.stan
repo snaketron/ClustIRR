@@ -11,9 +11,9 @@ data {
     int K; // categories
     int N; // number of samples
     int y [N, K]; // counts matrix
-    int x [N]; // design var 
     int<lower=0, upper=1> compute_delta; // should we compute delta
 }
+
 
 transformed data {
     int N_delta;
@@ -26,6 +26,7 @@ transformed data {
     }
 }
 
+
 parameters {
     real <lower=0> kappa;
     vector [K] alpha;
@@ -35,10 +36,12 @@ parameters {
 model {
     target += exponential_lpdf(2+kappa|0.01);
     target += normal_lpdf(alpha|0,3);
+    
     for(i in 1:N) {
         target += normal_lpdf(beta[i]|0, 1);
-        target += dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]*x[i]));
+        target += dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
     }
+    
 }
 
 generated quantities {
@@ -50,10 +53,9 @@ generated quantities {
     
     k = 1;
     for(i in 1:N) {
-        p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]*x[i]));
+        p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]));
         y_hat[i] = multinomial_rng(p[i], sum(y[i]));
-        log_lik[i] = dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]*x[i]));
-        
+        log_lik[i] = dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
         if(compute_delta==1) {
             if(i != N) {
                 for(j in (i+1):N) {
@@ -62,7 +64,5 @@ generated quantities {
                 }
             }
         }
-        
     }
 }
-

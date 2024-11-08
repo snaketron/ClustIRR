@@ -30,18 +30,12 @@ dco <- function(community_occupancy_matrix,
         pars <- c("alpha", "beta", "delta", "kappa", "p", "y_hat", "log_lik")
     }
     
-    x <- c(-1, +1)
-    if(n > 2) {
-        x <- rep(1, times = n)
-    }
-    
     # fit
     message("[1/2] fit...")
     f <- sampling(object = model,
                   data = list(K = nrow(community_occupancy_matrix), 
                               N = n, 
                               y = t(community_occupancy_matrix),
-                              x = x,
                               compute_delta = compute_delta),
                   chains = mcmc_control$mcmc_chains, 
                   cores = mcmc_control$mcmc_cores, 
@@ -248,17 +242,12 @@ get_posterior_summaries <- function(cm, f, compute_delta) {
         m <- rownames(s)
         m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
         
-        if(length(samples)==2 & par == "beta") {
-            s$community <- as.numeric(m)
-        } 
-        else {
-            m <- do.call(rbind, strsplit(x = m, split = "\\,"))
-            s$s <- as.numeric(m[,1])
-            s$community <- as.numeric(m[,2])
-            meta <- data.frame(s = 1:length(samples), sample = samples)
-            s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = TRUE)
-            s <- s[order(s$i, decreasing = FALSE),]
-        }
+        m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+        s$s <- as.numeric(m[,1])
+        s$community <- as.numeric(m[,2])
+        meta <- data.frame(s = 1:length(samples), sample = samples)
+        s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = TRUE)
+        s <- s[order(s$i, decreasing = FALSE),]
         
         return(s)
     }
@@ -302,49 +291,8 @@ get_posterior_summaries <- function(cm, f, compute_delta) {
     }
     
     post_delta <- function(f, samples, compute_delta) {
-        if(compute_delta==FALSE) {
+        if(compute_delta==0) {
             return(NA)
-        }
-        
-        if(length(samples)==2) {
-            # pmax statistics
-            p <- as_draws(f)
-            p <- subset_draws(p, variable = "beta")
-            p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
-            p$community <- as.numeric(gsub(pattern = "beta\\[|\\]", 
-                                           replacement = '', x = p$variable))
-            
-            s <- data.frame(summary(f, par = "beta")$summary)
-            s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
-            colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
-            s$i <- 1:nrow(s)
-            
-            # maintain original index order
-            m <- rownames(s)
-            m <- gsub(pattern = "beta\\[|\\]", replacement = '', x = m)
-            s$community <- as.numeric(m)
-            s$sample_1 <- samples[1]
-            s$sample_2 <- samples[2]
-            
-            # merge
-            s <- merge(x = s, y = p[, c("community", "pmax")],by=c("community"))
-            s <- s[order(s$i, decreasing = F),]
-            s$i <- NULL
-            
-            # get reverse effects
-            sr <- s
-            sr$mean <- sr$mean*-1
-            sr$median <- sr$median*-1
-            x <- sr$L95*-1
-            y <- sr$H95*-1
-            sr$L95 <- y
-            sr$H95 <- x
-            sr$sample_1 <- samples[2]
-            sr$sample_2 <- samples[1]
-            
-            s <- rbind(s, sr)
-            s$contrast <- paste0(s$sample_1, '-', s$sample_2)
-            return(s)
         }
         
         get_meta <- function(samples) {
