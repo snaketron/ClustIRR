@@ -1,28 +1,48 @@
 
-dco <- function(community_occupancy_matrix, mcmc_control) {
+dco <- function(community_occupancy_matrix, 
+                mcmc_control, 
+                compute_delta = TRUE) {
     # check control
     mcmc_control <- process_mcmc_control(control_in = mcmc_control)
+    # check compute_delta
 
     n <- ncol(community_occupancy_matrix)
     if(n==1) {
         stop("ncol(community_occupancy_matrix) must be >1")
     }
-    if(n==2) {
-        model <- stanmodels$dm_n2
-        pars <- c("alpha", "beta", "kappa", "p", "y_hat", "log_lik")
+    
+    if(missing(compute_delta)) {
+        stop("compute_delta is missing")
     }
-    if(n>2) {
-        model <- stanmodels$dm
+    if(length(compute_delta)!=1) {
+        stop("compute_delta must be logical")
+    }
+    if(is.logical(compute_delta)==FALSE) {
+        stop("compute_delta must be logical")
+    }
+    compute_delta <- ifelse(test = compute_delta == TRUE, yes = 1, no = 0)
+    
+    
+    
+    model <- stanmodels$dm
+    pars <- c("alpha", "beta", "kappa", "p", "y_hat", "log_lik")
+    if(compute_delta == 1) {
         pars <- c("alpha", "beta", "delta", "kappa", "p", "y_hat", "log_lik")
     }
     
+    x <- c(-1, +1)
+    if(n > 2) {
+        x <- rep(1, times = n)
+    }
+    
     # fit
-    message("1/2 fit...")
+    message("[1/2] fit...")
     f <- sampling(object = model,
                   data = list(K = nrow(community_occupancy_matrix), 
-                              N = ncol(community_occupancy_matrix), 
+                              N = n, 
                               y = t(community_occupancy_matrix),
-                              x = c(-1, +1)),
+                              x = x,
+                              compute_delta = compute_delta),
                   chains = mcmc_control$mcmc_chains, 
                   cores = mcmc_control$mcmc_cores, 
                   iter = mcmc_control$mcmc_iter, 
@@ -32,14 +52,17 @@ dco <- function(community_occupancy_matrix, mcmc_control) {
                   algorithm = mcmc_control$mcmc_algorithm,
                   include = TRUE,
                   pars = pars)
+    
     # summaries
-    message("2/2 posterior summary...")
-    s <- get_posterior_summaries(cm = community_occupancy_matrix, f = f)
+    message("[2/2] posterior summary...")
+    s <- get_posterior_summaries(cm = community_occupancy_matrix, 
+                                 f = f, compute_delta = compute_delta)
     
     return(list(fit = f, 
                 posterior_summary = s, 
                 community_occupancy_matrix = community_occupancy_matrix, 
-                mcmc_control = mcmc_control))
+                mcmc_control = mcmc_control,
+                compute_delta = compute_delta))
 }
 
 
@@ -212,7 +235,7 @@ process_mcmc_control <- function(control_in) {
 }
 
 
-get_posterior_summaries <- function(cm, f) {
+get_posterior_summaries <- function(cm, f, compute_delta) {
     
     post_sample_com <- function(f, samples, par) {
         
@@ -278,7 +301,10 @@ get_posterior_summaries <- function(cm, f) {
         return(s)
     }
     
-    post_delta <- function(f, samples, par) {
+    post_delta <- function(f, samples, compute_delta) {
+        if(compute_delta==FALSE) {
+            return(NA)
+        }
         
         if(length(samples)==2) {
             # pmax statistics
@@ -293,7 +319,6 @@ get_posterior_summaries <- function(cm, f) {
             colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
             s$i <- 1:nrow(s)
             
-            
             # maintain original index order
             m <- rownames(s)
             m <- gsub(pattern = "beta\\[|\\]", replacement = '', x = m)
@@ -301,12 +326,10 @@ get_posterior_summaries <- function(cm, f) {
             s$sample_1 <- samples[1]
             s$sample_2 <- samples[2]
             
-            
             # merge
             s <- merge(x = s, y = p[, c("community", "pmax")],by=c("community"))
             s <- s[order(s$i, decreasing = F),]
             s$i <- NULL
-            
             
             # get reverse effects
             sr <- s
@@ -343,24 +366,22 @@ get_posterior_summaries <- function(cm, f) {
         
         # pmax
         p <- as_draws(f)
-        p <- subset_draws(p, variable = par)
+        p <- subset_draws(p, variable = "delta")
         p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
-        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', 
-                  x = p$variable)
+        m <- gsub(pattern = "delta\\[|\\]", replacement = '', x = p$variable)
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         p$k <- as.numeric(m[,1])
         p$community <- as.numeric(m[,2])
         
-        
         # main summary
-        s <- data.frame(summary(f, par = par)$summary)
+        s <- data.frame(summary(f, par = "delta")$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         # maintain original index order
         s$i <- 1:nrow(s)
         m <- rownames(s)
-        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
+        m <- gsub(pattern = "delta\\[|\\]", replacement = '', x = m)
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         s$k <- as.numeric(m[,1])
         s$community <- as.numeric(m[,2])
@@ -399,7 +420,8 @@ get_posterior_summaries <- function(cm, f) {
               p = post_sample_com(f = f, samples = samples, par = "p"),
               y_hat = post_sample_com(f = f, samples = samples, par = "y_hat"),
               kappa = post_global(f = f, par = "kappa"),
-              delta = post_delta(f = f, samples = samples, par = "delta"))
+              delta = post_delta(f = f, samples = samples, 
+                                 compute_delta = compute_delta))
     
     o$y_hat$y_obs <- c(cm)
     

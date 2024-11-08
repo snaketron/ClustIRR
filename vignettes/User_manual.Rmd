@@ -471,7 +471,8 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
                              mcmc_cores = 1,
                              mcmc_algorithm = "NUTS",
                              adapt_delta = 0.9,
-                             max_treedepth = 10))
+                             max_treedepth = 10),
+         compute_delta = TRUE)
 ```
 
 ## **Step 5.** posterior predictive check
@@ -670,7 +671,8 @@ d <- dco(community_occupancy_matrix = community_occupancy_matrix,
                              mcmc_cores = 1,
                              mcmc_algorithm = "NUTS",
                              adapt_delta = 0.95,
-                             max_treedepth = 11))
+                             max_treedepth = 11),
+         compute_delta = TRUE)
 ```
 
 ## **Step 5.** posterior predictive check

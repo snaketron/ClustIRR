@@ -7,7 +7,7 @@ enrichment/depletion of individual communities in each sample using a Bayesian
 hierarchical model.
 }
 \usage{
-dco(community_occupancy_matrix, mcmc_control)
+dco(community_occupancy_matrix, mcmc_control, compute_delta=TRUE)
 }
 \arguments{
 \item{community_occupancy_matrix}{matrix, rows are communities, columns 
@@ -25,10 +25,12 @@ repertoire.}
 \item max_treedepth = 12; the max value, in exponents of 2, of what the binary 
 tree size in NUTS should have.
 }
+\item{compute_delta}{should delta be computed by the Stan model? This may be 
+take up extra memory.}
 }
 \value{
 The output is a list with the folling elements:
-\item{fit}{stan object, model fit}
+\item{fit}{model fit (stan object)}
 \item{posterior_summary}{nested list with data.frames, summary of model 
 parameters, including their means, medians, 95\% credible intervals, etc.
 Predicted observations (y_hat), which are useful for posterior predictive
@@ -36,7 +38,8 @@ checks are also provided.}
 \item{community_occupancy_matrix}{matrix, rows are communities, columns are 
 repertoires, matrix entries are numbers of cells in each community and 
 repertoire.}
-\item{mcmc_control}{list, mcmc configuration inputs provided as list.}
+\item{mcmc_control}{mcmc configuration inputs provided as list.}
+\item{compute_delta}{compute_delta inputs provided as a logical input}
 }
 
 \examples{
