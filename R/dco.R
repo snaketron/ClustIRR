@@ -12,7 +12,7 @@ dco <- function(community_occupancy_matrix,
     
     # check compute_delta
     if(missing(compute_delta)) {
-        stop("compute_delta is missing")
+        compute_delta <- TRUE
     }
     if(length(compute_delta)!=1) {
         stop("compute_delta must be logical")
