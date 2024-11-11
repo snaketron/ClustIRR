@@ -414,8 +414,9 @@ get_intergraph_edges <- function(igs,
         
         # get blosum matrix from pwalign
         data_env <- new.env(parent = emptyenv())
-        
         data("BLOSUM62", envir = data_env, package = "pwalign")
+        # ensure: min(BLOSUM62)=0, max=15
+        data_env[["BLOSUM62"]] <- data_env[["BLOSUM62"]] + 4
         
         # compute BLSOUM62 score for matches
         o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 

@@ -4,13 +4,13 @@ dco <- function(community_occupancy_matrix,
                 compute_delta = TRUE) {
     # check control
     mcmc_control <- process_mcmc_control(control_in = mcmc_control)
-    # check compute_delta
 
     n <- ncol(community_occupancy_matrix)
     if(n==1) {
         stop("ncol(community_occupancy_matrix) must be >1")
     }
     
+    # check compute_delta
     if(missing(compute_delta)) {
         stop("compute_delta is missing")
     }
