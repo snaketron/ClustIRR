@@ -7,7 +7,7 @@ enrichment/depletion of individual communities in each sample using a Bayesian
 hierarchical model.
 }
 \usage{
-dco(community_occupancy_matrix, mcmc_control, compute_delta=TRUE)
+dco(community_occupancy_matrix, mcmc_control, compute_delta=TRUE, groups = NA)
 }
 \arguments{
 \item{community_occupancy_matrix}{matrix, rows are communities, columns 
@@ -27,6 +27,13 @@ tree size in NUTS should have.
 }
 \item{compute_delta}{should delta be computed by the Stan model? This may be 
 take up extra memory.}
+\item{groups}{vector with integers \eqn{\geq1}, one for each repertoire (column
+in community_occupancy_matrix). This specifies the biological group of each 
+repertoire (e.g. for cancer repertoire we may specify the index 1, and for 
+normal repertoires the index 2). If this vector is specified, ClustIRR will 
+employ a hierarchical model, modeling the dependence between the repertoires 
+within each group. Else (which is the default setting in ClustIRR), ClustIRR 
+will treat the repertoires as independent samples by employing a simpler model.}
 }
 \value{
 The output is a list with the folling elements:
@@ -39,7 +46,8 @@ checks are also provided.}
 repertoires, matrix entries are numbers of cells in each community and 
 repertoire.}
 \item{mcmc_control}{mcmc configuration inputs provided as list.}
-\item{compute_delta}{compute_delta inputs provided as a logical input}
+\item{compute_delta}{the input compute_delta.}
+\item{groups}{the input groups.}
 }
 
 \examples{

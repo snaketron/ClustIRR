@@ -1,10 +1,11 @@
 
 dco <- function(community_occupancy_matrix, 
                 mcmc_control, 
-                compute_delta = TRUE) {
+                compute_delta = TRUE,
+                groups = NA) {
     # check control
     mcmc_control <- process_mcmc_control(control_in = mcmc_control)
-
+    
     n <- ncol(community_occupancy_matrix)
     if(n==1) {
         stop("ncol(community_occupancy_matrix) must be >1")
@@ -23,12 +24,42 @@ dco <- function(community_occupancy_matrix,
     compute_delta <- ifelse(test = compute_delta == TRUE, yes = 1, no = 0)
     
     
-    
-    model <- stanmodels$dm
-    pars <- c("alpha", "beta", "kappa", "p", "y_hat", "log_lik")
-    if(compute_delta == 1) {
-        pars <- c("alpha", "beta", "delta", "kappa", "p", "y_hat", "log_lik")
+    # check groups
+    if(missing(groups)) {
+        groups <- NA
     }
+    if(is.na(groups)==FALSE) {
+        if(length(groups)!=n) {
+            stop("length(groups) != ncol(community_occupancy_matrix)")
+        }
+        if(all(is.numeric(groups))==FALSE) {
+            stop("groups must integers")
+        }
+        if(all(1:max(groups) %in% groups)==FALSE) {
+            stop("missing group in 1:max(groups)")
+        }
+    }
+    has_groups <- all(is.na(groups)==FALSE)
+    
+    
+    # select normal or hierarchical model
+    if(has_groups) {
+        model <- stanmodels$dmh
+        pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
+                  "kappa", "p", "y_hat", "log_lik")
+        if(compute_delta == 1) {
+            pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
+                      "delta", "kappa", "p", "y_hat", "log_lik")
+        }
+    } 
+    else {
+        model <- stanmodels$dm
+        pars <- c("alpha", "beta", "kappa", "p", "y_hat", "log_lik")
+        if(compute_delta == 1) {
+            pars<- c("alpha", "beta", "delta", "kappa", "p", "y_hat", "log_lik")
+        }
+    }
+    
     
     # fit
     message("[1/2] fit...")
@@ -36,6 +67,7 @@ dco <- function(community_occupancy_matrix,
                   data = list(K = nrow(community_occupancy_matrix), 
                               N = n, 
                               y = t(community_occupancy_matrix),
+                              G = groups,
                               compute_delta = compute_delta),
                   chains = mcmc_control$mcmc_chains, 
                   cores = mcmc_control$mcmc_cores, 
@@ -50,13 +82,17 @@ dco <- function(community_occupancy_matrix,
     # summaries
     message("[2/2] posterior summary...")
     s <- get_posterior_summaries(cm = community_occupancy_matrix, 
-                                 f = f, compute_delta = compute_delta)
+                                 f = f, 
+                                 groups = groups,
+                                 has_groups = has_groups,
+                                 compute_delta = compute_delta)
     
     return(list(fit = f, 
                 posterior_summary = s, 
                 community_occupancy_matrix = community_occupancy_matrix, 
                 mcmc_control = mcmc_control,
-                compute_delta = compute_delta))
+                compute_delta = compute_delta,
+                groups = groups))
 }
 
 
@@ -192,7 +228,7 @@ process_mcmc_control <- function(control_in) {
         }
     }
     
- 
+    
     control <- list(mcmc_warmup = 750,
                     mcmc_iter = 1500,
                     mcmc_chains = 4,
@@ -219,7 +255,7 @@ process_mcmc_control <- function(control_in) {
     
     
     check_mcmc_iter(mcmc_iter = control$mcmc_iter,
-                     mcmc_warmup = control$mcmc_warmup)
+                    mcmc_warmup = control$mcmc_warmup)
     check_mcmc_chains(mcmc_chains = control$mcmc_chains)
     check_mcmc_cores(mcmc_cores = control$mcmc_cores)
     check_adapt_delta(adapt_delta = control$adapt_delta)
@@ -229,7 +265,11 @@ process_mcmc_control <- function(control_in) {
 }
 
 
-get_posterior_summaries <- function(cm, f, compute_delta) {
+get_posterior_summaries <- function(cm, 
+                                    f, 
+                                    compute_delta, 
+                                    has_groups, 
+                                    groups) {
     
     post_sample_com <- function(f, samples, par) {
         
@@ -252,14 +292,14 @@ get_posterior_summaries <- function(cm, f, compute_delta) {
         return(s)
     }
     
-    post_com <- function(f, par) {
+    post_alpha <- function(f) {
         
-        s <- data.frame(summary(f, par = par)$summary)
+        s <- data.frame(summary(f, par = "alpha")$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         m <- rownames(s)
-        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
+        m <- gsub(pattern = paste0("alpha\\[|\\]"), replacement = '', x = m)
         s$community <- as.numeric(m)
         return(s)
     }
@@ -280,13 +320,44 @@ get_posterior_summaries <- function(cm, f, compute_delta) {
         return(s)
     }
     
-    post_global <- function(f, par) {
-        
-        s <- data.frame(summary(f, par = par)$summary)
+    post_kappa <- function(f) {
+        s <- data.frame(summary(f, par = "kappa")$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         s$par <- rownames(s)
+        return(s)
+    }
+    
+    post_betamu <- function(f, has_groups) {
+        if(has_groups==FALSE) {
+            return(NA)
+        }
+        
+        s <- data.frame(summary(f, par = "beta_mu")$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+        
+        # maintain original index order
+        s$i <- 1:nrow(s)
+        m <- rownames(s)
+        m <- gsub(pattern = "beta\\_mu\\[|\\]", replacement = '', x = m)
+        
+        m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+        s$g <- as.numeric(m[,1])
+        s$community <- as.numeric(m[,2])
+        
+        return(s)
+    }
+    
+    post_betasigma <- function(f, has_groups) {
+        if(has_groups==FALSE) {
+            return(NA)
+        }
+        s <- data.frame(summary(f, par = "beta_sigma")$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+        s$group <- as.numeric(rownames(s))
         return(s)
     }
     
@@ -360,17 +431,98 @@ get_posterior_summaries <- function(cm, f, compute_delta) {
         
         return(s)
     }
-
+    
+    post_deltamu <- function(f, groups, compute_delta) {
+        if(compute_delta==0) {
+            return(NA)
+        }
+        
+        get_meta <- function(groups) {
+            m <- c()
+            k <- 1
+            for(i in 1:(length(groups)-1)) {
+                for(j in (i+1):length(groups)) {
+                    m <- rbind(m, data.frame(k = k, 
+                                             group_1 = groups[i],
+                                             group_2 = groups[j]))
+                    k <- k + 1
+                }   
+            }
+            m$contrast <- paste0(m$group_1, '-', m$group_2)
+            return(m)
+        }
+        
+        meta <- get_meta(groups = groups)
+        
+        # pmax
+        p <- as_draws(f)
+        p <- subset_draws(p, variable = "delta")
+        p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
+        m <- gsub(pattern = "delta\\[|\\]", replacement = '', x = p$variable)
+        m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+        p$k <- as.numeric(m[,1])
+        p$community <- as.numeric(m[,2])
+        
+        # main summary
+        s <- data.frame(summary(f, par = "delta")$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+        
+        # maintain original index order
+        s$i <- 1:nrow(s)
+        m <- rownames(s)
+        m <- gsub(pattern = "delta\\[|\\]", replacement = '', x = m)
+        m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+        s$k <- as.numeric(m[,1])
+        s$community <- as.numeric(m[,2])
+        
+        
+        s <- merge(x = s, y = p[,c("k", "community", "pmax")], 
+                   by = c("k", "community"))
+        s <- merge(x = s, y = meta, by.x = "k", by.y = "k", all.x = T)
+        s <- s[order(s$i, decreasing = F),]
+        s$i <- NULL
+        
+        
+        # get reverse effects
+        sr <- s
+        sr$mean <- sr$mean*-1
+        sr$median <- sr$median*-1
+        x <- sr$L95*-1
+        y <- sr$H95*-1
+        sr$L95 <- y
+        sr$H95 <- x
+        x <- sr$group_1
+        y <- sr$group_2
+        sr$group_2 <- x
+        sr$group_1 <- y
+        
+        s <- rbind(s, sr)
+        s$contrast <- paste0(s$group_1, '-', s$group_2)
+        
+        return(s)
+    }
+    
     samples <- colnames(cm)
+    groups <- unique(groups)
     
     o <- list(beta = post_sample_com(f = f, samples = samples, par = "beta"),
-              alpha = post_com(f = f, par = "alpha"),
+              beta_mu = post_betamu(f = f, has_groups = has_groups),
+              beta_sigma = post_betasigma(f = f, has_groups = has_groups),
+              alpha = post_alpha(f = f),
               p = post_sample_com(f = f, samples = samples, par = "p"),
               y_hat = post_sample_com(f = f, samples = samples, par = "y_hat"),
-              kappa = post_global(f = f, par = "kappa"),
-              delta = post_delta(f = f, samples = samples, 
-                                 compute_delta = compute_delta))
+              kappa = post_kappa(f = f))
     
+    # compute delta
+    if(has_groups==FALSE) {
+        delta <- post_delta(f = f, samples = samples, 
+                            compute_delta = compute_delta)
+    } else {
+        delta <- post_deltamu(f = f, groups = groups, 
+                              compute_delta = compute_delta)
+    }
+    o[["delta"]] <- delta
     o$y_hat$y_obs <- c(cm)
     
     return(o)
