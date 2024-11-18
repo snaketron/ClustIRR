@@ -28,7 +28,8 @@ dco <- function(community_occupancy_matrix,
     if(missing(groups)) {
         groups <- NA
     }
-    if(is.na(groups)==FALSE) {
+    has_groups <- all(is.na(groups)==FALSE)
+    if(has_groups) {
         if(length(groups)!=n) {
             stop("length(groups) != ncol(community_occupancy_matrix)")
         }
@@ -39,8 +40,6 @@ dco <- function(community_occupancy_matrix,
             stop("missing group in 1:max(groups)")
         }
     }
-    has_groups <- all(is.na(groups)==FALSE)
-    
     
     # select normal or hierarchical model
     if(has_groups) {
@@ -357,7 +356,9 @@ get_posterior_summaries <- function(cm,
         s <- data.frame(summary(f, par = "beta_sigma")$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
-        s$group <- as.numeric(rownames(s))
+        m <- rownames(s)
+        m <- gsub(pattern = "beta\\_sigma\\[|\\]", replacement = '', x = m)
+        s$group <- as.numeric(m)
         return(s)
     }
     
