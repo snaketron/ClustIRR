@@ -503,26 +503,54 @@ ggplot(data = d$posterior_summary$y_hat)+
 ```
 
 ## **Step 6.** $\delta$ parameters
-We can compare DAC in two directions: $a$ vs. $b$ **or** $b$ vs. $a$ 
+We can compare DAC in two directions: $a$ vs. $b$ **or** $b$ vs. $a$.
+
+Two different $\delta$ parameters are available.
+${\delta}_{\beta}$ is the difference between the different samples $\beta$ parameter
+for each community. It can be interpreted as the effect of each community, 
+ranging from $-\infty$ to $+\infty$.
 
 ```{r, fig.width=6, fig.height=4}
-ggplot(data = d$posterior_summary$delta)+
+ggplot(data = d$posterior_summary$delta_b)+
   facet_wrap(facets = ~contrast, ncol = 1)+
   geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
                 col = "darkgray", width =0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
   theme(legend.position = "none")+
-  ylab(label = expression(delta))+
+  ylab(label = expression(delta[beta]))+
+  scale_x_continuous(expand = c(0,0))
+```
+
+${\delta}_p$ is the difference between the different samples
+regenerated multinomial probability $p$ for each community. It can be 
+interpreted as the effect of each community, ranging from $-1$ to $+1$.
+
+```{r, fig.width=6, fig.height=4}
+ggplot(data = d$posterior_summary$delta_p)+
+  facet_wrap(facets = ~contrast, ncol = 1)+
+  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
+                col = "darkgray", width =0)+
+  geom_point(aes(x = community, y = mean), size = 0.5)+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "none")+
+  ylab(label = expression(delta[p]))+
   scale_x_continuous(expand = c(0,0))
 ```
 
 Distribution of mean $\delta$s
 
 ```{r, fig.width=4, fig.height=3}
-ggplot(data = d$posterior_summary$delta)+
+ggplot(data = d$posterior_summary$delta_b)+
   geom_histogram(aes(mean), bins = 100)+
-  xlab(label = expression(delta))+
+  xlab(label = expression(delta[beta]))+
+  theme_bw(base_size = 10)
+```
+
+```{r, fig.width=4, fig.height=3}
+ggplot(data = d$posterior_summary$delta_p)+
+  geom_histogram(aes(mean), bins = 100)+
+  xlab(label = expression(delta[p]))+
   theme_bw(base_size = 10)
 ```
 
@@ -731,14 +759,14 @@ $\delta^{a-b}_{i} = \beta^{a}_{i}-\beta^{b}_{i}$
 
 Lets look at $\delta^{a-b}$, $\delta^{a-c}$ and $\delta^{b-c}$ for
 different communities. This information is stored in
-`posterior_summary$delta`. of the output. We see clear differences
+`posterior_summary$delta_b`. of the output. We see clear differences
 ($\delta!=0$) for at least 3 communities.
 
 **Remember: we simulated clonal expansion in about 2% of the
 communities!**
 
 ```{r, fig.width=6, fig.height=7}
-delta <- d$posterior_summary$delta
+delta <- d$posterior_summary$delta_b
 delta <- delta[delta$contrast %in% c("a-b", "a-c", "b-c"), ]
 
 ggplot(data = delta)+
@@ -747,7 +775,22 @@ ggplot(data = delta)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
   theme(legend.position = "top")+
-  ylab(label = expression(delta))+
+  ylab(label = expression(delta[beta]))+
+  scale_x_continuous(expand = c(0,0))
+```
+
+
+```{r, fig.width=6, fig.height=7}
+delta <- d$posterior_summary$delta_p
+delta <- delta[delta$contrast %in% c("a-b", "a-c", "b-c"), ]
+
+ggplot(data = delta)+
+  facet_wrap(facets = ~contrast, ncol = 1)+
+  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), width=0)+
+  geom_point(aes(x = community, y = mean), size = 0.5)+
+  theme_bw(base_size = 10)+
+  theme(legend.position = "top")+
+  ylab(label = expression(delta[p]))+
   scale_x_continuous(expand = c(0,0))
 ```
 

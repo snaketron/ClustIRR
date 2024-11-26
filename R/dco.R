@@ -48,14 +48,15 @@ dco <- function(community_occupancy_matrix,
                   "kappa", "p", "y_hat", "log_lik")
         if(compute_delta == 1) {
             pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
-                      "delta", "kappa", "p", "y_hat", "log_lik")
+                      "delta_b", "delta_p", "kappa", "p", "y_hat", "log_lik")
         }
     } 
     else {
         model <- stanmodels$dm
         pars <- c("alpha", "beta", "kappa", "p", "y_hat", "log_lik")
         if(compute_delta == 1) {
-            pars<- c("alpha", "beta", "delta", "kappa", "p", "y_hat", "log_lik")
+            pars<- c("alpha", "beta", "delta_b", "delta_p", "kappa", 
+                     "p", "y_hat", "log_lik")
         }
     }
     
@@ -362,7 +363,7 @@ get_posterior_summaries <- function(cm,
         return(s)
     }
     
-    post_delta <- function(f, samples, compute_delta) {
+    post_delta <- function(f, samples, compute_delta, par) {
         if(compute_delta==0) {
             return(NA)
         }
@@ -386,22 +387,23 @@ get_posterior_summaries <- function(cm,
         
         # pmax
         p <- as_draws(f)
-        p <- subset_draws(p, variable = "delta")
+        p <- subset_draws(p, variable = par)
         p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
-        m <- gsub(pattern = "delta\\[|\\]", replacement = '', x = p$variable)
+        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', 
+                  x = p$variable)
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         p$k <- as.numeric(m[,1])
         p$community <- as.numeric(m[,2])
         
         # main summary
-        s <- data.frame(summary(f, par = "delta")$summary)
+        s <- data.frame(summary(f, par = par)$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         # maintain original index order
         s$i <- 1:nrow(s)
         m <- rownames(s)
-        m <- gsub(pattern = "delta\\[|\\]", replacement = '', x = m)
+        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         s$k <- as.numeric(m[,1])
         s$community <- as.numeric(m[,2])
@@ -433,7 +435,7 @@ get_posterior_summaries <- function(cm,
         return(s)
     }
     
-    post_deltamu <- function(f, groups, compute_delta) {
+    post_deltamu <- function(f, groups, compute_delta, par) {
         if(compute_delta==0) {
             return(NA)
         }
@@ -457,22 +459,22 @@ get_posterior_summaries <- function(cm,
         
         # pmax
         p <- as_draws(f)
-        p <- subset_draws(p, variable = "delta")
+        p <- subset_draws(p, variable = par)
         p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
-        m <- gsub(pattern = "delta\\[|\\]", replacement = '', x = p$variable)
+        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = p$variable)
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         p$k <- as.numeric(m[,1])
         p$community <- as.numeric(m[,2])
         
         # main summary
-        s <- data.frame(summary(f, par = "delta")$summary)
+        s <- data.frame(summary(f, par = par)$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
         
         # maintain original index order
         s$i <- 1:nrow(s)
         m <- rownames(s)
-        m <- gsub(pattern = "delta\\[|\\]", replacement = '', x = m)
+        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         s$k <- as.numeric(m[,1])
         s$community <- as.numeric(m[,2])
@@ -517,13 +519,18 @@ get_posterior_summaries <- function(cm,
     
     # compute delta
     if(has_groups==FALSE) {
-        delta <- post_delta(f = f, samples = samples, 
-                            compute_delta = compute_delta)
+        delta_b <- post_delta(f = f, samples = samples, 
+                            compute_delta = compute_delta, par = "delta_b")
+        delta_p <- post_delta(f = f, samples = samples, 
+                              compute_delta = compute_delta, par = "delta_p")
     } else {
-        delta <- post_deltamu(f = f, groups = groups, 
-                              compute_delta = compute_delta)
+        delta_b <- post_deltamu(f = f, groups = groups, 
+                                compute_delta = compute_delta, par = "delta_b")
+        delta_p <- post_deltamu(f = f, groups = groups, 
+                              compute_delta = compute_delta, par = "delta_p")
     }
-    o[["delta"]] <- delta
+    o[["delta_b"]] <- delta_b
+    o[["delta_p"]] <- delta_p
     o$y_hat$y_obs <- c(cm)
     
     return(o)

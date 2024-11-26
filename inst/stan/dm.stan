@@ -48,21 +48,27 @@ generated quantities {
     int y_hat [N, K];
     real log_lik [N];
     simplex [K] p [N];
-    vector [K_delta] delta [N_delta];
+    vector [K_delta] delta_b [N_delta];
+    vector [K_delta] delta_p [N_delta];
     int k;
     
-    k = 1;
     for(i in 1:N) {
         p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]));
         y_hat[i] = multinomial_rng(p[i], sum(y[i]));
         log_lik[i] = dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
+    }
+    
+    k = 1;
+    for(i in 1:N) {
         if(compute_delta==1) {
             if(i != N) {
                 for(j in (i+1):N) {
-                    delta[k] = beta[i]-beta[j];
+                    delta_b[k] = beta[i]-beta[j];
+                    delta_p[k] = p[i]-p[j];
                     k = k + 1;
                 }
             }
         }
     }
+    
 }
