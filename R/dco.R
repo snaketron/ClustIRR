@@ -48,14 +48,14 @@ dco <- function(community_occupancy_matrix,
                   "kappa", "p", "y_hat", "log_lik")
         if(compute_delta == 1) {
             pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
-                      "delta_b", "delta_p", "kappa", "p", "y_hat", "log_lik")
+                      "delta", "epsilon", "kappa", "p", "y_hat", "log_lik")
         }
     } 
     else {
         model <- stanmodels$dm
         pars <- c("alpha", "beta", "kappa", "p", "y_hat", "log_lik")
         if(compute_delta == 1) {
-            pars<- c("alpha", "beta", "delta_b", "delta_p", "kappa", 
+            pars<- c("alpha", "beta", "delta", "epsilon", "kappa", 
                      "p", "y_hat", "log_lik")
         }
     }
@@ -519,18 +519,18 @@ get_posterior_summaries <- function(cm,
     
     # compute delta
     if(has_groups==FALSE) {
-        delta_b <- post_delta(f = f, samples = samples, 
-                            compute_delta = compute_delta, par = "delta_b")
-        delta_p <- post_delta(f = f, samples = samples, 
-                              compute_delta = compute_delta, par = "delta_p")
+        delta <- post_delta(f = f, samples = samples, 
+                            compute_delta = compute_delta, par = "delta")
+        epsilon <- post_delta(f = f, samples = samples, 
+                              compute_delta = compute_delta, par = "epsilon")
     } else {
-        delta_b <- post_deltamu(f = f, groups = groups, 
-                                compute_delta = compute_delta, par = "delta_b")
-        delta_p <- post_deltamu(f = f, groups = groups, 
-                              compute_delta = compute_delta, par = "delta_p")
+        delta <- post_deltamu(f = f, groups = groups, 
+                                compute_delta = compute_delta, par = "delta")
+        epsilon <- post_deltamu(f = f, groups = groups, 
+                              compute_delta = compute_delta, par = "epsilon")
     }
-    o[["delta_b"]] <- delta_b
-    o[["delta_p"]] <- delta_p
+    o[["delta"]] <- delta
+    o[["epsilon"]] <- epsilon
     o$y_hat$y_obs <- c(cm)
     
     return(o)

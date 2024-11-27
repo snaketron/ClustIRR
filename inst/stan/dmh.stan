@@ -61,8 +61,8 @@ generated quantities {
     int y_hat [N, K];
     real log_lik [N];
     simplex [K] p [N];
-    vector [K_delta] delta_b [N_delta];
-    vector [K_delta] delta_p [N_delta];
+    vector [K_delta] delta [N_delta];
+    vector [K_delta] epsilon [N_delta];
     int k;
     
     for(i in 1:N) {
@@ -76,8 +76,8 @@ generated quantities {
         for(i in 1:max(G)) {
             if(i != max(G)) {
                 for(j in (i+1):max(G)) {
-                    delta_b[k] = beta_mu[i]-beta_mu[j];
-                    delta_p[k] = p[i]-p[j];
+                    delta[k] = beta_mu[i]-beta_mu[j];
+                    epsilon[k] = p[i]-p[j];
                     k = k + 1;
                 }
             }

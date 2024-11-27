@@ -502,55 +502,61 @@ ggplot(data = d$posterior_summary$y_hat)+
   theme_bw(base_size = 10)
 ```
 
-## **Step 6.** $\delta$ parameters
+## **Step 6.** $\delta$ and $\epsilon$ parameters
 We can compare DAC in two directions: $a$ vs. $b$ **or** $b$ vs. $a$.
 
-Two different $\delta$ parameters are available.
-${\delta}_{\beta}$ is the difference between the different samples $\beta$ parameter
+Two different parameters $\delta$ and $\epsilon$ are available.
+$\delta$ is the difference between the different samples $\beta$ parameter
 for each community. It can be interpreted as the effect of each community, 
-ranging from $-\infty$ to $+\infty$.
+regardless of it's cell count. This can be useful to detect changes in rare
+clonotypes with low cell counts. 
+$\delta$ has a range of $-\infty$ to $+\infty$.
 
 ```{r, fig.width=6, fig.height=4}
-ggplot(data = d$posterior_summary$delta_b)+
+ggplot(data = d$posterior_summary$delta)+
   facet_wrap(facets = ~contrast, ncol = 1)+
   geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
                 col = "darkgray", width =0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
   theme(legend.position = "none")+
-  ylab(label = expression(delta[beta]))+
+  ylab(label = expression(delta))+
   scale_x_continuous(expand = c(0,0))
 ```
 
-${\delta}_p$ is the difference between the different samples
+$\epsilon$ is the difference between the different samples
 regenerated multinomial probability $p$ for each community. It can be 
-interpreted as the effect of each community, ranging from $-1$ to $+1$.
+interpreted as the effect of each community, relative to the different
+sample and community sizes. This can be useful to detect medium to big effects
+in a concise way. $\epsilon$ has a range of $-1$ to $+1$.
 
 ```{r, fig.width=6, fig.height=4}
-ggplot(data = d$posterior_summary$delta_p)+
+ggplot(data = d$posterior_summary$epsilon)+
   facet_wrap(facets = ~contrast, ncol = 1)+
   geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
                 col = "darkgray", width =0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
   theme(legend.position = "none")+
-  ylab(label = expression(delta[p]))+
+  ylab(label = expression(epsilon))+
   scale_x_continuous(expand = c(0,0))
 ```
 
 Distribution of mean $\delta$s
 
 ```{r, fig.width=4, fig.height=3}
-ggplot(data = d$posterior_summary$delta_b)+
+ggplot(data = d$posterior_summary$delta)+
   geom_histogram(aes(mean), bins = 100)+
-  xlab(label = expression(delta[beta]))+
+  xlab(label = expression(delta))+
   theme_bw(base_size = 10)
 ```
 
+Distribution of mean $\epsilon$s
+
 ```{r, fig.width=4, fig.height=3}
-ggplot(data = d$posterior_summary$delta_p)+
+ggplot(data = d$posterior_summary$epsilon)+
   geom_histogram(aes(mean), bins = 100)+
-  xlab(label = expression(delta[p]))+
+  xlab(label = expression(epsilon))+
   theme_bw(base_size = 10)
 ```
 
@@ -748,7 +754,7 @@ ggplot(data = beta)+
   scale_x_continuous(expand = c(0,0))
 ```
 
-## **Step 7.** $\delta$ parameters
+## **Step 7.** $\delta$ and $\epsilon$ parameters
 
 If a given community $i$ is differentially expressed between two AIRRs,
 $a$ and $b$, then we may expect to see a difference in the credible
@@ -759,14 +765,14 @@ $\delta^{a-b}_{i} = \beta^{a}_{i}-\beta^{b}_{i}$
 
 Lets look at $\delta^{a-b}$, $\delta^{a-c}$ and $\delta^{b-c}$ for
 different communities. This information is stored in
-`posterior_summary$delta_b`. of the output. We see clear differences
+`posterior_summary$delta` of the output. We see clear differences
 ($\delta!=0$) for at least 3 communities.
 
 **Remember: we simulated clonal expansion in about 2% of the
 communities!**
 
 ```{r, fig.width=6, fig.height=7}
-delta <- d$posterior_summary$delta_b
+delta <- d$posterior_summary$delta
 delta <- delta[delta$contrast %in% c("a-b", "a-c", "b-c"), ]
 
 ggplot(data = delta)+
@@ -775,22 +781,31 @@ ggplot(data = delta)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
   theme(legend.position = "top")+
-  ylab(label = expression(delta[beta]))+
+  ylab(label = expression(delta))+
   scale_x_continuous(expand = c(0,0))
 ```
 
+We can also expect to see a difference in the credible
+values of $p^{a}_{i}$ and $p^{b}_{i}$, which incorporates the differences
+between community sizes. We define this as $\epsilon^{a-b}_{i}$.
+
+$\epsilon^{a-b}_{i} = p^{a}_{i}-p^{b}_{i}$
+
+We see clear differences ($\epsilon!=0$), but only for the bigger 2 
+communities. This information is stored in `posterior_summary$epsilon` 
+of the output.
 
 ```{r, fig.width=6, fig.height=7}
-delta <- d$posterior_summary$delta_p
-delta <- delta[delta$contrast %in% c("a-b", "a-c", "b-c"), ]
+epsilon <- d$posterior_summary$epsilon
+epsilon <- epsilon[epsilon$contrast %in% c("a-b", "a-c", "b-c"), ]
 
-ggplot(data = delta)+
+ggplot(data = epsilon)+
   facet_wrap(facets = ~contrast, ncol = 1)+
   geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), width=0)+
   geom_point(aes(x = community, y = mean), size = 0.5)+
   theme_bw(base_size = 10)+
   theme(legend.position = "top")+
-  ylab(label = expression(delta[p]))+
+  ylab(label = expression(epsilon))+
   scale_x_continuous(expand = c(0,0))
 ```
 
