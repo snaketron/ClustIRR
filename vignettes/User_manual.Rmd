@@ -546,18 +546,20 @@ Distribution of mean $\delta$s
 
 ```{r, fig.width=4, fig.height=3}
 ggplot(data = d$posterior_summary$delta)+
-  geom_histogram(aes(mean), bins = 100)+
-  xlab(label = expression(delta))+
-  theme_bw(base_size = 10)
+    facet_wrap(facets = ~contrast, ncol = 1)+
+    geom_histogram(aes(mean), bins = 100)+
+    xlab(label = expression(delta))+
+    theme_bw(base_size = 10)
 ```
 
 Distribution of mean $\epsilon$s
 
 ```{r, fig.width=4, fig.height=3}
 ggplot(data = d$posterior_summary$epsilon)+
-  geom_histogram(aes(mean), bins = 100)+
-  xlab(label = expression(epsilon))+
-  theme_bw(base_size = 10)
+    facet_wrap(facets = ~contrast, ncol = 1)+
+    geom_histogram(aes(mean), bins = 100)+
+    xlab(label = expression(epsilon))+
+    theme_bw(base_size = 10)
 ```
 
 ```{r, echo=FALSE, include=FALSE}
@@ -808,6 +810,25 @@ ggplot(data = epsilon)+
   ylab(label = expression(epsilon))+
   scale_x_continuous(expand = c(0,0))
 ```
+
+We can look at the distribution of the effect size means.
+
+```{r}
+ggplot(data = d$posterior_summary$delta)+
+    facet_wrap(facets = ~contrast, ncol = 1)+
+    geom_histogram(aes(mean), bins = 100)+
+    xlab(label = expression(delta))+
+    theme_bw(base_size = 10)
+```
+
+```{r}
+ggplot(data = d$posterior_summary$epsilon)+
+    facet_wrap(facets = ~contrast, ncol = 1)+
+    geom_histogram(aes(mean), bins = 100)+
+    xlab(label = expression(epsilon))+
+    theme_bw(base_size = 10)
+```
+
 
 ```{r session_info}
 utils::sessionInfo()
