@@ -317,66 +317,81 @@ get_intergraph_edges <- function(igs,
                                  trim_flank_aa,
                                  gmi) {
     
-    get_identical_hits <- function(a, b) {
-        js <- intersect(a$Seq, b$Seq)
-        js <- js[is.na(js)==FALSE]
-        if(length(js)==0) {
-            return(NULL)
-        }
-        is <- lapply(X = js, a = a, b = b, FUN = function(x, a, b) {
-            return(expand.grid(a$Id[which(a$Seq==x)], 
-                               b$Id[which(b$Seq==x)]))
-        })
-        is <- do.call(rbind, is)
-        colnames(is) <- c("QueryId", "TargetId")
-        return(is)
-    }
-    
-    get_bscore_trim <- function(x, s1, s2, bm, d, trim_flank_aa) {
+    get_bscore <- function(x, o, b, gap_o, gap_e, trim) {
         
-        a <- s1$Seq[d$QueryId[x]]
-        b <- s2$Seq[d$TargetId[x]]
-        na <- nchar(a)
-        nb <- nchar(b)
-        if(is.na(na)|is.na(nb)) {
-            return(NA)
-        }
-        if((na-2*trim_flank_aa)<=0 | (nb-2*trim_flank_aa)<=0) {
-            return(NA)
+        parse_cigar <- function(cigar) {
+            c <- as.numeric(gregexpr(text = cigar, pattern = "X|D|I|\\=")[[1]])
+            s <- vapply(X = c, cigar = cigar, FUN.VALUE = character(1), 
+                        FUN = function(x, cigar) {
+                            return(substr(x = cigar, start = x, stop = x))
+                        })
+            n <- vapply(X = 2:(length(c)+1), c = c(0,c), cigar = cigar, 
+                        FUN.VALUE = character(1), 
+                        FUN = function(x, c, cigar) {
+                            return(substr(x = cigar, start = c[x-1]+1, stop = c[x]-1))
+                        })
+            n <- as.numeric(n)
+            
+            return(rep(x = s, times = n))
         }
         
-        a <- substr(x=a, start = trim_flank_aa+1, stop = nchar(a)-trim_flank_aa)
-        b <- substr(x=b, start = trim_flank_aa+1, stop = nchar(b)-trim_flank_aa)
+        q <- o$QueryMatchSeq[x] 
+        t <- o$TargetMatchSeq[x] 
+        cigar <- o$Alignment[x] 
         
-        if(is.na(a)|is.na(b)) {
-            return(NA)
-        }
-        if(is.na(a)|is.na(b)) {
-            return(NA)
-        }
+        s <- parse_cigar(cigar = cigar)
+        len_s <- length(s)
+        q <- unlist(strsplit(x = q, split = NULL, fixed = TRUE))
+        t <- unlist(strsplit(x = t, split = NULL, fixed = TRUE))
         
-        return(stringDist(x = c(a, b),
-                          method = "substitutionMatrix", 
-                          type = "global", 
-                          substitutionMatrix = bm, 
-                          gapOpening = 10,
-                          gapExtension = 4))
-    }
-    
-    get_bscore <- function(x, s1, s2, bm, d) {
-        a <- s1$Seq[d$QueryId[x]]
-        b <- s2$Seq[d$TargetId[x]]
-        
-        if(is.na(a)|is.na(b)) {
-            return(NA)
+        # trim region = 1, else = 0
+        tr <- numeric(length = len_s)
+        if(trim != 0) {
+            if(len_s-2*trim <= 0) {
+                tr[1:length(tr)] <- 1
+            } else {
+                tr[c(1:trim, (len_s-trim+1):len_s)] <- 1
+            }
         }
         
-        return(stringDist(x = c(a, b),
-                          method = "substitutionMatrix",
-                          type = "global",
-                          substitutionMatrix = bm,
-                          gapOpening = 10,
-                          gapExtension = 4))
+        cscore <- 0
+        score <- 0
+        gap_o_on <- 0
+        iq <- 1
+        it <- 1
+        for(i in seq_len(len_s)) {
+            if(s[i]=="="|s[i]=="X") {
+                bi <- b[q[iq],t[it]]
+                score <- score + bi
+                cscore <- cscore + bi * (tr[i]==0)
+                gap_o_on <- 0
+                iq <- iq + 1
+                it <- it + 1
+            }
+            else {
+                if(gap_o_on==1) {
+                    score <- score + gap_e
+                    cscore <- cscore + gap_e * (tr[i]==0)
+                } 
+                else {
+                    score <- score + gap_o + gap_e
+                    cscore <- cscore + (gap_o + gap_e) * (tr[i]==0)
+                    gap_o_on <- 1
+                }
+                
+                iq <- iq + (s[i]=="I")
+                it <- it + (s[i]=="D")
+            }
+        }
+        
+        res <- numeric(length = 6)
+        res[1] <- score
+        res[2] <- length(s)
+        res[3] <- res[1]/res[2]
+        res[4] <- cscore
+        res[5] <- sum(tr==0)
+        res[6] <- res[4]/res[5]
+        return(res)
     }
     
     get_blastr <- function(s1, s2, chain, trim_flank_aa, gmi) {
@@ -388,68 +403,64 @@ get_intergraph_edges <- function(igs,
         o <- blast(query = s1, 
                    db = s2,
                    maxAccepts = 10^4,
+                   maxRejects = 10^3,
                    minIdentity = gmi,
                    alphabet = "protein",
                    output_to_file = FALSE)
         
+        # check if NA -> why should this occur?
         o <- o[is.na(o$QueryMatchSeq)==FALSE&
                    is.na(o$TargetMatchSeq)==FALSE,]
-        
         # if empty stop
         if(nrow(o)==0) {
             return(NULL)
-        } else {
-            # we only need these columns
-            o <- o[, c("QueryId", "TargetId")]
-            
-            # here make sure that short identical sequences are not thrown out
-            # if duplicated -> remove
-            oi <- get_identical_hits(a = s1, b = s2)
-            if(is.null(oi)==FALSE) {
-                o <- rbind(o, oi)
-                o <- o[duplicated(o)==FALSE, ]
-                rm(oi)
-            }
+        } 
+        
+        
+        # remove partial hits
+        o$QueryLen <- s1$len[o$QueryId]
+        o$TargetLen <- s2$len[o$TargetId]
+        j <- which(o$QueryMatchStart!=1 | 
+                       o$TargetMatchStart!=1 | 
+                       o$QueryMatchEnd != o$QueryLen | 
+                       o$TargetMatchEnd != o$TargetLen)
+        if(length(j)!=0) {
+            o <- o[-j,]
+        }
+        # if empty stop
+        if(nrow(o)==0) {
+            return(NULL)
         }
         
         # get blosum matrix from pwalign
         data_env <- new.env(parent = emptyenv())
         data("BLOSUM62", envir = data_env, package = "pwalign")
-        # ensure: min(BLOSUM62)=0, max=15
         data_env[["BLOSUM62"]] <- data_env[["BLOSUM62"]] + 4
         
-        # compute BLSOUM62 score for matches
-        o$bs <- sapply(X = 1:nrow(o), FUN = get_bscore, d = o, 
-                       s1 = s1, s2 = s2, bm = data_env[["BLOSUM62"]])
+        # compute BLSOUM62 scores
+        bs <- do.call(rbind, lapply(X = 1:nrow(o), 
+                                    FUN = get_bscore, 
+                                    o = o, 
+                                    gap_o = -10, 
+                                    gap_e = -4, 
+                                    trim = trim_flank_aa,
+                                    b = data_env[["BLOSUM62"]]))
         
-        # compute BLSOUM62 score for matches
-        o$core_bs <- o$bs
-        if(trim_flank_aa > 0) {
-            o$core_bs <- vapply(X = 1:nrow(o), 
-                                FUN = get_bscore_trim, 
-                                s1 = s1,
-                                s2 = s2,
-                                d = o,
-                                bm = data_env[["BLOSUM62"]],
-                                trim_flank_aa = trim_flank_aa,
-                                FUN.VALUE = numeric(1))
-        }
+        o$b <- bs[,1]
+        o$max_len <- bs[,2]
+        o$nb <- bs[,3]
+        o$cb <- bs[,4]
+        o$max_clen <- bs[,5]
+        o$ncb <- bs[,6]
         
         out <- data.frame(from = s1$name[o$QueryId],
                           to = s2$name[o$TargetId],
-                          weight = -o$bs,
-                          cweight = -o$core_bs)
-        
-        len_s1 <- s1$len[o$QueryId]
-        len_s2 <- s2$len[o$TargetId]
-        
-        max_len <- ifelse(test = len_s1 >= len_s2, yes = len_s1, no = len_s2)
-        out$max_len <- max_len
-        out$max_clen <- max_len-(2*trim_flank_aa)
-        out$max_clen <- ifelse(test=out$max_clen<0, yes = 0, no = out$max_clen)
-        
-        out$nweight <- out$weight/out$max_len
-        out$ncweight <- out$cweight/out$max_clen
+                          weight = o$b,
+                          cweight = o$cb,
+                          nweight = o$nb,
+                          ncweight = o$ncb,
+                          max_len = o$max_len,
+                          max_clen = o$max_clen)
         
         return(out)
     }

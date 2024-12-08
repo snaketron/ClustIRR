@@ -50,121 +50,131 @@ get_clust <- function(x, s, control) {
   cdr3 <- get_cdr3s(x = s, chain = x)
   
   cdr3 <- table(cdr3)
-  cdr3_dup <- ifelse(test = as.numeric(cdr3)>1, yes = 1, no = 0)
   cdr3 <- names(cdr3)
   
-  return(get_blosum(cdr3 = cdr3, cdr3_dup = cdr3_dup, control = control))
+  return(get_blosum(cdr3 = cdr3, control = control))
 }
 
 
 
-get_blosum <- function(cdr3, cdr3_dup, control) {
+get_blosum <- function(cdr3, control) {
   
-  # computes BLOSUM62 score for pairs of sequences returned by blaster 
-  get_bscore <- function(x, d, bm, db) {
-    a <- db$Seq[d$QueryId[x]]
-    b <- db$Seq[d$TargetId[x]]
+  get_bscore <- function(x, o, b, gap_o, gap_e, trim) {
     
-    if(is.na(a)|is.na(b)) {
-      return(NA)
+    parse_cigar <- function(cigar) {
+      c <- as.numeric(gregexpr(text = cigar, pattern = "X|D|I|\\=")[[1]])
+      s <- vapply(X = c, cigar = cigar, FUN.VALUE = character(1), 
+                  FUN = function(x, cigar) {
+                    return(substr(x = cigar, start = x, stop = x))
+                  })
+      n <- vapply(X = 2:(length(c)+1), c = c(0,c), cigar = cigar, 
+                  FUN.VALUE = character(1), 
+                  FUN = function(x, c, cigar) {
+                    return(substr(x = cigar, start = c[x-1]+1, stop = c[x]-1))
+                  })
+      n <- as.numeric(n)
+      
+      return(rep(x = s, times = n))
     }
     
-    return(stringDist(x = c(a, b),
-                      method = "substitutionMatrix", 
-                      type = "global", 
-                      substitutionMatrix = bm, 
-                      gapOpening = 10,
-                      gapExtension = 4))
-  }
-  
-  get_bscore_trim <- function(x, d, bm, db, trim) {
+    q <- o$QueryMatchSeq[x] 
+    t <- o$TargetMatchSeq[x] 
+    cigar <- o$Alignment[x] 
     
-    a <- db$Seq[d$QueryId[x]]
-    b <- db$Seq[d$TargetId[x]]
-    na <- nchar(a)
-    nb <- nchar(b)
-    if((na-2*trim)<=0 | (nb-2*trim)<=0) {
-      return(NA)
-    }
+    s <- parse_cigar(cigar = cigar)
+    len_s <- length(s)
+    q <- unlist(strsplit(x = q, split = NULL, fixed = TRUE))
+    t <- unlist(strsplit(x = t, split = NULL, fixed = TRUE))
     
-    a <- substr(x = a, start = trim+1, stop = nchar(a)-trim)
-    b <- substr(x = b, start = trim+1, stop = nchar(b)-trim)
-    
-    if(is.na(a)|is.na(b)) {
-      return(NA)
-    }
-    
-    return(stringDist(x = c(a, b),
-                      method = "substitutionMatrix", 
-                      type = "global", 
-                      substitutionMatrix = bm, 
-                      gapOpening = 10,
-                      gapExtension = 4))
-  }
-  
-  get_bscore_dup <- function(x, cdr3, bm, trim) {
-    
-    if(is.na(cdr3[x])) {
-      return(data.frame(from_cdr3 = cdr3[x],
-                        to_cdr3 = cdr3[x],
-                        weight = NA,
-                        cweight = NA))
-    } 
-    
-    bs <- stringDist(x = c(cdr3[x], cdr3[x]),
-                     method = "substitutionMatrix", 
-                     type = "global", 
-                     substitutionMatrix = bm, 
-                     gapOpening = 10,
-                     gapExtension = 4)
-    
-    a <- cdr3[x]
-    na <- nchar(a)
-    if((na-2*trim)<=0) {
-      bs_core <- NA
-    } 
-    else {
-      cdr3_core <- substr(x = a, start = trim+1, stop = na-trim)
-      if(is.na(cdr3_core)) {
-        bs_core <- NA
-      } 
-      else {
-        bs_core <- stringDist(x = c(cdr3_core, cdr3_core),
-                              method = "substitutionMatrix", 
-                              type = "global", 
-                              substitutionMatrix = bm, 
-                              gapOpening = 10,
-                              gapExtension = 4)
+    # trim region = 1, else = 0
+    tr <- numeric(length = len_s)
+    if(trim != 0) {
+      if(len_s-2*trim <= 0) {
+        tr[1:length(tr)] <- 1
+      } else {
+        tr[c(1:trim, (len_s-trim+1):len_s)] <- 1
       }
     }
-    return(data.frame(from_cdr3 = cdr3[x],
-                      to_cdr3 = cdr3[x],
-                      weight = -bs,
-                      cweight = -bs_core))
+    
+    cscore <- 0
+    score <- 0
+    gap_o_on <- 0
+    iq <- 1
+    it <- 1
+    for(i in seq_len(len_s)) {
+      if(s[i]=="="|s[i]=="X") {
+        bi <- b[q[iq],t[it]]
+        score <- score + bi
+        cscore <- cscore + bi * (tr[i]==0)
+        gap_o_on <- 0
+        iq <- iq + 1
+        it <- it + 1
+      }
+      else {
+        if(gap_o_on==1) {
+          score <- score + gap_e
+          cscore <- cscore + gap_e * (tr[i]==0)
+        } 
+        else {
+          score <- score + gap_o + gap_e
+          cscore <- cscore + (gap_o + gap_e) * (tr[i]==0)
+          gap_o_on <- 1
+        }
+        
+        iq <- iq + (s[i]=="I")
+        it <- it + (s[i]=="D")
+      }
+    }
+    
+    res <- numeric(length = 6)
+    res[1] <- score
+    res[2] <- length(s)
+    res[3] <- res[1]/res[2]
+    res[4] <- cscore
+    res[5] <- sum(tr==0)
+    res[6] <- res[4]/res[5]
+    return(res)
   }
   
-  db <- data.frame(Id = 1:length(cdr3), Seq = cdr3)
+  db <- data.frame(Id = 1:length(cdr3), Seq = cdr3, len = nchar(cdr3))
   
   # blast
   o <- blast(query = db, 
              db = db,
              maxAccepts = 10^4,
+             maxRejects = 10^3,
              minIdentity = control$gmi,
              alphabet = "protein", 
              output_to_file = FALSE)
   
   # remove self-hits
   o <- o[o$QueryId!=o$TargetId,]
-  
   # if empty stop
   if(nrow(o)==0) {
     return(NULL)
   }
+  
+  # remove partial hits
+  o$TargetLen <- db$len[o$TargetId]
+  o$QueryLen <- db$len[o$QueryId]
+  j <- which(o$QueryMatchStart!=1 | 
+               o$TargetMatchStart!=1 | 
+          o$QueryMatchEnd != o$QueryLen | 
+            o$TargetMatchEnd != o$TargetLen)
+  if(length(j)!=0) {
+    o <- o[-j,]
+  }
+  # if empty stop
+  if(nrow(o)==0) {
+    return(NULL)
+  }
+  
+  # remove duplicates (there should be none by this point)
   key <- apply(X = o[,c("QueryId", "TargetId")], MARGIN = 1, 
                FUN = function(x) {paste0(sort(x), collapse = '-')})
-  key_js <- which(duplicated(key)==FALSE)
-  if(length(key_js)!=0) {
-    o <- o[key_js,,drop=FALSE]
+  j <- which(duplicated(key)==FALSE)
+  if(length(j)!=0) {
+    o <- o[j,,drop=FALSE]
   }
   
   # get blosum matrix from pwalign
@@ -173,55 +183,30 @@ get_blosum <- function(cdr3, cdr3_dup, control) {
   # ensure: min(BLOSUM62)=0
   data_env[["BLOSUM62"]] <- data_env[["BLOSUM62"]] + 4
   
-  # compute BLSOUM62 score for matches
-  o$bs <- vapply(X = 1:nrow(o), 
-                 FUN = get_bscore, 
-                 d = o, 
-                 db = db, 
-                 bm = data_env[["BLOSUM62"]],
-                 FUN.VALUE = numeric(1))
+  # compute BLSOUM62 scores
+  bs <- do.call(rbind, lapply(X = 1:nrow(o), 
+                              FUN = get_bscore, 
+                              o = o, 
+                              gap_o = -10, 
+                              gap_e = -4, 
+                              trim = control$trim_flank_aa,
+                              b = data_env[["BLOSUM62"]]))
   
-  # compute BLSOUM62 score for matches
-  if(control$trim_flank_aa == 0) {
-    o$core_bs <- o$bs
-  } 
-  else {
-    o$core_bs <- vapply(X = 1:nrow(o), 
-                        FUN = get_bscore_trim, 
-                        d = o, 
-                        db = db, 
-                        bm = data_env[["BLOSUM62"]],
-                        trim = control$trim_flank_aa,
-                        FUN.VALUE = numeric(1))
-  }
+  o$b <- bs[,1]
+  o$max_len <- bs[,2]
+  o$nb <- bs[,3]
+  o$cb <- bs[,4]
+  o$max_clen <- bs[,5]
+  o$ncb <- bs[,6]
   
   out <- data.frame(from_cdr3 = db$Seq[o$QueryId],
                     to_cdr3 = db$Seq[o$TargetId],
-                    weight = -o$bs,
-                    cweight = -o$core_bs)
-  
-  # if there are duplicated CDR3s add one entry
-  if(any(cdr3_dup==1)) {
-    q <- cdr3[which(cdr3_dup==1)]
-    out_dup <- do.call(rbind, lapply(X = 1:length(q),
-                                     FUN = get_bscore_dup,
-                                     cdr3 = q, 
-                                     bm = data_env[["BLOSUM62"]], 
-                                     trim = control$trim_flank_aa))
-    
-    out <- rbind(out, out_dup)
-  }
-  
-  out$max_len <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
-                       FUN = function(x) {return(max(nchar(x)))})
-  out$max_clen <- apply(X = out[, c("from_cdr3", "to_cdr3")], MARGIN = 1,
-                        trim = control$trim_flank_aa, 
-                        FUN = function(x, trim) {return(max(nchar(x)-trim*2))})
-  out$max_clen <- ifelse(test=out$max_clen<0, yes = 0, no = out$max_clen)
-  
-  
-  out$nweight <- out$weight/out$max_len
-  out$ncweight <- out$cweight/out$max_clen
+                    weight = o$b,
+                    cweight = o$cb,
+                    nweight = o$nb,
+                    ncweight = o$ncb,
+                    max_len = o$max_len,
+                    max_clen = o$max_clen)
   return(out)
 }
 
@@ -425,3 +410,6 @@ match_db <- function(cs, control) {
   
   return(cs)
 }
+
+
+
