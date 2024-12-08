@@ -521,13 +521,13 @@ get_posterior_summaries <- function(cm,
     if(has_groups==FALSE) {
         delta <- post_delta(f = f, samples = samples, 
                             compute_delta = compute_delta, par = "delta")
-        epsilon <- post_delta(f = f, samples = samples, 
+        epsilon <- post_delta(f = f, samples = samples,
                               compute_delta = compute_delta, par = "epsilon")
     } else {
         delta <- post_deltamu(f = f, groups = groups, 
-                                compute_delta = compute_delta, par = "delta")
-        epsilon <- post_deltamu(f = f, groups = groups, 
-                              compute_delta = compute_delta, par = "epsilon")
+                              compute_delta = compute_delta, par = "delta")
+        epsilon <- post_deltamu(f = f, groups = groups,
+                                compute_delta = compute_delta, par = "epsilon")
     }
     o[["delta"]] <- delta
     o[["epsilon"]] <- epsilon
