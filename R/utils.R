@@ -75,6 +75,12 @@ get_sample <- function(x) {
 }
 
 
+get_blosum62 <- function() {
+  e <- new.env()
+  name <- data("BLOSUM62", package = "ClustIRR", envir = e)[1]
+  return(e[[name]])
+}
+
 
 # This is the class of the outputs produced by function clust_irr. Object
 # from this class are used as input of plot_graph

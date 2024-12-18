@@ -177,9 +177,9 @@ get_blosum <- function(cdr3, control) {
     o <- o[j,,drop=FALSE]
   }
   
-  # get blosum matrix from pwalign
+  # get blosum matrix
   data_env <- new.env(parent = emptyenv())
-  data("BLOSUM62", envir = data_env, package = "pwalign")
+  data("BLOSUM62", envir = data_env, package = "ClustIRR")
   # ensure: min(BLOSUM62)=0
   data_env[["BLOSUM62"]] <- data_env[["BLOSUM62"]] + 4
   

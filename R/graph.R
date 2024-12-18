@@ -432,9 +432,9 @@ get_intergraph_edges <- function(igs,
             return(NULL)
         }
         
-        # get blosum matrix from pwalign
+        # get blosum matrix
         data_env <- new.env(parent = emptyenv())
-        data("BLOSUM62", envir = data_env, package = "pwalign")
+        data("BLOSUM62", envir = data_env, package = "ClustIRR")
         data_env[["BLOSUM62"]] <- data_env[["BLOSUM62"]] + 4
         
         # compute BLSOUM62 scores
