@@ -49,9 +49,6 @@ get_clust <- function(x, s, control) {
   
   cdr3 <- get_cdr3s(x = s, chain = x)
   
-  cdr3 <- table(cdr3)
-  cdr3 <- names(cdr3)
-  
   return(get_blosum(cdr3 = cdr3, control = control))
 }
 
