@@ -241,7 +241,7 @@ get_blosum <- function(cdr3, control) {
                    trim = control$trim_flank_aa,
                    b = data_env[["BLOSUM62"]]))
     
-    o <- data.frame(from_cdr3 = db$Seq[o$QueryId],
+    out <- data.frame(from_cdr3 = db$Seq[o$QueryId],
                     to_cdr3 = db$Seq[o$TargetId],
                     weight = bs[,1],
                     cweight = bs[,4],
@@ -267,8 +267,9 @@ get_blosum <- function(cdr3, control) {
                             max_len = bs_dup[,2],
                             max_clen = bs_dup[,5])
         
-        out <- rbind(o, o_dup)
+        out <- rbind(o_dup, out)
     }
+    
     return(out)
 }
 
