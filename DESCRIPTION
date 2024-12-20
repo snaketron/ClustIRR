@@ -17,7 +17,7 @@ Description: ClustIRR analyzes repertoires of B- and T-cell receptors. It
 License: GPL-3 + file LICENSE
 LazyData: false
 Depends:
-    R (>= 4.4.0)
+    R (>= 4.3.0)
 Imports:
     blaster,
     future,
