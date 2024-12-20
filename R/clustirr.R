@@ -252,7 +252,7 @@ get_blosum <- function(cdr3, control) {
     
     # compute BLSOUM62 scores between duplicates -> more efficient
     if(length(cdr3_dup)!=0) {
-        bs_dup <- t(vapply(X = c, 
+        bs_dup <- t(vapply(X = cdr3_dup, 
                            FUN = get_bscore_dup, 
                            trim = control$trim_flank_aa,
                            b = data_env[["BLOSUM62"]],
