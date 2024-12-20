@@ -134,18 +134,15 @@ get_blosum <- function(cdr3, control) {
     }
     
     get_bscore_dup <- function(x, b, trim) {
-        
         x <- unlist(strsplit(x = x, split = NULL, fixed = TRUE))
         len_x <- length(x)
         len_cx <- len_x
-        
         
         if(len_x==1) {
             score <- sum(b[x,x]) 
         } else {
             score <- sum(diag(b[x,x]))
         }
-        
         
         if(len_x <= trim*2) {
             cscore <- 0
@@ -154,7 +151,7 @@ get_blosum <- function(cdr3, control) {
                 cscore <- score
             } 
             else {
-                cx <- x[(trim+1):(len_s-trim)]
+                cx <- x[(trim+1):(len_x-trim)]
                 len_cx <- length(cx)
                 if(len_cx==1) {
                     cscore <- sum(b[x,x]) 
@@ -165,7 +162,6 @@ get_blosum <- function(cdr3, control) {
             }
         }
         
-        
         res <- numeric(length = 6)
         res[1] <- score
         res[2] <- len_x
@@ -175,7 +171,6 @@ get_blosum <- function(cdr3, control) {
         res[6] <- res[4]/res[5]
         return(res)
     }
-    
     
     # get duplicates
     cdr3_dup <- cdr3[duplicated(cdr3)==TRUE]
