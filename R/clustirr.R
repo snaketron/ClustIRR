@@ -154,10 +154,10 @@ get_blosum <- function(cdr3, control) {
                 cx <- x[(trim+1):(len_x-trim)]
                 len_cx <- length(cx)
                 if(len_cx==1) {
-                    cscore <- sum(b[x,x]) 
+                    cscore <- sum(b[cx,cx]) 
                 } 
                 else {
-                    cscore <- sum(diag(b[x,x]))
+                    cscore <- sum(diag(b[cx,cx]))
                 }
             }
         }
