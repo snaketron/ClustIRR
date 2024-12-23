@@ -173,7 +173,7 @@ get_blosum <- function(cdr3, control) {
     }
     
     # get duplicates
-    cdr3_dup <- cdr3[duplicated(cdr3)==TRUE]
+    cdr3_dup <- unique(cdr3[duplicated(cdr3)==TRUE])
     
     # remove duplicates
     cdr3 <- cdr3[duplicated(cdr3)==FALSE]

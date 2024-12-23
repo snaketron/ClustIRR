@@ -81,7 +81,7 @@ get_graph <- function(clust_irr) {
         ig <- delete_edges(ig, edges = 1)
         
         # add global edges
-        message("(", sample_id, "): adding edges... \n")
+        message("adding edges... \n")
         if(is.null(e)==FALSE && nrow(e)!=0) {
             for(chain in chains) {
                 chain_ge <- e[e$chain == chain, ]
@@ -124,7 +124,7 @@ get_graph <- function(clust_irr) {
     }
     
     # build graph
-    message("building graph... \n")
+    message("(", sample_id, "): , building graph... \n")
     ig <- build_graph(e = e, cs = cs, sample_id = sample_id, chains = chains)
     
     return(list(graph = ig, clones = cs, joint_graph = FALSE))
@@ -185,14 +185,16 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     # get joint controls
     control <- get_joint_controls(clust_irrs = clust_irrs)
     
-    # get igs
-    future::plan(future::multisession, workers = I(cores))
+    # build graphs
+    message("[1/2] generating graphs... \n")
+    
     igs <- future_lapply(X = clust_irrs, FUN = get_graph, future.seed = TRUE)
     names(igs) <- names(clust_irrs)
     
     # get chains
     chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
     
+    message("[2/2] generating intergraph edges... \n")
     ige <- get_intergraph_edges(igs = igs,
                                 chains = chains,
                                 cores = cores,
