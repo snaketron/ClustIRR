@@ -299,6 +299,9 @@ get_community_ann <- function(node_summary,
     if(any(ag_source %in% c("gene", "species"))==FALSE) {
         stop("ag_source must be gene or species")
     }
+    if(any(duplicated(community_summary$community))) {
+        stop("duplicated community IDs in community_summary")
+    }
     
     ns <- node_summary
     cs <- community_summary
@@ -306,5 +309,9 @@ get_community_ann <- function(node_summary,
     node_ann <- get_node_ann(node_summary = ns, 
                              ag_name = ag_name, 
                              ag_source = ag_source)
+    node_ann <- node_ann %>% 
+        group_by(community) %>% 
+        summarise_all(.funs=sum)
+    
     return(merge(x = cs, y = node_ann, by = "community"))
 }

@@ -1,7 +1,7 @@
 Package: ClustIRR
 Type: Package
 Title: Clustering of immune receptor repertoires
-Version: 1.5.29
+Version: 1.5.30
 Authors@R: c(
     person("Simo", "Kitanovski", email = "simokitanovski@gmail.com", 
     role = c("aut", "cre"), comment=c(ORCID="0000-0003-2909-5376")),
@@ -34,7 +34,8 @@ Imports:
     stringdist,
     utils,
     posterior,
-    visNetwork
+    visNetwork,
+    dplyr
 Suggests:
     BiocStyle,
     knitr,

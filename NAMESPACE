@@ -37,10 +37,12 @@ importFrom(igraph, cluster_leiden)
 importFrom(igraph, simplify)
 importFrom(igraph, is_simple)
 importFrom(igraph, subgraph)
-
 importFrom(posterior, as_draws)
 importFrom(posterior, subset_draws)
 importFrom(posterior, summarise_draws)
+importFrom(dplyr, group_by)
+importFrom(dplyr, summarise_all)
+importFrom(dplyr, "%>%")
 
 export(cluster_irr)
 export(get_graph)
