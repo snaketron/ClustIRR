@@ -1,7 +1,7 @@
 Package: ClustIRR
 Type: Package
 Title: Clustering of immune receptor repertoires
-Version: 1.5.25
+Version: 1.5.29
 Authors@R: c(
     person("Simo", "Kitanovski", email = "simokitanovski@gmail.com", 
     role = c("aut", "cre"), comment=c(ORCID="0000-0003-2909-5376")),
