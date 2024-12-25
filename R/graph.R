@@ -435,9 +435,7 @@ get_intergraph_edges <- function(igs,
         }
         
         # get blosum matrix
-        data_env <- new.env(parent = emptyenv())
-        data("BLOSUM62", envir = data_env, package = "ClustIRR")
-        data_env[["BLOSUM62"]] <- data_env[["BLOSUM62"]] + 4
+        data_env <- get_blosum62()
         
         # compute BLSOUM62 scores
         bs <- do.call(rbind, lapply(X = 1:nrow(o), 

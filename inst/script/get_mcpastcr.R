@@ -20,4 +20,6 @@ t <- t[, c("CDR3a", "CDR3b",
            "Antigen_gene", "Reference")]
 
 mcpas <- t
+mcpas$Antigen_gene <- gsub(pattern = "\\|", replacement = ',', 
+                           x = mcpas$Antigen_gene)
 save(mcpas, file = "data/mcpas.RData", compress = T)
