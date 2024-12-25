@@ -259,19 +259,24 @@ get_node_ann <- function(node_summary,
     }
     
     m <- node_summary
+    vars <- c()
     if(length(ag_species)!=0) {
         for(ag in ag_species) {
-            m <- cbind(m, get_ann(ns = node_summary, ag = ag, type = "species"))
+            a <- get_ann(ns = node_summary, ag = ag, type = "species")
+            vars <- c(vars, colnames(a))
+            m <- cbind(m, a)
         }
     }
     
     if(length(ag_genes)!=0) {
         for(ag in ag_genes) {
-            m <- cbind(m, get_ann(ns = node_summary, ag = ag, type = "gene"))
+            a <- get_ann(ns = node_summary, ag = ag, type = "gene")
+            vars <- c(vars, colnames(a))
+            m <- cbind(m, a)
         }
     }
     
-    return(m)
+    return(list(ann = m, vars = vars))
 }
 
 # Description:
@@ -300,12 +305,13 @@ get_community_ann <- function(node_summary,
     ns <- node_summary
     cs <- community_summary
     
-    an <- get_node_ann(node_summary = ns, 
-                       ag_species = ag_species, 
-                       ag_genes = ag_genes)
-    an <- an %>% 
-        group_by(community) %>% 
-        summarise_all(.funs=sum)
+    node_ann <- get_node_ann(node_summary = ns, 
+                            ag_species = ag_species, 
+                            ag_genes = ag_genes)
     
-    return(merge(x = cs, y = an, by = "community"))
+    a <- node_ann$ann %>% 
+        group_by(community) %>% 
+        summarise_at(.funs = sum, .vars = node_ann$vars)
+    
+    return(merge(x = cs, y = a, by = "community"))
 }
