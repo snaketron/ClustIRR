@@ -208,66 +208,69 @@ get_annotation_dbs <- function() {
 # Description:
 # integrate nodes with data from databases: VDJdb, tcr3d, mcpas-tcr
 get_node_ann <- function(node_summary, 
-                         ag_name, 
-                         ag_source) {
+                         ag_species,
+                         ag_genes) {
+    
+    get_ann <- function(ns, ag, type) {
+        agk <- paste0(ag, "_summary")
+        db <- get_annotation_dbs()
+        i <- which(regexec(pattern = paste0(
+            paste0("info_", db, "_"), collapse = "|"), text = colnames(ns))!=-1)
+        is <- do.call(rbind, strsplit(x = colnames(ns)[i], split = "\\_"))
+        is <- data.frame(db = is[,2], chain = is[,3], info_key = colnames(ns)[i])
+        
+        m <- matrix(data = 0, nrow = nrow(ns), ncol = nrow(is)+1)
+        colnames(m) <- c(gsub(pattern = "info\\_", 
+                              replacement = paste0(ag, "_"), 
+                              x = is$info_key), agk)
+        
+        for(i in 1:nrow(is)) {
+            k <- do.call(rbind, strsplit(x = ns[,is$info_key[i]], split = "\\|"))
+            if(type == "species") {
+                g <- gsub(pattern = "Antigen\\_species\\:", 
+                          replacement = '', x = k[,3])
+                m[,i] <- vapply(X = g, ag = ag, FUN.VALUE = logical(1),
+                                FUN = function(x, ag) {
+                                    return(regexpr(pattern = ag, text = x)!=-1)
+                                })
+            }
+            else if(type == "gene") {
+                g <- gsub(pattern = "Antigen\\_gene\\:", 
+                          replacement = '', x = k[,4])
+                m[,i] <- vapply(X = g, ag = ag, FUN.VALUE = logical(1),
+                                FUN = function(x, ag) {
+                                    return(regexpr(pattern = ag, text = x)!=-1)
+                                })
+            }
+        }
+        m[,agk] <- apply(X = m[,1:(ncol(m)-1)], MARGIN = 1, FUN = sum)
+        m[,agk] <- ifelse(test = m[,agk]==0, yes = 0, no = 1)
+        m <- data.frame(m)
+    }
     
     if(missing(node_summary)) {
         stop("node_summary is missing")
     }
-    if(missing(ag_name)) {
-        stop("ag_name is missing")
+    if(missing(ag_species)&missing(ag_genes)) {
+        stop("ag_species and ag_genes are missing")
     }
-    if(missing(ag_source)) {
-        stop("ag_source is missing")
-    }
-    if(is.character(ag_source)==FALSE) {
-        stop("ag_source must be character")
-    }
-    if(length(ag_source)!=1) {
-        stop("ag_source must have length 1")
-    }
-    if(any(ag_source %in% c("gene", "species"))==FALSE) {
-        stop("ag_source must be gene or species")
+    if(is.character(ag_species)==FALSE&is.character(ag_genes)==FALSE) {
+        stop("ag_species and ag_genes must be character vectors")
     }
     
-    ns <- node_summary
-    agk <- paste0(ag_name, "_summary")
-    
-    db <- get_annotation_dbs()
-    
-    i <- which(regexec(pattern = paste0(
-        paste0("info_", db, "_"), collapse = "|"), text = colnames(ns))!=-1)
-    is <- do.call(rbind, strsplit(x = colnames(ns)[i], split = "\\_"))
-    is <- data.frame(db = is[,2], chain = is[,3], info_key = colnames(ns)[i])
-    
-    m <- matrix(data = 0, nrow = nrow(ns), ncol = nrow(is)+2)
-    colnames(m) <- c(gsub(pattern = "info\\_", 
-                          replacement = paste0(ag_name, "_"), 
-                          x = is$info_key), agk, "community")
-    
-    for(i in 1:nrow(is)) {
-        k <- do.call(rbind, strsplit(x = ns[,is$info_key[i]], split = "\\|"))
-        if(ag_source == "species") {
-            g <- gsub(pattern = "Antigen\\_species\\:", 
-                      replacement = '', x = k[,3])
-            m[,i] <- vapply(X = g, ag_name = ag_name, FUN.VALUE = logical(1),
-                            FUN = function(x, ag_name) {
-                                return(regexpr(pattern = ag_name, text = x)!=-1)
-                            })
-        }
-        else if(ag_source == "gene") {
-            g <- gsub(pattern = "Antigen\\_gene\\:", 
-                      replacement = '', x = k[,4])
-            m[,i] <- vapply(X = g, ag_name = ag_name, FUN.VALUE = logical(1),
-                            FUN = function(x, ag_name) {
-                                return(regexpr(pattern = ag_name, text = x)!=-1)
-                            })
+    m <- node_summary
+    if(length(ag_species)!=0) {
+        for(ag in ag_species) {
+            m <- cbind(m, get_ann(ns = node_summary, ag = ag, type = "species"))
         }
     }
-    m[,agk] <- apply(X = m[,1:(ncol(m)-1)], MARGIN = 1, FUN = sum)
-    m[,agk] <- ifelse(test = m[,agk]==0, yes = 0, no = 1)
-    m[,"community"] <- ns$community
-    m <- data.frame(m)
+    
+    if(length(ag_genes)!=0) {
+        for(ag in ag_genes) {
+            m <- cbind(m, get_ann(ns = node_summary, ag = ag, type = "gene"))
+        }
+    }
+    
     return(m)
 }
 
@@ -275,8 +278,8 @@ get_node_ann <- function(node_summary,
 # integrate communities with data from databases: VDJdb, tcr3d, mcpas-tcr
 get_community_ann <- function(node_summary, 
                               community_summary, 
-                              ag_name, 
-                              ag_source) {
+                              ag_species, 
+                              ag_genes) {
     
     if(missing(node_summary)) {
         stop("node_summary is missing")
@@ -284,20 +287,11 @@ get_community_ann <- function(node_summary,
     if(missing(community_summary)) {
         stop("community_summary is missing")
     }
-    if(missing(ag_name)) {
-        stop("ag_name is missing")
+    if(missing(ag_species)&missing(ag_genes)) {
+        stop("ag_species and ag_genes are missing")
     }
-    if(missing(ag_source)) {
-        stop("ag_source is missing")
-    }
-    if(is.character(ag_source)==FALSE) {
-        stop("ag_source must be character")
-    }
-    if(length(ag_source)!=1) {
-        stop("ag_source must have length 1")
-    }
-    if(any(ag_source %in% c("gene", "species"))==FALSE) {
-        stop("ag_source must be gene or species")
+    if(is.character(ag_species)==FALSE&is.character(ag_genes)==FALSE) {
+        stop("ag_species and ag_genes must be character vectors")
     }
     if(any(duplicated(community_summary$community))) {
         stop("duplicated community IDs in community_summary")
@@ -306,12 +300,12 @@ get_community_ann <- function(node_summary,
     ns <- node_summary
     cs <- community_summary
     
-    node_ann <- get_node_ann(node_summary = ns, 
-                             ag_name = ag_name, 
-                             ag_source = ag_source)
-    node_ann <- node_ann %>% 
+    an <- get_node_ann(node_summary = ns, 
+                       ag_species = ag_species, 
+                       ag_genes = ag_genes)
+    an <- an %>% 
         group_by(community) %>% 
         summarise_all(.funs=sum)
     
-    return(merge(x = cs, y = node_ann, by = "community"))
+    return(merge(x = cs, y = an, by = "community"))
 }

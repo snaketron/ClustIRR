@@ -2,23 +2,23 @@
 \alias{get_community_ann}
 \title{Get antigen annotations for communities}
 \description{
-Use \code{node_summary} and \code{community_summary} data created by 
-the function \code{detect_communities} to perform antigen annotation 
-based databases such as VDJdb.}
+Annotate the \code{node_summary} and \code{community_summary} data 
+created by the function \code{detect_communities} with antigen annotations 
+from databases such as VDJdb.}
 \details{
-The user has to provide an antigen name (e.g. \code{ag_name} = "EBV") and 
-antigen source (\code{ag_source} = "species" or \code{ag_source} = "gene"). 
-Furthermore, the user has to provide two data.frames: (\code{node_summary} 
-\code{community_summary}, both provided as output by the function 
-\code{detect_communities}).}
+The user has to provide a vector of antigen species (e.g. 
+\code{ag_species} = c("EBV", "CMV")) and/or a vector of antigen 
+genes (e.g. \code{ag_genes} = "MLANA"). Furthermore, the user has 
+to provide nodes (\code{node_summary} data.frame created by the 
+function \code{detect_communities}).}
 \usage{
-get_community_ann(node_summary, community_summary, ag_name, ag_source)
+get_community_ann(node_summary, community_summary, ag_species, ag_genes)
 }
 \arguments{
 \item{node_summary}{\code{node_summary} data.frame}
 \item{community_summary}{\code{community_summary} data.frame}
-\item{ag_name}{antigen name, character, e.g. "EBV".}
-\item{ag_source}{antigen source, character, "species" or "gene".}
+\item{ag_species}{antigen species, character vector, e.g. "EBV".}
+\item{ag_genes}{antigen genes, character vector, e.g. "MLANA".}
 }
 \value{
 The output is a data.frame with communities and their antigen annotations,
@@ -59,7 +59,7 @@ names(gcd)
 # contain CDR3s specific for antigens from the EBV
 an <- get_community_ann(node_summary = gcd$node_summary, 
                         community_summary = gcd$community_summary, 
-                        ag_name = "EBV",
-                        ag_source = "species")
+                        ag_species = "EBV",
+                        ag_genes = "MLANA")
 kable(an)
 }
