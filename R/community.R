@@ -117,8 +117,8 @@ get_community_detection <- function(g,
     if(algorithm == "leiden") {
         c <- cluster_leiden(graph = g, 
                             weights = E(g)$w, 
-                            resolution_parameter = resolution,
-                            n_iterations = 10)
+                            resolution = resolution,
+                            n_iterations = 100)
         V(g)$community <- c$membership
     }
     return(g)
@@ -128,36 +128,54 @@ get_community_summary <- function(g,
                                   chains, 
                                   metric) {
     
-    get_vstats <- function(vs) {
+    get_vstats <- function(vs, wide) {
         
-        vs$f <- 1
+        vs$cells <- vs$clone_size
+        vs$clones <- 1
         
-        # number of cells
-        vs_cells <- aggregate(clone_size~community+sample, data = vs, FUN = sum)
-        vs_cells <- acast(data = vs_cells, formula = community~sample, 
-                          value.var = "clone_size", fill = 0)
-        vs_cells <- data.frame(vs_cells)
-        vs_cells$n <- apply(X = vs_cells, MARGIN = 1, FUN = sum)
-        colnames(vs_cells) <- paste0("cells_", colnames(vs_cells))
-        vs_cells$community <- rownames(vs_cells)
-        vs_cells$community <- as.numeric(as.character(vs_cells$community))
-        vs_cells <- vs_cells[order(vs_cells$community, decreasing = FALSE), ]
+        if(wide) {
+            # number of cells
+            vcells <- aggregate(cells~community+sample, data = vs, FUN = sum)
+            vcells <- acast(data = vcells, formula = community~sample, 
+                            value.var = "cells", fill = 0)
+            vcells <- data.frame(vcells)
+            vcells$n <- apply(X = vcells, MARGIN = 1, FUN = sum)
+            colnames(vcells) <- paste0("cells_", colnames(vcells))
+            vcells$community <- rownames(vcells)
+            vcells$community <- as.numeric(as.character(vcells$community))
+            vcells <- vcells[order(vcells$community, decreasing = FALSE), ]
+            
+            # number of clones
+            vclones <- aggregate(clones~community+sample, data = vs, FUN = sum)
+            vclones <- acast(data = vclones, formula = community~sample, 
+                             value.var = "clones", fill = 0)
+            vclones <- data.frame(vclones)
+            vclones$n <- apply(X = vclones, MARGIN = 1, FUN = sum)
+            colnames(vclones) <- paste0("clones_", colnames(vclones))
+            vclones$community <- rownames(vclones)
+            vclones$community <- as.numeric(as.character(vclones$community))
+            vclones <- vclones[order(vclones$community, decreasing = FALSE), ]
+            
+            # merge clones and cells
+            vstats <- merge(x = vclones, y = vcells, by = "community")
+        } 
+        else {
+            # number of cells
+            vcells <- aggregate(cells~community+sample, data = vs, 
+                                FUN = sum, drop = FALSE)
+            
+            # number of clones
+            vclones <- aggregate(clones~community+sample, data = vs, 
+                                 FUN = sum, drop = FALSE)
+            
+            # merge clones and cells
+            vstats <- merge(x = vclones, y = vcells, 
+                            by = c("community", "sample"))
+            vstats$cells[is.na(vstats$cells)] <- 0
+            vstats$clones[is.na(vstats$clones)] <- 0
+        }
         
-        
-        # number of clones
-        vs_clones <- aggregate(f~community+sample, data = vs, FUN = sum)
-        vs_clones <- acast(data = vs_clones, formula = community~sample, 
-                           value.var = "f", fill = 0)
-        vs_clones <- data.frame(vs_clones)
-        vs_clones$n <- apply(X = vs_clones, MARGIN = 1, FUN = sum)
-        colnames(vs_clones) <- paste0("clones_", colnames(vs_clones))
-        vs_clones$community <- rownames(vs_clones)
-        vs_clones$community <- as.numeric(as.character(vs_clones$community))
-        vs_clones <- vs_clones[order(vs_clones$community, decreasing = FALSE), ]
-        
-        # merge clones and cells
-        vs_stats <- merge(x = vs_clones, y = vs_cells, by = "community")
-        return(vs_stats)
+        return(vstats)
     }
     
     get_estats <- function(x, g, chains) {
@@ -205,13 +223,22 @@ get_community_summary <- function(g,
                  chains = chains, FUN = get_estats)
     es <- data.frame(do.call(rbind, es))
     
-    # get community statistics on vertices
-    vs <- get_vstats(vs = as_data_frame(x = g, what = "vertices"))
+    # get community statistics on vertices (wide and tall format)
+    vs_wide <- get_vstats(vs = as_data_frame(x = g, what = "vertices"), 
+                          wide = TRUE)
+    vs_tall <- get_vstats(vs = as_data_frame(x = g, what = "vertices"), 
+                          wide = FALSE)
     
     # merge results
-    o <- merge(x = vs, y = es, by = "community", all.x = TRUE)
-    o <- o[order(o$community, decreasing = FALSE), ]
-    return(o)
+    cs_wide <- merge(x = vs_wide, y = es, by = "community", all.x = TRUE)
+    cs_wide <- cs_wide[order(cs_wide$community, decreasing = FALSE), ]
+    
+    cs_tall <- merge(x = vs_tall, y = es, by = "community", all.x = TRUE)
+    cs_tall <- cs_tall[order(vs_tall$community, decreasing = FALSE), ]
+    
+    
+    return(list(wide = cs_wide, 
+                tall = cs_tall))
 }
 
 get_community_matrix <- function(g) {

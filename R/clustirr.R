@@ -123,13 +123,11 @@ get_blosum <- function(cdr3, control) {
             }
         }
         
-        res <- numeric(length = 6)
+        res <- numeric(length = 4)
         res[1] <- score
         res[2] <- len_s
-        res[3] <- res[1]/res[2]
-        res[4] <- cscore
-        res[5] <- sum(tr==0)
-        res[6] <- res[4]/res[5]
+        res[3] <- cscore
+        res[4] <- sum(tr==0)
         return(res)
     }
     
@@ -162,13 +160,11 @@ get_blosum <- function(cdr3, control) {
             }
         }
         
-        res <- numeric(length = 6)
+        res <- numeric(length = 4)
         res[1] <- score
         res[2] <- len_x
-        res[3] <- res[1]/res[2]
-        res[4] <- cscore
-        res[5] <- len_cx
-        res[6] <- res[4]/res[5]
+        res[3] <- cscore
+        res[4] <- len_cx
         return(res)
     }
     
@@ -225,7 +221,7 @@ get_blosum <- function(cdr3, control) {
     
     # compute BLSOUM62 scores
     bs <- t(vapply(X = 1:nrow(o), 
-                   FUN.VALUE = numeric(6),
+                   FUN.VALUE = numeric(4),
                    FUN = get_bscore, 
                    o = o, 
                    gap_o = -10, 
@@ -234,13 +230,13 @@ get_blosum <- function(cdr3, control) {
                    b = data_env[["BLOSUM62"]]))
     
     out <- data.frame(from_cdr3 = db$Seq[o$QueryId],
-                    to_cdr3 = db$Seq[o$TargetId],
-                    weight = bs[,1],
-                    cweight = bs[,4],
-                    nweight = bs[,3],
-                    ncweight = bs[,6],
-                    max_len = bs[,2],
-                    max_clen = bs[,5])
+                      to_cdr3 = db$Seq[o$TargetId],
+                      weight = bs[,1],
+                      cweight = bs[,3],
+                      nweight = bs[,1]/bs[,2],
+                      ncweight = bs[,3]/bs[,4],
+                      max_len = bs[,2],
+                      max_clen = bs[,4])
     
     # compute BLSOUM62 scores between duplicates -> more efficient
     if(length(cdr3_dup)!=0) {
@@ -248,17 +244,16 @@ get_blosum <- function(cdr3, control) {
                            FUN = get_bscore_dup, 
                            trim = control$trim_flank_aa,
                            b = data_env[["BLOSUM62"]],
-                           FUN.VALUE = numeric(6)))
+                           FUN.VALUE = numeric(4)))
         
         o_dup <- data.frame(from_cdr3 = cdr3_dup,
                             to_cdr3 = cdr3_dup,
                             weight = bs_dup[,1],
-                            cweight = bs_dup[,4],
-                            nweight = bs_dup[,3],
-                            ncweight = bs_dup[,6],
+                            cweight = bs_dup[,3],
+                            nweight = bs_dup[,1]/bs_dup[,2],
+                            ncweight = bs_dup[,3]/bs_dup[,4],
                             max_len = bs_dup[,2],
-                            max_clen = bs_dup[,5])
-        
+                            max_clen = bs_dup[,4])
         out <- rbind(o_dup, out)
     }
     

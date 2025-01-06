@@ -45,18 +45,18 @@ dco <- function(community_occupancy_matrix,
     if(has_groups) {
         model <- stanmodels$dmh
         pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
-                  "kappa", "p", "y_hat", "log_lik")
+                  "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
             pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
-                      "delta", "epsilon", "kappa", "p", "y_hat", "log_lik")
+                      "delta", "epsilon", "kappa", "y_hat", "log_lik")
         }
     } 
     else {
         model <- stanmodels$dm
-        pars <- c("alpha", "beta", "kappa", "p", "y_hat", "log_lik")
+        pars <- c("alpha", "beta", "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
-            pars<- c("alpha", "beta", "delta", "epsilon", "kappa", 
-                     "p", "y_hat", "log_lik")
+            pars <- c("alpha", "beta", "delta", "epsilon", "kappa", 
+                      "y_hat", "log_lik")
         }
     }
     
@@ -513,7 +513,6 @@ get_posterior_summaries <- function(cm,
               beta_mu = post_betamu(f = f, has_groups = has_groups),
               beta_sigma = post_betasigma(f = f, has_groups = has_groups),
               alpha = post_alpha(f = f),
-              p = post_sample_com(f = f, samples = samples, par = "p"),
               y_hat = post_sample_com(f = f, samples = samples, par = "y_hat"),
               kappa = post_kappa(f = f))
     

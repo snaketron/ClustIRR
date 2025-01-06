@@ -396,8 +396,8 @@ plot(x = gcd$community_occupancy_matrix[, "a"],
      ylab = "community occupancy [cells in IRR b]")
 ```
 
-Also see `community_summary`. Here we provide community-specific summaries,
-as rows, including: 
+Also see `community_summary`. In the data.frame `wide` we provide community 
+summaries in each row across all samples, including: 
 
   * `clones_a`, `clone_b`, `clones_n`: the frequency of clones in the community
   coming from IRR a, b and in total (n)
@@ -410,7 +410,7 @@ as rows, including:
   sequences
 
 ```{r}
-kable(head(gcd$community_summary), digits = 2)
+kable(head(gcd$community_summary$wide), digits = 2)
 ```
 
 What is the contribution of CDR3a and CDR3b weights to the formation of
@@ -424,13 +424,23 @@ from a single node have no within-community edges $\rightarrow$
   * `w` = 0
 
 ```{r, fig.width=6, fig.height=4}
-ggplot(data = gcd$community_summary)+
+ggplot(data = gcd$community_summary$wide)+
   geom_point(aes(x = w_CDR3a, y = w_CDR3b, size = cells_n), shape=21)+
   xlab(label = "CDR3a ncweight")+
   ylab(label = "CDR3b ncweight")+
   scale_size_continuous(range = c(0.5, 5))+
   theme_bw(base_size = 10)
 ```
+
+
+In the data.frame `tall` we provide community and sample/repertoire summaries 
+in each row.
+
+```{r}
+kable(head(gcd$community_summary$tall), digits = 2)
+```
+
+
 
 Node-specific (TCR clone-specific) summaries are provided in
 `node_summary`
@@ -473,6 +483,33 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
                              adapt_delta = 0.9,
                              max_treedepth = 10))
 ```
+
+
+
+Which clones (nodes in the graph) have CMV-specific CDR3s?
+
+```{r}
+beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
+                            beta = d$posterior_summary$beta,
+                            ag_species = c("CMV", "EBV", "Influenza"),
+                            ag_genes = c("MLANA"),
+                      db = "vdjdb",
+                      chain = "both")
+
+patchwork::wrap_plots(o$violins)
+```
+
+
+
+Which communities have TCR clones with CMV, EBV and Influenza-specific CDR3s?
+
+```{r}
+cs_ann <- get_community_ann(community_summary = gcd$community_summary,
+                            node_summary = gcd$node_summary,
+                            ag_species = c("CMV", "EBV", "Influenza"),
+                            ag_genes = c("MLANA"))
+```
+
 
 ## **Step 5.** posterior predictive check
 

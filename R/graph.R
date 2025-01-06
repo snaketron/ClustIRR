@@ -386,13 +386,11 @@ get_intergraph_edges <- function(igs,
             }
         }
         
-        res <- numeric(length = 6)
+        res <- numeric(length = 4)
         res[1] <- score
         res[2] <- length(s)
-        res[3] <- res[1]/res[2]
-        res[4] <- cscore
-        res[5] <- sum(tr==0)
-        res[6] <- res[4]/res[5]
+        res[3] <- cscore
+        res[4] <- sum(tr==0)
         return(res)
     }
     
@@ -418,7 +416,6 @@ get_intergraph_edges <- function(igs,
             return(NULL)
         } 
         
-        
         # remove partial hits
         o$QueryLen <- s1$len[o$QueryId]
         o$TargetLen <- s2$len[o$TargetId]
@@ -438,30 +435,23 @@ get_intergraph_edges <- function(igs,
         data_env <- get_blosum62()
         
         # compute BLSOUM62 scores
-        bs <- do.call(rbind, lapply(X = 1:nrow(o), 
-                                    FUN = get_bscore, 
-                                    o = o, 
-                                    gap_o = -10, 
-                                    gap_e = -4, 
-                                    trim = trim_flank_aa,
-                                    b = data_env[["BLOSUM62"]]))
-        
-        o$b <- bs[,1]
-        o$max_len <- bs[,2]
-        o$nb <- bs[,3]
-        o$cb <- bs[,4]
-        o$max_clen <- bs[,5]
-        o$ncb <- bs[,6]
+        bs <- t(vapply(X = 1:nrow(o), 
+                       FUN.VALUE = numeric(4),
+                       FUN = get_bscore, 
+                       o = o, 
+                       gap_o = -10, 
+                       gap_e = -4, 
+                       trim = trim_flank_aa,
+                       b = data_env[["BLOSUM62"]]))
         
         out <- data.frame(from = s1$name[o$QueryId],
                           to = s2$name[o$TargetId],
-                          weight = o$b,
-                          cweight = o$cb,
-                          nweight = o$nb,
-                          ncweight = o$ncb,
-                          max_len = o$max_len,
-                          max_clen = o$max_clen)
-        
+                          weight = bs[,1],
+                          cweight = bs[,3],
+                          nweight = bs[,1]/bs[,2],
+                          ncweight = bs[,3]/bs[,4],
+                          max_len = bs[,2],
+                          max_clen = bs[,4])
         return(out)
     }
     

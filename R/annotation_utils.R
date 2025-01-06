@@ -207,90 +207,123 @@ get_annotation_dbs <- function() {
 
 # Description:
 # integrate nodes with data from databases: VDJdb, tcr3d, mcpas-tcr
-get_node_ann <- function(node_summary, 
-                         ag_species,
-                         ag_genes) {
+get_node_ann <- function(node_summary, ag_key) {
     
     get_ann <- function(ns, ag, type) {
-        agk <- paste0(ag, "_summary")
-        db <- get_annotation_dbs()
-        i <- which(regexec(pattern = paste0(
-            paste0("info_", db, "_"), collapse = "|"), text = colnames(ns))!=-1)
-        is <- do.call(rbind, strsplit(x = colnames(ns)[i], split = "\\_"))
-        is <- data.frame(db = is[,2], chain = is[,3], info_key = colnames(ns)[i])
+        dbs <- get_annotation_dbs()
         
-        m <- matrix(data = 0, nrow = nrow(ns), ncol = nrow(is)+1)
+        # created column
+        agk <- paste0(ag, "_", dbs, "_summary")
+        
+        # clone size (multiplier)
+        clone_size <- ns$clone_size
+        
+        # columns of interest
+        i <- which(regexec(pattern = paste0(
+            paste0("info_", dbs, "_"), collapse = "|"), 
+            text = colnames(ns))!=-1)
+        is <- do.call(rbind, strsplit(x = colnames(ns)[i], 
+                                      split = "\\_"))
+        is <- data.frame(db = is[,2], chain = is[,3], 
+                         info_key = colnames(ns)[i])
+        
+        # results
+        m <- matrix(data = 0, nrow = nrow(ns), ncol = nrow(is)+length(agk))
         colnames(m) <- c(gsub(pattern = "info\\_", 
                               replacement = paste0(ag, "_"), 
                               x = is$info_key), agk)
         
         for(i in 1:nrow(is)) {
-            k <- do.call(rbind, strsplit(x = ns[,is$info_key[i]], split = "\\|"))
+            k <- do.call(rbind, strsplit(x = ns[,is$info_key[i]], 
+                                         split = "\\|"))
             if(type == "species") {
                 g <- gsub(pattern = "Antigen\\_species\\:", 
                           replacement = '', x = k[,3])
-                m[,i] <- vapply(X = g, ag = ag, FUN.VALUE = logical(1),
-                                FUN = function(x, ag) {
-                                    return(regexpr(pattern = ag, text = x)!=-1)
-                                })
+                m[,i] <- vapply(X = g, 
+                                ag = ag, 
+                                clone_size = clone_size,
+                                FUN.VALUE = numeric(1),
+                                FUN = function(x, ag, clone_size) {
+                                    return(regexpr(pattern = ag, 
+                                                   text = x)!=-1)
+                                })*clone_size
             }
             else if(type == "gene") {
                 g <- gsub(pattern = "Antigen\\_gene\\:", 
                           replacement = '', x = k[,4])
-                m[,i] <- vapply(X = g, ag = ag, FUN.VALUE = logical(1),
-                                FUN = function(x, ag) {
-                                    return(regexpr(pattern = ag, text = x)!=-1)
-                                })
+                m[,i] <- vapply(X = g, 
+                                ag = ag, 
+                                clone_size = clone_size,
+                                FUN.VALUE = numeric(1),
+                                FUN = function(x, ag, clone_size) {
+                                    return(regexpr(pattern = ag, 
+                                                   text = x)!=-1)
+                                })*clone_size
             }
         }
-        m[,agk] <- apply(X = m[,1:(ncol(m)-1)], MARGIN = 1, FUN = sum)
-        m[,agk] <- ifelse(test = m[,agk]==0, yes = 0, no = 1)
+        
+        # DB-specific cells -> summary for both chains A|B cells
+        for(db in dbs) {
+            ags <- paste0(ag, "_", db, "_summary")
+            mm <- m[, which(regexpr(pattern = db, text = colnames(m))!=-1 & 
+                      regexpr(pattern = ags, text = colnames(m))==-1),
+              drop = FALSE]
+            m[,ags] <- apply(X = mm, MARGIN = 1, FUN = max)
+        }
         m <- data.frame(m)
-    }
-    
-    if(missing(node_summary)) {
-        stop("node_summary is missing")
-    }
-    if(missing(ag_species)&missing(ag_genes)) {
-        stop("ag_species and ag_genes are missing")
-    }
-    if(is.character(ag_species)==FALSE&is.character(ag_genes)==FALSE) {
-        stop("ag_species and ag_genes must be character vectors")
+        return(m)
     }
     
     m <- node_summary
     vars <- c()
-    if(length(ag_species)!=0) {
-        for(ag in ag_species) {
-            a <- get_ann(ns = node_summary, ag = ag, type = "species")
-            vars <- c(vars, colnames(a))
-            m <- cbind(m, a)
-        }
-    }
     
-    if(length(ag_genes)!=0) {
-        for(ag in ag_genes) {
-            a <- get_ann(ns = node_summary, ag = ag, type = "gene")
-            vars <- c(vars, colnames(a))
-            m <- cbind(m, a)
-        }
+    for(i in 1:nrow(ag_key)) {
+        browser()
+        a<- get_ann(ns = node_summary, ag = ag_key$ag[i], type = ag_key$type[i])
+        vars <- c(vars, colnames(a))
+        m <- cbind(m, a)
     }
-    
+   
     return(list(ann = m, vars = vars))
 }
 
 # Description:
-# integrate communities with data from databases: VDJdb, tcr3d, mcpas-tcr
-get_community_ann <- function(node_summary, 
-                              community_summary, 
-                              ag_species, 
-                              ag_genes) {
+get_beta_violins <- function(beta,
+                             node_summary,
+                             ag_species = NULL, 
+                             ag_genes = NULL,
+                             db = "vdjdb",
+                             chain = "both") {
     
+    get_violins <- function(x, d, db, chain) {
+        
+        if(chain=="both") {
+            ags <- paste0(x, "_", db, "_summary")
+            d$size <- d[, ags]
+            d$specificity <- ifelse(d[, ags]>0, yes = "+", no = "-")
+        } 
+        if(chain == "alpha" | chain == "beta") {
+            ags <- paste0(db, "_", chain)
+            d$specificity <- ifelse(d[, ags]>0, yes = "+", no = "-")
+        }
+
+        g <- ggplot(data = d)+
+            geom_sina(aes(x = sample, y = mean, col = specificity, 
+                          size = size), alpha = 0.75)+
+            theme_bw()+
+            ggtitle(label = x, subtitle = paste0(db, ", chains: ", chain))+
+            scale_radius(name = "Specific cells", 
+                         breaks = scales::pretty_breaks(n = 4),
+                         range = c(0.5, 4))
+        
+        return(g)
+    }
+    
+    if(missing(beta)) {
+        stop("beta is missing")
+    }
     if(missing(node_summary)) {
         stop("node_summary is missing")
-    }
-    if(missing(community_summary)) {
-        stop("community_summary is missing")
     }
     if(missing(ag_species)&missing(ag_genes)) {
         stop("ag_species and ag_genes are missing")
@@ -298,20 +331,66 @@ get_community_ann <- function(node_summary,
     if(is.character(ag_species)==FALSE&is.character(ag_genes)==FALSE) {
         stop("ag_species and ag_genes must be character vectors")
     }
-    if(any(duplicated(community_summary$community))) {
-        stop("duplicated community IDs in community_summary")
+    if(length(ag_genes)==0) {
+        ag_genes <- NA
+    }
+    if(length(ag_species)==0) {
+        ag_species <- NA
+    }
+    if(missing(db)) {
+        stop("db is missing")
+    }
+    if(length(db)!=1) {
+        stop("db must be one of vdjdb, mcpas, or tcr3d")
+    }
+    if(is.character(db)==FALSE) {
+        stop("db must be character")
+    }
+    dbs <- get_annotation_dbs()
+    if(db %in% dbs == FALSE) {
+        stop("db must be one of vdjdb, mcpas, or tcr3d")
+    }
+    if(missing(chain)) {
+        stop("chain is missing")
+    }
+    if(length(chain)!=1) {
+        stop("chain must be one of CDR3a, CDR3b or both")
+    }
+    if(is.character(chain)==FALSE) {
+        stop("chain must be character")
     }
     
-    ns <- node_summary
-    cs <- community_summary
+    # construct antigen key
+    ag_key <- rbind(data.frame(ag = ag_species, type = "species"),
+                    data.frame(ag = ag_genes, type = "gene"))
+    ag_key <- ag_key[complete.cases(ag_key),]
     
-    node_ann <- get_node_ann(node_summary = ns, 
-                            ag_species = ag_species, 
-                            ag_genes = ag_genes)
+    browser()
+    na <- get_node_ann(node_summary = node_summary, ag_key = ag_key)
     
-    a <- node_ann$ann %>% 
-        group_by(community) %>% 
-        summarise_at(.funs = sum, .vars = node_ann$vars)
     
-    return(merge(x = cs, y = a, by = "community"))
+    d <- na$ann %>% 
+        group_by(community, sample) %>% 
+        summarise_at(.funs = sum, .vars = c(na$vars, "clone_size"))
+    
+    d <- merge(x = beta, 
+                y = d[, c("community", "sample", na$vars)], 
+                by = c("community", "sample"),
+                all.x = TRUE)
+    
+    w <- which(is.na(d), arr.ind = TRUE)
+    if(nrow(w)!=0) {
+        d[w] <- 0
+    }
+    
+    d <- d[order(d$mean, decreasing = TRUE),]
+    
+    # violins
+    v <- lapply(X = ag_key$ag, FUN = get_violins, d = d, db = db, chain = chain)
+    
+    return(list(node_annotations = na$ann,
+                beta_summary = d,
+                vars = vars,
+                violins = v))
 }
+    
