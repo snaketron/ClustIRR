@@ -55,6 +55,7 @@ export(plot_graph)
 export(detect_communities)
 export(dco)
 export(get_beta_violins)
+export(get_honeycombs)
 
 exportClasses(clust_irr)
 exportMethods(get_clustirr_clust)
