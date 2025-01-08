@@ -7,6 +7,7 @@ T-cell and B-cell receptors) based on their CDR3 sequences.
 }
 \usage{
 cluster_irr(s,
+            meta = NULL,
             control = list(gmi = 0.7,
                            trim_flank_aa = 3,
                            db_dist = 0,
@@ -30,6 +31,9 @@ both chains are available, then you can provide both in separate columns e.g.:
 }
 }
 }
+\item{meta}{data.frame with meta-data for each IR clone, which may contain
+data such as, V/J genes, biological condition, age, etc. This data will be
+used to annotate the graph nodes and help downstream analyses.}
 \item{control}{auxiliary parameters to control the algorithm's behavior. See 
 the details below:
 \itemize{
@@ -48,7 +52,7 @@ only from human CDR3}) are integrated in ClustIRR: \code{VDJdb}, \code{TCR3d}
 and \code{McPAS-TCR}. 
 \item \code{db_dist}: we compute edit distances between CDR3 sequences from 
 \code{s} and from a database (e.g. VDJdb). If a particular distance is 
-smaller than or equal to \code{edit_dist} (default = 0), then we annotate 
+smaller than or equal to \code{db_dist} (default = 0), then we annotate 
 the CDR3 from \code{s} with the specificity of the database CDR3 sequence.
 }
 }
@@ -85,42 +89,27 @@ CDR3s sequences.
 
 How to compute a similarity score between a pair of CDR3 sequences?
 
-Pair of sequences, \eqn{a} and \eqn{b}, are aligned with the Needleman-Wunsch 
-algorithm (BLOSUM62 substitution matrix is used for scoring). The output is an 
-alignment score (\eqn{\omega}). Identical or similar CDR3 sequence pairs get a 
-large positive \eqn{\omega}, and dissimilar CDR3 sequence pairs get a low (or 
-even negative) \eqn{\omega}.
+1. Align pairs of sequences
 
-To make sure that \eqn{\omega} is comparable across pairs of CDR3s with
-different lengths, ClustIRR divides (normalizes) \eqn{\omega}
-by the length of the longest CDR3 sequences in each pair: 
+2. Score alignment with BLOSUM62 substitution matrix and gap open/exten costs
 
-\eqn{\bar{\omega} = \dfrac{\omega}{\max(|a|, |b|)}}
+3. Normalize alignment scores by alignment length
 
-where \eqn{|a|} and \eqn{|b|} are the lengths of CDR3 sequences \eqn{a}
-and \eqn{b}; and \eqn{\bar{\omega}} is the normalized alignment score.
+4. Compute the normalized alignment score of the CDR3 \bold{cores}.
 
-The CDR3 \bold{cores}, which represent the central parts of the CDR3 loop 
-and tend to have high probability of making a contact with the antigen, 
-are compared with the same procedure. ClustIRR constructs the CDR3 cores 
-by trimming few residues (defined by \code{control$trim_flanks}) from either 
-end of each CDR3 sequences. These are then aligned and scored based on the 
-same algorithm, yielding for each pair of CDR3 cores a normalized alignment 
-scores \eqn{\bar{\omega}_c}.
+CDR3 \bold{cores} are the central parts of the CDR3 loop, which tend to have 
+high probability of making a contact with the antigen. ClustIRR constructs the 
+CDR3 cores by trimming few residues (defined by \code{control$trim_flanks}) 
+from both ends of each CDR3 sequence.
 
-\bold{This strategy is computationally very expensive!}
-
-For large IRRs with \eqn{n>10^6} this algorithm requires significant
-computational resources. To mitigate this challenge, we employ a
-screening step in which dissimilar sequences pairs are flagged. In
-short, each CDR3 is used as a query in a \bold{fast} protein-BLAST search
-as implemented in the R-package blaster, while the remaining CDR3s are
-considered as a database of amino acid sequences against which the query
-is compared. CDR3 sequences which share at least 70\% sequence identity
-(user parameter \code{control$gmi}) with the query are selected, and only
-these are aligned with query CDR3. For the remaining CDR3 pairs we
-assume \eqn{\bar{\omega}=0}.
-
+For large IRRs with many clones, step 1 requires significant computational 
+resources. To mitigate this challenge, we employ a screening step in which 
+similar sequence pairs selected. In short, each CDR3 is used as a query in 
+a \bold{fast} protein-BLAST search as implemented in the R-package blaster, 
+while the remaining CDR3s are considered as a database of amino acid sequences 
+against which the query is compared. CDR3 sequences which share at least 70\% 
+sequence identity (user parameter \code{control$gmi}) with the query are 
+selected, and only these are scored according to steps 2-4.
 }
 
 \examples{

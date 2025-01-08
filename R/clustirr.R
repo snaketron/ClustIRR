@@ -1,4 +1,5 @@
 cluster_irr <- function(s,
+                        meta = NULL,
                         control = list(gmi = 0.7,
                                        trim_flank_aa = 3,
                                        db_dist = 0,
@@ -7,7 +8,7 @@ cluster_irr <- function(s,
     control <- get_control(control_in = control)
     
     # input check
-    input_check(s = s, control = control)
+    input_check(s = s, meta = meta, control = control)
     
     # get chains to be analyzed
     chains <- get_chains(colnames(s))
@@ -27,7 +28,10 @@ cluster_irr <- function(s,
     names(clust) <- chains
     
     # setup clustirr object
-    return(get_clustirr_output_obj(clust = clust, s = s, control = control))
+    return(get_clustirr_output_obj(clust = clust, 
+                                   s = s, 
+                                   meta = meta, 
+                                   control = control))
 }
 
 

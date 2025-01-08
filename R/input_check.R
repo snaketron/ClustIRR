@@ -1,11 +1,12 @@
 # Description:
 # Check user provided input and generate errors and warnings, if necessary
-input_check <- function(s, control) {
+input_check <- function(s, meta, control) {
   check_s(s = s)
   check_trim_flank_aa(control$trim_flank_aa)
   check_gmi(control$gmi)
   check_db_custom(db_custom = control$db_custom)
   check_db_dist(db_dist = control$db_dist)
+  check_meta(s = s, meta = meta)
 }
 
 check_s <- function(s) {
@@ -151,6 +152,22 @@ check_db_dist <- function(db_dist) {
   check_singlevalue(db_dist)
   check_lessthan(db_dist, 0)
 }
+
+
+check_meta <- function(s, meta) {
+    if(missing(meta)==FALSE & is.null(meta)==FALSE) {
+        if(is.data.frame(meta)==FALSE) {
+            stop("meta is provided but not as data.frame")
+        }
+        if(nrow(meta)!=nrow(s)) {
+            stop("meta is provided but nrow(meta) != nrow(s)")
+        }
+        if(colnames(meta) %in% colnames(s)) {
+            stop("same column names in meta and s")
+        }
+    }
+}
+
 
 
 #### Helper functions ####
