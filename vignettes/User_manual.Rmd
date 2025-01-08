@@ -390,11 +390,10 @@ head(gcd$community_occupancy_matrix)
 ```
 
 ```{r, fig.width=5, fig.height=5}
-plot(x = gcd$community_occupancy_matrix[, "a"],
-     y = gcd$community_occupancy_matrix[, "b"],
-     xlab = "community occupancy [cells in IRR a]",
-     ylab = "community occupancy [cells in IRR b]")
+honeycomb <- ClustIRR::get_honeycombs(com = gcd$community_occupancy_matrix)
+honeycomb[[1]]
 ```
+
 
 Also see `community_summary`. In the data.frame `wide` we provide community 
 summaries in each row across all samples, including: 
@@ -490,25 +489,20 @@ Which clones (nodes in the graph) have CMV-specific CDR3s?
 
 ```{r}
 beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
-                            beta = d$posterior_summary$beta,
-                            ag_species = c("CMV", "EBV", "Influenza"),
-                            ag_genes = c("MLANA"),
-                      db = "vdjdb",
-                      chain = "both")
-
-patchwork::wrap_plots(o$violins)
+                                 beta = d$posterior_summary$beta,
+                                 ag_species = c("CMV", "EBV", "Influenza"),
+                                 ag_genes = c("MLANA"),
+                                 db = "vdjdb",
+                                 db_dist = 0,
+                                 chain = "both")
 ```
 
 
 
-Which communities have TCR clones with CMV, EBV and Influenza-specific CDR3s?
-
-```{r}
-cs_ann <- get_community_ann(community_summary = gcd$community_summary,
-                            node_summary = gcd$node_summary,
-                            ag_species = c("CMV", "EBV", "Influenza"),
-                            ag_genes = c("MLANA"))
+```{r, fig.width=7, fig.height=5.5}
+patchwork::wrap_plots(beta_violins$violins)
 ```
+
 
 
 ## **Step 5.** posterior predictive check
@@ -581,9 +575,9 @@ ggplot(data = d$posterior_summary$epsilon)+
 
 Distribution of mean $\delta$s
 
-```{r, fig.width=4, fig.height=3}
+```{r, fig.width=6, fig.height=2}
 ggplot(data = d$posterior_summary$delta)+
-    facet_wrap(facets = ~contrast, ncol = 1)+
+    facet_wrap(facets = ~contrast, nrow = 1)+
     geom_histogram(aes(mean), bins = 100)+
     xlab(label = expression(delta))+
     theme_bw(base_size = 10)
@@ -591,9 +585,9 @@ ggplot(data = d$posterior_summary$delta)+
 
 Distribution of mean $\epsilon$s
 
-```{r, fig.width=4, fig.height=3}
+```{r, fig.width=6, fig.height=2}
 ggplot(data = d$posterior_summary$epsilon)+
-    facet_wrap(facets = ~contrast, ncol = 1)+
+    facet_wrap(facets = ~contrast, nrow = 1)+
     geom_histogram(aes(mean), bins = 100)+
     xlab(label = expression(epsilon))+
     theme_bw(base_size = 10)
@@ -705,18 +699,14 @@ How many cells in each community from the three IRRs?
 -   panel B: $a$ vs $c$
 -   panel C: $b$ vs $c$
 
+
+
 ```{r, fig.width=7, fig.height=2.5}
-(ggplot(data = gcd$community_summary)+
-   geom_point(aes(x = cells_a, y = cells_b), shape = 21)+
-   theme_bw(base_size = 10))|
-  (ggplot(data = gcd$community_summary)+
-     geom_point(aes(x = cells_a, y = cells_c), shape = 21)+
-     theme_bw(base_size = 10))|
-  (ggplot(data = gcd$community_summary)+
-     geom_point(aes(x = cells_b, y = cells_c), shape = 21)+
-     theme_bw(base_size = 10))+
-  plot_annotation(tag_level = 'A')
+honeycomb <- ClustIRR::get_honeycombs(com = gcd$community_occupancy_matrix)
+
+patchwork::wrap_plots(honeycomb, nrow = 1)
 ```
+
 
 The number of cells in each IRR and community are stored as cells in the
 matrix `community_occupancy_matrix`. Rows are communities, and columns
