@@ -162,9 +162,6 @@ check_meta <- function(s, meta) {
         if(nrow(meta)!=nrow(s)) {
             stop("meta is provided but nrow(meta) != nrow(s)")
         }
-        if(colnames(meta) %in% colnames(s)) {
-            stop("same column names in meta and s")
-        }
     }
 }
 

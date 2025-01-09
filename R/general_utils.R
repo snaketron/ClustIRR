@@ -40,7 +40,7 @@ get_trimmed_flanks <- function(x, flank_size) {
 get_clustirr_output_obj <- function(clust, s, meta, control) {
     
     # keep meta data
-    if(is.null(meta)==FALSE | missing(meta)) {
+    if(is.null(meta)==TRUE | missing(meta)==TRUE) {
         meta <- NULL
     }
     

@@ -108,17 +108,22 @@ data("CDR3ab", package = "ClustIRR")
 set.seed(127)
 n <- 300
 
-# get 300 CDR3a and CDR3b pairs from the data -> IRR a
-a <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
-                CDR3b = CDR3ab$CDR3b[1:n], 
-                clone_size=rpois(n = n, lambda = 3)+1, 
-                sample = "a")
+# 1. Get 300 CDR3a and CDR3b pairs from the data -> IRR a
+a <- CDR3ab[1:n, c("CDR3a", "CDR3b")]
+a$clone_size <- rpois(n = n, lambda = 3)+1
+a$sample <- "a"
 
-# get 200 CDR3a and CDR3b pairs from the data -> IRR b
-b <- data.frame(CDR3a = CDR3ab$CDR3a[101:(n+100)], 
-                CDR3b = CDR3ab$CDR3b[101:(n+100)], 
-                clone_size=rpois(n = n, lambda = 3)+1, 
-                sample = "b")
+# 2. Get accompanying meta data for IRR a [optional]
+# It may contain as many features (columns) as you want
+meta_a <- CDR3ab[1:n, c("TRBV", "TRBJ", "TRAV", "TRAJ")]
+
+# 3. Get 300 CDR3a and CDR3b pairs from the data -> IRR b
+b <- CDR3ab[101:(n+100), c("CDR3a", "CDR3b")]
+b$clone_size <- rpois(n = n, lambda = 3)+1
+b$sample <- "b"
+
+# 4. Get accompanying meta data for IRR b [optional]
+meta_b <- CDR3ab[101:(n+100), c("TRBV", "TRBJ", "TRAV", "TRAJ")]
 ```
 
 ```{r}
@@ -183,9 +188,9 @@ of class `clust_irr`.
 
 ```{r}
 # perform clust_irr analysis of repertoire a
-c_a <- cluster_irr(s = a, control = list(gmi = 0.7))
+c_a <- cluster_irr(s = a, meta = meta_a, control = list(gmi = 0.7))
 # ... and b
-c_b <- cluster_irr(s = b, control = list(gmi = 0.7))
+c_b <- cluster_irr(s = b, meta = meta_b, control = list(gmi = 0.7))
 ```
 
 Next, we show the chain-specific similarity scores between CDR3s 

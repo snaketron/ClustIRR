@@ -37,9 +37,13 @@ get_beta_violins(beta,
                  chain = "both")
 }
 \arguments{
+\item{beta}{\code{beta} data.frame}
 \item{node_summary}{\code{node_summary} data.frame}
-\item{ag_species}{antigen species, character vector, e.g. "EBV".}
-\item{ag_genes}{antigen genes, character vector, e.g. "MLANA".}
+\item{ag_species}{antigen species, character vector, e.g. c("EBV", "CMV")}
+\item{ag_genes}{antigen genes, character vector, e.g. "MLANA"}
+\item{db}{annotation database, character, e.g. "vdjdb"}
+\item{db_dist}{maximum edit distance threshold for matching, nummeric}
+\item{chain}{immune receptor chain for annotation, "both", "CDR3a" or "CDR3b"}
 }
 \value{
 The output is a list with 4 elements: 
@@ -87,7 +91,7 @@ names(gcd)
 head(gcd$community_occupancy_matrix)
 
 # look at the community summary
-head(gcd$community_summary)
+head(gcd$community_summary$wide)
 
 # look at the node summary
 head(gcd$node_summary)

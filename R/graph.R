@@ -103,20 +103,22 @@ get_graph <- function(clust_irr) {
     
     # cells
     s <- get_clustirr_inputs(clust_irr)$s
-    
     # setting up the sample id
     sample_id <- s$sample[1]
     
+    # meta
+    meta <- get_clustirr_inputs(clust_irr)$meta
+    
     # get clones
-    cs <- get_clones(sample_id = sample_id, x = s)
+    cs <- get_clones(sample_id = sample_id, s = s, meta = meta)
     
     # get edges between clones
     e <- get_edges(clust_irr = clust_irr, cs = cs)
     
     # build graph with only vertices
     if(is.null(e)) {
-        ig <- graph_from_data_frame(d = data.frame(from=cs$name[1], 
-                                                   to=cs$name[1]), 
+        ig <- graph_from_data_frame(d = data.frame(from = cs$name[1], 
+                                                   to = cs$name[1]), 
                                     directed = FALSE, vertices = cs)
         ig <- delete_edges(ig, edges = 1)
         
@@ -517,14 +519,26 @@ get_intergraph_edges <- function(igs,
     return(ige)
 }
 
-get_clones <- function(sample_id, x) {
-    cs <- x
-    cs$id <- NULL
-    cs$clone_id <- seq_len(nrow(cs))
-    cs$sample <- sample_id
-    cs$name <- paste0(sample_id, '|', cs$clone_id)
-    cs <- cs[, rev(colnames(cs))]
-    return(cs)
+get_clones <- function(sample_id, s, meta) {
+    s$id <- NULL
+    s$clone_id <- seq_len(nrow(s))
+    s$sample <- sample_id
+    s$name <- paste0(sample_id, '|', s$clone_id)
+    s <- s[, rev(colnames(s))]
+    
+    # append s and meta
+    if(is.null(meta)==FALSE & missing(meta)==FALSE) {
+        cols <- intersect(colnames(s), colnames(meta))
+        if(length(cols)!=0) {
+            
+            meta <- meta[, (colnames(meta) %in% cols)==FALSE, drop = FALSE]
+            if(ncol(meta)!=0) {
+                s <- cbind(s, meta)
+            }
+        }
+    }
+    
+    return(s)
 }
 
 # Description:
