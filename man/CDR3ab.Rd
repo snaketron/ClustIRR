@@ -26,9 +26,9 @@ data(CDR3ab)
 T-cell receptor (TCR) repertoire with 10,000 T-cells (rows). Each T-cell 
 has the following features: amino acid sequences of their complementarity 
 determining region 3 (CDR3); and variable (V) and joining (J) gene names 
-for chain \eqn{\alpha} and \eqn{\beta}}. 
+for TCR chains \eqn{\alpha} and \eqn{\beta}. 
 
-Important: this is a mock dataset, all CDR3 sequences and the genes were 
+Important remark: this is a mock dataset, all CDR3 sequences and the genes were 
 sampled from a larger set of CDR3\eqn{\beta} sequences and genes of naive 
 CD8+ T cells in humans.
 }

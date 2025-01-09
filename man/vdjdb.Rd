@@ -20,7 +20,7 @@
 }
 
 \source{
-\href{https://vdjdb.cdr3.net/}{VDJdb, June 2024}
+\href{https://vdjdb.cdr3.net/}{VDJdb, December 2024}
 }
 \usage{
 data(vdjdb)

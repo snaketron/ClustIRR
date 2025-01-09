@@ -26,14 +26,14 @@ test_that("s parameter takes only valid input", {
 
 test_that("s parameter takes only valid input", {
   data("CDR3ab", package = "ClustIRR")
-  s <- CDR3ab[1:100,]
+  s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- "a"
   expect_no_error(cluster_irr(s))
   
   
   # test s
-  s <- CDR3ab[1:100,]
+  s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- "a"
   s$CDR3b[1] <- NA
@@ -42,21 +42,21 @@ test_that("s parameter takes only valid input", {
   
   # test sample
   data("CDR3ab", package = "ClustIRR")
-  s <- CDR3ab[1:100,]
+  s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- NA
   expect_error(cluster_irr(s = s),
                regexp = "sample must be character")
   
   data("CDR3ab", package = "ClustIRR")
-  s <- CDR3ab[1:100,]
+  s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- 1
   expect_error(cluster_irr(s = s),
                regexp = "sample must be character")
   
   data("CDR3ab", package = "ClustIRR")
-  s <- CDR3ab[1:100,]
+  s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- "a"
   s$sample <- as.factor(s$sample)
@@ -64,14 +64,14 @@ test_that("s parameter takes only valid input", {
                regexp = "sample must be character")
   
   data("CDR3ab", package = "ClustIRR")
-  s <- CDR3ab[1:100,]
+  s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- T
   expect_error(cluster_irr(s = s),
                regexp = "sample must be character")
   
   data("CDR3ab", package = "ClustIRR")
-  s <- CDR3ab[1:100,]
+  s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- "a"
   s$sample[1] <- "b"

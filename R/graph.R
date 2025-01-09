@@ -515,6 +515,7 @@ get_intergraph_edges <- function(igs,
                          gmi = gmi,
                          future.seed = TRUE)
     ige <- do.call(rbind, ige)
+    future::plan(future::sequential)
     
     return(ige)
 }
@@ -530,11 +531,10 @@ get_clones <- function(sample_id, s, meta) {
     if(is.null(meta)==FALSE & missing(meta)==FALSE) {
         cols <- intersect(colnames(s), colnames(meta))
         if(length(cols)!=0) {
-            
             meta <- meta[, (colnames(meta) %in% cols)==FALSE, drop = FALSE]
-            if(ncol(meta)!=0) {
-                s <- cbind(s, meta)
-            }
+        }
+        if(ncol(meta)!=0) {
+            s <- cbind(s, meta)
         }
     }
     
