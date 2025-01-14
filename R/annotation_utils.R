@@ -301,7 +301,8 @@ get_beta_violins <- function(beta,
             d$specificity <- ifelse(d[, ags]>0, yes = "+", no = "-")
         } 
         if(chain == "CDR3a" | chain == "CDR3b") {
-            ags <- paste0(db, "_", chain)
+            ags <- paste0(x, "_", db, "_", chain)
+	    d$size <- d[, ags]
             d$specificity <- ifelse(d[, ags]>0, yes = "+", no = "-")
         }
 
