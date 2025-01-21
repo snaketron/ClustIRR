@@ -1,13 +1,15 @@
 detect_communities <- function(graph, 
+                               weight,
                                algorithm = "leiden", 
                                resolution = 1,
-                               weight = "ncweight",
+                               iterations = 100,
                                metric = "average",
                                chains) {
     
     check_inputs(graph = graph,
                  algorithm = algorithm, 
                  resolution = resolution,
+                 iterations = iterations,
                  weight = weight, 
                  metric = metric, 
                  chains = chains)
@@ -21,16 +23,17 @@ detect_communities <- function(graph,
     message("[2/5] community detection...")
     cg <- get_community_detection(g = cg, 
                                   algorithm = algorithm, 
-                                  resolution = resolution)
+                                  resolution = resolution,
+                                  iterations = iterations)
     
     message("[3/5] community summary...")
-    cs <- get_community_summary(g = cg, chains = chains)
+    cs <- get_community_summary(g = cg$graph, chains = chains)
     
     message("[4/5] extracting community occupancy matrix...")
-    cm <- get_community_matrix(g = cg)
+    cm <- get_community_matrix(g = cg$graph)
     
     message("[5/5] extracting nodes")
-    vs <- as_data_frame(x = cg, what = "vertices")
+    vs <- as_data_frame(x = cg$graph, what = "vertices")
     
     # save configs
     config <- list(input_g = graph, 
@@ -43,7 +46,9 @@ detect_communities <- function(graph,
     return(list(community_occupancy_matrix = cm, 
                 community_summary = cs, 
                 node_summary = vs, 
-                graph = cg, 
+                graph = cg$graph, 
+                graph_structure_quality = list(modularity = cg$modularity,
+                                               quality = cg$quality),
                 input_config = config))
 }
 
@@ -106,22 +111,37 @@ get_formatted_graph <- function(graph,
 
 get_community_detection <- function(g, 
                                     algorithm, 
-                                    resolution) {
+                                    resolution,
+                                    iterations) {
     
+    m <- NA
+    q <- NA
     if(algorithm == "louvain") {
         c <- cluster_louvain(graph = g, 
                              weights = E(g)$w, 
                              resolution = resolution)
         V(g)$community <- c$membership
+        m <- c$modularity[length(c$modularity)]
     }
     if(algorithm == "leiden") {
         c <- cluster_leiden(graph = g, 
                             weights = E(g)$w, 
                             resolution = resolution,
-                            n_iterations = 100)
+                            n_iterations = iterations)
         V(g)$community <- c$membership
+        m <- modularity(g, membership = c$membership, weights = E(g)$w, 
+                        resolution = resolution, directed = FALSE)
+        q <- c$quality
     }
-    return(g)
+    if(algorithm == "infomap") {
+        c <- cluster_infomap(graph = g, 
+                             e.weights = E(g)$w, 
+                             nb.trials = iterations)
+        V(g)$community <- c$membership
+        m <- c$modularity[length(c$modularity)]
+    }
+    
+    return(list(graph = g, quality = q, modularity = m))
 }
 
 get_community_summary <- function(g, 
@@ -254,6 +274,7 @@ get_community_matrix <- function(g) {
 check_inputs <- function(graph, 
                          algorithm, 
                          resolution,
+                         iterations,
                          weight, 
                          metric, 
                          chains) {
@@ -269,16 +290,16 @@ check_inputs <- function(graph,
     
     # check algorithm
     if(missing(algorithm)) {
-        stop("algorithm must be louvain or leiden")
+        stop("algorithm must be louvain, leiden or infomap")
     }
     if(length(algorithm)!=1) {
-        stop("algorithm must be louvain or leiden")
+        stop("algorithm must be louvain, leiden or infomap")
     }
     if(is.character(algorithm)==FALSE) {
         stop("algorithm must be character")
     }
-    if(!algorithm %in% c("louvain", "leiden")) {
-        stop("algorithm must be louvain or leiden")
+    if(!algorithm %in% c("louvain", "leiden", "infomap")) {
+        stop("algorithm must be louvain, leiden or infomap")
     }
     
     
@@ -297,6 +318,24 @@ check_inputs <- function(graph,
     }
     if(resolution<=0) {
         stop("resolution must be a number > 0")
+    }
+    
+    
+    # check iterations
+    if(missing(iterations)) {
+        stop("iterations must be a number > 0")
+    }
+    if(length(iterations)!=1) {
+        stop("iterations must be a number > 0")
+    }
+    if(is.numeric(iterations)==FALSE) {
+        stop("iterations must be a number > 0")
+    }
+    if(is.finite(iterations)==FALSE) {
+        stop("iterations must be a number > 0")
+    }
+    if(iterations<=0) {
+        stop("iterations must be a number > 0")
     }
     
     
