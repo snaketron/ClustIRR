@@ -69,9 +69,10 @@ sequence pairs are similar
 }
 \usage{
 detect_communities(graph,
+                   weight,
                    algorithm = "leiden", 
                    resolution = 1,
-                   weight = "ncweight",
+                   iterations = 100,
                    metric = "average",
                    chains)
 }
@@ -80,6 +81,7 @@ detect_communities(graph,
 \item{algorithm}{graph-based community detection (GCD) method: leiden (default) 
 or louvain.}
 \item{resolution}{clustering resolution (default = 1) for the GCD.}
+\item{iterations}{clustering iterations (default = 100) for the GCD.}
 \item{weight}{which edge weight metric (default = ncweight) should be 
 used for GCD}
 \item{metric}{possible metrics: "average" (default), "strict" or "loose".}
@@ -95,7 +97,9 @@ repertoire.}
 are provided as columns.}
 \item{node_summary}{data.frame, rows are nodes (clones) and their properties 
 are provided as columnscontains all user provided.}
-\item{graph}{igraph object, processed graph object}
+\item{graph}{igraph object, processed graph object.}
+\item{graph_structure_quality}{graph modularity and quality (only for Leiden) 
+measure of the strength of division of the graph into communities.}
 \item{input_config}{list, inputs provided as list.}
 }
 \examples{
@@ -120,9 +124,10 @@ jg <- get_joint_graph(clust_irrs = c)
 
 # detect communities
 gcd <- detect_communities(graph = jg$graph, 
+                          weight = "nweight",
                           algorithm = "leiden",
                           resolution = 1,
-                          weight = "ncweight",
+                          iterations = 100,
                           metric = "average",
                           chains = c("CDR3a", "CDR3b"))
 
