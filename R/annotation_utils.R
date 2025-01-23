@@ -278,10 +278,9 @@ get_node_ann <- function(ns, ag_key, db) {
         vars <- c(vars, colnames(a))
         m <- cbind(m, a)
     }
-   
+    
     return(list(ann = m, vars = vars))
 }
-
 
 
 # Description:
@@ -302,10 +301,10 @@ get_beta_violins <- function(beta,
         } 
         if(chain == "CDR3a" | chain == "CDR3b") {
             ags <- paste0(x, "_", db, "_", chain)
-	    d$size <- d[, ags]
+            d$size <- d[, ags]
             d$specificity <- ifelse(d[, ags]>0, yes = "+", no = "-")
         }
-
+        
         g <- ggplot(data = d)+
             geom_sina(aes(x = sample, y = mean, col = specificity, 
                           size = size), stroke = 0.5, alpha = 0.4)+
@@ -561,10 +560,10 @@ get_beta_violins <- function(beta,
     } else {
         chains <- chain
     }
-
+    
     # select node_summary columns
     ns <- node_summary[,c(chains, "community", "sample", "clone_size")]
-        
+    
     # construct antigen key
     ag_key <- rbind(data.frame(ag = ag_species, type = "species"),
                     data.frame(ag = ag_genes, type = "gene"))
@@ -641,4 +640,293 @@ get_honeycombs <- function(com) {
 }
 
 
+
+
+# Description:
+get_ag_summary <- function(communities,
+                           node_summary,
+                           ag_species = NULL, 
+                           ag_genes = NULL,
+                           db = "vdjdb",
+                           db_dist = 0,
+                           chain = "both") {
     
+    match_db <- function(ns, db, db_dist) {
+        
+        get_db_info <- function(ns, db, db_type, chain, index) {
+            
+            get_vdjdb_info <- function(x, ns, db, chain, index) {
+                if(x == "") {
+                    return("")
+                }
+                xs <- as.numeric(unlist(strsplit(index[x], split = "\\|")))
+                
+                return(paste0("<db:VDJdb|chain:", chain, "|",
+                              "Antigen_species:", 
+                              paste0(db[xs, "Antigen_species"], collapse = ';'),"|",
+                              "Antigen_gene:", 
+                              paste0(db[xs, "Antigen_gene"], collapse = ';'), "|",
+                              "CDR3_species:", 
+                              paste0(db[xs, "CDR3_species"], collapse = ';'), "|",
+                              "Reference:", 
+                              paste0(db[xs, "PMID"], collapse = ';'), ">"))
+            }
+            
+            get_tcr3d_info <- function(x, ns, db, chain, index) {
+                if(x == "") {
+                    return("")
+                }
+                xs <- as.numeric(unlist(strsplit(index[x], split = "\\|")))
+                
+                return(paste0("<db:tcr3d|chain:", chain, "|",
+                              "Antigen_species:", 
+                              paste0(db[xs, "Antigen_species"], collapse = ';'),"|",
+                              "Antigen_gene:", 
+                              paste0(db[xs, "Antigen_gene"], collapse = ';'), "|",
+                              "Reference:", 
+                              paste0(db[xs, "Reference"], collapse = ';'), ">"))
+            }
+            
+            get_mcpas_info <- function(x, ns, db, chain, index) {
+                if(x == "") {
+                    return("")
+                }
+                xs <- as.numeric(unlist(strsplit(index[x], split = "\\|")))
+                
+                return(paste0("<db:mcpas|chain:", chain, "|",
+                              "Antigen_species:", 
+                              paste0(db[xs, "Antigen_species"], collapse = ';'),"|",
+                              "Antigen_gene:", 
+                              paste0(db[xs, "Antigen_gene"], collapse = ';'), "|",
+                              "CDR3_species:", 
+                              paste0(db[xs, "CDR3_species"], collapse = ';'), "|",
+                              "Reference:", 
+                              paste0(db[xs, "Reference"], collapse = ';'), ">"))
+            }
+            
+            if(db_type == "vdjdb") {
+                return(vapply(X = 1:nrow(ns), 
+                              FUN = get_vdjdb_info, 
+                              ns = ns,
+                              db = db[,c(chain, "CDR3_species", "Antigen_species", 
+                                         "Antigen_gene", "Reference")],
+                              chain = chain,
+                              index = index,
+                              FUN.VALUE = character(1)))
+                
+                return(unlist(lapply(X=which(ns[,paste0("db_vdjdb_", chain)]==1),
+                                     ns=ns,
+                                     db=db[,c(chain, "CDR3_species", 
+                                              "Antigen_species", 
+                                              "Antigen_gene", 
+                                              "Reference")],
+                                     chain = chain,
+                                     index = index,
+                                     FUN=get_vdjdb_info)))
+            }
+            if(db_type == "tcr3d") {
+                return(unlist(lapply(X = 1:nrow(ns),
+                                     ns = ns,
+                                     db = db[,c(chain, "Antigen_species", 
+                                                "Antigen_gene", 
+                                                "Reference")],
+                                     chain = chain,
+                                     index = index,
+                                     FUN = get_tcr3d_info)))
+            }
+            if(db_type == "mcpas") {
+                return(unlist(lapply(X = 1:nrow(ns),
+                                     ns = ns,
+                                     db = db[,c(chain, "CDR3_species",
+                                                "Antigen_species", 
+                                                "Antigen_gene", 
+                                                "Reference")],
+                                     chain = chain,
+                                     index = index,
+                                     FUN = get_mcpas_info)))
+            }
+        }
+        
+        get_db_index <- function(x, a, b, d) {
+            if(d==0) {
+                z <- which(a==b[x])
+            } else {
+                z <- which(stringdist(a=a,b=b[x],method="lv")<=d)
+            }
+            if(length(z)!=0) {
+                return(paste0(z, collapse = '|'))
+            }
+            return('')
+        }
+        
+        load_data <- function(d) {
+            
+            e <- new.env()
+            if(d=="vdjdb") {
+                name <- data("vdjdb", package = "ClustIRR", envir = e)[1]
+            }
+            if(d=="mcpas") {
+                name <- data("mcpas", package = "ClustIRR", envir = e)[1]
+            }
+            if(d=="tcr3d") {
+                name <- data("tcr3d", package = "ClustIRR", envir = e)[1]
+            }
+            return(e[[name]])
+        }
+        
+        # what type of chaisn are there in the data -> use them to match DBs
+        chains <- get_chains(x = colnames(ns))
+        
+        # load DBs and pack into one list -> db
+        db_name <- db
+        db <- vector(mode = "list", length = 1)
+        names(db) <- db_name
+        db[[1]] <- load_data(d = names(db)[1])
+        
+        for(chain in chains) {
+            key_db <- paste0("db_", db_name, "_", chain)
+            key_index <- paste0("index_", db_name, "_", chain)
+            key_info <- paste0("info_", db_name, "_", chain)
+            
+            ns[, key_db] <- 0
+            ns[, key_index] <- ''
+            ns[, key_info] <- ''
+            
+            # insert indices
+            ns[, key_index] <- vapply(X = 1:nrow(ns), 
+                                      a = db[[db_name]][, chain],
+                                      b = ns[, chain],
+                                      d = db_dist,
+                                      FUN.VALUE = character(1), 
+                                      FUN = get_db_index)
+            
+            ns[ns[, key_index]!='', key_db] <- 1
+            ns[, key_info] <- get_db_info(ns = ns,
+                                          db_type = db_name,
+                                          db = db[[db_name]],
+                                          index = ns[, key_index],
+                                          chain = chain)
+            ns[, key_index] <- NULL
+        }
+        
+        # get aggregate infos
+        x <- ns[, which(regexpr(pattern = "info_", text = colnames(ns))!=-1), 
+                drop=FALSE]
+        a <- apply(X = x, MARGIN = 1, FUN = function(x, key) {
+            if(all(x=="")) {
+                return(list(ag_species = '', ag_gene = ''))
+            }
+            
+            ag_species <- c()
+            ag_gene <- c()
+            x <- x[x!=""]
+            for(i in 1:length(x)) {
+                y <- unlist(strsplit(x = x[i], split = "\\|"))
+                ag_species <- c(ag_species, unlist(strsplit(x = y[3], split = '\\;')))
+                ag_gene <- c(ag_gene, unlist(strsplit(x = y[4], split = '\\;')))
+            }
+            ag_species <- paste0(unique(gsub(pattern = "Antigen_species\\:", 
+                                             replacement = '', x = ag_species)), 
+                                 collapse = ',')
+            ag_gene <- paste0(unique(gsub(pattern = "Antigen_gene\\:", 
+                                          replacement = '', x = ag_gene)),
+                              collapse = ',')
+            
+            return(list(ag_species = ag_species, ag_gene = ag_gene))
+        })
+        
+        ns$Ag_species <- unlist(lapply(X = a, FUN = function(x){x[["ag_species"]]}))
+        ns$Ag_gene <- unlist(lapply(X = a, FUN = function(x) {x[["ag_gene"]]}))
+        
+        return(ns)
+    }
+    
+    # input checks, TODO: pack
+    if(missing(communities)) {
+        stop("communities is missing")
+    }
+    if(missing(node_summary)) {
+        stop("node_summary is missing")
+    }
+    if(missing(ag_species)&missing(ag_genes)) {
+        stop("ag_species and ag_genes are missing")
+    }
+    if(is.character(ag_species)==FALSE&is.character(ag_genes)==FALSE) {
+        stop("ag_species and ag_genes must be character vectors")
+    }
+    if(length(ag_genes)==0) {
+        ag_genes <- NA
+    }
+    if(length(ag_species)==0) {
+        ag_species <- NA
+    }
+    if(missing(db)) {
+        stop("db is missing")
+    }
+    if(length(db)!=1) {
+        stop("db must be one of 'vdjdb', 'mcpas', or 'tcr3d'")
+    }
+    if(is.character(db)==FALSE) {
+        stop("db must be character")
+    }
+    dbs <- get_annotation_dbs()
+    if(db %in% dbs == FALSE) {
+        stop("db must be one of 'vdjdb', 'mcpas', or 'tcr3d'")
+    }
+    if(missing(chain)) {
+        stop("chain is missing")
+    }
+    if(length(chain)!=1) {
+        stop("chain must be one of CDR3a, CDR3b or both")
+    }
+    if(is.character(chain)==FALSE) {
+        stop("chain must be character")
+    }
+    if(all(chain %in% c("both", "CDR3a", "CDR3b"))==FALSE) {
+        stop("chain must be one of: 'CDR3a', 'CDR3b' or 'both' 
+        (DBs do not provide annotations for other chain types)")
+    }
+    check_db_dist(db_dist)
+    if(chain == "both") {
+        chains <- get_chains(colnames(node_summary))
+    } else {
+        chains <- chain
+    }
+    
+    # select node_summary columns
+    ns <- node_summary[,c(chains, "community", "sample", "clone_size")]
+    
+    # keep info about the community size
+    n <- aggregate(clone_size~sample, data = ns, FUN = sum)
+    n$repertoire_size <- n$clone_size
+    n$clone_size <- NULL
+        
+    ns <- ns[ns$community %in% communities,]
+    
+    # construct antigen key
+    ag_key <- rbind(data.frame(ag = ag_species, type = "species"),
+                    data.frame(ag = ag_genes, type = "gene"))
+    ag_key <- ag_key[complete.cases(ag_key),]
+    
+    
+    ns <- match_db(ns = ns, db = db, db_dist = db_dist)
+    na <- get_node_ann(ns = ns, ag_key = ag_key, db = db)
+    
+    # Create the list to fill d with 0s
+    l <- as.list(rep(0, length(c(na$vars, "clone_size"))))
+    names(l) <- c(na$vars, "clone_size")
+    d <- na$ann %>% complete(community, sample, fill = l, explicit = TRUE)
+    
+    d <- d %>% 
+        group_by(community, sample) %>% 
+        summarise_at(.funs = sum, .vars = c(na$vars, "clone_size"))
+    
+    w <- which(is.na(d), arr.ind = TRUE)
+    if(nrow(w)!=0) {
+        d[w] <- 0
+    }
+    
+    d <- merge(x = d, y = n, by = "sample", all.x = TRUE)
+    
+    return(d)
+}

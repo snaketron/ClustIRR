@@ -48,6 +48,7 @@ importFrom(dplyr, summarise_all)
 importFrom(dplyr, summarise_at)
 importFrom(dplyr, mutate)
 importFrom(dplyr, "%>%")
+importFrom(tidyr, complete)
 importFrom(ggforce, geom_sina)
 importFrom(scales, pretty_breaks)
 
@@ -59,6 +60,8 @@ export(detect_communities)
 export(dco)
 export(get_beta_violins)
 export(get_honeycombs)
+export(get_ag_summary)
+
 
 exportClasses(clust_irr)
 exportMethods(get_clustirr_clust)

@@ -1,0 +1,100 @@
+\name{get_ag_summary}
+\alias{get_ag_summary}
+\title{Estimate the number of antigen-specific T-cells in selected communities}
+\description{
+Use 1. a list of community IDs, 2. \code{node_summary} data.frame generated 
+by the function \code{detect_communities}; and 3. antigen species/genes to 
+estimate the number of antigen-specific T-cells in selected communities in
+each repertoire.}
+\details{
+The user has to provide a vector of antigen species (e.g. 
+\code{ag_species} = c("EBV", "CMV")) and/or a vector of antigen 
+genes (e.g. \code{ag_genes} = "MLANA"). Furthermore, the user has 
+to provide nodes (\code{node_summary} data.frame created by the 
+function \code{detect_communities}) and a vector with community IDs. 
+
+The user can also select an annotation database \code{db},
+such as "vdjdb", "mcpas" or "tcr3d"; and restrict the annotation to
+specific IR chains, such as "CDR3a", "CDR3b" or "both". By default,
+we will look for perfect matches (\code{db_dist=0}) between CDR3 
+sequences in the input and in the annotation database for annotation. 
+Flexible annotation based on edit distances can be performed by 
+increasing \code{db_dist}.
+}
+\usage{
+get_ag_summary(communities,
+               node_summary,
+               ag_species = NULL, 
+               ag_genes = NULL,
+               db = "vdjdb",
+               db_dist = 0,
+               chain = "both")
+}
+\arguments{
+\item{communities}{numeric vector with community IDs}
+\item{node_summary}{\code{node_summary} data.frame}
+\item{ag_species}{antigen species, character vector, e.g. c("EBV", "CMV")}
+\item{ag_genes}{antigen genes, character vector, e.g. "MLANA"}
+\item{db}{annotation database, character, e.g. "vdjdb"}
+\item{db_dist}{maximum edit distance threshold for matching, nummeric}
+\item{chain}{immune receptor chain for annotation, "both", "CDR3a" or "CDR3b"}
+}
+\value{
+The output is a data.frame with the number of T-cells specific for the 
+antigenic species/genes (columns) provided as input per repertoire (row),
+including the total number of T-cells in each repertoire.
+}
+\examples{
+# load package input data
+data("CDR3ab", package = "ClustIRR")
+a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
+                  CDR3b = CDR3ab[1:500, "CDR3b"],
+                  clone_size = 1,
+                  sample = "a")
+
+b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
+                  CDR3b = CDR3ab[401:900, "CDR3b"],
+                  clone_size = 1,
+                  sample = "b")
+b$clone_size[1] <- 20
+
+# run ClustIRR analysis
+c <- c(cluster_irr(s = a), cluster_irr(s = b))
+
+# get joint graph
+jg <- get_joint_graph(clust_irrs = c)
+
+# detect communities
+gcd <- detect_communities(graph = jg$graph, 
+                          algorithm = "leiden",
+                          resolution = 1,
+                          weight = "ncweight",
+                          metric = "average",
+                          chains = c("CDR3a", "CDR3b"))
+
+# look at outputs
+names(gcd)
+
+# look at the community matrix
+head(gcd$community_occupancy_matrix)
+
+# look at the community summary
+head(gcd$community_summary$wide)
+
+# look at the node summary
+head(gcd$node_summary)
+
+# differential community occupancy analysis
+dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
+
+names(dco)
+
+# generate beta violin plots
+ag_summary <- get_ag_summary(communities = 1:3,
+                             node_summary = gcd$node_summary,
+                             ag_species = c("EBV", "CMV"),
+                             ag_genes = "MLANA",
+                             db = "vdjdb",
+                             db_dist = 0,
+                             chain = "both")
+}
