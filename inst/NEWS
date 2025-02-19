@@ -40,3 +40,5 @@ Changes in version 1.3.34 (19 Oct, 2024)
 Changes in version 1.5.36 (Dec, 2024)
 + Two function for visualization of results: get_honeycombs and get_beta_violins
 
+Changes in version 1.5.41 (Feb, 2025)
++ Function for community inspection/decoding

@@ -1,24 +1,19 @@
 detect_communities <- function(graph, 
-                               weight,
+                               weight = "nweight",
                                algorithm = "leiden", 
                                resolution = 1,
                                iterations = 100,
-                               metric = "average",
                                chains) {
     
     check_inputs(graph = graph,
                  algorithm = algorithm, 
                  resolution = resolution,
                  iterations = iterations,
-                 weight = weight, 
-                 metric = metric, 
+                 weight = weight,
                  chains = chains)
     
     message("[1/5] formatting graph...")
-    cg <- get_formatted_graph(graph = graph, 
-                              weight = weight, 
-                              metric = metric,
-                              chains = chains) 
+    cg <- get_formatted_graph(graph = graph, weight = weight, chains = chains) 
     
     message("[2/5] community detection...")
     cg <- get_community_detection(g = cg, 
@@ -39,8 +34,7 @@ detect_communities <- function(graph,
     config <- list(input_g = graph, 
                    algorithm = algorithm, 
                    resolution = resolution,
-                   weight = weight, 
-                   metric = metric,
+                   weight = weight,
                    chains = chains)
     
     return(list(community_occupancy_matrix = cm, 
@@ -54,18 +48,7 @@ detect_communities <- function(graph,
 
 get_formatted_graph <- function(graph, 
                                 weight,
-                                metric,
                                 chains) {
-    
-    set_weight <- function(graph, weight) {
-        if(weight == "ncweight") {
-            E(graph)$weight <- E(graph)$ncweight
-        }
-        if(weight == "nweight") {
-            E(graph)$weight <- E(graph)$nweight
-        }
-        return(graph)
-    }
     
     set_chain <- function(graph, chains) {
         i <- which(!E(graph)$chain %in% chains)
@@ -75,37 +58,28 @@ get_formatted_graph <- function(graph,
         return(graph)
     }
     
-    graph <- set_weight(graph = graph, weight = weight)
     graph <- set_chain(graph = graph, chains = chains)
     
-    graph <- simplify(graph, edge.attr.comb = list(weight = "concat",
+    graph <- simplify(graph, edge.attr.comb = list(ncweight = "concat",
+                                                   nweight = "concat",
                                                    chain = "concat",
                                                    "ignore"))
     
-    if(metric == "average") {
-        E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
-                             FUN = function(x) {return(sum(x)/2)})
-    }
-    if(metric == "strict") {
-        E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
-                             FUN = function(x) {
-                                 if(length(x)==2) {
-                                     return(min(x))
-                                 }
-                                 return(min(x,0))})
-    }
-    if(metric == "loose") {
-        E(graph)$w <- vapply(X = E(graph)$weight, FUN.VALUE = numeric(1),
-                             FUN = function(x) {
-                                 if(length(x)==2) {
-                                     return(max(x))
-                                 }
-                                 return(max(x,0))})
+    E(graph)$nweight <- vapply(X = E(graph)$nweight, FUN.VALUE = numeric(1),
+                               FUN = function(x) {return(sum(x)/2)})
+    E(graph)$ncweight <- vapply(X = E(graph)$ncweight, FUN.VALUE = numeric(1),
+                                FUN = function(x) {return(sum(x)/2)})
+    if(weight == "nweight") {
+        E(graph)$w <- E(graph)$nweight
+    } else {
+        E(graph)$w <- E(graph)$ncweight
     }
     
-    graph <- delete_edges(graph = graph, which(E(graph)$w <= 0))
     # if trim*2 > CDR3 lengths -> NA
-    graph <- delete_edges(graph = graph, which(is.na(E(graph)$w)))
+    i <- which(E(graph)$w <= 0 | is.na(E(graph)$w))
+    if(length(i)!=0) {
+        graph <- delete_edges(graph = graph, i)
+    }
     return(graph)
 }
 
@@ -145,8 +119,7 @@ get_community_detection <- function(g,
 }
 
 get_community_summary <- function(g, 
-                                  chains, 
-                                  metric) {
+                                  chains) {
     
     get_vstats <- function(vs, wide) {
         
@@ -202,8 +175,11 @@ get_community_summary <- function(g,
         sg <- subgraph(graph = g, vids = which(V(g)$community==x))
         
         if(length(sg)==1) {
-            v <- numeric(length = length(chains)*2+1)
-            names(v) <- c("w", paste0("w_", chains), paste0("n_", chains))
+            v <- numeric(length = length(chains)*3+1)
+            names(v) <- c("w", 
+                          paste0("ncweight_", chains),
+                          paste0("nweight_", chains),
+                          paste0("n_", chains))
             v <- c(x, v)
             names(v)[1] <- "community"
             return(v)
@@ -212,17 +188,21 @@ get_community_summary <- function(g,
         es <- as_data_frame(x = sg, what = "edges")
         l <- lapply(X = 1:nrow(es), es = es, chains, 
                     FUN = function(x, es, chains) {
-                        v <- numeric(length = length(chains)*2+1)
-                        names(v) <- c("w", paste0("w_", chains), 
+                        v <- numeric(length = length(chains)*3+1)
+                        names(v) <- c("w", 
+                                      paste0("ncweight_", chains),
+                                      paste0("nweight_", chains),
                                       paste0("n_", chains))
                         for(c in chains) {
                             i <- which(es$chain[[x]]==c)
                             if(length(i)==0) {
-                                v[paste0("w_", c)] <- 0
+                                v[paste0("ncweight_", c)] <- 0
+                                v[paste0("nweight_", c)] <- 0
                                 v[paste0("n_", c)] <- 0
                             } else {
-                                v["w"] <- es$w[[x]][i]
-                                v[paste0("w_", c)] <- es$weight[[x]][i]
+                                v["w"] <- es$w[[x]]#[i]
+                                v[paste0("ncweight_", c)] <- es$ncweight[[x]][i]
+                                v[paste0("nweight_", c)] <- es$nweight[[x]][i]
                                 v[paste0("n_", c)] <- 1
                             }
                         }
@@ -230,8 +210,9 @@ get_community_summary <- function(g,
                     })
         l <- data.frame(do.call(rbind, l))
         l <- c(x, colMeans(l[,which(regexpr(pattern = "w", 
-                                            text = colnames(l))!=-1)]),
-               colSums(l[,which(regexpr(pattern = "n", 
+                                            text = colnames(l))!=-1)],
+                           na.rm = TRUE),
+               colSums(l[,which(regexpr(pattern = "n\\_", 
                                         text = colnames(l))!=-1), drop=FALSE]))
         
         names(l)[1] <- "community"
@@ -276,7 +257,6 @@ check_inputs <- function(graph,
                          resolution,
                          iterations,
                          weight, 
-                         metric, 
                          chains) {
     
     
@@ -354,23 +334,6 @@ check_inputs <- function(graph,
     }
     
     
-    
-    # check metric
-    if(missing(metric)) {
-        stop("metric must be average, strict or loose")
-    }
-    if(length(metric)!=1) {
-        stop("metric must be average, strict or loose")
-    }
-    if(is.character(metric)==FALSE) {
-        stop("metric must be character")
-    }
-    if(!metric %in% c("average", "strict", "loose")) {
-        stop("metric must be average, strict or loose")
-    }
-    
-    
-    
     # check chains
     if(missing(chains)) {
         stop("chains must be a character vector")
@@ -385,5 +348,75 @@ check_inputs <- function(graph,
                          "CDR3d", "CDR3h", "CDR3l"))==FALSE) {
         stop("chains must be a character vector")
     }
-    
 }
+
+
+set_chain <- function(graph, chains) {
+    i <- which(!E(graph)$chain %in% chains)
+    if(length(i)!=0) {
+        graph <- delete_edges(graph = graph, i)
+    }
+    return(graph)
+}
+
+# Description:
+# find components, cliques, subgraphs in a community
+decode_communities <- function(community_id,
+                               graph, 
+                               edge_attr,
+                               node_attr) {
+    
+    apply_op <- function(vec, op, val) {
+        ops <- list("==" = `==`,
+                    "!=" = `!=`,
+                    "<"  = `<`,
+                    ">"  = `>`,
+                    "<=" = `<=`,
+                    ">=" = `>=`)
+        
+        if (!op %in% names(ops)) {
+            stop("Invalid operator, choose: '==', '!=', '<', '>', '<=', '>='")
+        }
+        
+        return(ops[[op]](vec, val))
+    }
+    
+    if(any(vertex_attr_names(graph)=="community")==FALSE) {
+        stop("no community ID as node attribute")
+    } else {
+        graph <- subgraph(graph = graph, 
+                          vids = V(graph)$community == community_id)
+    }
+    if(length(graph)==1 | length(E(graph)) == 0) {
+        warning("community has only one vertex")
+    }
+    
+    # edge_attr <- vector(mode = "list", length = 1)
+    # edge_attr[[1]] <- list(name = "nweight", thr = 4, op = ">=") 
+    
+    etm <- matrix(data = 0, nrow = length(edge_attr), ncol = length(E(graph)))
+    if(length(edge_attr) != 0) {
+        for(i in seq_len(length(edge_attr))) {
+            g_atr <- edge_attr[[i]]$name
+            g_thr <- edge_attr[[i]]$thr
+            g_op <- edge_attr[[i]]$op
+            
+            j <- which(edge_attr_names(graph) == g_atr)
+            if(length(j) != 0) {
+                v <- edge_attr(graph = graph, name = g_atr)
+                etm[i,] <- apply_op(vec = v, val = g_thr, op = op)
+            }
+        }
+    }
+    etm <- apply(X = etm, MARGIN = 2, FUN = prod)
+    i <- which(etm==FALSE)
+    if(length(i)!=0) {
+        graph <- delete_edges(graph = graph, edges = i)
+    }
+    V(graph)$components <- components(graph = graph)$membership
+    
+    # summarize graph: nodes ...
+    
+    return(graph)
+}
+

@@ -1,9 +1,9 @@
 ---
-title: "Analysis of T and B cell receptor repertoires with ClustIRR"
+title: "Decoding T- and B-cell receptor repertoires with ClustIRR"
 output:
     BiocStyle::html_document
 vignette: >
-    %\VignetteIndexEntry{Analysis of T and B cell receptor repertoires with ClustIRR}
+    %\VignetteIndexEntry{Decoding T- and B-cell receptor repertoires with ClustIRR}
     %\VignetteEncoding{UTF-8}
     %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
@@ -20,43 +20,43 @@ library(knitr)
 library(ClustIRR)
 library(igraph)
 library(ggplot2)
+theme_set(new = theme_bw(base_size = 10))
 library(ggrepel)
 library(patchwork)
 ```
 
 # Introduction
 
-Adaptive immunity relies on diverse immune receptor repertoires (IRRs:
-B- and T-cell receptor repertoires) to protect the host against
-genetically diverse and rapidly evolving pathogens, such as viruses,
-bacteria, and cancers. The sequence diversity of B- and T-cell receptors
-(BCRs and TCRs) originates, in part, from V(D)J recombination, a process
-in which different germline-encoded genes are joined to form unique
-immune receptors. As a result, practically every newly formed naive
-mature T and B cell is equipped with a distinct immune receptor (IR),
-enabling them to recognize unique sets of antigens.
+Adaptive immunity employs diverse immune receptor repertoires (IRRs; B-
+and T-cell receptors) to combat evolving pathogens including viruses,
+bacteria, and cancers. Receptor diversity arises through V(D)J
+recombination - combinatorial assembly of germline genes generating
+unique sequences. Each naive lymphocyte consequently expresses a
+distinct receptor, enabling broad antigen recognition.
 
-B cells bind antigens directly through the complementarity-determining
-regions (CDRs) of their BCRs, while T cells recognize antigenic peptides
-presented by major histocompatibility complex (MHC) molecules via the
-CDRs of their TCRs. Antigen recognition can lead to B/T cell activation,
-causing these cells to rapidly proliferate and form antigen-specific
-clones capable of mounting an effective immune response.
+B cells engage antigens directly via BCR complementarity-determining
+regions (CDRs), while T cells recognize peptide-MHC complexes through
+TCR CDRs. Antigen recognition triggers clonal expansion, producing
+effector populations that mount targeted immune responses.
 
-Recent studies have shown that sequence similarity between TCRs often
-indicates shared antigen specificity. Therefore, by clustering TCR
-sequences from high-throughput sequencing (HT-seq) data, we can identify
-communities of TCRs with shared antigen specificity. By tracking the
-dynamics of these communities over time or across biological conditions,
-we may learn how our immune system responds to e.g. cancer
-immunotherapies, vaccines, and antiviral drugs, which can help us
-improve these treatments.
+High-throughput sequencing (HT-seq) enables tracking of TCR/BCR
+community dynamics across biological conditions (e.g.,
+pre-/post-treatment), offering insights into responses to immunotherapy
+and vaccination. However, two key challenges complicate this approach:
+
+1.  **Extreme diversity and privacy**: TCRs/BCRs are highly
+    personalized, with incomplete sampling particularly problematic in
+    clinical settings where sample volumes are limited. Even
+    comprehensive sampling reveals minimal repertoire overlap between
+    individuals.
+
+2.  **Similar TCRs/BCRs recognize similar antigens**
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a computational method
-that detects communities of immune receptors with similar specificity and 
-employs Bayesian models to quantify differential community occupancy between 
-IRRs from different biological conditions (e.g. before and after cancer 
-treatment).
+that addresses these challenges by: (1) Identifying
+specificity-associated receptor communities through sequence clustering,
+and (2) Applying Bayesian models to quantify differential community
+abundance across conditions.
 
 # Installation
 
@@ -81,297 +81,289 @@ knitr::include_graphics("../inst/extdata/logo.png")
 
 ## Input
 
-The main input of `r Biocpkg("ClustIRR")` is an IRR (`s`), which should
-be provided as data.frame. The rows in the data.frame correspond to
-**clones** (clone = group of cells derived from a common parent cell by
-clonal expansion). We use the following data from each clone:
+The main input of `r Biocpkg("ClustIRR")` is a repertoire (`s`), which
+should be provided as data.frame. The rows in the data.frame correspond
+to **clones** (clone = group of cells derived from a common parent cell
+by clonal expansion). We use the following data from each clone:
 
--   **Amino acid sequences** of the complementarity determining regions
-    3 from one or both chains (e.g. CDR3$\alpha$ and CDR3$\beta$ from
-    $\alpha\beta$ TCRs).
--   **Clone size**, which refers to the frequency of cells that belong to 
-    the clone.
+-   **CDR3 amino acid sequences** from one/both chains (e.g.
+    CDR3$\alpha$ and CDR3$\beta$ from TCR$\alpha\beta$s).
+-   **Clone size**, which refers to the frequency of cells that belong
+    to the clone.
 
-In a typical scenario, the user will have more than one IRR (see
-workflow). For instance, the user will analyze longitudinal IRR data,
-i.e., two or three IRRs taken at different time points; or across
-different biological conditions.
+In a typical scenario, the user will have more than one repertoire (see
+workflow). For instance, the user will analyze longitudinal repertoire
+data, i.e., two or three repertoires taken at different time points; or
+across different biological conditions.
 
-Let's have a look at an example IRR: two TCR$\alpha\beta$ repertoires
-$a$ and $b$.
-
-```{r}
-data("CDR3ab", package = "ClustIRR")
-```
+Let's look at dataset `D1` that is provided within
+`r Biocpkg("ClustIRR")`. `D1` contains three TCR$\alpha\beta$
+repertoires: $a$, $b$, and $c$ and their metadata: `ma`, `mb` and `mc`.
 
 ```{r}
-set.seed(127)
-n <- 300
-
-# 1. Get 300 CDR3a and CDR3b pairs from the data -> IRR a
-a <- CDR3ab[1:n, c("CDR3a", "CDR3b")]
-a$clone_size <- rpois(n = n, lambda = 3)+1
-a$sample <- "a"
-
-# 2. Get accompanying meta data for IRR a [optional]
-# It may contain as many features (columns) as you want
-meta_a <- CDR3ab[1:n, c("TRBV", "TRBJ", "TRAV", "TRAJ")]
-
-# 3. Get 300 CDR3a and CDR3b pairs from the data -> IRR b
-b <- CDR3ab[101:(n+100), c("CDR3a", "CDR3b")]
-b$clone_size <- rpois(n = n, lambda = 3)+1
-b$sample <- "b"
-
-# 4. Get accompanying meta data for IRR b [optional]
-meta_b <- CDR3ab[101:(n+100), c("TRBV", "TRBJ", "TRAV", "TRAJ")]
+data("D1", package = "ClustIRR")
+str(D1)
 ```
+
+Extract the data.frames for each TCR repertoire and their metadata:
 
 ```{r}
-str(a)
+# Extract TCRab repertoires: a, b and c
+a <- D1$a
+b <- D1$b
+c <- D1$c
+
+# Extract metadata for TCRab repertoires 'a', 'b' and 'c'.
+# This data is optional. It may contain and may contain diverse 
+# supplementary (clone-specific and repertoire-specific) data for 
+# each TCRab repertoire.
+meta_a <- D1$ma
+meta_b <- D1$mb
+meta_c <- D1$mc
 ```
+
+## Algorithm
+
+`r Biocpkg("ClustIRR")` performs the following steps.
+
+1.  Compute similarities between T-cell clones within each TCR
+    repertoire
+
+2.  Construct a graph from each TCR repertoire
+
+3.  Construct a joint similarity graph ($J$)
+
+4.  Detect communities in $J$
+
+5.  Analyze Differential Community Occupancy (DCO)
+
+    a\. Between individual TCR repertoires with model $M$
+
+    b\. Between groups of TCR repertoires from biological conditions
+    with model $M_h$
+
+6.  Inspect results
+
+## **Step 1.** Compute TCR clone similarities in a repertoire with `cluster_irr`
+
+`r Biocpkg("ClustIRR")` aims to quantify the similarity between pairs of
+TCR clones based on the similarities of their CDR3s sequences. For this
+it employs Basic Local-Alignment Search Tool (BLAST) via the R-package
+`r CRANpkg("blaster")`. Briefly, a protein database is constructed from
+all CDR3 sequences, and each CDR3 sequence is used as a query. This
+enables fast sequence similarity searches. Furthermore, only CDR3
+sequences matches with $\geq$ 70% sequence identity to the query are
+retained. This step reduces the computational and memory requirements,
+without impacting downstream community analyses, as CDR3 sequences with
+lower typically yield low similarity scores.
+
+For matched CDR3 pair, an alignment score ($\omega$) is computed using
+BLOSUM62 substitution scores with gap opening penalty of -10 and gap
+extension penalty of -4. $\omega$ is the sum of substitution scores and
+gap penalties in the alignment. Identical or highly similar CDR3
+sequence pairs receive large positive $\omega$ scores, while dissimilar
+pairs receive low or negative $\omega$. To normalize $\omega$ for
+alignment length, `r Biocpkg("ClustIRR")` computes
+$\bar{\omega} = \omega/l$, where $l$ is the alignment length yielding
+normalized alignment score $\bar{\omega}$. This normalization, also used
+in iSMART (Zhang, 2020), ensures comparability across CDR3 pairs of
+varying lengths.
+
+`r Biocpkg("ClustIRR")` also computes alignment scores for the CDR3
+**core** regions ($\omega^c$ and $\bar{\omega}^c$). The CDR3 core,
+representing the central loop region with high antigen-contact
+probability (Glanville, 2017), is generated by trimming three residues
+from each end of the CDR3 sequence. Comparing $\bar{\omega}^c$ and
+$\bar{\omega}$ allows assessment of whether sequence similarity is
+concentrated in the core or flanking regions.
+
+### Run `cluster_irr`
+
+Step 1. involves calling the function `clust_irr` which returns an S4
+object of class `clust_irr`.
 
 ```{r}
-str(b)
+# perform clust_irr analysis of repertoire a, b and c
+cl_a <- cluster_irr(s = a, meta = meta_a, control = list(gmi = 0.7))
+cl_b <- cluster_irr(s = b, meta = meta_b, control = list(gmi = 0.7))
+cl_c <- cluster_irr(s = c, meta = meta_c, control = list(gmi = 0.7))
 ```
 
-## **Step 1.** IRR analysis with `cluster_irr`
-
-### Theory: how to compute similarities between IR clones?
-IRRs, such as T-cell receptor repertoires, are made up of T-cells which
-are distributed over T-cell clones. TCR clones with **identical** pairs
-of CDR3$\alpha$ and CDR3$\beta$ sequences most likely recognize the same
-sets of antigens. Meanwhile, TCR clones with **similar** pairs of
-CDR3$\alpha$ and CDR3$\beta$ sequences may also share common
-specificity. `r Biocpkg("ClustIRR")` aims to quantify the similarity
-between pairs of TCR clones based on the similarities of their CDR3s
-sequences.
-
-How to compute a similarity score between a pair of CDR3 sequences?
-
-Pair of sequences, $a$ and $b$, are aligned with the Needleman-Wunsch
-algorithm. The output is an alignment score ($\omega$). Identical or
-similar CDR3 sequence pairs get a large positive $\omega$, and
-dissimilar CDR3 sequence pairs get a low (or even negative) $\omega$.
-
-To make sure that $\omega$ is comparable across pairs of CDR3s with
-different lengths, `r Biocpkg("ClustIRR")` divides (normalizes) $\omega$
-by the length of the longest CDR3 sequences in each pair: \begin{align}
-    \bar{\omega} = \dfrac{\omega}{\max(|a|, |b|)}
-\end{align} where $|a|$ and $|b|$ are the lengths of CDR3 sequences $a$
-and $b$; and $\bar{\omega}$ is the normalized alignment score.
-
-The CDR3 *cores*, which represent the central parts of the CDR3 loop and
-tend to have high probability of making a contact with the antigen, are
-also compared. `r Biocpkg("ClustIRR")` constructs the CDR3 cores by
-trimming few residues (defined by `control$trim_flanks`) from either end
-of each CDR3 sequences. These are then aligned and scored based on the
-same algorithm, yielding for each pair of CDR3 cores a normalized
-alignment scores $\bar{\omega}_c$.
-
-**This strategy is computationally very expensive!**
-
-For large IRRs with $n>10^6$ this algorithm requires significant
-computational resources. To mitigate this challenge, we employ a
-screening step in which dissimilar sequences pairs are flagged. In
-short, each CDR3 is used as a query in a **fast** protein-BLAST search
-as implemented in the R-package blaster, while the remaining CDR3s are
-considered as a database of amino acid sequences against which the query
-is compared. CDR3 sequences which share at least 70% sequence identity
-(user parameter `control$gmi`) with the query are selected, and only
-these are aligned with query CDR3. For the remaining CDR3 pairs we
-assume $\bar{\omega}=0$.
-
-
-### Example
-Step 1. involves calling the function `clust_irr` which returns an S4 object 
-of class `clust_irr`. 
-
-```{r}
-# perform clust_irr analysis of repertoire a
-c_a <- cluster_irr(s = a, meta = meta_a, control = list(gmi = 0.7))
-# ... and b
-c_b <- cluster_irr(s = b, meta = meta_b, control = list(gmi = 0.7))
-```
-
-Next, we show the chain-specific similarity scores between CDR3s 
-sequences. Each row is a pair of CDR3 sequences from the repertoire. 
-For each pair we have the following metrics:
+Next, we show the chain-specific similarity scores between CDR3s
+sequences. Each row is a pair of CDR3 sequences from the repertoire. For
+each pair we have the following metrics:
 
 -   `max_len`: length of the longer CDR3 sequence in the pair
--   `max_clen`:  length of the longer CDR3 core sequence in the pair
--   `weight`: $\omega$ = BLOSUM62 score of the **complete** CDR3 alignment
+-   `max_clen`: length of the longer CDR3 core sequence in the pair
+-   `weight`: $\omega$ = BLOSUM62 score of the **complete** CDR3
+    alignment
 -   `cweight`= $\omega_c$: BLOSUM62 score of CDR3 **cores**
 -   `nweight` = $\bar{\omega}$: normalized `weight` by `max_len`
 -   `ncweight` = $\bar{\omega}_c$: normalized `cweight` by `max_clen`
 
-The results for CDR3a:
+The results for CDR3$\alpha$ sequence pairs from repertoire `a`:
 
 ```{r}
-kable(head(c_a@clust$CDR3a), digits = 2)
+kable(head(cl_a@clust$CDR3a), digits = 2)
 ```
 
-... the same table as CDR3b sequence pairs:
+... the same table for CDR3$\beta$ sequence pairs from repertoire `a`:
 
 ```{r}
-kable(head(c_a@clust$CDR3a), digits = 2)
+kable(head(cl_a@clust$CDR3b), digits = 2)
 ```
 
-### Annotation of CDR3s 
-The function `clust_irr` performs automatic annotation of TCR clones 
-based on databases (DBs) including: VDJdb, TCR3d, McPAS-TCR. The control 
-parameter `control$db_edit=0` (default) controls an edit distance threshold. 
-If the edit distance between an input CDR3 and a DB CDR3 sequence is smaller 
-then or equal to `control$db_edit`, then the input CDR3s inherits the antigen 
-specificity data of the DB CDR3s.
+Notice that very similar CDR3$\alpha$ or CDR3$\beta$ pairs have high
+normalized alignment scores ($\bar{\omega}$). We have similar tables for
+repertoire `b` and `c`.
 
-To access these annotations see:
+### Annotation of CDR3s
 
-```{r}
-# control = list(gmi = 0.7, trim_flank_aa = 3, db_dist = 0, db_custom = NULL)
-kable(head(get_clustirr_inputs(c_a)$s), digits = 2)
-```
+The function `clust_irr` performs automatic annotation of TCR clones
+based on multiple databases (DBs), including: VDJdb, TCR3d, McPAS-TCR.
+Each TCR clone recieves two types of annotations (per chain and per
+database):
 
+-   **Ag_species**: the name of the antigen species recognized by the
+    clone's CDR3
 
-## **Step 2.** building a graph with `get_graph` or `get_joint_graph`
+-   **Ag_gene**: the name of the antigen gene recognized by clone's CDR3
 
-Next, `r Biocpkg("ClustIRR")` builds a graph. If we analyze one IRR,
-then we may employ the function `get_graph`, which converts the
-`clust_irr` object into an `igraph` object. Meanwhile, if we are
-analyzing two ore more IRRs, then we can use the function
-`get_joint_graph` to generate a joint `igraph` object. In this case,
-edges between TCR clones from different IRRs are computed using the 
-same procedure outlined in step 1.
+Annotation process: annotation is performed based on an **edit distance
+threshold**, controlled by the user through the parameter
+`control$db_edit` (default = 0). If the **edit distance** between an
+input CDR3 sequence and a database (DB) CDR3 sequence is **less than or
+equal to** `control$db_edit`, the input CDR3 inherits the annotation
+data of the matched DB CDR3.
+
+This information will be used for various **downstream analyses** (see
+the next steps).
+
+## **Step 2.** Construct TCR repertoire graphs with `get_graph`
+
+Next, `r Biocpkg("ClustIRR")` builds a graph. If we analyze one
+TCR$\alpha\beta$ repertoire, then we may employ the function
+`get_graph`, which converts the `clust_irr` object into an `igraph`
+object. Meanwhile, if we are analyzing two or more repertoires, then we
+can use the function `get_joint_graph` to generate a joint `igraph`
+object. In this case, edges between TCR clones from different TCR
+repertoires are computed using the same procedure outlined in step 1.
 
 The graphs have *nodes* and *weighted edges*:
 
--   nodes: clones from each IRR. Each clone attribute (clone size, CDR3
-    sequences, etc) is provided as node attribute
--   edges: connections between nodes (clones) in each IRR (computed in
-    step 1.)
+-   nodes: clones from each TCR repertoire. Each clone attribute (clone
+    size, CDR3 sequences, etc.) is provided as node attribute
+-   edges: undirected edges connecting pairs of nodes based on
+    CDR3$\alpha$ and CDR3$\beta$ similarity scores ($\bar{\omega}$ and
+    $\bar{\omega}^c$) in each TCR repertoire (computed in step 1.)
 
 ```{r}
-g <- get_graph(clust_irr = c_a)
+g <- get_graph(clust_irr = cl_a)
 ```
+
+### Inspect graphs with `plot_graph` 
+
+We can use the function `plot_graph` for interactive visualization of
+relatively small graphs. 
+
+For instance, we can highligh TCR clones that recognize certain antigenic 
+species or genes (see dropdown menu), or use the hoovering function to
+look at the CDR3 sequences of nodes.
+
+Do this now!
 
 ```{r}
-plot_graph(g, as_visnet = TRUE)
+plot_graph(g, select_by = "Ag_species", as_visnet = TRUE)
 ```
 
-The graph is an `igraph` object. We can use the `igraph` functions to
-inspect different properties of the graph, such as, the distribution of
-edge weights (shown below). Notice, that the edge weights vary
-drastically between the edges.
+
+### `get_graph` and `get_joint_graph` generate `igraph` objects
+We can use igraph functions to inspect various properties of the graph. 
+For instance, below, we extract the edge attributes and visualize the 
+distributions of the edge attributes `ncweight` and `nweight` for all 
+CDR3$\alpha$ and CDR3$\beta$ sequence pairs.
 
 ```{r, fig.width=6, fig.height=4.5}
 # data.frame of edges and their attributes
 e <- igraph::as_data_frame(x = g$graph, what = "edges")
 ```
 
-```{r}
-kable(head(e), digits = 2)
-```
-
-Below we show the distributions of the edge attributes `ncweight` and
-`nweight` between CDR3$\alpha$ and CDR3$\beta$ sequence pairs in the
-IRR.
-
 ```{r, fig.width=5, fig.height=3.5}
 ggplot(data = e)+
   geom_density(aes(ncweight, col = chain))+
   geom_density(aes(nweight, col = chain), linetype = "dashed")+
-  theme_bw()+
   xlab(label = "edge weight (solid = ncweight, dashed = nweight)")+
   theme(legend.position = "top")
 ```
 
-Here we have two IRRs. We can use the function by `get_joint_graph` to
-create a joint graph. This function computes edges between the TCR
-clones from the different IRRs (as described in step 1.). We do this in
-the following code blocks.
+Can you guess why we observe **bimodal** distributions? (*Hint:* CDR3s have 
+different lengths)
+
+
+
+## **Step 3.** Constructing a joint similarity graph with `get_joint_graph`
+In dataset `D1` we have three TCR repertoires. Hence, we can use the function
+`get_joint_graph` to create a joint graph. This function computes 
+similarities between CDR3 sequences of clones from different repertoires, 
+creating new edges between nodes from different graphs with $\bar{\omega}$ 
+and $\bar{\omega}^c$ as edge attributes. The joint graph $J$ is structured 
+as an igraph object.
 
 ```{r, fig.width=6, fig.height=6}
-g <- get_joint_graph(clust_irrs = c(c_a, c_b))
+g <- get_joint_graph(clust_irrs = c(cl_a, cl_b, cl_c))
 ```
+
+Once again, we will use the function `plot_graph` for interactive 
+visualization. However, even in this small case study--where each 
+TCR repertoire contains **only 500 TCR clones**--we observe that the 
+**joint graph is complex**! This complexity makes qualitative analyses 
+impractical. To address this, `r Biocpkg("ClustIRR")` focuses on 
+**quantitative analyses** (see the next step).
 
 ```{r, fig.width=6, fig.height=6}
-plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
+plot_graph(g = g, select_by = "Ag_gene", as_visnet = TRUE, node_opacity = 0.8)
 ```
 
 
-## **Step 3.** community detection
+## **Step 4.** community detection with `detect_communities`
+
 `r Biocpkg("ClustIRR")` employs graph-based community detection (GCD)
-algorithms, such as Louvain or Leiden, to identify densely connected
-communities.
+algorithms, such as Louvain, Leiden or InfoMap, to identify
+**communities** of nodes that have high density of edges among each
+other, and low density of edges with nodes outside the community.
 
-But first, we must decide how to compute a similarity between two nodes,
-$i$ and $j$, (e.g. TCR clones) based on the similarity scores between their 
-CDR3 sequences (compute in step 1.). We will refer to this metric as 
-$\omega(i,j)$.
+First, the similarity score between T-cell clones $i$ and $j$ is defined
+as the average CDR3$\alpha$ and CDR3$\beta$ alignment scores:
 
-### Scenario 1: we have CDR3 sequences from one chain, e.g. CDR3$\beta$
-If the data contains CDR3 sequences from only one chain, such as CDR3$\beta$, 
-then $\omega(i,j)$ is defined as
+```{=tex}
 \begin{align}
-    \omega(i,j)={\bar{\omega}}^\beta
-    \qquad\text{or}\qquad
-    \omega(i,j)={\bar{\omega}}^\beta_c
+\omega(i,j) = \dfrac{{\bar{\omega}}_\alpha + {\bar{\omega}}_\beta}{2}
 \end{align}
-The user can decide among the two definitions by specifying 
-`weight` = "ncweight" (default; $\omega(i,j)=\bar{\omega_c}$) 
-or `weight` = "nweight" (default; $\omega(i,j)=\bar{\omega}$).
+```
 
-### Scenario 2: we have CDR3 sequences from both chains (paired data)
-To compute the similarity score between TCR clones, $i$ and $j$, we
-compute the average alignment score from their CDR3$\alpha$ and
-CDR3$\beta$ alignment scores (in the next, I will use TCR$\alpha\beta$ 
-as an example, however, this approach can also be used to compare 
-TCR$\gamma\delta$ or BCR*IgH-IgL* clones): 
-\begin{align}
-    \omega(i,j)=\dfrac{{\bar{\omega}}^\alpha + {\bar{\omega}}^\beta}{2}
-    \qquad\text{or}\qquad
-    \omega(i,j)=\dfrac{{\bar{\omega}}^\alpha_c + {\bar{\omega}}^\beta_c}{2},
-\end{align} 
-where $\bar{\omega}^\alpha$ and $\bar{\omega}^\beta$ are the
-alignment scores for the CDR3$\alpha$ and CDR3$\beta$ sequences,
-respectively; and $\bar{\omega}^\alpha_c$ and $\bar{\omega}^\beta_c$ are
-the alignment scores for the CDR3$\alpha$ and CDR3$\beta$ cores,
-respectively. Based on this metric, the contributions of CDR3$\alpha$
-and CDR3$\beta$ towards the overall similarity of the TCR clones are
-assigned equal weights.
-
-`r Biocpkg("ClustIRR")` provides two additional metrics for computing
-similarity scores between TCR clones, including a *strict metric*, which
-assigns high similarity score to a pair of TCR clones only if both of
-their CDR3$\alpha$ and CDR3$\beta$ sequence pairs are similar
-\begin{align}
-    \omega^s(i,j) = \min({\bar{\omega}}^\alpha, {\bar{\omega}}^\beta)
-    \qquad\text{or}\qquad
-    \omega^s(i,j) = \min({\bar{\omega}}^\alpha_c, {\bar{\omega}}^\beta_c),
-\end{align} and a *loose metric*, which assigns high similarity score to
-a pair of TCR clones if either of their CDR3$\alpha$ and CDR3$\beta$
-sequence pairs are similar \begin{align}
-    \omega^l(i,j) = \max({\bar{\omega}}^\alpha, {\bar{\omega}}^\beta)
-    \qquad\text{or}\qquad
-    \omega^l(i,j) = \max({\bar{\omega}}^\alpha_c, {\bar{\omega}}^\beta_c),
-\end{align}
-
+where $\bar{\omega}_\alpha$ and $\bar{\omega}_\beta$ are the alignment
+scores for the CDR3$\alpha$ and CDR3$\beta$, respectively. If a chain is
+missing, its alignment score is set to 0.
 
 The user has the following options:
 
--   `algorithm`: "leiden" (default) or "louvain"
+-   `algorithm`: "leiden" (default) "louvain", or "infomap"
 -   `resolution`: GCD resolution = 1 (default)
+-   `iterations`: number of clustering iterations (default = 100) to
+    ensure robust results
 -   `weight`: "ncweight" (default) or "nweight"
--   `metric`: "average" (default), "strict" or "loose"
 -   `chains`: "CDR3a" or "CDR3b" or c("CDR3a", "CDR3b")
 
 ```{r}
 gcd <- detect_communities(graph = g$graph, 
                           algorithm = "leiden",
                           resolution = 1,
+                          iterations = 100,
                           weight = "ncweight",
-                          metric = "average",
                           chains = c("CDR3a", "CDR3b"))
 ```
+
+### Inspecting the outputs of `detect_communities`
 
 The function `detect_communities` generates a complex output. Lets
 investigate its elements:
@@ -381,10 +373,10 @@ names(gcd)
 ```
 
 The main element is `community_occupancy_matrix`, which contains the
-number of T-cells in each community (row) and IRR (column). Here we have
-two IRRs (two columns) and about 300 communities. This matrix is the
-main input of the function `dco` (step 4.), to detect differences in the
-community occupancy between IRRs.
+number of T-cells in each community (row) and repertoire (column). Here
+we have three repertoires (three columns) and about 260 communities.
+This matrix is the main input of the function `dco` (step 5.), to detect
+differences in the community occupancy between repertoires.
 
 ```{r}
 dim(gcd$community_occupancy_matrix)
@@ -394,57 +386,57 @@ dim(gcd$community_occupancy_matrix)
 head(gcd$community_occupancy_matrix)
 ```
 
+### Visualizing community abundance matrices with `get_honeycombs`
+
 ```{r, fig.width=5, fig.height=5}
-honeycomb <- ClustIRR::get_honeycombs(com = gcd$community_occupancy_matrix)
-honeycomb[[1]]
+honeycomb <- get_honeycombs(com = gcd$community_occupancy_matrix)
 ```
 
+In the **honeycomb plots** shown below, several communities (black dots)
+appear **far** from the diagonal. This indicates that these communities
+contain more cells in repertoires b and c (y-axes in panels A and B)
+compared to repertoire a (x-axes in panels A and B). Meanwhile, the same
+points are generally close to the diagonal in panel C but remain
+slightly more abundant in repertoire c (y-axis) compared to b (x-axis).
 
-Also see `community_summary`. In the data.frame `wide` we provide community 
-summaries in each row across all samples, including: 
+In step 5, `r Biocpkg("ClustIRR")` will provide a quantitative answer to
+the question: *Which communities are differentially abundant between
+pairs of repertoires?*
 
-  * `clones_a`, `clone_b`, `clones_n`: the frequency of clones in the community
-  coming from IRR a, b and in total (n)
-  * `cells_a`, `cells_b`, `cells_n`: the frequency of cell in the community
-  coming from IRR a, b and in total (n)
-  * `w`: the mean inter-clone similarity ($\omega(i,j)$)
-  * `w_CDR3a`, `w_CDR3b`: the contributions of CDR3$\alpha$ and CDR3$\beta$ 
-  to `w`
-  * `n_CDR3a`, `n_CDR3b`: number of edges between CDR3$\alpha$ and CDR3$\beta$ 
-  sequences
+Importantly, the color of the hexagons encodes the density of
+communities in the 2D scatterplots: **dark hexagons** indicate high a
+frequency of communities, while **light hexagons** represent sparsely
+populated regions.
+
+```{r, fig.width=10, fig.height=2.5}
+wrap_plots(honeycomb, nrow = 1)+
+    plot_annotation(tag_levels = 'A')
+```
+
+Also see `community_summary`. In the data.frame `wide` we provide
+community summaries in each row across all samples, including:
+
+-   `clones_a`, `clone_b`, `clone_c`, `clones_n`: the frequency of
+    clones in the community coming from repertoire `a`, `b`, `c` and in
+    total (n)
+-   `cells_a`, `cells_b`, `cells_c`, `cells_n`: the frequency of cell in
+    the community coming from repertoires `a`, `b`, `c` and in total (n)
+-   `w`: average inter-clone similarity
+-   `ncweight_CDR3a/b`, `nweight_CDR3a/b`: raw and normalized similarity
+    for CDR3$\alpha$ and CDR3$\beta$ sequences
+-   `n_CDR3a`, `n_CDR3b`: number of edges between CDR3$\alpha$ and
+    CDR3$\beta$ sequences
 
 ```{r}
-kable(head(gcd$community_summary$wide), digits = 2)
+kable(head(gcd$community_summary$wide), digits = 1)
 ```
 
-What is the contribution of CDR3a and CDR3b weights to the formation of
-communities? 
-
-Notice the big dot at coordinatex 0,0. Communities made up 
-from a single node have no within-community edges $\rightarrow$ 
-
-  * `w_CDR3a` = 0
-  * `w_CDR3b` = 0
-  * `w` = 0
-
-```{r, fig.width=6, fig.height=4}
-ggplot(data = gcd$community_summary$wide)+
-  geom_point(aes(x = w_CDR3a, y = w_CDR3b, size = cells_n), shape=21)+
-  xlab(label = "CDR3a ncweight")+
-  ylab(label = "CDR3b ncweight")+
-  scale_size_continuous(range = c(0.5, 5))+
-  theme_bw(base_size = 10)
-```
-
-
-In the data.frame `tall` we provide community and sample/repertoire summaries 
-in each row.
+In the data.frame `tall` we provide community and sample/repertoire
+summaries in each row.
 
 ```{r}
 kable(head(gcd$community_summary$tall), digits = 2)
 ```
-
-
 
 Node-specific (TCR clone-specific) summaries are provided in
 `node_summary`
@@ -453,44 +445,56 @@ Node-specific (TCR clone-specific) summaries are provided in
 kable(head(gcd$node_summary), digits = 2)
 ```
 
+## **Step 5.** differential community occupancy (DCO) with `dco`
 
-## **Step 4.** differential community occupancy (DCO)
-
-Do we see **growing** or **shrinking** communities in a given IRRs?
+Do we see **expanding** or **contracting** communities in a given
+repertoire?
 
 We employ a Bayesian model to quantify the relative abundance
-(occupancy) of individual communities in each IRR (minimum number of
-IRRs = 2).
+(occupancy) of individual communities in each repertoire.
 
-**For DCO analysis of two IRRs** The model output is the parameter
-$\delta=\delta_1,\delta_2,\ldots,\delta_k$, where $k$ is the number of
-communities. Growing community $i$ between IRR $a$ vs. IRR $b$, results
-in $\delta_i>0$, shrinking community $i$ results in $\delta_i < 0$.
+The model output for repertoire $a$ is the parameter vector
+$\beta^a=\beta^a_1,\beta^a_2,\ldots,\beta^a_k$, which describes the
+effect of repertoire $a$ on the relative occupancy in each community.
 
-**For DCO analysis of more than two IRRs** The model output for IRR $a$
-is the parameter vector $\beta^a=\beta^a_1,\beta^a_2,\ldots,\beta^a_k$,
-which describes the effect of IRR $a$ on the relative occupancy in each
-community.
+Given two repertoires, $a$ and $b$, we can quantify the differential
+community occupancy (DCO):
 
-Given two IRRs, $a$ and $b$, we can quantify the differential community
-occupancy (DCO): \begin{align}
+```{=tex}
+\begin{align}
 \delta^{a-b}_i = \beta^a_i - \beta^b_i
 \end{align}
+```
 
 ```{r}
 d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
-         mcmc_control = list(mcmc_warmup = 500,
-                             mcmc_iter = 1500,
-                             mcmc_chains = 3,
+         mcmc_control = list(mcmc_warmup = 300,
+                             mcmc_iter = 600,
+                             mcmc_chains = 2,
                              mcmc_cores = 1,
                              mcmc_algorithm = "NUTS",
                              adapt_delta = 0.9,
                              max_treedepth = 10))
 ```
 
+## **Step 6.** Inspect result
 
+### Visualizing the distribution of $\beta$ means with `get_beta_violins`
 
-Which clones (nodes in the graph) have CMV-specific CDR3s?
+```{r}
+beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
+                                 beta = d$posterior_summary$beta,
+                                 ag_species = NULL,
+                                 db = "vdjdb",
+                                 db_dist = 0,
+                                 chain = "both")
+```
+
+```{r, fig.width=6.5, fig.height=3}
+beta_violins$violins
+```
+
+### Compare $\beta$s of clones specific for *CMV*, *EBV*, *flu* or *MLANA*?
 
 ```{r}
 beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
@@ -502,15 +506,11 @@ beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
                                  chain = "both")
 ```
 
-
-
-```{r, fig.width=7, fig.height=5.5}
-patchwork::wrap_plots(beta_violins$violins)
+```{r, fig.width=7, fig.height=13}
+patchwork::wrap_plots(beta_violins$violins, ncol = 1)
 ```
 
-
-
-## **Step 5.** posterior predictive check
+### Posterior predictive checks
 
 Before we can start interpreting the model results, we have to make sure
 that the model is valid. One standard approach is to check whether our
@@ -523,8 +523,8 @@ General idea of posterior predictive checks:
 2.  simulate new data $\hat{y}$
 3.  compare $y$ and $\hat{y}$
 
-`r Biocpkg("ClustIRR")` provides $y$ and $\hat{y}$ of each IRR, which we
-can visualize with ggplot:
+`r Biocpkg("ClustIRR")` provides $y$ and $\hat{y}$ of each repertoire,
+which we can visualize with ggplot:
 
 ```{r, fig.width=6, fig.height=2.5}
 ggplot(data = d$posterior_summary$y_hat)+
@@ -534,334 +534,66 @@ ggplot(data = d$posterior_summary$y_hat)+
                 col = "darkgray", width=0)+
   geom_point(aes(x = y_obs, y = mean), size = 0.8)+
   xlab(label = "observed y")+
-  ylab(label = "predicted y (and 95% HDI)")+
-  theme_bw(base_size = 10)
+  ylab(label = "predicted y (and 95% HDI)")
 ```
 
-## **Step 6.** $\delta$ and $\epsilon$ parameters
-We can compare DAC in two directions: $a$ vs. $b$ **or** $b$ vs. $a$.
+### Inspecting the degree of differential community abundance $\rightarrow$ parameter $\delta$
 
-Two different parameters $\delta$ and $\epsilon$ are available.
-$\delta$ is the difference between the different samples $\beta$ parameter
-for each community. It can be interpreted as the effect of each community, 
-regardless of it's cell count. This can be useful to detect changes in rare
-clonotypes with low cell counts. 
-$\delta$ has a range of $-\infty$ to $+\infty$.
+Given two repertoires, $a$ and $b$, we can quantify the differential
+community occupancy (DCO):
 
-```{r, fig.width=6, fig.height=4}
+```{=tex}
+\begin{align}
+\delta^{a-b}_i = \beta^a_i - \beta^b_i
+\end{align}
+```
+Importantly, `r Biocpkg("ClustIRR")` always computes both contrasts ($a$
+vs. $b$ and $b$ vs. $a$): $\delta^{a-b}_i$ and $\delta^{b-a}_i$.
+
+```{r, fig.width=7, fig.height=6}
 ggplot(data = d$posterior_summary$delta)+
-  facet_wrap(facets = ~contrast, ncol = 1)+
-  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
-                col = "darkgray", width =0)+
-  geom_point(aes(x = community, y = mean), size = 0.5)+
-  theme_bw(base_size = 10)+
-  theme(legend.position = "none")+
-  ylab(label = expression(delta))+
-  scale_x_continuous(expand = c(0,0))
+    facet_wrap(facets = ~contrast, ncol = 2)+
+    geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
+                  col = "lightgray", width = 0)+
+    geom_point(aes(x = community, y = mean), shape = 21, fill = "black", 
+               stroke = 0.4, col = "white", size = 1.25)+
+    theme(legend.position = "top")+
+    ylab(label = expression(delta))+
+    scale_x_continuous(expand = c(0,0))
 ```
 
-$\epsilon$ is the difference between the different samples
-regenerated multinomial probability $p$ for each community. It can be 
-interpreted as the effect of each community, relative to the different
-sample and community sizes. This can be useful to detect medium to big effects
-in a concise way. $\epsilon$ has a range of $-1$ to $+1$.
+Given two repertoires, $a$ and $b$, `r Biocpkg("ClustIRR")` also
+quantifies absolute differences in community probabilities:
 
-```{r, fig.width=6, fig.height=4}
+```{=tex}
+\begin{align}
+\epsilon^{a-b} = \mathrm{softmax}(\alpha + \beta^a) - 
+\mathrm{softmax}(\alpha + \beta^b)
+\end{align}
+```
+Again, both contrasts are computed: $\epsilon^{a-b}_i$ and
+$\epsilon^{b-a}_i$.
+
+```{r, fig.width=7, fig.height=6}
 ggplot(data = d$posterior_summary$epsilon)+
-  facet_wrap(facets = ~contrast, ncol = 1)+
-  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
-                col = "darkgray", width =0)+
-  geom_point(aes(x = community, y = mean), size = 0.5)+
-  theme_bw(base_size = 10)+
-  theme(legend.position = "none")+
-  ylab(label = expression(epsilon))+
-  scale_x_continuous(expand = c(0,0))
-```
-
-Distribution of mean $\delta$s
-
-```{r, fig.width=6, fig.height=2}
-ggplot(data = d$posterior_summary$delta)+
-    facet_wrap(facets = ~contrast, nrow = 1)+
-    geom_histogram(aes(mean), bins = 100)+
-    xlab(label = expression(delta))+
-    theme_bw(base_size = 10)
-```
-
-Distribution of mean $\epsilon$s
-
-```{r, fig.width=6, fig.height=2}
-ggplot(data = d$posterior_summary$epsilon)+
-    facet_wrap(facets = ~contrast, nrow = 1)+
-    geom_histogram(aes(mean), bins = 100)+
-    xlab(label = expression(epsilon))+
-    theme_bw(base_size = 10)
+    facet_wrap(facets = ~contrast, ncol = 2)+
+    geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
+                  col = "lightgray", width = 0)+
+    geom_point(aes(x = community, y = mean), shape = 21, fill = "black", 
+               stroke = 0.4, col = "white", size = 1.25)+
+    theme(legend.position = "top")+
+    ylab(label = expression(epsilon))+
+    scale_x_continuous(expand = c(0,0))
 ```
 
 ```{r, echo=FALSE, include=FALSE}
-rm(a, b, c_a, c_b, d, e, g, gcd, n)
+rm(a, b, cl_a, cl_b, cl_c, meta_a, meta_b, meta_c, d, e, g, gcd)
 ```
-
 
 ## Conclusion: you can also use **custom** community occupancy matrix for DCO!
+
 The function `dco` takes as its main input a community occupancy matrix.
-This enables users who are accustomed to using complementary algorithm 
-for detecting specificity groups, such as, GLIPH, TCRdist3, GIANA, and 
-iSMART, to skip steps 1-3 of the `r Biocpkg("ClustIRR")` workflow, and 
+This enables users who are accustomed to using complementary algorithm
+for detecting specificity groups, such as, GLIPH, TCRdist3, GIANA, and
+iSMART, to skip steps 1-3 of the `r Biocpkg("ClustIRR")` workflow, and
 to proceed with analysis for DCO.
-
-
-# Case study: analysis of **three** TCR repertoires
-
-Imagine that we have three IRRs, $a$, $b$ and $c$, obtained from one
-patient at three timepoints.
-
-```{r}
-# repertoire size
-n <- 200
-
-# a
-a <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
-                CDR3b = CDR3ab$CDR3b[1:n],
-                sample = "a")
-# b
-b <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
-                CDR3b = CDR3ab$CDR3b[1:n],
-                sample = "b")
-
-# c
-c <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
-                CDR3b = CDR3ab$CDR3b[1:n],
-                sample = "c")
-```
-
-```{r}
-get_clonal_expansion <- function(n, p_expanded) {
-  s <- sample(x = c(0, 1), size = n, prob = c(1-p_expanded, 
-                                              p_expanded), replace = T)
-  y <- vapply(X = s, FUN.VALUE = numeric(1), FUN = function(x) {
-    if(x == 0) {
-      return(rpois(n = 1, lambda = 0.5))
-    }
-    return(rpois(n = 1, lambda = 50))
-  })
-  return(y)
-}
-```
-
-```{r}
-# simulate expansion of specific communities
-set.seed(1243)
-clone_size <- rpois(n = n, lambda = 3)+1
-expansion_factor <- get_clonal_expansion(n = n, p_expanded = 0.02)
-
-a$clone_size <- clone_size
-b$clone_size <- clone_size+expansion_factor*1
-c$clone_size <- clone_size+expansion_factor*2
-```
-
-## **Step 1.** `cluster_irr` analyzed each TCRs repertoire
-
-```{r}
-# run cluster_irr on each IRR and join the results
-clust_irrs <- c(cluster_irr(s = a), cluster_irr(s = b), cluster_irr(s = c))
-```
-
-## **Step 2.** `get_graph` and `plot_graph` visualize specificity structures
-
-We can also plot a graph of the global specificity structure in TCR
-repertoire $a$, $b$ and $c$.
-
-```{r}
-g <- get_joint_graph(clust_irrs = clust_irrs, cores = 1)
-```
-
-```{r, fig.width=6, fig.height=6}
-plot_graph(g = g, as_visnet = TRUE, node_opacity = 0.8)
-```
-
-## **Step 3.** `detect_communities` identifies communities in the graph
-
-Are there densely connected sets of nodes (=**communities**) in this
-graph?
-
-To answer this question we can use graph-based community detection (GCD)
-algorithms, such as Leiden or Louvain. As input for GCD we can use
-`nweight` or `ncweight` (default) between CDR3a, CDR3b or both CDR3a and
-CDR3b.
-
-```{r}
-gcd <- detect_communities(graph = g$graph,
-                          weight = "ncweight",
-                          algorithm = "leiden",
-                          resolution = 1,
-                          chains = c("CDR3a", "CDR3b"))
-```
-
-How many cells in each community from the three IRRs?
-
--   panel A: $a$ vs $b$
--   panel B: $a$ vs $c$
--   panel C: $b$ vs $c$
-
-
-
-```{r, fig.width=7, fig.height=2.5}
-honeycomb <- ClustIRR::get_honeycombs(com = gcd$community_occupancy_matrix)
-
-patchwork::wrap_plots(honeycomb, nrow = 1)
-```
-
-
-The number of cells in each IRR and community are stored as cells in the
-matrix `community_occupancy_matrix`. Rows are communities, and columns
-are IRRs
-
-```{r}
-community_occupancy_matrix <- gcd$community_occupancy_matrix
-head(community_occupancy_matrix)
-```
-
-## **Step 4.** `dco` performs differential community occupancy (DCO) analysis
-
-Do we see **expanding** or **shrinking** communities in a given IRRs?
-
-We employ a Bayesian model to quantify the relative abundance
-(occupancy) of individual communities, and the differential community
-occupancy between IRRs.
-
-```{r}
-d <- dco(community_occupancy_matrix = community_occupancy_matrix,
-         mcmc_control = list(mcmc_warmup = 300,
-                             mcmc_iter = 900,
-                             mcmc_chains = 3,
-                             mcmc_cores = 1,
-                             mcmc_algorithm = "NUTS",
-                             adapt_delta = 0.95,
-                             max_treedepth = 11))
-```
-
-## **Step 5.** posterior predictive check
-
-Before we can start interpreting the model results, we have to make sure
-that the model is valid. One standard approach is to check whether our
-model can retrodict the observed data (community occupancy matrix) which
-was used to fit model parameters.
-
-General idea of posterior predictive checks:
-
-1.  fit model based on data $y$
-2.  simulate new data $\hat{y}$
-3.  compare $y$ and $\hat{y}$
-
-`r Biocpkg("ClustIRR")` provides $y$ and $\hat{y}$ of each IRR, which we
-can visualize with ggplot:
-
-```{r, fig.width=6, fig.height=2.5}
-ggplot(data = d$posterior_summary$y_hat)+
-  facet_wrap(facets = ~sample, nrow = 1, scales = "free")+
-  geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = "gray")+
-  geom_errorbar(aes(x = y_obs, y = mean, ymin = L95, ymax = H95),
-                col = "darkgray", width=0)+
-  geom_point(aes(x = y_obs, y = mean), size = 0.8)+
-  xlab(label = "observed y")+
-  ylab(label = "predicted y (and 95% HDI)")+
-  theme_bw(base_size = 10)
-```
-
-## **Step 6.** $\beta$ parameters
-
-Notice that some (about 2%) $\beta$ coefficients are far from $\beta=0$.
-
-**Remember: we simulated clonal expansion in 2% of the communities!**
-
-```{r, fig.width=6, fig.height=7}
-beta <- d$posterior_summary$beta
-ggplot(data = beta)+
-  facet_wrap(facets = ~sample, ncol = 1)+
-  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95,
-                    col = sample), width = 0)+
-  geom_point(aes(x = community, y = mean, col = sample), size = 0.5)+
-  theme_bw(base_size = 10)+
-  theme(legend.position = "top")+
-  ylab(label = expression(beta))+
-  scale_x_continuous(expand = c(0,0))
-```
-
-## **Step 7.** $\delta$ and $\epsilon$ parameters
-
-If a given community $i$ is differentially expressed between two AIRRs,
-$a$ and $b$, then we may expect to see a difference in the credible
-values of $\beta^{a}_{i}$ and $\beta^{b}_{i}$. We define this as
-$\delta^{a-b}_{i}$.
-
-$\delta^{a-b}_{i} = \beta^{a}_{i}-\beta^{b}_{i}$
-
-Lets look at $\delta^{a-b}$, $\delta^{a-c}$ and $\delta^{b-c}$ for
-different communities. This information is stored in
-`posterior_summary$delta` of the output. We see clear differences
-($\delta!=0$) for at least 3 communities.
-
-**Remember: we simulated clonal expansion in about 2% of the
-communities!**
-
-```{r, fig.width=6, fig.height=7}
-delta <- d$posterior_summary$delta
-delta <- delta[delta$contrast %in% c("a-b", "a-c", "b-c"), ]
-
-ggplot(data = delta)+
-  facet_wrap(facets = ~contrast, ncol = 1)+
-  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), width=0)+
-  geom_point(aes(x = community, y = mean), size = 0.5)+
-  theme_bw(base_size = 10)+
-  theme(legend.position = "top")+
-  ylab(label = expression(delta))+
-  scale_x_continuous(expand = c(0,0))
-```
-
-We can also expect to see a difference in the credible
-values of $p^{a}_{i}$ and $p^{b}_{i}$, which incorporates the differences
-between community sizes. We define this as $\epsilon^{a-b}_{i}$.
-
-$\epsilon^{a-b}_{i} = p^{a}_{i}-p^{b}_{i}$
-
-We see clear differences ($\epsilon!=0$), but only for the bigger 2 
-communities. This information is stored in `posterior_summary$epsilon` 
-of the output.
-
-```{r, fig.width=6, fig.height=7}
-epsilon <- d$posterior_summary$epsilon
-epsilon <- epsilon[epsilon$contrast %in% c("a-b", "a-c", "b-c"), ]
-
-ggplot(data = epsilon)+
-  facet_wrap(facets = ~contrast, ncol = 1)+
-  geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), width=0)+
-  geom_point(aes(x = community, y = mean), size = 0.5)+
-  theme_bw(base_size = 10)+
-  theme(legend.position = "top")+
-  ylab(label = expression(epsilon))+
-  scale_x_continuous(expand = c(0,0))
-```
-
-We can look at the histograms of the effect size means.
-
-```{r}
-ggplot(data = d$posterior_summary$delta)+
-    facet_wrap(facets = ~contrast, ncol = 1)+
-    geom_histogram(aes(mean), bins = 100)+
-    xlab(label = expression(delta))+
-    theme_bw(base_size = 10)
-```
-
-```{r}
-ggplot(data = d$posterior_summary$epsilon)+
-    facet_wrap(facets = ~contrast, ncol = 1)+
-    geom_histogram(aes(mean), bins = 100)+
-    xlab(label = expression(epsilon))+
-    theme_bw(base_size = 10)
-```
-
-
-```{r session_info}
-utils::sessionInfo()
-```

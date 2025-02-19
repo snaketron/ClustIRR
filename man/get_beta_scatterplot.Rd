@@ -1,10 +1,9 @@
-\name{get_beta_violins}
-\alias{get_beta_violins}
-\title{Visualize distribution of \eqn{\beta} means in each repertoire 
-as violin plots}
+\name{get_beta_scatterplot}
+\alias{get_beta_scatterplot}
+\title{Compare community \eqn{\beta}s between pairs of repertoires}
 \description{
-Visualize the \eqn{\beta} means as violin plots, representing relative 
-community occupancies for individual repertoires. At the same time, annotate 
+Visualize the \eqn{\beta} means as a 2D scatterplot, representing relative 
+community occupancies for all pairs of repertoires. At the same time, annotate 
 the communities (dots) based on their specificity.
 }
 \details{
@@ -25,13 +24,13 @@ Flexible annotation based on edit distances can be performed by
 increasing \code{db_dist}.
 }
 \usage{
-get_beta_violins(beta,
-                 node_summary,
-                 ag_species = NULL, 
-                 ag_genes = NULL,
-                 db = "vdjdb",
-                 db_dist = 0,
-                 chain = "both")
+get_beta_scatterplot(beta,
+                     node_summary,
+                     ag_species = NULL, 
+                     ag_genes = NULL,
+                     db = "vdjdb",
+                     db_dist = 0,
+                     chain = "both")
 }
 \arguments{
 \item{beta}{\code{beta} data.frame}
@@ -51,11 +50,10 @@ The output is a list with 4 elements:
 
 \code{vars}: annotation variables
 
-\code{violins}: violin plots (one for each antigen species and gene)
-
-\code{violins}: a list of violin plots. Each element of the list contains 
-a violin visual for a specific antigen species/gene.
-
+\code{scatterplots}: a list of scatterplots: Each element of the list contains 
+a scatterplots for a specific antigen species/gene. Within each element of the 
+list there are \eqn{n^2} panels (comparisons between repertoire pairs), with 
+\eqn{n} as the number of repertoires.
 }
 \examples{
 # load package input data
@@ -102,11 +100,11 @@ dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
 names(dco)
 
 # generate beta violin plots
-beta_violins <- get_beta_violins(beta = dco$posterior_summary$beta,
-                                 node_summary = gcd$node_summary,
-                                 ag_species = c("EBV", "CMV"),
-                                 ag_genes = "MLANA",
-                                 db = "vdjdb",
-                                 db_dist = 0,
-                                 chain = "both")
+beta_scatterplot <- get_beta_scatterplot(beta = dco$posterior_summary$beta,
+                                         node_summary = gcd$node_summary,
+                                         ag_species = c("EBV", "CMV"),
+                                         ag_genes = "MLANA",
+                                         db = "vdjdb",
+                                         db_dist = 0,
+                                         chain = "both")
 }

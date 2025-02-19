@@ -69,7 +69,6 @@ gcd <- detect_communities(graph = jg$graph,
                           algorithm = "leiden",
                           resolution = 1,
                           weight = "ncweight",
-                          metric = "average",
                           chains = c("CDR3a", "CDR3b"))
 
 # look at outputs
