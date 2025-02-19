@@ -243,6 +243,9 @@ get_node_ann <- function(ns, ag_key, db) {
                                 clone_size = clone_size,
                                 FUN.VALUE = numeric(1),
                                 FUN = function(x, ag, clone_size) {
+                                    if(ag=="") {
+                                        return(FALSE)
+                                    }
                                     return(regexpr(pattern = ag, 
                                                    text = x)!=-1)
                                 })*clone_size
@@ -508,8 +511,10 @@ get_beta_violins <- function(beta,
             geom_sina(aes(x = sample, y = mean, col = specificity, 
                           size = size), stroke = 0.5, alpha = 0.4)+
             theme_bw(base_size = 10)+
-            ggtitle(label = paste0("Ag=", ag_name, ", source=", ag_type, 
-                                   " [DB=", db, ", chains=", chain, "]"))+
+            ggtitle(label = '', 
+                    subtitle = paste0("Ag=", ag_name, ", ", ag_type, 
+                                      " [DB=", db, 
+                                      ", chains=", chain, "]"))+
             ylab(label = expression(beta))+
             xlab(label = "repertoire")+
             scale_radius(name = "# cells", 
@@ -663,8 +668,8 @@ get_beta_scatterplot <- function(beta,
         i <- 1
         for(s1 in samples) {
             for(s2 in samples) {
-                dx <- d[sample == s1, ]
-                dy <- d[sample == s2, ]
+                dx <- d[d$sample == s1, ]
+                dy <- d[d$sample == s2, ]
                 
                 dx <- dx[, c("mean", "specificity", "size", "community")]
                 colnames(dx) <- c("mean_x", "specificity_x", 
@@ -676,16 +681,21 @@ get_beta_scatterplot <- function(beta,
                 
                 dxy <- merge(x = dx, y = dy, by = "community")
                 
-                gs[[i]] <- ggplot(data = d)+
+                dxy$specificity <- ifelse(test = (dxy$specificity_x == "+" | 
+                                              dxy$specificity_y == "+"),
+                                          yes = "+", no = "-")
+                
+                gs[[i]] <- ggplot(data = dxy)+
                     geom_point(aes(x = mean_x, y = mean_y, 
-                                   col = specificity_x | specificity_y, 
+                                   col = specificity, 
                                    size = size_x+size_y), alpha = 0.5)+
                     theme_bw(base_size = 10)+
-                    ggtitle(label = paste0("Ag=", ag_name, ", ",
-                                           "source=", ag_type, " ", 
-                                           "[DB=", db, ", chains=", chain, "]"))+
-                    ylab(label = expression(beta[y]))+
-                    xlab(label = expression(beta[x]))+
+                    ggtitle(label = '', 
+                            subtitle = paste0("Ag=", ag_name, ", ", ag_type, 
+                                              " ", "[DB=", db, 
+                                              ", chains=", chain, "]"))+
+                    ylab(label = bquote(beta ~" (" ~ .(s1) ~ ")"))+
+                    xlab(label = bquote(beta ~" (" ~ .(s2) ~ ")"))+
                     scale_radius(name = "# cells", 
                                  breaks = scales::pretty_breaks(n = 4),
                                  range = c(0.5, 3))+

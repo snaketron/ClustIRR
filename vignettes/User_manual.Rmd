@@ -479,7 +479,7 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
 
 ## **Step 6.** Inspect result
 
-### Visualizing the distribution of $\beta$ means with `get_beta_violins`
+### Visualizing the distribution of $\beta$ with `get_beta_violins`
 
 ```{r}
 beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
@@ -490,7 +490,7 @@ beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
                                  chain = "both")
 ```
 
-```{r, fig.width=6.5, fig.height=3}
+```{r, fig.width=5, fig.height=3}
 beta_violins$violins
 ```
 
@@ -506,9 +506,28 @@ beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
                                  chain = "both")
 ```
 
-```{r, fig.width=7, fig.height=13}
-patchwork::wrap_plots(beta_violins$violins, ncol = 1)
+```{r, fig.width=9, fig.height=7}
+patchwork::wrap_plots(beta_violins$violins, ncol = 2)
 ```
+
+
+
+### Compare $\beta$ between repertoires with `get_beta_scatterplot`
+
+```{r}
+beta_scatterplots <- get_beta_scatterplot(node_summary = gcd$node_summary,
+                                          beta = d$posterior_summary$beta,
+                                          ag_species = c("CMV"),
+                                          db = "vdjdb",
+                                          db_dist = 0,
+                                          chain = "both")
+```
+
+```{r, fig.width=14, fig.height=10}
+patchwork::wrap_plots(beta_scatterplots$scatterplots[[1]], ncol = 3)
+```
+
+
 
 ### Posterior predictive checks
 
@@ -537,7 +556,7 @@ ggplot(data = d$posterior_summary$y_hat)+
   ylab(label = "predicted y (and 95% HDI)")
 ```
 
-### Inspecting the degree of differential community abundance $\rightarrow$ parameter $\delta$
+### Differential community abundance results $\rightarrow$ par. $\delta$
 
 Given two repertoires, $a$ and $b$, we can quantify the differential
 community occupancy (DCO):
