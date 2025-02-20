@@ -445,6 +445,75 @@ Node-specific (TCR clone-specific) summaries are provided in
 kable(head(gcd$node_summary), digits = 2)
 ```
 
+
+
+### Decoding communities with `decode_community`
+
+Community with ID=8 contains 42 TCR clones. These are connected based on
+their CDR3$\beta$ sequences.
+
+```{r}
+ns_com_8 <- gcd$node_summary[gcd$node_summary$community == 8, ]
+
+table(ns_com_8$sample)
+```
+
+We can extract it and visualize it using igraph:
+
+```{r, fig.width=6, fig.height=4}
+par(mai = c(0,0,0,0))
+plot(subgraph(graph = gcd$graph, vids = which(V(gcd$graph)$community == 8)))
+```
+
+Furthermore, we can "decompose" this graph using `decode_community` based
+on the attributes of the edges (`edge_at`) and nodes (`node_at`).
+
+```{r}
+# we can pick from these edge attributes
+edge_attr_names(graph = gcd$graph)
+```
+
+
+```{r}
+# This would tell ClustIRR to only keep edges with nweight>=4 & ncweight>=4
+edge_at <- list(list(name = "nweight", val = 3, op = ">="),
+               list(name = "ncweight", val = 3, op = ">="))
+```
+
+
+```{r}
+# we can pick from these node attributes
+vertex_attr_names(graph = gcd$graph)
+```
+
+
+```{r}
+# This would tell ClustIRR to only keep nodes with TRBV and TRBJ
+node_at <- list(list(name = "TRBV"), list(name = "TRBJ"))
+```
+
+
+```{r}
+c8 <- decode_communities(community_id = 8, 
+                         graph = gcd$graph,
+                         edge_at = edge_at,
+                         node_at = node_at)
+```
+
+```{r, fig.width=6, fig.height=4}
+par(mar = c(0, 0, 0, 0))
+plot(c8, vertex.size = 10)
+```
+
+```{r}
+as_data_frame(x = c8, what = "vertices")[,c("name", "component_id", 
+                                            "CDR3b", "TRBV", "TRBJ",
+                                            "CDR3a", "TRAV", "TRAJ")]
+```
+
+
+
+
 ## **Step 5.** differential community occupancy (DCO) with `dco`
 
 Do we see **expanding** or **contracting** communities in a given
