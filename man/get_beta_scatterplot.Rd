@@ -26,8 +26,8 @@ increasing \code{db_dist}.
 \usage{
 get_beta_scatterplot(beta,
                      node_summary,
-                     ag_species = NULL, 
-                     ag_genes = NULL,
+                     ag_species, 
+                     ag_genes,
                      db = "vdjdb",
                      db_dist = 0,
                      chain = "both")

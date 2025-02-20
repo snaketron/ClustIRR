@@ -27,8 +27,8 @@ increasing \code{db_dist}.
 \usage{
 get_beta_violins(beta,
                  node_summary,
-                 ag_species = NULL, 
-                 ag_genes = NULL,
+                 ag_species,
+                 ag_genes,
                  db = "vdjdb",
                  db_dist = 0,
                  chain = "both")
@@ -84,22 +84,8 @@ gcd <- detect_communities(graph = jg$graph,
                           weight = "ncweight",
                           chains = c("CDR3a", "CDR3b"))
 
-# look at outputs
-names(gcd)
-
-# look at the community matrix
-head(gcd$community_occupancy_matrix)
-
-# look at the community summary
-head(gcd$community_summary$wide)
-
-# look at the node summary
-head(gcd$node_summary)
-
 # differential community occupancy analysis
 dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
-
-names(dco)
 
 # generate beta violin plots
 beta_violins <- get_beta_violins(beta = dco$posterior_summary$beta,
