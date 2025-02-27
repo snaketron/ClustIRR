@@ -466,18 +466,19 @@ plot(subgraph(graph = gcd$graph, vids = which(V(gcd$graph)$community == 8)))
 ```
 
 Furthermore, we can "decompose" this graph using `decode_community` based
-on the attributes of the edges (`edge_at`) and nodes (`node_at`).
+on the attributes of the edges (`edge_filter`) and nodes (`node_filter`).
 
 ```{r}
 # we can pick from these edge attributes
 edge_attr_names(graph = gcd$graph)
 ```
 
+The following edge-filter will instruct ClustIRR to keep edges with with 
+edge attributes: nweight>=3 **AND** ncweight>=3
 
 ```{r}
-# This would tell ClustIRR to only keep edges with nweight>=4 & ncweight>=4
-edge_at <- list(list(name = "nweight", val = 3, op = ">="),
-               list(name = "ncweight", val = 3, op = ">="))
+edge_filter <- rbind(data.frame(name = "nweight", value = 3, operation = ">="),
+                     data.frame(name = "ncweight", value = 3, operation = ">="))
 ```
 
 
@@ -486,18 +487,20 @@ edge_at <- list(list(name = "nweight", val = 3, op = ">="),
 vertex_attr_names(graph = gcd$graph)
 ```
 
+The following node-filter will instruct ClustIRR to retain edges between 
+nodes that have shared node attributed with respect to **ALL** of the 
+following node attributes: 
 
 ```{r}
-# This would tell ClustIRR to only keep nodes with TRBV and TRBJ
-node_at <- list(list(name = "TRBV"), list(name = "TRBJ"))
+node_filter <- data.frame(name = c("TRBV", "TRBJ", "HLA_A"))
 ```
 
 
 ```{r}
 c8 <- decode_communities(community_id = 8, 
                          graph = gcd$graph,
-                         edge_at = edge_at,
-                         node_at = node_at)
+                         edge_filter = edge_filter,
+                         node_filter = node_filter)
 ```
 
 ```{r, fig.width=6, fig.height=4}
