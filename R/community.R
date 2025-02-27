@@ -363,8 +363,8 @@ set_chain <- function(graph, chains) {
 # find components, cliques, subgraphs in a community
 decode_communities <- function(community_id,
                                graph, 
-                               edge_at,
-                               node_at) {
+                               edge_filter,
+                               node_filter) {
     
     apply_op <- function(vec, op, val) {
         ops <- list("==" = `==`,
@@ -390,70 +390,55 @@ decode_communities <- function(community_id,
     if(length(graph)==1 | length(E(graph)) == 0) {
         warning("community has only one vertex")
     }
-    
-    
-    # edge_at <- vector(mode = "list", length = 1)
-    # edge_at[[1]] <- list(name = "nweight", val = 4, op = ">=") 
-   
-    # node_at <- vector(mode = "list", length = 1)
-    # node_at[[1]] <- list(name = "conditions") ...
-    
-    etm <- matrix(data = 0, nrow = length(edge_at), ncol = length(E(graph)))
-    if(length(edge_at) != 0) {
-        for(i in seq_len(length(edge_at))) {
-            g_atr <- edge_at[[i]]$name
-            g_val <- edge_at[[i]]$val
-            g_op <- edge_at[[i]]$op
+
+    # consider edges
+    if(nrow(edge_filter)!=0) {
+        # this is where the edge filter results will be kept
+        etm <- matrix(data = 0, 
+                      nrow = nrow(edge_filter), 
+                      ncol = length(E(graph)))
+        for(i in seq_len(nrow(edge_filter))) {
+            a_name <- edge_filter$name[i]
+            a_value <- edge_filter$value[i]
+            a_operation <- edge_filter$operation[i]
             
-            j <- which(edge_attr_names(graph) == g_atr)
+            j <- which(edge_attr_names(graph) == a_name)
             if(length(j) != 0) {
-                v <- edge_attr(graph = graph, name = g_atr)
-                etm[i,] <- apply_op(vec = v, val = g_val, op = g_op)
+                v <- edge_attr(graph = graph, name = a_name)
+                etm[i,] <- apply_op(vec = v, val = a_value, op = a_operation)
             }
         }
-    }
-    etm <- apply(X = etm, MARGIN = 2, FUN = prod)
-    i <- which(etm==FALSE)
-    if(length(i)!=0) {
-        graph <- delete_edges(graph = graph, edges = i)
+        etm <- apply(X = etm, MARGIN = 2, FUN = prod)
+        i <- which(etm == FALSE)
+        if(length(i) != 0) {
+            graph <- delete_edges(graph = graph, edges = i)
+        }
     }
     
-    
-    vs_attributes <- unlist(lapply(X = node_at, FUN = function(x) {
-        return(x$name)
-    }))
+    # now partition based on node-attributes
     vs <- as_data_frame(x = graph, what = "vertices")
-    vs <- vs[, c(vs_attributes), drop=FALSE]
-    vs$key <- apply(X = vs[, vs_attributes, drop=FALSE], 
-                    MARGIN = 1, FUN = paste, collapse = '|')
-    V(graph)$key <- vs$key
-    
-    # el <- as_data_frame(x = graph, what = "both")
-    # el$edges$id <- 1:nrow(el$edges)
-    # keys <- merge(x = merge(x = el$edges, 
-    #                 y = el$vertices[, c("name", "key")], 
-    #                 by.x = "from", by.y = "name", all.x = TRUE), 
-    #       y = el$vertices[, c("name", "key")], 
-    #       by.x = "to", by.y = "name", all.x = TRUE)
-    # keys <- keys$id[keys$key.x==keys$key.y]
-    V(graph)$components <- components(graph = graph)$membership
-    V(graph)$component_id <- paste0(V(graph)$key, '|', V(graph)$components)
-    V(graph)$component_id <- as.numeric(as.factor(x = V(graph)$component_id))
-    
-    sgs <- lapply(X = unique(V(graph)$component_id), 
-                  g = graph, 
-                  FUN = function(x, g) {
-                      vids <- which(V(g)$component_id == x)
-                      return(subgraph(graph = g, vids = vids))
-                  })
-    names(sgs) <- unique(V(graph)$component_id)
+    V(graph)$key <- apply(X = vs[, node_filter$name, drop=FALSE], 
+                          MARGIN = 1, FUN = paste, collapse = '|')
+    sgs <- lapply(
+        X = unique(V(graph)$key), g = graph, 
+        FUN = function(x, g) {
+            # get a subgraph with shared node attributes
+            sg <- subgraph(graph = g, vids = which(V(g)$key == x))
+            
+            # find connected components
+            V(sg)$components <- components(graph = sg)$membership
+            V(sg)$component_id <- paste0(V(sg)$key, '|', 
+                                         V(sg)$components)
+            V(sg)$component_id <- as.numeric(as.factor(V(sg)$component_id))
+            return(disjoint_union(lapply(
+                X = unique(V(sg)$component_id), g = sg, 
+                FUN = function(x, g) {
+                    vids <- which(V(g)$component_id == x)
+                    return(subgraph(graph = g, vids = vids))
+                })))
+        })
     sgs <- disjoint_union(sgs)
-    # cliques \in component \in community
-    # finding cliques: NP problem O(2^)
-    # finding cliques in components -> solvable
-    # if(length(keys)!=0) {
-    #     graphs <- subgraph(graph = graphs, vids = keys)
-    # }
+    
     return(sgs)
 }
 
