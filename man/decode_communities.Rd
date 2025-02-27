@@ -76,6 +76,7 @@ gcd <- detect_communities(graph = jg$graph,
 # We "decompose" the communities in the gcd object using decode_community 
 # based on the attributes of the edges (edge_filter) and nodes (node_filter).
 # We can pick from these edge attributes and create filters:
+library(igraph)
 edge_attr_names(graph = gcd$graph)
 
 # For instance, the following edge-filter will instruct ClustIRR to keep 
