@@ -1,5 +1,7 @@
 # ClustIRR: Clustering of Immune Receptor Repertoires
 
+![Build Status](https://github.com/<OWNER>/<REPO>/actions/workflows/r.yml/badge.svg)
+
 ## Overview 
 ClustIRR analyzes repertoires of B- and T-cell receptors. It begins the 
 analysis by identifying communities (i.e., specificity groups) of immune 
@@ -30,7 +32,6 @@ To do this, start R and enter:
 library(devtools)
 install_github("snaketron/ClustIRR")
 ```
-
 
 Case studies are provided in the directory /vignettes
 
