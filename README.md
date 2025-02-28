@@ -1,6 +1,6 @@
 # ClustIRR: Clustering of Immune Receptor Repertoires
 
-![Build Status](https://github.com/<OWNER>/<REPO>/actions/workflows/r.yml/badge.svg)
+![Build Status](https://github.com/snaketron/ClustIRR/actions/workflows/r.yml/badge.svg)
 
 ## Overview 
 ClustIRR analyzes repertoires of B- and T-cell receptors. It begins the 
