@@ -47,31 +47,27 @@ The output is a "filtered" igraph object.
 \examples{
 # load package input data
 data("CDR3ab", package = "ClustIRR")
-a <- data.frame(CDR3a = CDR3ab[1:300, "CDR3a"],
-                CDR3b = CDR3ab[1:300, "CDR3b"],
-                clone_size = 1,
-                sample = "a")
+a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
+                  CDR3b = CDR3ab[1:500, "CDR3b"],
+                  clone_size = 1,
+                  sample = "a")
 
-b <- data.frame(CDR3a = CDR3ab[201:400, "CDR3a"],
-                CDR3b = CDR3ab[201:400, "CDR3b"],
-                clone_size = 1,
-                sample = "b")
+b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
+                  CDR3b = CDR3ab[401:900, "CDR3b"],
+                  clone_size = 1,
+                  sample = "b")
 b$clone_size[1] <- 20
 
 # run ClustIRR analysis
-c <- c(cluster_irr(s = a), cluster_irr(s = b))
-
-# get joint graph
-jg <- get_joint_graph(clust_irrs = c)
+c <- clustirr(s = rbind(a, b))
 
 # detect communities
-gcd <- detect_communities(graph = jg$graph, 
-                          weight = "nweight",
+gcd <- detect_communities(graph = c$graph, 
                           algorithm = "leiden",
                           resolution = 1,
+                          weight = "ncweight",
                           iterations = 100,
                           chains = c("CDR3a", "CDR3b"))
-
 
 # We "decompose" the communities in the gcd object using decode_community 
 # based on the attributes of the edges (edge_filter) and nodes (node_filter).

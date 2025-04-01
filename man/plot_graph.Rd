@@ -44,11 +44,8 @@ data("CDR3ab", package = "ClustIRR")
 s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
 
 # run ClustIRR analysis
-out <- cluster_irr(s = s)
-
-# get graph
-g <- get_graph(clust_irr = out)
+c <- clustirr(s = s)
 
 # plot graph with vertices as clones
-plot_graph(g, as_visnet=FALSE, show_singletons=TRUE, node_opacity = 0.8)
+plot_graph(c, as_visnet=FALSE, show_singletons=TRUE, node_opacity = 0.8)
 }

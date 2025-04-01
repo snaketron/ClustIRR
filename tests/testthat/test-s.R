@@ -1,22 +1,22 @@
 ###### testing s with weird inputs #######
 
 test_that("s parameter takes only valid input", {
-  expect_error(cluster_irr(), 
+  expect_error(clustirr(), 
                regexp = "s is missing")
   
-  expect_error(cluster_irr(s = NULL), 
+  expect_error(clustirr(s = NULL), 
                regexp = "s is missing")
   
-  expect_error(cluster_irr(s = "C"), 
+  expect_error(clustirr(s = "C"), 
                regexp = "s has to be a dataframe")
   
-  expect_error(cluster_irr(s = TRUE), 
+  expect_error(clustirr(s = TRUE), 
                regexp = "s has to be a dataframe")
   
-  expect_error(cluster_irr(s = 1), 
+  expect_error(clustirr(s = 1), 
                regexp = "s has to be a dataframe")
   
-  expect_error(cluster_irr(s = NA), 
+  expect_error(clustirr(s = NA), 
                regexp = "s has to be a dataframe")
 })
 
@@ -29,7 +29,7 @@ test_that("s parameter takes only valid input", {
   s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- "a"
-  expect_no_error(cluster_irr(s))
+  expect_no_error(clustirr(s))
   
   
   # test s
@@ -37,7 +37,7 @@ test_that("s parameter takes only valid input", {
   s$clone_size <- 1
   s$sample <- "a"
   s$CDR3b[1] <- NA
-  expect_warning(cluster_irr(s = s))
+  expect_warning(clustirr(s = s))
   
   
   # test sample
@@ -45,14 +45,14 @@ test_that("s parameter takes only valid input", {
   s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- NA
-  expect_error(cluster_irr(s = s),
+  expect_error(clustirr(s = s),
                regexp = "sample must be character")
   
   data("CDR3ab", package = "ClustIRR")
   s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- 1
-  expect_error(cluster_irr(s = s),
+  expect_error(clustirr(s = s),
                regexp = "sample must be character")
   
   data("CDR3ab", package = "ClustIRR")
@@ -60,14 +60,14 @@ test_that("s parameter takes only valid input", {
   s$clone_size <- 1
   s$sample <- "a"
   s$sample <- as.factor(s$sample)
-  expect_error(cluster_irr(s = s),
+  expect_error(clustirr(s = s),
                regexp = "sample must be character")
   
   data("CDR3ab", package = "ClustIRR")
   s <- CDR3ab[1:100,c("CDR3a", "CDR3b")]
   s$clone_size <- 1
   s$sample <- T
-  expect_error(cluster_irr(s = s),
+  expect_error(clustirr(s = s),
                regexp = "sample must be character")
   
   data("CDR3ab", package = "ClustIRR")
@@ -75,8 +75,7 @@ test_that("s parameter takes only valid input", {
   s$clone_size <- 1
   s$sample <- "a"
   s$sample[1] <- "b"
-  expect_error(cluster_irr(s = s),
-               regexp = "multiple sample ids found")
+  expect_no_error(clustirr(s = s))
 })
 
 

@@ -1,12 +1,13 @@
 # Description:
 # Check user provided input and generate errors and warnings, if necessary
-input_check <- function(s, meta, control) {
+input_check <- function(s, meta, cores = cores, control) {
   check_s(s = s)
   check_trim_flank_aa(control$trim_flank_aa)
   check_gmi(control$gmi)
   check_db_custom(db_custom = control$db_custom)
   check_db_dist(db_dist = control$db_dist)
   check_meta(s = s, meta = meta)
+  check_cores(cores = cores)
 }
 
 check_s <- function(s) {
@@ -208,9 +209,6 @@ check_s_cols <- function(x) {
   if(any(colnames(x) == "sample")) {
     if(any(is.character(x$sample)==FALSE)) {
       stop("sample must be character")
-    }
-    if(length(unique(x$sample))!=1) {
-      stop("multiple sample ids found")
     }
   }
 }

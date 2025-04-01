@@ -72,13 +72,10 @@ b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
 b$clone_size[1] <- 20
 
 # run ClustIRR analysis
-c <- c(cluster_irr(s = a), cluster_irr(s = b))
-
-# get joint graph
-jg <- get_joint_graph(clust_irrs = c)
+c <- clustirr(s = rbind(a, b))
 
 # detect communities
-gcd <- detect_communities(graph = jg$graph, 
+gcd <- detect_communities(graph = c$graph, 
                           algorithm = "leiden",
                           resolution = 1,
                           weight = "ncweight",

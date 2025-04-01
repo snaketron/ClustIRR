@@ -1,5 +1,5 @@
 # Description:
-# integrate clustirr with data from databases: VDJdb, tcr3d, mcpas-tcr
+# annotate nodes with data from databases: VDJdb, tcr3d, mcpas-tcr
 match_db <- function(cs, control) {
     
     get_db_info <- function(cs, db, db_type, chain, index) {
@@ -67,8 +67,7 @@ match_db <- function(cs, control) {
                                  cs=cs,
                                  db=db[,c(chain, "CDR3_species", 
                                           "Antigen_species", 
-                                          "Antigen_gene", 
-                                          "Reference")],
+                                          "Antigen_gene", "Reference")],
                                  chain = chain,
                                  index = index,
                                  FUN=get_vdjdb_info)))
@@ -87,8 +86,7 @@ match_db <- function(cs, control) {
             return(unlist(lapply(X = 1:nrow(cs),
                                  cs = cs,
                                  db = db[,c(chain, "CDR3_species",
-                                            "Antigen_species", 
-                                            "Antigen_gene", 
+                                            "Antigen_species", "Antigen_gene", 
                                             "Reference")],
                                  chain = chain,
                                  index = index,
@@ -162,6 +160,7 @@ match_db <- function(cs, control) {
                                           db = db[[db_name]],
                                           index = cs[, key_index],
                                           chain = chain)
+            cs[cs[, key_db]==0, key_info] <- NA
             cs[, key_index] <- NULL
         }
     }
@@ -169,13 +168,13 @@ match_db <- function(cs, control) {
     # get aggregate infos
     x <- cs[, which(regexpr(pattern = "info_", text = colnames(cs))!=-1)]
     a <- apply(X = x, MARGIN = 1, FUN = function(x, key) {
-        if(all(x=="")) {
+        if(all(is.na(x))) {
             return(list(ag_species = '', ag_gene = ''))
         }
         
         ag_species <- c()
         ag_gene <- c()
-        x <- x[x!=""]
+        x <- x[is.na(x)==FALSE]
         for(i in 1:length(x)) {
             y <- unlist(strsplit(x = x[i], split = "\\|"))
             ag_species <- c(ag_species, unlist(strsplit(x = y[3], 
@@ -350,8 +349,7 @@ get_db_match <- function(ns, db, db_dist) {
             return(unlist(lapply(X=which(ns[,paste0("db_vdjdb_", chain)]==1),
                                  ns=ns,
                                  db=db[,c(chain, "CDR3_species", 
-                                          "Antigen_species", 
-                                          "Antigen_gene", 
+                                          "Antigen_species", "Antigen_gene", 
                                           "Reference")],
                                  chain = chain,
                                  index = index,
@@ -361,8 +359,7 @@ get_db_match <- function(ns, db, db_dist) {
             return(unlist(lapply(X = 1:nrow(ns),
                                  ns = ns,
                                  db = db[,c(chain, "Antigen_species", 
-                                            "Antigen_gene", 
-                                            "Reference")],
+                                            "Antigen_gene", "Reference")],
                                  chain = chain,
                                  index = index,
                                  FUN = get_tcr3d_info)))
@@ -371,8 +368,7 @@ get_db_match <- function(ns, db, db_dist) {
             return(unlist(lapply(X = 1:nrow(ns),
                                  ns = ns,
                                  db = db[,c(chain, "CDR3_species",
-                                            "Antigen_species", 
-                                            "Antigen_gene", 
+                                            "Antigen_species", "Antigen_gene", 
                                             "Reference")],
                                  chain = chain,
                                  index = index,
@@ -455,7 +451,7 @@ get_db_match <- function(ns, db, db_dist) {
         x <- x[x!=""]
         for(i in 1:length(x)) {
             y <- unlist(strsplit(x = x[i], split = "\\|"))
-            ag_species <- c(ag_species, unlist(strsplit(x = y[3], split = '\\;')))
+            ag_species <- c(ag_species, unlist(strsplit(x = y[3],split ='\\;')))
             ag_gene <- c(ag_gene, unlist(strsplit(x = y[4], split = '\\;')))
         }
         ag_species <- paste0(unique(gsub(pattern = "Antigen_species\\:", 
@@ -586,7 +582,7 @@ get_beta_violins <- function(beta,
     }
     
     # select node_summary columns
-    ns <- node_summary[,c(chains, "community", "sample", "clone_size")]
+    ns <- node_summary[,c(chains, "name", "community", "sample", "clone_size")]
     
     # construct antigen key
     # if not provided -> create only one entry ''
@@ -626,6 +622,7 @@ get_beta_violins <- function(beta,
     return(list(node_annotations = na$ann,
                 beta_summary = d,
                 vars = vars,
+                antigen_key = ag_key,
                 violins = v))
 }
 

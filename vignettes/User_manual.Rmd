@@ -23,6 +23,7 @@ library(ggplot2)
 theme_set(new = theme_bw(base_size = 10))
 library(ggrepel)
 library(patchwork)
+options(digits=2)
 ```
 
 # Introduction
@@ -107,19 +108,16 @@ str(D1)
 
 Extract the data.frames for each TCR repertoire and their metadata:
 
-```{r}
-# Extract TCRab repertoires: a, b and c
-a <- D1$a
-b <- D1$b
-c <- D1$c
+We will merge three TCR repertoires into the data.frame tcr_reps.
 
-# Extract metadata for TCRab repertoires 'a', 'b' and 'c'.
-# This data is optional. It may contain and may contain diverse 
-# supplementary (clone-specific and repertoire-specific) data for 
-# each TCRab repertoire.
-meta_a <- D1$ma
-meta_b <- D1$mb
-meta_c <- D1$mc
+```{r}
+tcr_reps <- rbind(D1$a, D1$b, D1$c)
+```
+
+We will do the same for the metadata
+
+```{r}
+meta <- rbind(D1$ma, D1$mb, D1$mc)
 ```
 
 ## Algorithm
@@ -177,21 +175,45 @@ from each end of the CDR3 sequence. Comparing $\bar{\omega}^c$ and
 $\bar{\omega}$ allows assessment of whether sequence similarity is
 concentrated in the core or flanking regions.
 
-### Run `cluster_irr`
+## **Step 2-3.** Construct TCR repertoire graphs and join them into $J$
+
+Next, `r Biocpkg("ClustIRR")` builds a graph for each TCR repertoire.
+The graphs have *nodes* and *weighted edges*:
+
+-   nodes: clones from each TCR repertoire. Each clone attribute (clone
+    size, CDR3 sequences, etc.) is provided as node attribute
+-   edges: undirected edges connecting pairs of nodes based on
+    CDR3$\alpha$ and CDR3$\beta$ similarity scores ($\bar{\omega}$ and
+    $\bar{\omega}^c$) in each TCR repertoire (computed in step 1.)
+
+Then the graphs are joined together: edges between TCR clones from
+different TCR repertoires are computed using the same procedure outlined
+in step 1. The joint graph $J$ is stored as an `igraph` object.
+
+## Run steps 1-3 with `clustirr`
 
 Step 1. involves calling the function `clust_irr` which returns an S4
 object of class `clust_irr`.
 
 ```{r}
-# perform clust_irr analysis of repertoire a, b and c
-cl_a <- cluster_irr(s = a, meta = meta_a, control = list(gmi = 0.7))
-cl_b <- cluster_irr(s = b, meta = meta_b, control = list(gmi = 0.7))
-cl_c <- cluster_irr(s = c, meta = meta_c, control = list(gmi = 0.7))
+cl <- clustirr(s = tcr_reps, meta = meta, control = list(gmi = 0.7))
 ```
 
-Next, we show the chain-specific similarity scores between CDR3s
-sequences. Each row is a pair of CDR3 sequences from the repertoire. For
-each pair we have the following metrics:
+The output **complex** list with three elements:
+
+1.   `graph` = the joint graph $J$
+
+2.   `clust_irrs` = list with S4 `clust_irr` objects one for each TCR
+    repertoire
+
+3.  `multigraph` = logical value which tell us whether $J$ contains
+    multiple or a single TCR repertoire
+
+### Inspect the content of `clust_irrs`
+
+We can look at the similarity scores between CDR3 sequences of TCR
+repertoire `a`. Each row is a pair of CDR3 sequences from the repertoire
+annotated with the following metrics:
 
 -   `max_len`: length of the longer CDR3 sequence in the pair
 -   `max_clen`: length of the longer CDR3 core sequence in the pair
@@ -204,20 +226,24 @@ each pair we have the following metrics:
 The results for CDR3$\alpha$ sequence pairs from repertoire `a`:
 
 ```{r}
-kable(head(cl_a@clust$CDR3a), digits = 2)
+kable(head(cl$clust_irrs[["a"]]@clust$CDR3a), digits = 2)
 ```
 
 ... the same table for CDR3$\beta$ sequence pairs from repertoire `a`:
 
 ```{r}
-kable(head(cl_a@clust$CDR3b), digits = 2)
+kable(head(cl$clust_irrs[["a"]]@clust$CDR3b), digits = 2)
 ```
 
 Notice that very similar CDR3$\alpha$ or CDR3$\beta$ pairs have high
 normalized alignment scores ($\bar{\omega}$). We have similar tables for
-repertoire `b` and `c`.
+repertoire `b` and `c`. These are used internally to construct graphs in
+the next step.
 
-### Annotation of CDR3s
+### Inspect graphs with `plot_graph`
+
+We can use the function `plot_graph` for interactive visualization of
+relatively small graphs.
 
 The function `clust_irr` performs automatic annotation of TCR clones
 based on multiple databases (DBs), including: VDJdb, TCR3d, McPAS-TCR.
@@ -229,63 +255,32 @@ database):
 
 -   **Ag_gene**: the name of the antigen gene recognized by clone's CDR3
 
-Annotation process: annotation is performed based on an **edit distance
-threshold**, controlled by the user through the parameter
-`control$db_edit` (default = 0). If the **edit distance** between an
-input CDR3 sequence and a database (DB) CDR3 sequence is **less than or
-equal to** `control$db_edit`, the input CDR3 inherits the annotation
-data of the matched DB CDR3.
-
-This information will be used for various **downstream analyses** (see
-the next steps).
-
-## **Step 2.** Construct TCR repertoire graphs with `get_graph`
-
-Next, `r Biocpkg("ClustIRR")` builds a graph. If we analyze one
-TCR$\alpha\beta$ repertoire, then we may employ the function
-`get_graph`, which converts the `clust_irr` object into an `igraph`
-object. Meanwhile, if we are analyzing two or more repertoires, then we
-can use the function `get_joint_graph` to generate a joint `igraph`
-object. In this case, edges between TCR clones from different TCR
-repertoires are computed using the same procedure outlined in step 1.
-
-The graphs have *nodes* and *weighted edges*:
-
--   nodes: clones from each TCR repertoire. Each clone attribute (clone
-    size, CDR3 sequences, etc.) is provided as node attribute
--   edges: undirected edges connecting pairs of nodes based on
-    CDR3$\alpha$ and CDR3$\beta$ similarity scores ($\bar{\omega}$ and
-    $\bar{\omega}^c$) in each TCR repertoire (computed in step 1.)
-
-```{r}
-g <- get_graph(clust_irr = cl_a)
-```
-
-### Inspect graphs with `plot_graph` 
-
-We can use the function `plot_graph` for interactive visualization of
-relatively small graphs. 
-
-For instance, we can highligh TCR clones that recognize certain antigenic 
-species or genes (see dropdown menu), or use the hoovering function to
-look at the CDR3 sequences of nodes.
+Hence, in the plot we can highlight TCR clones that recognize certain
+antigenic species or genes (see dropdown menu), or use the hoovering
+function to look at the CDR3 sequences of nodes.
 
 Do this now!
 
 ```{r}
-plot_graph(g, select_by = "Ag_species", as_visnet = TRUE)
+plot_graph(cl, select_by = "Ag_species", as_visnet = TRUE)
 ```
 
+Notice that even in this small case study--where each TCR repertoire
+contains **only 500 TCR clones**--we observe that the **joint graph is
+complex**! This complexity makes qualitative analyses impractical. To
+address this, `r Biocpkg("ClustIRR")` focuses on **quantitative
+analyses** (see the next steps).
 
-### `get_graph` and `get_joint_graph` generate `igraph` objects
-We can use igraph functions to inspect various properties of the graph. 
-For instance, below, we extract the edge attributes and visualize the 
-distributions of the edge attributes `ncweight` and `nweight` for all 
-CDR3$\alpha$ and CDR3$\beta$ sequence pairs.
+### You can evaluate $J$ with igraph
+
+We can use igraph functions to inspect various properties of the graph
+in `cl$graph`. For instance, below, we extract the edge attributes and
+visualize the distributions of the edge attributes `ncweight` and
+`nweight` for all CDR3$\alpha$ and CDR3$\beta$ sequence pairs.
 
 ```{r, fig.width=6, fig.height=4.5}
 # data.frame of edges and their attributes
-e <- igraph::as_data_frame(x = g$graph, what = "edges")
+e <- igraph::as_data_frame(x = cl$graph, what = "edges")
 ```
 
 ```{r, fig.width=5, fig.height=3.5}
@@ -296,34 +291,15 @@ ggplot(data = e)+
   theme(legend.position = "top")
 ```
 
-Can you guess why we observe **bimodal** distributions? (*Hint:* CDR3s have 
-different lengths)
+Can you guess why we observe **trimodal** distributions?
 
+-   *Top mode: weights of identical CDR3 sequence pairs from the
+    different TCR repertoires*
 
+-   *Middle mode: weights of CDR3 sequences with same lengths*
 
-## **Step 3.** Constructing a joint similarity graph with `get_joint_graph`
-In dataset `D1` we have three TCR repertoires. Hence, we can use the function
-`get_joint_graph` to create a joint graph. This function computes 
-similarities between CDR3 sequences of clones from different repertoires, 
-creating new edges between nodes from different graphs with $\bar{\omega}$ 
-and $\bar{\omega}^c$ as edge attributes. The joint graph $J$ is structured 
-as an igraph object.
-
-```{r, fig.width=6, fig.height=6}
-g <- get_joint_graph(clust_irrs = c(cl_a, cl_b, cl_c))
-```
-
-Once again, we will use the function `plot_graph` for interactive 
-visualization. However, even in this small case study--where each 
-TCR repertoire contains **only 500 TCR clones**--we observe that the 
-**joint graph is complex**! This complexity makes qualitative analyses 
-impractical. To address this, `r Biocpkg("ClustIRR")` focuses on 
-**quantitative analyses** (see the next step).
-
-```{r, fig.width=6, fig.height=6}
-plot_graph(g = g, select_by = "Ag_gene", as_visnet = TRUE, node_opacity = 0.8)
-```
-
+-   *Bottom mode: weights of CDR3 sequences with different lengths -\>
+    scores penalized by gap cost*
 
 ## **Step 4.** community detection with `detect_communities`
 
@@ -340,7 +316,6 @@ as the average CDR3$\alpha$ and CDR3$\beta$ alignment scores:
 \omega(i,j) = \dfrac{{\bar{\omega}}_\alpha + {\bar{\omega}}_\beta}{2}
 \end{align}
 ```
-
 where $\bar{\omega}_\alpha$ and $\bar{\omega}_\beta$ are the alignment
 scores for the CDR3$\alpha$ and CDR3$\beta$, respectively. If a chain is
 missing, its alignment score is set to 0.
@@ -355,7 +330,7 @@ The user has the following options:
 -   `chains`: "CDR3a" or "CDR3b" or c("CDR3a", "CDR3b")
 
 ```{r}
-gcd <- detect_communities(graph = g$graph, 
+gcd <- detect_communities(graph = cl$graph, 
                           algorithm = "leiden",
                           resolution = 1,
                           iterations = 100,
@@ -414,7 +389,7 @@ wrap_plots(honeycomb, nrow = 1)+
 ```
 
 Also see `community_summary`. In the data.frame `wide` we provide
-community summaries in each row across all samples, including:
+community summaries in each community across all TCR repertoires, including:
 
 -   `clones_a`, `clone_b`, `clone_c`, `clones_n`: the frequency of
     clones in the community coming from repertoire `a`, `b`, `c` and in
@@ -428,26 +403,24 @@ community summaries in each row across all samples, including:
     CDR3$\beta$ sequences
 
 ```{r}
-kable(head(gcd$community_summary$wide), digits = 1)
+kable(head(gcd$community_summary$wide), digits = 1, row.names = FALSE)
 ```
 
-In the data.frame `tall` we provide community and sample/repertoire
+In the data.frame `tall` we provide community and repertoire
 summaries in each row.
 
 ```{r}
-kable(head(gcd$community_summary$tall), digits = 2)
+kable(head(gcd$community_summary$tall), digits = 1, row.names = FALSE)
 ```
 
 Node-specific (TCR clone-specific) summaries are provided in
 `node_summary`
 
 ```{r}
-kable(head(gcd$node_summary), digits = 2)
+kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
 ```
 
-
-
-### Decoding communities with `decode_community`
+### Special functions: decoding communities with `decode_community`
 
 Community with ID=8 contains 42 TCR clones. These are connected based on
 their CDR3$\beta$ sequences.
@@ -465,36 +438,35 @@ par(mai = c(0,0,0,0))
 plot(subgraph(graph = gcd$graph, vids = which(V(gcd$graph)$community == 8)))
 ```
 
-Furthermore, we can "decompose" this graph using `decode_community` based
-on the attributes of the edges (`edge_filter`) and nodes (`node_filter`).
+Furthermore, we can "decompose" this graph using `decode_community`
+based on the attributes of the edges (`edge_filter`) and nodes
+(`node_filter`).
 
 ```{r}
 # we can pick from these edge attributes
 edge_attr_names(graph = gcd$graph)
 ```
 
-The following edge-filter will instruct ClustIRR to keep edges with with 
-edge attributes: nweight>=3 **AND** ncweight>=3
+The following edge-filter will instruct ClustIRR to keep edges with with
+edge attributes: nweight $>=$ 4 **AND** ncweight $>=$ 4
 
 ```{r}
-edge_filter <- rbind(data.frame(name = "nweight", value = 3, operation = ">="),
-                     data.frame(name = "ncweight", value = 3, operation = ">="))
+edge_filter <- rbind(data.frame(name = "nweight", value = 4, operation = ">="),
+                     data.frame(name = "ncweight", value = 4, operation = ">="))
 ```
-
 
 ```{r}
 # we can pick from these node attributes
 vertex_attr_names(graph = gcd$graph)
 ```
 
-The following node-filter will instruct ClustIRR to retain edges between 
-nodes that have shared node attributed with respect to **ALL** of the 
-following node attributes: 
+The following node-filter will instruct ClustIRR to retain edges between
+nodes that have shared node attributed with respect to **ALL** of the
+following node attributes:
 
 ```{r}
-node_filter <- data.frame(name = c("TRBV", "TRBJ", "HLA_A"))
+node_filter <- data.frame(name = c("TRBV", "TRAV"))
 ```
-
 
 ```{r}
 c8 <- decode_communities(community_id = 8, 
@@ -509,13 +481,12 @@ plot(c8, vertex.size = 10)
 ```
 
 ```{r}
-as_data_frame(x = c8, what = "vertices")[,c("name", "component_id", 
-                                            "CDR3b", "TRBV", "TRBJ",
-                                            "CDR3a", "TRAV", "TRAJ")]
+kable(as_data_frame(x = c8, what = "vertices")[, c("name", "key", 
+                                                   "CDR3b", "TRBV", 
+                                                   "TRBJ", "CDR3a", 
+                                                   "TRAV", "TRAJ")],
+      row.names = FALSE)
 ```
-
-
-
 
 ## **Step 5.** differential community occupancy (DCO) with `dco`
 
@@ -537,7 +508,6 @@ community occupancy (DCO):
 \delta^{a-b}_i = \beta^a_i - \beta^b_i
 \end{align}
 ```
-
 ```{r}
 d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
          mcmc_control = list(mcmc_warmup = 300,
@@ -549,7 +519,7 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
                              max_treedepth = 10))
 ```
 
-## **Step 6.** Inspect result
+## **Step 6.** Inspect results
 
 ### Visualizing the distribution of $\beta$ with `get_beta_violins`
 
@@ -582,8 +552,6 @@ beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
 patchwork::wrap_plots(beta_violins$violins, ncol = 2)
 ```
 
-
-
 ### Compare $\beta$ between repertoires with `get_beta_scatterplot`
 
 ```{r}
@@ -598,8 +566,6 @@ beta_scatterplots <- get_beta_scatterplot(node_summary = gcd$node_summary,
 ```{r, fig.width=14, fig.height=10}
 patchwork::wrap_plots(beta_scatterplots$scatterplots[[1]], ncol = 3)
 ```
-
-
 
 ### Posterior predictive checks
 
@@ -638,6 +604,7 @@ community occupancy (DCO):
 \delta^{a-b}_i = \beta^a_i - \beta^b_i
 \end{align}
 ```
+
 Importantly, `r Biocpkg("ClustIRR")` always computes both contrasts ($a$
 vs. $b$ and $b$ vs. $a$): $\delta^{a-b}_i$ and $\delta^{b-a}_i$.
 
@@ -662,6 +629,7 @@ quantifies absolute differences in community probabilities:
 \mathrm{softmax}(\alpha + \beta^b)
 \end{align}
 ```
+
 Again, both contrasts are computed: $\epsilon^{a-b}_i$ and
 $\epsilon^{b-a}_i$.
 
@@ -686,5 +654,5 @@ rm(a, b, cl_a, cl_b, cl_c, meta_a, meta_b, meta_c, d, e, g, gcd)
 The function `dco` takes as its main input a community occupancy matrix.
 This enables users who are accustomed to using complementary algorithm
 for detecting specificity groups, such as, GLIPH, TCRdist3, GIANA, and
-iSMART, to skip steps 1-3 of the `r Biocpkg("ClustIRR")` workflow, and
+iSMART, to skip steps 1-4 of the `r Biocpkg("ClustIRR")` workflow, and
 to proceed with analysis for DCO.

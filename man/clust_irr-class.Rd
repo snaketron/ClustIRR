@@ -71,7 +71,7 @@ data("CDR3ab", package = "ClustIRR")
 s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
 
 # run analysis
-c <- cluster_irr(s = s)
+c <- clustirr(s = s)
 
 # output class
 class(c)
@@ -80,14 +80,14 @@ class(c)
 str(c)
 
 # inspect which CDR3bs are globally similar
-knitr::kable(head(slot(c, "clust")$CDR3b))
+knitr::kable(head(slot(c$clust_irrs, "clust")$CDR3b))
 
 
 # clust_irr S4 object generated 'manually' from the individual results
 new_clust_irr <- new("clust_irr", 
-                     clust = slot(object = c, name = "clust"),
-                     inputs = slot(object = c, name = "inputs"))
+                     clust = slot(object = c$clust_irrs, name = "clust"),
+                     inputs = slot(object = c$clust_irrs, name = "inputs"))
 
 # we should get identical outputs
-identical(x = new_clust_irr, y = c)
+identical(x = new_clust_irr, y = c$clust_irrs)
 }

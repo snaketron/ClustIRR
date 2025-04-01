@@ -81,7 +81,6 @@ get_graph <- function(clust_irr) {
         ig <- delete_edges(ig, edges = 1)
         
         # add global edges
-        message("adding edges... \n")
         if(is.null(e)==FALSE && nrow(e)!=0) {
             for(chain in chains) {
                 chain_ge <- e[e$chain == chain, ]
@@ -122,14 +121,16 @@ get_graph <- function(clust_irr) {
                                     directed = FALSE, vertices = cs)
         ig <- delete_edges(ig, edges = 1)
         
-        return(list(graph = ig, clones = cs))
+        return(list(graph = ig, clust_irrs = clust_irr, 
+                    clones = cs, multigraph = FALSE))
     }
     
     # build graph
-    message("(", sample_id, "): , building graph... \n")
+    message("creating graph (", sample_id, ") \n")
     ig <- build_graph(e = e, cs = cs, sample_id = sample_id, chains = chains)
     
-    return(list(graph = ig, clones = cs, joint_graph = FALSE))
+    return(list(graph = ig, clust_irrs = clust_irr, 
+                clones = cs, multigraph = FALSE))
 }
 
 
@@ -141,9 +142,6 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
         }
         if(is.list(clust_irrs)==FALSE) {
             stop("clust_irrs must be a list of clust_irr objects")
-        }
-        if(length(clust_irrs)<=1) {
-            stop("get_joint_graph needs >= 2 clust_irr outputs")
         }
         for(i in 1:length(clust_irrs)) {
             check_clustirr(clust_irr = clust_irrs[[i]])
@@ -188,7 +186,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     control <- get_joint_controls(clust_irrs = clust_irrs)
     
     # build graphs
-    message("[1/2] generating graphs... \n")
+    message("[1/2] generating individual graphs... \n")
     
     igs <- future_lapply(X = clust_irrs, FUN = get_graph, future.seed = TRUE)
     names(igs) <- names(clust_irrs)
@@ -196,7 +194,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     # get chains
     chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
     
-    message("[2/2] generating intergraph edges... \n")
+    message("[2/2] joining graphs... \n")
     ige <- get_intergraph_edges(igs = igs,
                                 chains = chains,
                                 cores = cores,
@@ -225,7 +223,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     # build joint graph
     g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
     
-    return(list(graph = g, clust_irrs = clust_irrs, joint_graph = TRUE))
+    return(list(graph = g, clust_irrs = clust_irrs, multigraph = TRUE))
 }
 
 
@@ -248,7 +246,7 @@ plot_graph <- function(g,
         if(is.null(g$graph)) {
             stop("wrong input g")
         }
-        if(is.logical(g$joint_graph)==FALSE) {
+        if(is.logical(g$multigraph)==FALSE) {
             stop("wrong input g")
         }
     }
@@ -262,7 +260,7 @@ plot_graph <- function(g,
     # unpack g
     ig <- g$graph
     cs <- as_data_frame(ig, what = "vertices")
-    is_jg <- g$joint_graph
+    is_jg <- g$multigraph
     
     if(!show_singletons){
         k <- which(degree(ig) == 0 & V(ig)$clone_size <= 1)
@@ -304,7 +302,6 @@ plot_graph <- function(g,
                                   MARGIN = 1, FUN = function(x, y) {
                                       paste0(paste0("<b>", y, "</b>", ':', x), 
                                              collapse = '<br>')})
-        
         
         u <- unique(unlist(strsplit(x=unique(cs[, select_by]),split = ',')))
         vi <- vi %>% visOptions(selectedBy = list(variable = select_by,
@@ -466,7 +463,7 @@ get_intergraph_edges <- function(igs,
         s2 <- igs[[ix$index_j[x]]]$clones
         rm(igs)
         
-        message("joining:", x, ":", s1_name, '|', s2_name, "\n")
+        message("joining (", x, ") ", s1_name, ' and ', s2_name, "\n")
         
         # run 
         b <- get_blastr(s1 = s1,

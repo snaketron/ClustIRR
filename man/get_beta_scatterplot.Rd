@@ -70,34 +70,17 @@ b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
 b$clone_size[1] <- 20
 
 # run ClustIRR analysis
-c <- c(cluster_irr(s = a), cluster_irr(s = b))
-
-# get joint graph
-jg <- get_joint_graph(clust_irrs = c)
+c <- clustirr(s = rbind(a, b))
 
 # detect communities
-gcd <- detect_communities(graph = jg$graph, 
+gcd <- detect_communities(graph = c$graph, 
                           algorithm = "leiden",
                           resolution = 1,
                           weight = "ncweight",
                           chains = c("CDR3a", "CDR3b"))
 
-# look at outputs
-names(gcd)
-
-# look at the community matrix
-head(gcd$community_occupancy_matrix)
-
-# look at the community summary
-head(gcd$community_summary$wide)
-
-# look at the node summary
-head(gcd$node_summary)
-
 # differential community occupancy analysis
 dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
-
-names(dco)
 
 # generate beta violin plots
 beta_scatterplot <- get_beta_scatterplot(beta = dco$posterior_summary$beta,
