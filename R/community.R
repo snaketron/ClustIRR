@@ -366,6 +366,13 @@ decode_communities <- function(community_id,
                                edge_filter,
                                node_filter) {
     
+    if(missing(edge_filter)) {
+        edge_filter <- NULL
+    }
+    if(missing(node_filter)) {
+        node_filter <- NULL
+    }
+    
     apply_op <- function(vec, op, val) {
         ops <- list("==" = `==`,
                     "!=" = `!=`,
@@ -392,7 +399,7 @@ decode_communities <- function(community_id,
     }
 
     # consider edges
-    if(nrow(edge_filter)!=0) {
+    if(is.null(edge_filter)==FALSE) {
         # this is where the edge filter results will be kept
         etm <- matrix(data = 0, 
                       nrow = nrow(edge_filter), 
@@ -416,29 +423,54 @@ decode_communities <- function(community_id,
     }
     
     # now partition based on node-attributes
-    vs <- as_data_frame(x = graph, what = "vertices")
-    V(graph)$key <- apply(X = vs[, node_filter$name, drop=FALSE], 
-                          MARGIN = 1, FUN = paste, collapse = '|')
-    sgs <- lapply(
-        X = unique(V(graph)$key), g = graph, 
-        FUN = function(x, g) {
-            # get a subgraph with shared node attributes
-            sg <- subgraph(graph = g, vids = which(V(g)$key == x))
-            
-            # find connected components
-            V(sg)$components <- components(graph = sg)$membership
-            V(sg)$component_id <- paste0(V(sg)$key, '|', 
-                                         V(sg)$components)
-            V(sg)$component_id <- as.numeric(as.factor(V(sg)$component_id))
-            return(disjoint_union(lapply(
-                X = unique(V(sg)$component_id), g = sg, 
-                FUN = function(x, g) {
-                    vids <- which(V(g)$component_id == x)
-                    return(subgraph(graph = g, vids = vids))
-                })))
-        })
-    sgs <- disjoint_union(sgs)
-    
-    return(sgs)
+    if(is.null(node_filter)==FALSE) {
+        vs <- as_data_frame(x = graph, what = "vertices")
+        V(graph)$key <- apply(X = vs[, node_filter$name, drop=FALSE], 
+                              MARGIN = 1, FUN = paste, collapse = '|')
+        
+        sgs <- lapply(
+            X = unique(V(graph)$key), g = graph, 
+            FUN = function(x, g) {
+                # get a subgraph with shared node attributes
+                sg <- subgraph(graph = g, vids = which(V(g)$key == x))
+                
+                # find connected components
+                V(sg)$components <- components(graph = sg)$membership
+                V(sg)$component_id <- paste0(V(sg)$key, '|', 
+                                             V(sg)$components)
+                V(sg)$component_id <- as.numeric(as.factor(V(sg)$component_id))
+                return(disjoint_union(lapply(
+                    X = unique(V(sg)$component_id), g = sg, 
+                    FUN = function(x, g) {
+                        vids <- which(V(g)$component_id == x)
+                        return(subgraph(graph = g, vids = vids))
+                    })))
+            })
+        sgs <- disjoint_union(sgs)
+        return(sgs)
+    } 
+    else {
+        sgs <- lapply(
+            X = unique(V(graph)$community), g = graph, 
+            FUN = function(x, g) {
+                # get a subgraph with shared node attributes
+                sg <- subgraph(graph = g, vids = which(V(g)$community == x))
+                
+                # find connected components
+                V(sg)$components <- components(graph = sg)$membership
+                V(sg)$component_id <- paste0(V(sg)$key, '|', 
+                                             V(sg)$components)
+                V(sg)$component_id <- as.numeric(as.factor(V(sg)$component_id))
+                return(disjoint_union(lapply(
+                    X = unique(V(sg)$component_id), g = sg, 
+                    FUN = function(x, g) {
+                        vids <- which(V(g)$component_id == x)
+                        return(subgraph(graph = g, vids = vids))
+                    })))
+            })
+        sgs <- disjoint_union(sgs)
+        return(sgs)
+        
+    }
 }
 
