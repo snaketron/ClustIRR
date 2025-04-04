@@ -1,7 +1,7 @@
 Package: ClustIRR
 Type: Package
 Title: Clustering of immune receptor repertoires
-Version: 1.5.46
+Version: 1.5.47
 Authors@R: c(
     person("Simo", "Kitanovski", email = "simokitanovski@gmail.com", 
     role = c("aut", "cre"), comment=c(ORCID="0000-0003-2909-5376")),
@@ -15,7 +15,6 @@ Description: ClustIRR analyzes repertoires of B- and T-cell receptors. It
     allowing the identification of expanding or contracting communities 
     in response to e.g. infection or cancer treatment.
 License: GPL-3 + file LICENSE
-LazyData: false
 Depends:
     R (>= 4.3.0)
 Imports:
@@ -47,9 +46,12 @@ Suggests:
     ggplot2,
     ggrepel,
     patchwork
+SystemRequirements: GNU make
 Encoding: UTF-8
-NeedsCompilation: no
-biocViews: Clustering, ImmunoOncology, SingleCell, Software, Classification
+LazyData: false
+NeedsCompilation: yes
+biocViews: Clustering, ImmunoOncology, SingleCell, Software, Classification,
+    Bayesian, BiomedicalInformatics, ImmunoOncology, MathematicalBiology
 RoxygenNote: 7.2.3
 VignetteBuilder: knitr
 URL: https://github.com/snaketron/ClustIRR
@@ -62,4 +64,3 @@ LinkingTo:
     RcppParallel (>= 5.0.1),
     rstan (>= 2.18.1),
     StanHeaders (>= 2.18.0)
-SystemRequirements: GNU make
