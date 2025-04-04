@@ -458,7 +458,7 @@ decode_communities <- function(community_id,
                 
                 # find connected components
                 V(sg)$components <- components(graph = sg)$membership
-                V(sg)$component_id <- paste0(V(sg)$key, '|', 
+                V(sg)$component_id <- paste0(V(sg)$community, '|', 
                                              V(sg)$components)
                 V(sg)$component_id <- as.numeric(as.factor(V(sg)$component_id))
                 return(disjoint_union(lapply(
