@@ -42,7 +42,12 @@ have the same attribute values among \bold{ALL} provided attributes will
 be treated as a subcomponent.}
 }
 \value{
-The output is a "filtered" igraph object.
+The output is a list with the following elements
+\itemite{
+\item community_graph, "filtered" igraph object
+\item component_stats, data.frame with summary about each connected component
+\item node_summary, data.frame with summary about each node
+}
 }
 \examples{
 # load package input data
@@ -76,9 +81,9 @@ library(igraph)
 edge_attr_names(graph = gcd$graph)
 
 # For instance, the following edge-filter will instruct ClustIRR to keep 
-# edges with: edge attributes: nweight>=3 \bold{AND} ncweight>=3
-edge_filter <- rbind(data.frame(name = "nweight", value = 3, operation = ">="),
-                     data.frame(name = "ncweight", value = 3, operation = ">="))
+# edges with: edge attributes: nweight>=8 \bold{AND} ncweight>=8
+edge_filter <- rbind(data.frame(name = "nweight", value = 8, operation = ">="),
+                     data.frame(name = "ncweight", value = 8, operation = ">="))
 
 # In addition, we can construct filters based on the following node attributes:
 vertex_attr_names(graph = gcd$graph)
@@ -96,10 +101,14 @@ c1 <- decode_communities(community_id = 1,
 
 # Plot resulting igraph
 par(mar = c(0, 0, 0, 0))
-plot(c1, vertex.size = 10)
+plot(c1$community_graph, vertex.size = 10)
 
 # Now look at node attributes
-as_data_frame(x = c1, what = "vertices")[,c("name", "component_id", 
-                                            "CDR3b", "CDR3a", "Ag_gene")]
+as_data_frame(x = c1$community_graph, what = "vertices")
+    [,c("name", "component_id", "CDR3b", "CDR3a", "Ag_gene")]
+
+str(c1$component_stats)
+
+str(c1$node_summary)
 }
 

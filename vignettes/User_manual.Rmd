@@ -201,9 +201,9 @@ cl <- clustirr(s = tcr_reps, meta = meta, control = list(gmi = 0.7))
 
 The output **complex** list with three elements:
 
-1.   `graph` = the joint graph $J$
+1.  `graph` = the joint graph $J$
 
-2.   `clust_irrs` = list with S4 `clust_irr` objects one for each TCR
+2.  `clust_irrs` = list with S4 `clust_irr` objects one for each TCR
     repertoire
 
 3.  `multigraph` = logical value which tell us whether $J$ contains
@@ -389,7 +389,8 @@ wrap_plots(honeycomb, nrow = 1)+
 ```
 
 Also see `community_summary`. In the data.frame `wide` we provide
-community summaries in each community across all TCR repertoires, including:
+community summaries in each community across all TCR repertoires,
+including:
 
 -   `clones_a`, `clone_b`, `clone_c`, `clones_n`: the frequency of
     clones in the community coming from repertoire `a`, `b`, `c` and in
@@ -406,8 +407,8 @@ community summaries in each community across all TCR repertoires, including:
 kable(head(gcd$community_summary$wide), digits = 1, row.names = FALSE)
 ```
 
-In the data.frame `tall` we provide community and repertoire
-summaries in each row.
+In the data.frame `tall` we provide community and repertoire summaries
+in each row.
 
 ```{r}
 kable(head(gcd$community_summary$tall), digits = 1, row.names = FALSE)
@@ -448,11 +449,11 @@ edge_attr_names(graph = gcd$graph)
 ```
 
 The following edge-filter will instruct ClustIRR to keep edges with with
-edge attributes: nweight $>=$ 4 **AND** ncweight $>=$ 4
+edge attributes: nweight $>=$ 8 **AND** ncweight $>=$ 8
 
 ```{r}
-edge_filter <- rbind(data.frame(name = "nweight", value = 4, operation = ">="),
-                     data.frame(name = "ncweight", value = 4, operation = ">="))
+edge_filter <- rbind(data.frame(name = "nweight", value = 8, operation = ">="),
+                     data.frame(name = "ncweight", value = 8, operation = ">="))
 ```
 
 ```{r}
@@ -477,15 +478,28 @@ c8 <- decode_communities(community_id = 8,
 
 ```{r, fig.width=6, fig.height=4}
 par(mar = c(0, 0, 0, 0))
-plot(c8, vertex.size = 10)
+plot(c8$community, vertex.size = 10)
 ```
 
 ```{r}
-kable(as_data_frame(x = c8, what = "vertices")[, c("name", "key", 
-                                                   "CDR3b", "TRBV", 
-                                                   "TRBJ", "CDR3a", 
-                                                   "TRAV", "TRAJ")],
+kable(as_data_frame(x = c8$community, what = "vertices")
+      [, c("name", "component_id", "CDR3b", "TRBV", 
+           "TRBJ", "CDR3a", "TRAV", "TRAJ")],
       row.names = FALSE)
+```
+
+... or we can summarize the properties of each component in the next
+table as rows with:
+
+-   component id, community id (=8 in this example because this is what
+    we selected)
+-   mean edge weights (for all core and complete CDR3 pairs)
+-   number of nodes, number of edges and expected number edges if the
+    component were a clique
+-   diameter of the component
+
+```{r}
+kable(c8$component_stats, row.names = FALSE)
 ```
 
 ## **Step 5.** differential community occupancy (DCO) with `dco`
@@ -604,7 +618,6 @@ community occupancy (DCO):
 \delta^{a-b}_i = \beta^a_i - \beta^b_i
 \end{align}
 ```
-
 Importantly, `r Biocpkg("ClustIRR")` always computes both contrasts ($a$
 vs. $b$ and $b$ vs. $a$): $\delta^{a-b}_i$ and $\delta^{b-a}_i$.
 
@@ -629,7 +642,6 @@ quantifies absolute differences in community probabilities:
 \mathrm{softmax}(\alpha + \beta^b)
 \end{align}
 ```
-
 Again, both contrasts are computed: $\epsilon^{a-b}_i$ and
 $\epsilon^{b-a}_i$.
 
