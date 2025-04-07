@@ -43,10 +43,10 @@ be treated as a subcomponent.}
 }
 \value{
 The output is a list with the following elements
-\itemite{
-\item community_graph, "filtered" igraph object
-\item component_stats, data.frame with summary about each connected component
-\item node_summary, data.frame with summary about each node
+\itemize{
+\item community_graph: "filtered" igraph object
+\item component_stats: data.frame with summary about each connected component
+\item node_summary: data.frame with summary about each node
 }
 }
 \examples{
@@ -104,8 +104,11 @@ par(mar = c(0, 0, 0, 0))
 plot(c1$community_graph, vertex.size = 10)
 
 # Now look at node attributes
-as_data_frame(x = c1$community_graph, what = "vertices")
-    [,c("name", "component_id", "CDR3b", "CDR3a", "Ag_gene")]
+as_data_frame(x = c1$community_graph, what = "vertices")[,c("name", 
+                                                            "component_id", 
+                                                            "CDR3b", 
+                                                            "CDR3a", 
+                                                            "Ag_gene")]
 
 str(c1$component_stats)
 
