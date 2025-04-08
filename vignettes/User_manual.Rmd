@@ -332,6 +332,7 @@ The user has the following options:
 ```{r}
 gcd <- detect_communities(graph = cl$graph, 
                           algorithm = "leiden",
+                          metric = "average",
                           resolution = 1,
                           iterations = 100,
                           weight = "ncweight",

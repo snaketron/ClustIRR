@@ -15,6 +15,7 @@ outside the community.
 detect_communities(graph,
                    weight = "nweight",
                    algorithm = "leiden", 
+                   metric = "average",
                    resolution = 1,
                    iterations = 100,
                    chains)
@@ -23,6 +24,7 @@ detect_communities(graph,
 \item{graph}{\code{igraph} object}
 \item{algorithm}{graph-based community detection (GCD) method: leiden 
 (default), louvain or infomap.}
+\item{metric}{possible metrics: "average" (default) or "max".}
 \item{resolution}{clustering resolution (default = 1) for GCD.}
 \item{iterations}{clustering iterations (default = 100) for GCD.}
 \item{weight}{which edge weight attribute (default = nweight) should be 
@@ -64,6 +66,7 @@ c <- clustirr(s = rbind(a, b))
 # detect communities
 gcd <- detect_communities(graph = c$graph, 
                           algorithm = "leiden",
+                          metric = "average",
                           resolution = 1,
                           weight = "ncweight",
                           iterations = 100,

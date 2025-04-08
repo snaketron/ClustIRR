@@ -46,6 +46,7 @@ importFrom(igraph, components)
 importFrom(igraph, edge_attr)
 importFrom(igraph, vertex_attr)
 importFrom(igraph, disjoint_union)
+importFrom(igraph, diameter)
 
 importFrom(posterior, as_draws)
 importFrom(posterior, subset_draws)

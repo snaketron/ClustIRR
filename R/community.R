@@ -1,19 +1,24 @@
 detect_communities <- function(graph, 
                                weight = "nweight",
                                algorithm = "leiden", 
+                               metric = "average",
                                resolution = 1,
                                iterations = 100,
                                chains) {
     
     check_inputs(graph = graph,
                  algorithm = algorithm, 
+                 metric = metric,
                  resolution = resolution,
                  iterations = iterations,
                  weight = weight,
                  chains = chains)
     
     message("[1/5] formatting graph...")
-    cg <- get_formatted_graph(graph = graph, weight = weight, chains = chains) 
+    cg <- get_formatted_graph(graph = graph, 
+                              metric = metric,
+                              weight = weight, 
+                              chains = chains) 
     
     message("[2/5] community detection...")
     cg <- get_community_detection(g = cg, 
@@ -35,6 +40,7 @@ detect_communities <- function(graph,
                    algorithm = algorithm, 
                    resolution = resolution,
                    weight = weight,
+                   metric = metric,
                    chains = chains)
     
     return(list(community_occupancy_matrix = cm, 
@@ -46,7 +52,8 @@ detect_communities <- function(graph,
                 input_config = config))
 }
 
-get_formatted_graph <- function(graph, 
+get_formatted_graph <- function(graph,
+                                metric,
                                 weight,
                                 chains) {
     
@@ -65,15 +72,29 @@ get_formatted_graph <- function(graph,
                                                    chain = "concat",
                                                    "ignore"))
     
-    E(graph)$nweight <- vapply(X = E(graph)$nweight, FUN.VALUE = numeric(1),
-                               FUN = function(x) {return(sum(x)/2)})
-    E(graph)$ncweight <- vapply(X = E(graph)$ncweight, FUN.VALUE = numeric(1),
-                                FUN = function(x) {return(sum(x)/2)})
+    if(metric == "average") {
+        E(graph)$nweight <- vapply(X = E(graph)$nweight, 
+                                   FUN.VALUE = numeric(1),
+                                   FUN = function(x) {return(sum(x)/2)})
+        E(graph)$ncweight <- vapply(X = E(graph)$ncweight, 
+                                    FUN.VALUE = numeric(1),
+                                    FUN = function(x) {return(sum(x)/2)})
+    }
+    if(metric == "max") {
+        E(graph)$nweight <- vapply(X = E(graph)$nweight, 
+                                   FUN.VALUE = numeric(1),
+                                   FUN = function(x) {return(max(x))})
+        E(graph)$ncweight <- vapply(X = E(graph)$ncweight, 
+                                    FUN.VALUE = numeric(1),
+                                    FUN = function(x) {return(max(x))})
+     }
+    
     if(weight == "nweight") {
         E(graph)$w <- E(graph)$nweight
     } else {
         E(graph)$w <- E(graph)$ncweight
     }
+    
     
     # if trim*2 > CDR3 lengths -> NA
     i <- which(E(graph)$w <= 0 | is.na(E(graph)$w))
@@ -254,6 +275,7 @@ get_community_matrix <- function(g) {
 
 check_inputs <- function(graph, 
                          algorithm, 
+                         metric,
                          resolution,
                          iterations,
                          weight, 
@@ -282,6 +304,19 @@ check_inputs <- function(graph,
         stop("algorithm must be louvain, leiden or infomap")
     }
     
+    # check metric
+    if(missing(metric)) {
+        stop("metric must be average or max")
+    }
+    if(length(metric)!=1) {
+        stop("metric must be average or max")
+    }
+    if(is.character(metric)==FALSE) {
+        stop("metric must be character")
+    }
+    if(!metric %in% c("average", "max")) {
+        stop("metric must be average or max")
+    }
     
     # check resolution
     if(missing(resolution)) {
