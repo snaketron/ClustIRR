@@ -186,15 +186,14 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     control <- get_joint_controls(clust_irrs = clust_irrs)
     
     # build graphs
-    message("[1/2] generating individual graphs... \n")
-    
+    message("[1/3] generating individual graphs... \n")
     igs <- future_lapply(X = clust_irrs, FUN = get_graph, future.seed = TRUE)
     names(igs) <- names(clust_irrs)
     
     # get chains
     chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
     
-    message("[2/2] joining graphs... \n")
+    message("[2/3] joining graphs... \n")
     ige <- get_intergraph_edges(igs = igs,
                                 chains = chains,
                                 cores = cores,
@@ -220,6 +219,9 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
         }
     }
     
+    message("[3/3] optimizing joint graph... \n")
+    # clean unused vars
+    rm(igs, ige)
     # build joint graph
     g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
     
