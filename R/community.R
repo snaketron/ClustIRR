@@ -502,7 +502,6 @@ decode_communities <- function(community_id,
                 V(sg)$components <- components(graph = sg)$membership
                 V(sg)$component_id <- paste0(V(sg)$community, '|', 
                                              V(sg)$components)
-                V(sg)$component_id <- as.numeric(as.factor(V(sg)$component_id))
                 return(disjoint_union(lapply(
                     X = unique(V(sg)$component_id), g = sg, 
                     FUN = function(x, g) {
@@ -511,6 +510,7 @@ decode_communities <- function(community_id,
                     })))
             })
         sgs <- disjoint_union(sgs)
+        V(sgs)$component_id <- as.numeric(as.factor(V(sgs)$component_id))
         
         sgs_stat <- get_component_stats(x = sgs)
         
