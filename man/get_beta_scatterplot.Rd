@@ -80,7 +80,9 @@ gcd <- detect_communities(graph = c$graph,
                           chains = c("CDR3a", "CDR3b"))
 
 # differential community occupancy analysis
-dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
+dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
+           mcmc_control = list(mcmc_chains = 2, 
+                               mcmc_cores = 2))
 
 # generate beta violin plots
 beta_scatterplot <- get_beta_scatterplot(beta = dco$posterior_summary$beta,

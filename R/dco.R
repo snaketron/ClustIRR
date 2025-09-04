@@ -306,36 +306,21 @@ get_posterior_summaries <- function(cm,
     
     post_beta <- function(f, samples) {
         
-        if(length(samples) == 2) {
-            s <- data.frame(summary(f, par = "beta")$summary)
-            s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
-            colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
-            
-            s$i <- 1:nrow(s)
-            m <- rownames(s)
-            m <- gsub(pattern = paste0("beta\\[|\\]"), replacement = '', x = m)
-            m <- do.call(rbind, strsplit(x = m, split = "\\,"))
-            s$s <- as.numeric(m[,1])
-            s$community <- as.numeric(m[,2])
-            s <- s[order(s$i, decreasing = FALSE),]
-        } 
-        else {
-            s <- data.frame(summary(f, par = "beta")$summary)
-            s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
-            colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
-            
-            # maintain original index order
-            s$i <- 1:nrow(s)
-            m <- rownames(s)
-            m <- gsub(pattern = "beta\\[|\\]", replacement = '', x = m)
-            
-            m <- do.call(rbind, strsplit(x = m, split = "\\,"))
-            s$s <- as.numeric(m[,1])
-            s$community <- as.numeric(m[,2])
-            meta <- data.frame(s = 1:length(samples), sample = samples)
-            s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = TRUE)
-            s <- s[order(s$i, decreasing = FALSE),]
-        }
+        s <- data.frame(summary(f, par = "beta")$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+        
+        # maintain original index order
+        s$i <- 1:nrow(s)
+        m <- rownames(s)
+        m <- gsub(pattern = "beta\\[|\\]", replacement = '', x = m)
+        
+        m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+        s$s <- as.numeric(m[,1])
+        s$community <- as.numeric(m[,2])
+        meta <- data.frame(s = 1:length(samples), sample = samples)
+        s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = TRUE)
+        s <- s[order(s$i, decreasing = FALSE),]
         
         return(s)
     }
