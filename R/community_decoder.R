@@ -40,6 +40,58 @@ decode_all_communities <- function(graph,
     return(o)
 }
 
+get_component_stats <- function(x) {
+    
+    # what is he
+    community_id <- V(x)$community[1]
+    
+    # number of nodes per component
+    count_n <- table(V(x)$component_id)
+    
+    # components has more than one node
+    i <- which(count_n>1)
+    stats_components <- c()
+    if(length(i)>0) {
+        stats_components <- lapply(X = names(i), g = x, FUN = function(x, g) {
+            o <- subgraph(g, vids = which(V(g)$component_id==x))
+            
+            ncweight <- E(o)$ncweight
+            if(length(ncweight)==0) {
+                ncweight <- NA
+            }
+            nweight <- E(o)$nweight
+            if(length(nweight)==0) {
+                nweight <- NA
+            }
+            
+            return(data.frame(component_id = x,
+                              community = V(o)$community[1],
+                              mean_ncweight = mean(ncweight),
+                              mean_nweight = mean(nweight),
+                              n_nodes = length(o),
+                              n_edges = length(E(o)),
+                              n_clique_edges = length(o)*(length(o)-1)/2,
+                              diameter = diameter(o)))
+        })
+        stats_components <- do.call(rbind, stats_components)
+    }
+    
+    i <- which(count_n==1)
+    stats_singletons <- c()
+    if(length(i)>0) {
+        stats_singletons <- data.frame(component_id = names(i),
+                                       community = community_id,
+                                       mean_ncweight = NA,
+                                       mean_nweight = NA,
+                                       n_nodes = 1,
+                                       n_edges = 0,
+                                       n_clique_edges = 0,
+                                       diameter = 0)
+    }
+    
+    return(rbind(stats_components, stats_singletons))
+}
+
 check_graph <- function(graph) {
     if(missing(graph)) {
         stop("missing graph")
