@@ -77,8 +77,7 @@ generated quantities {
             if(i != max(G)) {
                 for(j in (i+1):max(G)) {
                     delta[k] = beta_mu[i]-beta_mu[j];
-                    epsilon[k] = kappa*(softmax(alpha + beta_mu[i])-
-                    softmax(alpha + beta_mu[j]));
+                    epsilon[k] = softmax(alpha + beta_mu[i])-softmax(alpha + beta_mu[j]);
                     k = k + 1;
                 }
             }
