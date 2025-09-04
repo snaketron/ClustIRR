@@ -411,8 +411,8 @@ get_posterior_summaries <- function(cm,
         
         s <- merge(x = s, y = p[,c("k", "community", "pmax")], 
                    by = c("k", "community"))
-        s <- merge(x = s, y = meta, by.x = "k", by.y = "k", all.x = T)
-        s <- s[order(s$i, decreasing = F),]
+        s <- merge(x = s, y = meta, by.x = "k", by.y = "k", all.x = TRUE)
+        s <- s[order(s$i, decreasing = FALSE),]
         s$i <- NULL
         
         
@@ -482,8 +482,8 @@ get_posterior_summaries <- function(cm,
         
         s <- merge(x = s, y = p[,c("k", "community", "pmax")], 
                    by = c("k", "community"))
-        s <- merge(x = s, y = meta, by.x = "k", by.y = "k", all.x = T)
-        s <- s[order(s$i, decreasing = F),]
+        s <- merge(x = s, y = meta, by.x = "k", by.y = "k", all.x = TRUE)
+        s <- s[order(s$i, decreasing = FALSE),]
         s$i <- NULL
         
         
