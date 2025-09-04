@@ -42,3 +42,6 @@ Changes in version 1.5.36 (Dec, 2024)
 
 Changes in version 1.5.41 (Feb, 2025)
 + Function for community inspection/decoding
+
+Changes in version 1.7.3 (Sep, 2025)
++ Function for quantifying community purity wrt node features

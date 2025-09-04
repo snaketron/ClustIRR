@@ -86,7 +86,7 @@ check_gmi <- function(gmi) {
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
-  control = list(gmi = 0.7,
+  control = list(gmi = 0.8,
                  trim_flank_aa = 3,
                  db_dist = 0,
                  db_custom = NULL)

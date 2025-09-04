@@ -1,11 +1,14 @@
-\name{decode_communities}
-\alias{decode_communities}
+\name{decode_community}
+\alias{decode_community}
 \title{Decode graph communities}
 \description{
 Given a graph based on which we have detected communities (with the function
 \code{detect_communities}), and a community ID, the function will try to 
 partition the community nodes according to user-defined filters: edge and
 node filters.
+}
+\details{
+How to decode a community? 
 
 For instance, the user may only be interested in retaining edges with core 
 edge weight > 4; or making sure that nodes that have same 'cell_type' (node 
@@ -18,11 +21,8 @@ Based on these \code{filters}, ClustIRR will reformat the edges in the
 selected community and then find \bold{connected components} in the 
 resulting graph.
 }
-\details{
-
-}
 \usage{
-decode_communities(community_id, graph, edge_filter, node_filter)
+decode_community(community_id, graph, edge_filter, node_filter)
 }
 \arguments{
 \item{graph}{\code{igraph} object that has been analyzed by graph-based 
@@ -94,7 +94,7 @@ vertex_attr_names(graph = gcd$graph)
 node_filter <- data.frame(name = "Ag_gene")
 
 # Lets inspect community with ID = 1.
-c1 <- decode_communities(community_id = 1, 
+c1 <- decode_community(community_id = 1, 
                          graph = gcd$graph,
                          edge_filter = edge_filter,
                          node_filter = node_filter)

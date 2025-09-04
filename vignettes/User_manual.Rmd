@@ -471,7 +471,7 @@ node_filter <- data.frame(name = c("TRBV", "TRAV"))
 ```
 
 ```{r}
-c8 <- decode_communities(community_id = 8, 
+c8 <- decode_community(community_id = 8, 
                          graph = gcd$graph,
                          edge_filter = edge_filter,
                          node_filter = node_filter)
