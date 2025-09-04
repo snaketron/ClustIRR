@@ -48,7 +48,7 @@ dco <- function(community_occupancy_matrix,
                   "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
             pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
-                      "delta", "epsilon", "kappa", "y_hat", "log_lik")
+                      "delta", "epsilon", "kappa", "y_hat", "p", "log_lik")
         }
     } 
     else {
@@ -56,7 +56,7 @@ dco <- function(community_occupancy_matrix,
         pars <- c("alpha", "beta", "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
             pars <- c("alpha", "beta", "delta", "epsilon", "kappa", 
-                      "y_hat", "log_lik")
+                      "y_hat", "p", "log_lik")
         }
     }
     
@@ -271,16 +271,16 @@ get_posterior_summaries <- function(cm,
                                     has_groups, 
                                     groups) {
     
-    post_sample_com <- function(f, samples, par) {
+    post_yhat <- function(f, samples) {
         
-        s <- data.frame(summary(f, par = par)$summary)
+        s <- data.frame(summary(f, par = "y_hat")$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
-        
+
         # maintain original index order
         s$i <- 1:nrow(s)
         m <- rownames(s)
-        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = m)
+        m <- gsub(pattern = "y_hat\\[|\\]", replacement = '', x = m)
         
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         s$s <- as.numeric(m[,1])
@@ -301,6 +301,42 @@ get_posterior_summaries <- function(cm,
         m <- rownames(s)
         m <- gsub(pattern = paste0("alpha\\[|\\]"), replacement = '', x = m)
         s$community <- as.numeric(m)
+        return(s)
+    }
+    
+    post_beta <- function(f, samples) {
+        
+        if(length(samples) == 2) {
+            s <- data.frame(summary(f, par = "beta")$summary)
+            s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+            colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+            
+            s$i <- 1:nrow(s)
+            m <- rownames(s)
+            m <- gsub(pattern = paste0("beta\\[|\\]"), replacement = '', x = m)
+            m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+            s$s <- as.numeric(m[,1])
+            s$community <- as.numeric(m[,2])
+            s <- s[order(s$i, decreasing = FALSE),]
+        } 
+        else {
+            s <- data.frame(summary(f, par = "beta")$summary)
+            s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+            colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+            
+            # maintain original index order
+            s$i <- 1:nrow(s)
+            m <- rownames(s)
+            m <- gsub(pattern = "beta\\[|\\]", replacement = '', x = m)
+            
+            m <- do.call(rbind, strsplit(x = m, split = "\\,"))
+            s$s <- as.numeric(m[,1])
+            s$community <- as.numeric(m[,2])
+            meta <- data.frame(s = 1:length(samples), sample = samples)
+            s <- merge(x = s, y = meta, by.x = "s", by.y = "s", all.x = TRUE)
+            s <- s[order(s$i, decreasing = FALSE),]
+        }
+        
         return(s)
     }
     
@@ -509,11 +545,11 @@ get_posterior_summaries <- function(cm,
     samples <- colnames(cm)
     groups <- unique(groups)
     
-    o <- list(beta = post_sample_com(f = f, samples = samples, par = "beta"),
+    o <- list(beta = post_beta(f = f, samples = samples),
               beta_mu = post_betamu(f = f, has_groups = has_groups),
               beta_sigma = post_betasigma(f = f, has_groups = has_groups),
               alpha = post_alpha(f = f),
-              y_hat = post_sample_com(f = f, samples = samples, par = "y_hat"),
+              y_hat = post_yhat(f = f, samples = samples),
               kappa = post_kappa(f = f))
     
     # compute delta
