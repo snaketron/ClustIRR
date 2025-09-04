@@ -3,7 +3,7 @@
 \title{Decode all graph communities}
 \description{
 Given a graph based on which we have detected communities (with the function
-\code{detect_communities}), this function applies \code{decode_communities}
+\code{detect_community}), this function applies \code{decode_communities}
 to \bold{all} communities in the graph.  
 
 Each community is partitioned according to user-defined filters on edges 
@@ -27,7 +27,7 @@ decode_all_communities(graph, edge_filter, node_filter)
 }
 \arguments{
 \item{graph}{\code{igraph} object that has been analyzed by graph-based 
-community detection methods as implemented in \code{detect_communities}. 
+community detection methods as implemented in \code{detect_community}. 
 Must have a vertex attribute named \code{community}.}
 \item{edge_filter}{data.frame with edge filters. The data.frame has three 
 columns:}
