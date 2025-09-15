@@ -45,3 +45,6 @@ Changes in version 1.5.41 (Feb, 2025)
 
 Changes in version 1.7.3 (Sep, 2025)
 + Function for quantifying community purity wrt node features
+
+Changes in version 1.7.7 (Sep, 2025)
++ Bugfix, model improvement

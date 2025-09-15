@@ -47,16 +47,16 @@ dco <- function(community_occupancy_matrix,
         pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
                   "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
-            pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
-                      "delta", "epsilon", "kappa", "y_hat", "p", "log_lik")
+            pars <- c("alpha", "beta", "beta_mu", "beta_sigma", "delta", 
+                      "epsilon", "kappa", "y_hat", "p", "log_lik")
         }
     } 
     else {
         model <- stanmodels$dm
         pars <- c("alpha", "beta", "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
-            pars <- c("alpha", "beta", "delta", "epsilon", "kappa", 
-                      "y_hat", "p", "log_lik")
+            pars <- c("alpha", "beta", "delta", "epsilon", 
+                      "kappa", "y_hat", "p", "log_lik")
         }
     }
     
@@ -384,7 +384,7 @@ get_posterior_summaries <- function(cm,
         return(s)
     }
     
-    post_delta <- function(f, samples, compute_delta, par) {
+    post_delta <- function(f, samples, compute_delta, par, pmaxv) {
         if(compute_delta==0) {
             return(NA)
         }
@@ -409,7 +409,7 @@ get_posterior_summaries <- function(cm,
         # pmax
         p <- as_draws(f)
         p <- subset_draws(p, variable = par)
-        p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
+        p <- summarise_draws(p, pmax =~2*max(mean(.>=pmaxv), mean(.<=pmaxv))-1)
         m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', 
                   x = p$variable)
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
@@ -456,7 +456,7 @@ get_posterior_summaries <- function(cm,
         return(s)
     }
     
-    post_deltamu <- function(f, groups, compute_delta, par) {
+    post_deltamu <- function(f, groups, compute_delta, par, pmaxv) {
         if(compute_delta==0) {
             return(NA)
         }
@@ -481,8 +481,9 @@ get_posterior_summaries <- function(cm,
         # pmax
         p <- as_draws(f)
         p <- subset_draws(p, variable = par)
-        p <- summarise_draws(p, pmax =~2*max(mean(.>0), mean(.<=0))-1)
-        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', x = p$variable)
+        p <- summarise_draws(p, pmax =~2*max(mean(.>=pmaxv), mean(.<=pmaxv))-1)
+        m <- gsub(pattern = paste0(par,"\\[|\\]"), replacement = '', 
+                  x = p$variable)
         m <- do.call(rbind, strsplit(x = m, split = "\\,"))
         p$k <- as.numeric(m[,1])
         p$community <- as.numeric(m[,2])
@@ -540,14 +541,18 @@ get_posterior_summaries <- function(cm,
     # compute delta
     if(has_groups==FALSE) {
         delta <- post_delta(f = f, samples = samples, 
-                            compute_delta = compute_delta, par = "delta")
+                            compute_delta = compute_delta, 
+                            par = "delta", pmaxv = 0)
         epsilon <- post_delta(f = f, samples = samples,
-                              compute_delta = compute_delta, par = "epsilon")
+                              compute_delta = compute_delta, 
+                              par = "epsilon", pmaxv = 0)
     } else {
         delta <- post_deltamu(f = f, groups = groups, 
-                              compute_delta = compute_delta, par = "delta")
+                              compute_delta = compute_delta, 
+                              par = "delta", pmaxv = 0)
         epsilon <- post_deltamu(f = f, groups = groups,
-                                compute_delta = compute_delta, par = "epsilon")
+                                compute_delta = compute_delta, 
+                                par = "epsilon", pmaxv = 0)
     }
     o[["delta"]] <- delta
     o[["epsilon"]] <- epsilon

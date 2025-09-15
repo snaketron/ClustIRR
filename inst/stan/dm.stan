@@ -49,7 +49,7 @@ generated quantities {
     simplex [K] p [N];
     vector [K_delta] delta [N_delta];
     vector [K_delta] epsilon [N_delta];
-    int k;
+    int k = 1;
     
     for(i in 1:N) {
         p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]));
@@ -57,15 +57,12 @@ generated quantities {
         log_lik[i] = dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
     }
     
-    k = 1;
-    for(i in 1:N) {
-        if(compute_delta==1) {
-            if(i != N) {
-                for(j in (i+1):N) {
-                    delta[k] = beta[i]-beta[j];
-                    epsilon[k] = softmax(alpha+beta[i])-softmax(alpha+beta[j]);
-                    k = k + 1;
-                }
+    if(compute_delta==1) {
+        for(i in 1:(N-1)) {
+            for(j in (i+1):N) {
+                delta[k] = beta[i] - beta[j];
+                epsilon[k] = softmax(alpha+beta[i]) - softmax(alpha+beta[j]);
+                k += 1;
             }
         }
     }

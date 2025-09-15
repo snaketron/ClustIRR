@@ -523,6 +523,7 @@ community occupancy (DCO):
 \delta^{a-b}_i = \beta^a_i - \beta^b_i
 \end{align}
 ```
+
 ```{r}
 d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
          mcmc_control = list(mcmc_warmup = 300,
