@@ -40,18 +40,20 @@ regions (CDRs), while T cells recognize peptide-MHC complexes through
 TCR CDRs. Antigen recognition triggers clonal expansion, producing
 effector populations that mount targeted immune responses.
 
-High-throughput sequencing (HT-seq) enables tracking of TCR/BCR
-community dynamics across biological conditions (e.g.,
-pre-/post-treatment), offering insights into responses to immunotherapy
-and vaccination. However, two key challenges complicate this approach:
+High-throughput sequencing (HT-seq) enables tracking of TCR/BCR community 
+dynamics across biological conditions (e.g., pre-/post-treatment), offering 
+insights into responses to immunotherapy and vaccination. However, two key 
+challenges complicate this approach if the unit of analysis are **clonotype**:
 
 1.  **Extreme diversity and privacy**: TCRs/BCRs are highly
     personalized, with incomplete sampling particularly problematic in
     clinical settings where sample volumes are limited. Even
-    comprehensive sampling reveals minimal repertoire overlap between
-    individuals.
+    comprehensive sampling reveals minimal repertoire overlap in terms of
+    clonotypes between individuals.
 
 2.  **Similar TCRs/BCRs recognize similar antigens**
+
+
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a computational method
 that addresses these challenges by: (1) Identifying
@@ -84,13 +86,13 @@ knitr::include_graphics("../inst/extdata/logo.png")
 
 The main input of `r Biocpkg("ClustIRR")` is a repertoire (`s`), which
 should be provided as data.frame. The rows in the data.frame correspond
-to **clones** (clone = group of cells derived from a common parent cell
-by clonal expansion). We use the following data from each clone:
+to **clonotype** (clonotype = group of cells derived from a common parent 
+cell by clonal expansion). We use the following data from each clonotype:
 
 -   **CDR3 amino acid sequences** from one/both chains (e.g.
     CDR3$\alpha$ and CDR3$\beta$ from TCR$\alpha\beta$s).
 -   **Clone size**, which refers to the frequency of cells that belong
-    to the clone.
+    to the clonotype.
 
 In a typical scenario, the user will have more than one repertoire (see
 workflow). For instance, the user will analyze longitudinal repertoire
@@ -124,7 +126,7 @@ meta <- rbind(D1$ma, D1$mb, D1$mc)
 
 `r Biocpkg("ClustIRR")` performs the following steps.
 
-1.  Compute similarities between T-cell clones within each TCR
+1.  Compute similarities between T-cell clonotypes within each TCR
     repertoire
 
 2.  Construct a graph from each TCR repertoire
@@ -142,15 +144,15 @@ meta <- rbind(D1$ma, D1$mb, D1$mc)
 
 6.  Inspect results
 
-## **Step 1.** Compute TCR clone similarities in a repertoire with `cluster_irr`
+## **Step 1.** Compute TCR clonotype similarities in a repertoire with `cluster_irr`
 
 `r Biocpkg("ClustIRR")` aims to quantify the similarity between pairs of
-TCR clones based on the similarities of their CDR3s sequences. For this
+TCR clonotypes based on the similarities of their CDR3s sequences. For this
 it employs Basic Local-Alignment Search Tool (BLAST) via the R-package
 `r CRANpkg("blaster")`. Briefly, a protein database is constructed from
 all CDR3 sequences, and each CDR3 sequence is used as a query. This
 enables fast sequence similarity searches. Furthermore, only CDR3
-sequences matches with $\geq$ 70% sequence identity to the query are
+sequences matches with $\geq$ 80% sequence identity to the query are
 retained. This step reduces the computational and memory requirements,
 without impacting downstream community analyses, as CDR3 sequences with
 lower typically yield low similarity scores.
@@ -180,13 +182,13 @@ concentrated in the core or flanking regions.
 Next, `r Biocpkg("ClustIRR")` builds a graph for each TCR repertoire.
 The graphs have *nodes* and *weighted edges*:
 
--   nodes: clones from each TCR repertoire. Each clone attribute (clone
-    size, CDR3 sequences, etc.) is provided as node attribute
+-   nodes: clonotypes from each TCR repertoire. Each clonotype attribute 
+    (clone size, CDR3 sequences, etc.) is provided as node attribute
 -   edges: undirected edges connecting pairs of nodes based on
     CDR3$\alpha$ and CDR3$\beta$ similarity scores ($\bar{\omega}$ and
     $\bar{\omega}^c$) in each TCR repertoire (computed in step 1.)
 
-Then the graphs are joined together: edges between TCR clones from
+Then the graphs are joined together: edges between TCR clonotypes from
 different TCR repertoires are computed using the same procedure outlined
 in step 1. The joint graph $J$ is stored as an `igraph` object.
 
@@ -196,7 +198,7 @@ Step 1. involves calling the function `clust_irr` which returns an S4
 object of class `clust_irr`.
 
 ```{r}
-cl <- clustirr(s = tcr_reps, meta = meta, control = list(gmi = 0.7))
+cl <- clustirr(s = tcr_reps, meta = meta, control = list(gmi = 0.8))
 ```
 
 The output **complex** list with three elements:
@@ -245,17 +247,17 @@ the next step.
 We can use the function `plot_graph` for interactive visualization of
 relatively small graphs.
 
-The function `clust_irr` performs automatic annotation of TCR clones
+The function `clust_irr` performs automatic annotation of TCR clonotypes
 based on multiple databases (DBs), including: VDJdb, TCR3d, McPAS-TCR.
-Each TCR clone recieves two types of annotations (per chain and per
+Each TCR clonotype recieves two types of annotations (per chain and per
 database):
 
 -   **Ag_species**: the name of the antigen species recognized by the
-    clone's CDR3
+    clonotype's CDR3
 
--   **Ag_gene**: the name of the antigen gene recognized by clone's CDR3
+-   **Ag_gene**: the name of the antigen gene recognized by clonotype's CDR3
 
-Hence, in the plot we can highlight TCR clones that recognize certain
+Hence, in the plot we can highlight TCR clonotypes that recognize certain
 antigenic species or genes (see dropdown menu), or use the hoovering
 function to look at the CDR3 sequences of nodes.
 
@@ -266,7 +268,7 @@ plot_graph(cl, select_by = "Ag_species", as_visnet = TRUE)
 ```
 
 Notice that even in this small case study--where each TCR repertoire
-contains **only 500 TCR clones**--we observe that the **joint graph is
+contains **only 500 TCR clonotypes**--we observe that the **joint graph is
 complex**! This complexity makes qualitative analyses impractical. To
 address this, `r Biocpkg("ClustIRR")` focuses on **quantitative
 analyses** (see the next steps).
@@ -308,8 +310,8 @@ algorithms, such as Louvain, Leiden or InfoMap, to identify
 **communities** of nodes that have high density of edges among each
 other, and low density of edges with nodes outside the community.
 
-First, the similarity score between T-cell clones $i$ and $j$ is defined
-as the average CDR3$\alpha$ and CDR3$\beta$ alignment scores:
+First, the similarity score between T-cell clonotypes $i$ and $j$ is 
+defined as the average CDR3$\alpha$ and CDR3$\beta$ alignment scores:
 
 ```{=tex}
 \begin{align}
@@ -350,7 +352,7 @@ names(gcd)
 
 The main element is `community_occupancy_matrix`, which contains the
 number of T-cells in each community (row) and repertoire (column). Here
-we have three repertoires (three columns) and about 260 communities.
+we have three repertoires (three columns) and over 400 communities.
 This matrix is the main input of the function `dco` (step 5.), to detect
 differences in the community occupancy between repertoires.
 
@@ -394,11 +396,11 @@ community summaries in each community across all TCR repertoires,
 including:
 
 -   `clones_a`, `clone_b`, `clone_c`, `clones_n`: the frequency of
-    clones in the community coming from repertoire `a`, `b`, `c` and in
+    clonotypes in the community coming from repertoire `a`, `b`, `c` and in
     total (n)
 -   `cells_a`, `cells_b`, `cells_c`, `cells_n`: the frequency of cell in
     the community coming from repertoires `a`, `b`, `c` and in total (n)
--   `w`: average inter-clone similarity
+-   `w`: average inter-clonotype similarity
 -   `ncweight_CDR3a/b`, `nweight_CDR3a/b`: raw and normalized similarity
     for CDR3$\alpha$ and CDR3$\beta$ sequences
 -   `n_CDR3a`, `n_CDR3b`: number of edges between CDR3$\alpha$ and
@@ -415,7 +417,7 @@ in each row.
 kable(head(gcd$community_summary$tall), digits = 1, row.names = FALSE)
 ```
 
-Node-specific (TCR clone-specific) summaries are provided in
+Node-specific (TCR clonotype-specific) summaries are provided in
 `node_summary`
 
 ```{r}
@@ -424,7 +426,7 @@ kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
 
 ### Special functions: decoding communities with `decode_community`
 
-Community with ID=8 contains 42 TCR clones. These are connected based on
+Community with ID=8 contains 9 TCR clonotypes. These are connected based on
 their CDR3$\beta$ sequences.
 
 ```{r}
@@ -540,48 +542,31 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
 ### Visualizing the distribution of $\beta$ with `get_beta_violins`
 
 ```{r}
-beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
-                                 beta = d$posterior_summary$beta,
-                                 ag_species = NULL,
-                                 db = "vdjdb",
-                                 db_dist = 0,
-                                 chain = "both")
+beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
+                                beta = d$posterior_summary$beta,
+                                ag = "",
+                                ag_species = TRUE,
+                                db = "vdjdb")
 ```
 
 ```{r, fig.width=5, fig.height=3}
-beta_violins$violins
+beta_violins
 ```
 
-### Compare $\beta$s of clones specific for *CMV*, *EBV*, *flu* or *MLANA*?
+### Compare $\beta$s of clonotypes specific for *CMV*, *EBV*, *flu* or *MLANA*?
 
 ```{r}
-beta_violins <- get_beta_violins(node_summary = gcd$node_summary,
-                                 beta = d$posterior_summary$beta,
-                                 ag_species = c("CMV", "EBV", "Influenza"),
-                                 ag_genes = c("MLANA"),
-                                 db = "vdjdb",
-                                 db_dist = 0,
-                                 chain = "both")
+beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
+                                beta = d$posterior_summary$beta,
+                                ag = "CMV",
+                                ag_species = TRUE,
+                                db = "vdjdb")
 ```
 
 ```{r, fig.width=9, fig.height=7}
-patchwork::wrap_plots(beta_violins$violins, ncol = 2)
+beta_violins
 ```
 
-### Compare $\beta$ between repertoires with `get_beta_scatterplot`
-
-```{r}
-beta_scatterplots <- get_beta_scatterplot(node_summary = gcd$node_summary,
-                                          beta = d$posterior_summary$beta,
-                                          ag_species = c("CMV"),
-                                          db = "vdjdb",
-                                          db_dist = 0,
-                                          chain = "both")
-```
-
-```{r, fig.width=14, fig.height=10}
-patchwork::wrap_plots(beta_scatterplots$scatterplots[[1]], ncol = 3)
-```
 
 ### Posterior predictive checks
 
@@ -620,6 +605,7 @@ community occupancy (DCO):
 \delta^{a-b}_i = \beta^a_i - \beta^b_i
 \end{align}
 ```
+
 Importantly, `r Biocpkg("ClustIRR")` always computes both contrasts ($a$
 vs. $b$ and $b$ vs. $a$): $\delta^{a-b}_i$ and $\delta^{b-a}_i$.
 
@@ -644,6 +630,7 @@ quantifies absolute differences in community probabilities:
 \mathrm{softmax}(\alpha + \beta^b)
 \end{align}
 ```
+
 Again, both contrasts are computed: $\epsilon^{a-b}_i$ and
 $\epsilon^{b-a}_i$.
 

@@ -35,6 +35,5 @@ t <- t[, c("CDR3a", "CDR3b",
            "CDR3_species", "Antigen_species", 
            "Antigen_gene", "Reference")]
 
-
 vdjdb <- t
 save(vdjdb, file = "data/vdjdb.RData", compress = T)
