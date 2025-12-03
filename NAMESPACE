@@ -72,6 +72,7 @@ export(get_ag_gene_hits)
 export(decode_community)
 export(decode_all_communities)
 export(get_community_purity)
+export(get_cosine_similarity)
 
 exportClasses(clust_irr)
 exportMethods(get_clustirr_clust)

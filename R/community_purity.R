@@ -1,5 +1,5 @@
 # Description:
-# compute purity of communitie with respect to a node feature: 
+# compute purity of communities with respect to a node feature: 
 # numeric (e.g., gene expression) via coefficient of variation 
 # or categorical (e.g., tissue type) via gini impurity
 get_community_purity <- function(graph, 
