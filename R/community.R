@@ -33,7 +33,7 @@ detect_communities <- function(graph,
     cm <- get_community_matrix(g = cg$graph)
     
     message("[5/5] extracting nodes")
-    vs <- as_data_frame(x = cg$graph, what = "vertices")
+    vs <- igraph::as_data_frame(x = cg$graph, what = "vertices")
     
     # save configs
     config <- list(input_g = graph, 
@@ -206,7 +206,7 @@ get_community_summary <- function(g,
             return(v)
         }
         
-        es <- as_data_frame(x = sg, what = "edges")
+        es <- igraph::as_data_frame(x = sg, what = "edges")
         l <- lapply(X = 1:nrow(es), es = es, chains, 
                     FUN = function(x, es, chains) {
                         v <- numeric(length = length(chains)*3+1)
@@ -246,9 +246,9 @@ get_community_summary <- function(g,
     es <- data.frame(do.call(rbind, es))
     
     # get community statistics on vertices (wide and tall format)
-    vs_wide <- get_vstats(vs = as_data_frame(x = g, what = "vertices"), 
+    vs_wide <- get_vstats(vs = igraph::as_data_frame(x = g, what = "vertices"), 
                           wide = TRUE)
-    vs_tall <- get_vstats(vs = as_data_frame(x = g, what = "vertices"), 
+    vs_tall <- get_vstats(vs = igraph::as_data_frame(x = g, what = "vertices"), 
                           wide = FALSE)
     
     # merge results
@@ -264,7 +264,7 @@ get_community_summary <- function(g,
 }
 
 get_community_matrix <- function(g) {
-    vs <- as_data_frame(x = g, what = "vertices")
+    vs <- igraph::as_data_frame(x = g, what = "vertices")
     
     cm <- acast(data = vs, formula = community~sample, 
                 value.var = "clone_size", 

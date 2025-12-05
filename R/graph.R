@@ -170,7 +170,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     }
     
     get_v_e <- function(x, what) {
-        return(as_data_frame(x$graph, what = what))
+        return(igraph::as_data_frame(x$graph, what = what))
     }
     
     # check input
@@ -197,8 +197,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     ige <- get_intergraph_edges(igs = igs,
                                 chains = chains,
                                 cores = cores,
-                                trim_flank_aa = control$trim_flank_aa,
-                                gmi = control$gmi)
+                                control = control)
     
     # get the vertices/edges of the graph
     df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
@@ -224,6 +223,12 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     rm(igs, ige)
     # build joint graph
     g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
+    
+    # delete duplicate edges (if any)
+    de <- which_multiple(graph = g)
+    if(any(de)==TRUE) {
+        g <- igraph::delete_edges(graph = g, edges = which(de))
+    }
     
     return(list(graph = g, clust_irrs = clust_irrs, multigraph = TRUE))
 }
@@ -261,7 +266,7 @@ plot_graph <- function(g,
     
     # unpack g
     ig <- g$graph
-    cs <- as_data_frame(ig, what = "vertices")
+    cs <- igraph::as_data_frame(ig, what = "vertices")
     is_jg <- g$multigraph
     
     if(!show_singletons){
@@ -317,8 +322,7 @@ plot_graph <- function(g,
 get_intergraph_edges <- function(igs,
                                  chains, 
                                  cores, 
-                                 trim_flank_aa,
-                                 gmi) {
+                                 control) {
     
     get_bscore <- function(x, o, b, gap_o, gap_e, trim) {
         
@@ -395,7 +399,7 @@ get_intergraph_edges <- function(igs,
         return(res)
     }
     
-    get_blastr <- function(s1, s2, chain, trim_flank_aa, gmi) {
+    get_blastr <- function(s1, s2, chain, control) {
         s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name,
                          len = nchar(s1[, chain]))
         s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name,
@@ -405,7 +409,7 @@ get_intergraph_edges <- function(igs,
                    db = s2,
                    maxAccepts = 10^4,
                    maxRejects = 10^3,
-                   minIdentity = gmi,
+                   minIdentity = control$gmi,
                    alphabet = "protein",
                    output_to_file = FALSE)
         
@@ -442,7 +446,7 @@ get_intergraph_edges <- function(igs,
                        o = o, 
                        gap_o = -10, 
                        gap_e = -4, 
-                       trim = trim_flank_aa,
+                       trim = control$trim_flank_aa,
                        b = data_env[["BLOSUM62"]]))
         
         out <- data.frame(from = s1$name[o$QueryId],
@@ -453,10 +457,23 @@ get_intergraph_edges <- function(igs,
                           ncweight = bs[,3]/bs[,4],
                           max_len = bs[,2],
                           max_clen = bs[,4])
+        
+        # KNN 
+        if(control$knn == TRUE) {
+            out <- out[order(out$nweight, decreasing = TRUE), ]
+            out <- out %>%
+                group_by(from) %>%
+                arrange(desc(nweight), .by_group = TRUE) %>%
+                mutate(rank = row_number()) %>%
+                ungroup()
+            out <- out[out$rank <= control$k,]
+            out$rank <- NULL
+        }
+        
         return(out)
     }
     
-    get_igg <- function(x, ix, igs, trim_flank_aa, gmi) {
+    get_igg <- function(x, ix, igs, control) {
         # prepare pair-rep data
         s1_name <- ix$name_i[x]
         s2_name <- ix$name_j[x]
@@ -468,11 +485,7 @@ get_intergraph_edges <- function(igs,
         message("joining (", x, ") ", s1_name, ' and ', s2_name, "\n")
         
         # run 
-        b <- get_blastr(s1 = s1,
-                        s2 = s2,
-                        chain = chain,
-                        trim_flank_aa = trim_flank_aa,
-                        gmi = gmi)
+        b <- get_blastr(s1 = s1, s2 = s2, chain = chain, control = control)
         
         if(is.null(b)==FALSE && nrow(b)!=0) {
             b$chain <- chain
@@ -485,24 +498,33 @@ get_intergraph_edges <- function(igs,
         return(NULL)
     }
     
-    get_ix <- function(xs, ns, chains) {
-        ix <- c()
-        for(i in 1:(xs-1)) {
-            for(j in (i+1):xs) {
-                for(c in chains) {
-                    ix <- rbind(ix, data.frame(index_i = i, 
-                                               index_j = j,  
-                                               name_i = ns[i],
-                                               name_j = ns[j],
-                                               chain = c))
-                }
+    get_ix <- function(xs, ns, chains, control) {
+        ixs <- c()
+        for(c in chains) {
+            if(control$knn==TRUE) {
+                ix <- expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE)
+                colnames(ix) <- c("index_i", "index_j")
+                ix <- ix[ix$index_i!=ix$index_j,]
+                ix$name_i <- ns[ix$index_i]
+                ix$name_j <- ns[ix$index_j]
+                ix$chain <- c
+                ixs <- rbind(ixs, ix)
+            } else {
+                ix <- subset(expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE), 
+                             Var1 < Var2)
+                colnames(ix) <- c("index_i", "index_j")
+                ix$name_i <- ns[ix$index_i]
+                ix$name_j <- ns[ix$index_j]
+                ix$chain <- c
+                ixs <- rbind(ixs, ix)
             }
         }
         return(ix)
     }
     
     # indices 
-    ix <- get_ix(xs = length(igs), ns = names(igs), chains = chains)
+    ix <- get_ix(xs = length(igs), ns = names(igs), 
+                 chains = chains, control = control)
     # find global similarities between pairs of clone tables
     message("merging clust_irrs: ", nrow(ix), "\n")
     future::plan(future::multisession, workers = I(cores))
@@ -510,8 +532,7 @@ get_intergraph_edges <- function(igs,
                          ix = ix,
                          FUN = get_igg,
                          igs = igs,
-                         trim_flank_aa = trim_flank_aa,
-                         gmi = gmi,
+                         control = control,
                          future.seed = TRUE)
     ige <- do.call(rbind, ige)
     future::plan(future::sequential)

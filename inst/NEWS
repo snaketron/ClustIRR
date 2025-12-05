@@ -48,3 +48,7 @@ Changes in version 1.7.3 (Sep, 2025)
 
 Changes in version 1.7.7 (Sep, 2025)
 + Bugfix, model improvement
+
+Changes in version 1.9.2 (Dec, 2025)
++ K-nearest-neighbor approximation implemented
++ get_cosine_similarity to compare community abundance overlap
