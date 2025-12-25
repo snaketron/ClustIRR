@@ -60,14 +60,17 @@ model {
 generated quantities {
     int y_hat [N, K];
     real log_lik [N];
-    simplex [K] p [N];
+    // simplex [K] p [N];
+    simplex [K] p;
     vector [K_delta] delta [N_delta];
     vector [K_delta] epsilon [N_delta];
     int k = 1;
     
     for(i in 1:N) {
-        p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]));
-        y_hat[i] = multinomial_rng(p[i], sum(y[i]));
+        // p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]));
+        p = dirichlet_rng(kappa*softmax(alpha + beta[i]));
+        // y_hat[i] = multinomial_rng(p[i], sum(y[i]));
+        y_hat[i] = multinomial_rng(p, sum(y[i]));
         log_lik[i] = dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
     }
     

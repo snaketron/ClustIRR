@@ -48,7 +48,7 @@ dco <- function(community_occupancy_matrix,
                   "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
             pars <- c("alpha", "beta", "beta_mu", "beta_sigma", "delta", 
-                      "epsilon", "kappa", "y_hat", "p", "log_lik")
+                      "epsilon", "kappa", "y_hat", "log_lik")
         }
     } 
     else {
@@ -56,7 +56,7 @@ dco <- function(community_occupancy_matrix,
         pars <- c("alpha", "beta", "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
             pars <- c("alpha", "beta", "delta", "epsilon", 
-                      "kappa", "y_hat", "p", "log_lik")
+                      "kappa", "y_hat", "log_lik")
         }
     }
     

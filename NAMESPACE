@@ -62,12 +62,14 @@ importFrom(dplyr, arrange)
 importFrom(dplyr, ungroup)
 importFrom(dplyr, desc)
 importFrom(dplyr, row_number)
+importFrom(dplyr, across)
+
 importFrom(tidyr, complete)
 importFrom(ggforce, geom_sina)
 importFrom(scales, pretty_breaks)
 
 importFrom(gglogo, geom_logo)
-importFrom(gglogo,ggfortify)
+importFrom(gglogo, ggfortify)
 
 importFrom(msa, msaClustalOmega)
 
