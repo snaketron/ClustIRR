@@ -33,7 +33,7 @@ detect_communities <- function(graph,
     cm <- get_community_matrix(g = cg$graph)
     
     message("[5/5] extracting nodes")
-    vs <- as_data_frame(x = cg$graph, what = "vertices")
+    vs <- igraph::as_data_frame(x = cg$graph, what = "vertices")
     
     # save configs
     config <- list(input_g = graph, 
@@ -139,17 +139,56 @@ get_community_detection <- function(g,
     return(list(graph = g, quality = q, modularity = m))
 }
 
-get_community_summary <- function(g, 
-                                  chains) {
+get_community_summary <- function(g, chains) {
     
-    get_vstats <- function(vs, wide) {
+    get_estats <- function(e, v, chains) {
+        e <- merge(x = e, y = v[,c("name", "community")], 
+                   all.x = TRUE, by.x = "from", by.y = "name")
+        e <- merge(x = e, y = v[,c("name", "community", "sample")], 
+                   all.x = TRUE, by.x = "to", by.y = "name")
+        e <- e[e$community.x==e$community.y,]
+        if(nrow(e)==0) {
+            return(NULL)
+        }
         
-        vs$cells <- vs$clone_size
-        vs$clones <- 1
+        e$community <- e$community.x
+        e <- e[,c("community", "chain", "nweight", "ncweight", "w")]
+        e$n_edges <- 1
+        es <- vector(mode = "list", length = length(chains))
+        names(es) <- chains
+        
+        for(c in chains) {
+            x <- e[e$chain == c, ] %>%
+                group_by(community) %>%
+                summarise(across(c(nweight, ncweight, w), mean, na.rm = TRUE),
+                          n_edges = sum(n_edges, na.rm = TRUE), 
+                          .groups = "drop") %>%
+                ungroup()
+            x$chain <- NULL  
+            colnames(x) <- c("community",paste0(c("nweight", "ncweight", 
+                                                  "w", "n_edges"), "_", c))
+            es[[c]] <- x
+        }
+        
+        if(length(chains)>1) {
+            es <- merge(x = es[[chains[1]]], y = es[[chains[2]]], 
+                        by = "community", all = TRUE)
+            es[is.na(es)] <- 0
+            es <- es[,sort(colnames(es))]
+        } else {
+            es <- es[[chains[1]]]
+        }
+        return(es)
+    }
+    
+    get_vstats <- function(v, wide) {
+        
+        v$cells <- v$clone_size
+        v$clones <- 1
         
         if(wide) {
             # number of cells
-            vcells <- aggregate(cells~community+sample, data = vs, FUN = sum)
+            vcells <- aggregate(cells~community+sample, data = v, FUN = sum)
             vcells <- acast(data = vcells, formula = community~sample, 
                             value.var = "cells", fill = 0)
             vcells <- data.frame(vcells)
@@ -160,7 +199,7 @@ get_community_summary <- function(g,
             vcells <- vcells[order(vcells$community, decreasing = FALSE), ]
             
             # number of clones
-            vclones <- aggregate(clones~community+sample, data = vs, FUN = sum)
+            vclones <- aggregate(clones~community+sample, data = v, FUN = sum)
             vclones <- acast(data = vclones, formula = community~sample, 
                              value.var = "clones", fill = 0)
             vclones <- data.frame(vclones)
@@ -175,11 +214,11 @@ get_community_summary <- function(g,
         } 
         else {
             # number of cells
-            vcells <- aggregate(cells~community+sample, data = vs, 
+            vcells <- aggregate(cells~community+sample, data = v, 
                                 FUN = sum, drop = FALSE)
             
             # number of clones
-            vclones <- aggregate(clones~community+sample, data = vs, 
+            vclones <- aggregate(clones~community+sample, data = v, 
                                  FUN = sum, drop = FALSE)
             
             # merge clones and cells
@@ -192,79 +231,19 @@ get_community_summary <- function(g,
         return(vstats)
     }
     
-    get_estats <- function(x, g, chains) {
-        sg <- subgraph(graph = g, vids = which(V(g)$community==x))
-        
-        if(length(sg)==1) {
-            v <- numeric(length = length(chains)*3+1)
-            names(v) <- c("w", 
-                          paste0("ncweight_", chains),
-                          paste0("nweight_", chains),
-                          paste0("n_", chains))
-            v <- c(x, v)
-            names(v)[1] <- "community"
-            return(v)
-        }
-        
-        es <- as_data_frame(x = sg, what = "edges")
-        l <- lapply(X = 1:nrow(es), es = es, chains, 
-                    FUN = function(x, es, chains) {
-                        v <- numeric(length = length(chains)*3+1)
-                        names(v) <- c("w", 
-                                      paste0("ncweight_", chains),
-                                      paste0("nweight_", chains),
-                                      paste0("n_", chains))
-                        for(c in chains) {
-                            i <- which(es$chain[[x]]==c)
-                            if(length(i)==0) {
-                                v[paste0("ncweight_", c)] <- 0
-                                v[paste0("nweight_", c)] <- 0
-                                v[paste0("n_", c)] <- 0
-                            } else {
-                                v["w"] <- es$w[[x]]#[i]
-                                v[paste0("ncweight_", c)] <- es$ncweight[[x]][i]
-                                v[paste0("nweight_", c)] <- es$nweight[[x]][i]
-                                v[paste0("n_", c)] <- 1
-                            }
-                        }
-                        return(v)
-                    })
-        l <- data.frame(do.call(rbind, l))
-        l <- c(x, colMeans(l[,which(regexpr(pattern = "w", 
-                                            text = colnames(l))!=-1)],
-                           na.rm = TRUE),
-               colSums(l[,which(regexpr(pattern = "n\\_", 
-                                        text = colnames(l))!=-1), drop=FALSE]))
-        
-        names(l)[1] <- "community"
-        return(l)
-    } 
-    
-    # get community statistics on edges
-    es <- lapply(X = unique(V(g)$community), g = g, 
-                 chains = chains, FUN = get_estats)
-    es <- data.frame(do.call(rbind, es))
-    
-    # get community statistics on vertices (wide and tall format)
-    vs_wide <- get_vstats(vs = as_data_frame(x = g, what = "vertices"), 
-                          wide = TRUE)
-    vs_tall <- get_vstats(vs = as_data_frame(x = g, what = "vertices"), 
-                          wide = FALSE)
+    b <- igraph::as_data_frame(x = g, what = "both")
+    es <- get_estats(e = b$edges, v = b$vertices, chains = chains)
+    vs <- get_vstats(v = b$vertices, wide = TRUE)
     
     # merge results
-    cs_wide <- merge(x = vs_wide, y = es, by = "community", all.x = TRUE)
-    cs_wide <- cs_wide[order(cs_wide$community, decreasing = FALSE), ]
-    
-    cs_tall <- merge(x = vs_tall, y = es, by = "community", all.x = TRUE)
-    cs_tall <- cs_tall[order(vs_tall$community, decreasing = FALSE), ]
-    
-    
-    return(list(wide = cs_wide, 
-                tall = cs_tall))
+    cs <- merge(x = vs, y = es, by = "community", all.x = TRUE)
+    cs <- cs[order(cs$community, decreasing = FALSE), ]
+    cs[is.na(cs)] <- 0
+    return(cs)
 }
 
 get_community_matrix <- function(g) {
-    vs <- as_data_frame(x = g, what = "vertices")
+    vs <- igraph::as_data_frame(x = g, what = "vertices")
     
     cm <- acast(data = vs, formula = community~sample, 
                 value.var = "clone_size", 
@@ -384,7 +363,6 @@ check_inputs <- function(graph,
         stop("chains must be a character vector")
     }
 }
-
 
 set_chain <- function(graph, chains) {
     i <- which(!E(graph)$chain %in% chains)

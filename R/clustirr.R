@@ -4,7 +4,9 @@ clustirr <- function(s,
                      control = list(gmi = 0.8,
                                     trim_flank_aa = 3,
                                     db_dist = 0,
-                                    db_custom = NULL)) {
+                                    db_custom = NULL,
+                                    knn = FALSE,
+                                    k = 30)) {
     # control check
     control <- get_control(control_in = control)
     
@@ -284,6 +286,18 @@ get_blosum <- function(cdr3, control) {
                             max_len = bs_dup[,2],
                             max_clen = bs_dup[,4])
         out <- rbind(o_dup, out)
+    }
+    
+    # KNN 
+    if(control$knn == TRUE) {
+        out <- out[order(out$nweight, decreasing = TRUE), ]
+        out <- out %>%
+            group_by(from_cdr3) %>%
+            arrange(desc(nweight), .by_group = TRUE) %>%
+            mutate(rank = row_number()) %>%
+            ungroup()
+        out <- out[out$rank <= control$k,]
+        out$rank <- NULL
     }
     
     return(out)

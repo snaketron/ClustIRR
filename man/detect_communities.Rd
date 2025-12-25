@@ -79,7 +79,7 @@ names(gcd)
 head(gcd$community_occupancy_matrix)
 
 # look at the community summary
-head(gcd$community_summary$wide)
+head(gcd$community_summary)
 
 # look at the node summary
 head(gcd$node_summary)

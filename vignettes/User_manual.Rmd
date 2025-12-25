@@ -391,6 +391,7 @@ wrap_plots(honeycomb, nrow = 1)+
     plot_annotation(tag_levels = 'A')
 ```
 
+<<<<<<< HEAD
 ### **Quantitative** similarity between community abundance vectors with `get_cosine_similarity`
 
 In the **heatmap** shown below, we see high cosine similarity (CS) close 
@@ -405,7 +406,7 @@ cos_sim$g
 
 ### Summary of communities is provided in the `detect_communities` outputs  
 
-See the object `community_summary`. In the data.frame `wide` we provide
+See the object `community_summary`. In this data.frame we provide
 community summaries in each community across all TCR repertoires,
 including:
 
@@ -421,18 +422,11 @@ including:
     CDR3$\beta$ sequences
 
 ```{r}
-kable(head(gcd$community_summary$wide), digits = 1, row.names = FALSE)
+kable(head(gcd$community_summary), digits = 1, row.names = FALSE)
 ```
 
-In the data.frame `tall` we provide community and repertoire summaries
-in each row.
 
-```{r}
-kable(head(gcd$community_summary$tall), digits = 1, row.names = FALSE)
-```
-
-Node-specific (TCR clonotype-specific) summaries are provided in
-`node_summary`
+Node-specific (TCR clonotype-specific) summaries are provided in `node_summary`
 
 ```{r}
 kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
