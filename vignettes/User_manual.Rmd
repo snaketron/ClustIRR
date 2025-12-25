@@ -422,7 +422,8 @@ including:
     CDR3$\beta$ sequences
 
 ```{r}
-kable(head(gcd$community_summary), digits = 1, row.names = FALSE)
+kable(head(gcd$community_summary), digits = 1, 
+      row.names = FALSE)
 ```
 
 
@@ -434,20 +435,21 @@ kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
 
 ### Special functions: decoding communities with `decode_community`
 
-Community with ID=8 contains 9 TCR clonotypes. These are connected based on
-their CDR3$\beta$ sequences.
+Community with ID=22 contains 12 TCR clonotypes. These 
+are connected based on their CDR3$\alpha$ and CDR3$\beta$ 
+sequences.
 
 ```{r}
-ns_com_8 <- gcd$node_summary[gcd$node_summary$community == 8, ]
+ns_com <- gcd$node_summary[gcd$node_summary$community == 22, ]
 
-table(ns_com_8$sample)
+table(ns_com$sample)
 ```
 
 We can extract it and visualize it using igraph:
 
 ```{r, fig.width=6, fig.height=4}
 par(mai = c(0,0,0,0))
-plot(subgraph(graph = gcd$graph, vids = which(V(gcd$graph)$community == 8)))
+plot(subgraph(graph = gcd$graph, vids = which(V(gcd$graph)$community == 22)))
 ```
 
 Furthermore, we can "decompose" this graph using `decode_community`
@@ -460,11 +462,11 @@ edge_attr_names(graph = gcd$graph)
 ```
 
 The following edge-filter will instruct ClustIRR to keep edges with with
-edge attributes: nweight $>=$ 8 **AND** ncweight $>=$ 8
+edge attributes: nweight $>=$ 4 **AND** ncweight $>=$ 4
 
 ```{r}
-edge_filter <- rbind(data.frame(name = "nweight", value = 8, operation = ">="),
-                     data.frame(name = "ncweight", value = 8, operation = ">="))
+edge_filter <- rbind(data.frame(name = "nweight", value = 4, operation = ">="),
+                     data.frame(name = "ncweight", value = 4, operation = ">="))
 ```
 
 ```{r}
@@ -481,19 +483,19 @@ node_filter <- data.frame(name = c("TRBV", "TRAV"))
 ```
 
 ```{r}
-c8 <- decode_community(community_id = 8, 
-                         graph = gcd$graph,
-                         edge_filter = edge_filter,
-                         node_filter = node_filter)
+c22 <- decode_community(community_id = 22, 
+                        graph = gcd$graph,
+                        edge_filter = edge_filter,
+                        node_filter = node_filter)
 ```
 
 ```{r, fig.width=6, fig.height=4}
 par(mar = c(0, 0, 0, 0))
-plot(c8$community, vertex.size = 10)
+plot(c22$community, vertex.size = 10)
 ```
 
 ```{r}
-kable(as_data_frame(x = c8$community, what = "vertices")
+kable(as_data_frame(x = c22$community, what = "vertices")
       [, c("name", "component_id", "CDR3b", "TRBV", 
            "TRBJ", "CDR3a", "TRAV", "TRAJ")],
       row.names = FALSE)
@@ -502,7 +504,7 @@ kable(as_data_frame(x = c8$community, what = "vertices")
 ... or we can summarize the properties of each component in the next
 table as rows with:
 
--   component id, community id (=8 in this example because this is what
+-   component id, community id (=22 in this example because this is what
     we selected)
 -   mean edge weights (for all core and complete CDR3 pairs)
 -   number of nodes, number of edges and expected number edges if the
@@ -510,7 +512,7 @@ table as rows with:
 -   diameter of the component
 
 ```{r}
-kable(c8$component_stats, row.names = FALSE)
+kable(c22$component_stats, row.names = FALSE)
 ```
 
 ## **Step 5.** differential community occupancy (DCO) with `dco`
