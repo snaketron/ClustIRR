@@ -328,7 +328,7 @@ The user has the following options:
 -   `resolution`: GCD resolution = 1 (default)
 -   `iterations`: number of clustering iterations (default = 100) to
     ensure robust results
--   `weight`: "ncweight" (default) or "nweight"
+-   `weight`: "nweight" (default) or "ncweight"
 -   `chains`: "CDR3a" or "CDR3b" or c("CDR3a", "CDR3b")
 
 ```{r}
@@ -337,7 +337,7 @@ gcd <- detect_communities(graph = cl$graph,
                           metric = "average",
                           resolution = 1,
                           iterations = 100,
-                          weight = "ncweight",
+                          weight = "nweight",
                           chains = c("CDR3a", "CDR3b"))
 ```
 
@@ -364,7 +364,7 @@ dim(gcd$community_occupancy_matrix)
 head(gcd$community_occupancy_matrix)
 ```
 
-### Visualizing community abundance matrices with `get_honeycombs`
+### **Qualitative** similarity between community abundance vectors with `get_honeycombs`
 
 ```{r, fig.width=5, fig.height=5}
 honeycomb <- get_honeycombs(com = gcd$community_occupancy_matrix)
@@ -391,7 +391,21 @@ wrap_plots(honeycomb, nrow = 1)+
     plot_annotation(tag_levels = 'A')
 ```
 
-Also see `community_summary`. In the data.frame `wide` we provide
+### **Quantitative** similarity between community abundance vectors with `get_cosine_similarity`
+
+In the **heatmap** shown below, we see high cosine similarity (CS) close 
+to 1 between repertoires b vs. c, and lower CS values (0.55 -- 0.75) 
+between a vs. b/c. This is consistent with the qualitative honeycomb plot 
+based analysis.
+
+```{r, fig.width=3, fig.height=2.5}
+cos_sim <- get_cosine_similarity(com = gcd$community_occupancy_matrix)
+cos_sim$g
+```
+
+### Summary of communities is provided in the `detect_communities` outputs  
+
+See the object `community_summary`. In the data.frame `wide` we provide
 community summaries in each community across all TCR repertoires,
 including:
 
