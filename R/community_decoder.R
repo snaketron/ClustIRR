@@ -3,8 +3,8 @@
 # find components, cliques, subgraphs in a community
 decode_community <- function(community_id,
                              graph, 
-                             edge_filter,
-                             node_filter) {
+                             edge_filter = NULL,
+                             node_filter = NULL) {
     
     check_graph(graph = graph)
     check_community_id(graph = graph, community_id = community_id)
@@ -22,15 +22,15 @@ decode_community <- function(community_id,
 }
 
 decode_all_communities <- function(graph, 
-                                   edge_filter, 
-                                   node_filter) {
+                                   edge_filter = NULL, 
+                                   node_filter = NULL) {
     check_graph(graph = graph)
     check_edge_filter(edge_filter = edge_filter, graph = graph)
     check_node_filter(node_filter = node_filter, graph = graph)
     check_node_and_edges_filter(node_filter = node_filter,
                                 edge_filter = edge_filter)
     
-    cs <- V(graph)$community
+    cs <- unique(V(graph)$community)
     o <- lapply(X = cs, 
                 FUN = decode_community, 
                 graph = graph, 
@@ -132,7 +132,7 @@ check_community_id <- function(community_id,
 
 check_edge_filter <- function(edge_filter,
                               graph) {
-    if(missing(edge_filter)) {
+    if(missing(edge_filter)|is.null(edge_filter)) {
         warning("no edge_filter")
     } 
     else {
@@ -170,7 +170,7 @@ check_edge_filter <- function(edge_filter,
 
 check_node_filter <- function(node_filter, 
                               graph) {
-    if(missing(node_filter)) {
+    if(missing(node_filter)|is.null(node_filter)) {
         warning("no node_filter")
     } 
     else {

@@ -328,7 +328,7 @@ The user has the following options:
 -   `resolution`: GCD resolution = 1 (default)
 -   `iterations`: number of clustering iterations (default = 100) to
     ensure robust results
--   `weight`: "ncweight" (default) or "nweight"
+-   `weight`: "nweight" (default) or "ncweight"
 -   `chains`: "CDR3a" or "CDR3b" or c("CDR3a", "CDR3b")
 
 ```{r}
@@ -337,7 +337,7 @@ gcd <- detect_communities(graph = cl$graph,
                           metric = "average",
                           resolution = 1,
                           iterations = 100,
-                          weight = "ncweight",
+                          weight = "nweight",
                           chains = c("CDR3a", "CDR3b"))
 ```
 
@@ -364,7 +364,7 @@ dim(gcd$community_occupancy_matrix)
 head(gcd$community_occupancy_matrix)
 ```
 
-### Visualizing community abundance matrices with `get_honeycombs`
+### **Qualitative** similarity between community abundance vectors with `get_honeycombs`
 
 ```{r, fig.width=5, fig.height=5}
 honeycomb <- get_honeycombs(com = gcd$community_occupancy_matrix)
@@ -391,7 +391,22 @@ wrap_plots(honeycomb, nrow = 1)+
     plot_annotation(tag_levels = 'A')
 ```
 
-Also see `community_summary`. In the data.frame `wide` we provide
+<<<<<<< HEAD
+### **Quantitative** similarity between community abundance vectors with `get_cosine_similarity`
+
+In the **heatmap** shown below, we see high cosine similarity (CS) close 
+to 1 between repertoires b vs. c, and lower CS values (0.55 -- 0.75) 
+between a vs. b/c. This is consistent with the qualitative honeycomb plot 
+based analysis.
+
+```{r, fig.width=3, fig.height=2.5}
+cos_sim <- get_cosine_similarity(com = gcd$community_occupancy_matrix)
+cos_sim$g
+```
+
+### Summary of communities is provided in the `detect_communities` outputs  
+
+See the object `community_summary`. In this data.frame we provide
 community summaries in each community across all TCR repertoires,
 including:
 
@@ -407,18 +422,12 @@ including:
     CDR3$\beta$ sequences
 
 ```{r}
-kable(head(gcd$community_summary$wide), digits = 1, row.names = FALSE)
+kable(head(gcd$community_summary), digits = 1, 
+      row.names = FALSE)
 ```
 
-In the data.frame `tall` we provide community and repertoire summaries
-in each row.
 
-```{r}
-kable(head(gcd$community_summary$tall), digits = 1, row.names = FALSE)
-```
-
-Node-specific (TCR clonotype-specific) summaries are provided in
-`node_summary`
+Node-specific (TCR clonotype-specific) summaries are provided in `node_summary`
 
 ```{r}
 kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
@@ -426,20 +435,21 @@ kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
 
 ### Special functions: decoding communities with `decode_community`
 
-Community with ID=8 contains 9 TCR clonotypes. These are connected based on
-their CDR3$\beta$ sequences.
+Community with ID=22 contains 12 TCR clonotypes. These 
+are connected based on their CDR3$\alpha$ and CDR3$\beta$ 
+sequences.
 
 ```{r}
-ns_com_8 <- gcd$node_summary[gcd$node_summary$community == 8, ]
+ns_com <- gcd$node_summary[gcd$node_summary$community == 22, ]
 
-table(ns_com_8$sample)
+table(ns_com$sample)
 ```
 
 We can extract it and visualize it using igraph:
 
 ```{r, fig.width=6, fig.height=4}
 par(mai = c(0,0,0,0))
-plot(subgraph(graph = gcd$graph, vids = which(V(gcd$graph)$community == 8)))
+plot(subgraph(graph = gcd$graph, vids = which(V(gcd$graph)$community == 22)))
 ```
 
 Furthermore, we can "decompose" this graph using `decode_community`
@@ -452,11 +462,11 @@ edge_attr_names(graph = gcd$graph)
 ```
 
 The following edge-filter will instruct ClustIRR to keep edges with with
-edge attributes: nweight $>=$ 8 **AND** ncweight $>=$ 8
+edge attributes: nweight $>=$ 4 **AND** ncweight $>=$ 4
 
 ```{r}
-edge_filter <- rbind(data.frame(name = "nweight", value = 8, operation = ">="),
-                     data.frame(name = "ncweight", value = 8, operation = ">="))
+edge_filter <- rbind(data.frame(name = "nweight", value = 4, operation = ">="),
+                     data.frame(name = "ncweight", value = 4, operation = ">="))
 ```
 
 ```{r}
@@ -473,19 +483,19 @@ node_filter <- data.frame(name = c("TRBV", "TRAV"))
 ```
 
 ```{r}
-c8 <- decode_community(community_id = 8, 
-                         graph = gcd$graph,
-                         edge_filter = edge_filter,
-                         node_filter = node_filter)
+c22 <- decode_community(community_id = 22, 
+                        graph = gcd$graph,
+                        edge_filter = edge_filter,
+                        node_filter = node_filter)
 ```
 
 ```{r, fig.width=6, fig.height=4}
 par(mar = c(0, 0, 0, 0))
-plot(c8$community, vertex.size = 10)
+plot(c22$community, vertex.size = 10)
 ```
 
 ```{r}
-kable(as_data_frame(x = c8$community, what = "vertices")
+kable(as_data_frame(x = c22$community, what = "vertices")
       [, c("name", "component_id", "CDR3b", "TRBV", 
            "TRBJ", "CDR3a", "TRAV", "TRAJ")],
       row.names = FALSE)
@@ -494,7 +504,7 @@ kable(as_data_frame(x = c8$community, what = "vertices")
 ... or we can summarize the properties of each component in the next
 table as rows with:
 
--   component id, community id (=8 in this example because this is what
+-   component id, community id (=22 in this example because this is what
     we selected)
 -   mean edge weights (for all core and complete CDR3 pairs)
 -   number of nodes, number of edges and expected number edges if the
@@ -502,7 +512,7 @@ table as rows with:
 -   diameter of the component
 
 ```{r}
-kable(c8$component_stats, row.names = FALSE)
+kable(c22$component_stats, row.names = FALSE)
 ```
 
 ## **Step 5.** differential community occupancy (DCO) with `dco`

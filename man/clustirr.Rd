@@ -12,7 +12,9 @@ clustirr(s,
          control = list(gmi = 0.8,
                         trim_flank_aa = 3,
                         db_dist = 0,
-                        db_custom = NULL))
+                        db_custom = NULL,
+                        knn = FALSE,
+                        k = 30))
 }
 \arguments{
 \item{s}{a data.frame consisting of one or more IRRs. Each row is a clone
@@ -58,7 +60,13 @@ and \code{McPAS-TCR}.
 \code{s} and from a database (e.g. VDJdb). If a particular distance is 
 smaller than or equal to \code{db_dist} (default = 0), then we annotate 
 the CDR3 from \code{s} with the specificity of the database CDR3 sequence.
-}
+\item \code{knn and k}: Should ClustIRR use a k-nearest-neighbor (KNN)
+approach to construct the graphs? The default is \code{knn = FALSE}.
+If \code{knn = TRUE}, \code{k} specifies the maximum number of neighbors
+each node can have per chain. For example, with paired-chain data and
+\code{k = 1}, a node can have at most two neighbors (one per chain).
+If the analysis involves graph joining, then for each pair of graphs
+a node may have up to \code{k} neighbors per chain.}
 }
 }
 \value{

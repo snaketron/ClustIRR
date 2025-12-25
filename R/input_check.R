@@ -6,6 +6,7 @@ input_check <- function(s, meta, cores = cores, control) {
   check_gmi(control$gmi)
   check_db_custom(db_custom = control$db_custom)
   check_db_dist(db_dist = control$db_dist)
+  check_knn(knn = control$knn, k = control$k)
   check_meta(s = s, meta = meta)
   check_cores(cores = cores)
 }
@@ -82,6 +83,19 @@ check_gmi <- function(gmi) {
   check_probability(gmi)
 }
 
+check_knn <- function(knn, k) {
+    check_missing(knn)
+    check_singlevalue(knn)
+    check_logical(knn)
+    
+    check_missing(k)
+    check_infinity(k)
+    check_numeric(k)
+    check_singlevalue(k)
+    check_wholenumber(k)
+    check_lessthan(k, 1)
+}
+
 # Description:
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
@@ -89,7 +103,9 @@ get_control <- function(control_in) {
   control = list(gmi = 0.8,
                  trim_flank_aa = 3,
                  db_dist = 0,
-                 db_custom = NULL)
+                 db_custom = NULL,
+                 knn = FALSE,
+                 k = 30)
   
   # if missing control_in -> use default values
   if(missing(control_in) || is.null(control_in)) {
