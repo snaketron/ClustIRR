@@ -391,9 +391,8 @@ wrap_plots(honeycomb, nrow = 1)+
     plot_annotation(tag_levels = 'A')
 ```
 
-Also see `community_summary`. In the data.frame `wide` we provide
-community summaries in each community across all TCR repertoires,
-including:
+Also see `community_summary`. In the data.frame we provide community 
+summaries in each community across all TCR repertoires, including:
 
 -   `clones_a`, `clone_b`, `clone_c`, `clones_n`: the frequency of
     clonotypes in the community coming from repertoire `a`, `b`, `c` and in
@@ -407,18 +406,11 @@ including:
     CDR3$\beta$ sequences
 
 ```{r}
-kable(head(gcd$community_summary$wide), digits = 1, row.names = FALSE)
+kable(head(gcd$community_summary), digits = 1, row.names = FALSE)
 ```
 
-In the data.frame `tall` we provide community and repertoire summaries
-in each row.
 
-```{r}
-kable(head(gcd$community_summary$tall), digits = 1, row.names = FALSE)
-```
-
-Node-specific (TCR clonotype-specific) summaries are provided in
-`node_summary`
+Node-specific (TCR clonotype-specific) summaries are provided in `node_summary`
 
 ```{r}
 kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
