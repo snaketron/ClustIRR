@@ -341,13 +341,22 @@ get_posterior_summaries <- function(cm,
         return(s)
     }
     
-    post_kappa <- function(f) {
+    post_kappa <- function(f, has_groups) {
         s <- data.frame(summary(f, par = "kappa")$summary)
         s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
         colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
-        
         s$par <- rownames(s)
-        return(s)
+        
+        if(has_groups==FALSE) {
+            return(s)
+        } 
+        else {
+            s$i <- 1:nrow(s)
+            m <- rownames(s)
+            m <- gsub(pattern = "kappa\\[|\\]", replacement = '', x = m)
+            s$g <- as.numeric(m)
+            return(s)
+        }
     }
     
     post_betamu <- function(f, has_groups) {
@@ -536,26 +545,24 @@ get_posterior_summaries <- function(cm,
               beta_sigma = post_betasigma(f = f, has_groups = has_groups),
               alpha = post_alpha(f = f),
               y_hat = post_yhat(f = f, samples = samples),
-              kappa = post_kappa(f = f))
+              kappa = post_kappa(f = f, has_groups = has_groups))
     
     # compute delta
     if(has_groups==FALSE) {
-        delta <- post_delta(f = f, samples = samples, 
-                            compute_delta = compute_delta, 
-                            par = "delta", pmaxv = 0)
-        epsilon <- post_delta(f = f, samples = samples,
-                              compute_delta = compute_delta, 
-                              par = "epsilon", pmaxv = 0)
+        o[["delta"]] <- post_delta(f = f, samples = samples, 
+                                   compute_delta = compute_delta, 
+                                   par = "delta", pmaxv = 0)
+        o[["epsilon"]] <- post_delta(f = f, samples = samples,
+                                     compute_delta = compute_delta, 
+                                     par = "epsilon", pmaxv = 0)
     } else {
-        delta <- post_deltamu(f = f, groups = groups, 
-                              compute_delta = compute_delta, 
-                              par = "delta", pmaxv = 0)
-        epsilon <- post_deltamu(f = f, groups = groups,
-                                compute_delta = compute_delta, 
-                                par = "epsilon", pmaxv = 0)
+        o[["delta"]] <- post_deltamu(f = f, groups = groups, 
+                                     compute_delta = compute_delta, 
+                                     par = "delta", pmaxv = 0)
+        o[["epsilon"]] <- post_deltamu(f = f, groups = groups,
+                                       compute_delta = compute_delta, 
+                                       par = "epsilon", pmaxv = 0)
     }
-    o[["delta"]] <- delta
-    o[["epsilon"]] <- epsilon
     o$y_hat$y_obs <- c(cm)
     
     return(o)

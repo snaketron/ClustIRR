@@ -391,7 +391,6 @@ wrap_plots(honeycomb, nrow = 1)+
     plot_annotation(tag_levels = 'A')
 ```
 
-<<<<<<< HEAD
 ### **Quantitative** similarity between community abundance vectors with `get_cosine_similarity`
 
 In the **heatmap** shown below, we see high cosine similarity (CS) close 
