@@ -29,7 +29,7 @@ transformed data {
 
 
 parameters {
-    real <lower=0> kappa;
+    vector <lower=0> [max(G)] kappa;
     vector [K] alpha;
     vector [K] beta_mu [max(G)];
     vector <lower=0> [max(G)] beta_sigma;
@@ -46,39 +46,36 @@ transformed parameters {
 
 model {
     target += cauchy_lpdf(beta_sigma|0, 1);
-    target += exponential_lpdf(2+kappa|0.01);
     target += normal_lpdf(alpha|0,3);
     for(j in 1:max(G)) {
+        target += exponential_lpdf(2+kappa[j]|0.01);
         target += normal_lpdf(beta_mu[j]|0, 1);
     }
     for(i in 1:N) {
         target += std_normal_lpdf(beta_z[i]);
-        target += dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
+        target += dm_lpmf(y[i]|kappa[G[i]]*softmax(alpha + beta[i]));
     }
 }
 
 generated quantities {
     int y_hat [N, K];
     real log_lik [N];
-    // simplex [K] p [N];
     simplex [K] p;
     vector [K_delta] delta [N_delta];
     vector [K_delta] epsilon [N_delta];
     int k = 1;
     
     for(i in 1:N) {
-        // p[i] = dirichlet_rng(kappa*softmax(alpha + beta[i]));
-        p = dirichlet_rng(kappa*softmax(alpha + beta[i]));
-        // y_hat[i] = multinomial_rng(p[i], sum(y[i]));
+        p = dirichlet_rng(kappa[G[i]]*softmax(alpha + beta[i]));
         y_hat[i] = multinomial_rng(p, sum(y[i]));
-        log_lik[i] = dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
+        log_lik[i] = dm_lpmf(y[i]|kappa[G[i]]*softmax(alpha + beta[i]));
     }
     
     if(compute_delta==1) {
         for(i in 1:max(G)) {
             for(j in (i+1):max(G)) {
                 delta[k] = beta_mu[i] - beta_mu[j];
-                epsilon[k] = softmax(alpha+beta[i]) - softmax(alpha+beta[j]);
+                epsilon[k] = softmax(alpha+beta_mu[i]) - softmax(alpha+beta_mu[j]);
                 k += 1;
             }
         }

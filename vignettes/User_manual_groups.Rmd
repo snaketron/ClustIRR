@@ -1,0 +1,96 @@
+---
+title: "Finding **biological condition**-specific changes in T- and B-cell 
+receptor repertoires with ClustIRR"
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{Finding **biological condition**-specific changes 
+    in T- and B-cell receptor repertoires with ClustIRR}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(comment = "", warning = FALSE, message = FALSE)
+```
+
+```{r}
+library(knitr)
+library(ClustIRR)
+library(ggplot2)
+library(patchwork)
+library(ggforce)
+theme_set(new = theme_bw(base_size = 10))
+```
+
+```{r}
+data("D2", package = "ClustIRR")
+```
+
+```{r}
+cl <- clustirr(s = D2, control = list(gmi = 0.8))
+```
+
+
+```{r}
+gcd <- detect_communities(graph = cl$graph, 
+                          algorithm = "leiden",
+                          metric = "average",
+                          resolution = 1,
+                          iterations = 100,
+                          weight = "nweight",
+                          chains = c("CDR3a", "CDR3b"))
+```
+
+
+
+```{r}
+dim(gcd$community_occupancy_matrix)
+```
+
+
+```{r, fig.width=8, fig.height=9}
+honeycomb <- get_honeycombs(com = gcd$community_occupancy_matrix)
+wrap_plots(honeycomb, nrow = 5, ncol = 3)+
+    plot_annotation(tag_levels = 'A')
+```
+
+
+
+```{r}
+d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
+         groups = c(1, 1, 1, 2, 2, 2),
+         mcmc_control = list(mcmc_warmup = 300,
+                             mcmc_iter = 600,
+                             mcmc_chains = 2,
+                             mcmc_cores = 1,
+                             mcmc_algorithm = "NUTS",
+                             adapt_delta = 0.9,
+                             max_treedepth = 10))
+```
+
+
+
+```{r, fig.width=6, fig.height=3}
+ggplot(data = d$posterior_summary$beta)+
+    geom_sina(aes(x = sample, y = mean))|
+    ggplot(data = d$posterior_summary$beta_mu)+
+    geom_sina(aes(x = as.character(g), y = mean))
+```
+
+
+```{r, fig.width=7, fig.height=3}
+ggplot(data = d$posterior_summary$epsilon)+
+    facet_wrap(facets = ~contrast, ncol = 2)+
+    geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
+                  col = "lightgray", width = 0)+
+    geom_point(aes(x = community, y = mean), shape = 21, fill = "black", 
+               stroke = 0.4, col = "white", size = 1.25)+
+    theme(legend.position = "top")+
+    ylab(label = expression(delta))+
+    scale_x_continuous(expand = c(0,0))
+```
+
