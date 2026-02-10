@@ -359,6 +359,27 @@ get_posterior_summaries <- function(cm,
         }
     }
     
+    post_betamu_sigma <- function(f, has_groups) {
+        if(!has_groups) {
+            return(NULL)
+        }
+        s <- data.frame(summary(f, par = "beta_mu_sigma")$summary)
+        s <- s[, c("mean", "X50.", "X2.5.", "X97.5.", "n_eff", "Rhat")]
+        colnames(s) <- c("mean", "median", "L95", "H95", "n_eff", "Rhat")
+        s$par <- rownames(s)
+        
+        if(has_groups==FALSE) {
+            return(s)
+        } 
+        else {
+            s$i <- 1:nrow(s)
+            m <- rownames(s)
+            m <- gsub(pattern = "kappa\\[|\\]", replacement = '', x = m)
+            s$g <- as.numeric(m)
+            return(s)
+        }
+    }
+    
     post_betamu <- function(f, has_groups) {
         if(has_groups==FALSE) {
             return(NA)
@@ -545,7 +566,8 @@ get_posterior_summaries <- function(cm,
               beta_sigma = post_betasigma(f = f, has_groups = has_groups),
               alpha = post_alpha(f = f),
               y_hat = post_yhat(f = f, samples = samples),
-              kappa = post_kappa(f = f, has_groups = has_groups))
+              kappa = post_kappa(f = f, has_groups = has_groups),
+              betamu_sigma = post_betamu_sigma(f = f, has_groups = has_groups))
     
     # compute delta
     if(has_groups==FALSE) {
