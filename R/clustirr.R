@@ -219,8 +219,8 @@ get_blosum <- function(cdr3, control) {
     
     # remove self-hits
     o <- o[o$QueryId!=o$TargetId,]
-    # if empty stop
-    if(nrow(o)==0) {
+    # if empty and no duplicates found stop
+    if(nrow(o)==0 & length(cdr3_dup) < 1) {
         return(NULL)
     }
     
@@ -234,8 +234,8 @@ get_blosum <- function(cdr3, control) {
     if(length(j)!=0) {
         o <- o[-j,]
     }
-    # if empty stop
-    if(nrow(o)==0) {
+    # if empty and no duplicates found stop
+    if(nrow(o)==0 & length(cdr3_dup) < 1) {
         return(NULL)
     }
     
@@ -250,7 +250,8 @@ get_blosum <- function(cdr3, control) {
     # get blosum matrix
     data_env <- get_blosum62()
     
-    # compute BLSOUM62 scores
+    # if hits found, compute BLSOUM62 scores
+    if(nrow(o)>0) {
     bs <- t(vapply(X = 1:nrow(o), 
                    FUN.VALUE = numeric(4),
                    FUN = get_bscore, 
@@ -268,11 +269,12 @@ get_blosum <- function(cdr3, control) {
                       ncweight = bs[,3]/bs[,4],
                       max_len = bs[,2],
                       max_clen = bs[,4])
+    }
     
     # compute BLSOUM62 scores between duplicates -> more efficient
     if(length(cdr3_dup)!=0) {
-        bs_dup <- t(vapply(X = cdr3_dup, 
-                           FUN = get_bscore_dup, 
+        bs_dup <- t(vapply(X = cdr3_dup,
+                           FUN = get_bscore_dup,
                            trim = control$trim_flank_aa,
                            b = data_env[["BLOSUM62"]],
                            FUN.VALUE = numeric(4)))
@@ -285,7 +287,12 @@ get_blosum <- function(cdr3, control) {
                             ncweight = bs_dup[,3]/bs_dup[,4],
                             max_len = bs_dup[,2],
                             max_clen = bs_dup[,4])
-        out <- rbind(o_dup, out)
+        # combine with out, if existing
+        if(exists("out")) { 
+            out <- rbind(o_dup, out) }
+        else {
+            out <- o_dup
+            }
     }
     
     # KNN 
