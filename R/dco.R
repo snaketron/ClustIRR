@@ -45,10 +45,10 @@ dco <- function(community_occupancy_matrix,
     if(has_groups) {
         model <- stanmodels$dmh
         pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
-                  "kappa", "y_hat", "log_lik")
+                  "kappa", "beta_mu_sigma", "y_hat", "log_lik")
         if(compute_delta == 1) {
             pars <- c("alpha", "beta", "beta_mu", "beta_sigma", "delta", 
-                      "epsilon", "kappa", "y_hat", "log_lik")
+                      "epsilon", "kappa", "beta_mu_sigma", "y_hat", "log_lik")
         }
     } 
     else {
