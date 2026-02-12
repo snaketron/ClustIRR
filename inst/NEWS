@@ -56,3 +56,8 @@ Changes in version 1.9.2 (Dec, 2025)
 Changes in version 1.9.9 (Feb, 2026)
 + get_blosum() bugfix -> identical CDR3 did not form edges in certain cases
 + added test-get_blosum.R 
+
+Changes in version 1.9.10 (Feb, 2026)
++ get_joint_graph() bugfixes 
+ * when clustering both CDR3a/CDR3b, CDR3b edges between-repertoires got deleted
+ * one between-repertoire edge between two clones with double edges was deleted

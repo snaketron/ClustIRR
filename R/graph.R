@@ -211,8 +211,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
         if(is.null(ige)==FALSE && nrow(ige)!=0) {
             df_e <- rbind(df_e[, cols], ige[, cols])
         }
-    } 
-    else {
+    } else {
         if(is.null(ige)==FALSE && nrow(ige)!=0) {
             df_e <- ige[, cols]
         }
@@ -221,14 +220,16 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     message("[3/3] optimizing joint graph... \n")
     # clean unused vars
     rm(igs, ige)
+    
+    # delete duplicated edges, excluding those between different chains
+    if("chain" %in% names(df_e)) {
+        df_e <- df_e[!duplicated(df_e[, c("from", "to", "chain")]), ]
+    } else {
+        df_e <- df_e[!duplicated(df_e[, c("from", "to")]), ]
+    }
+    
     # build joint graph
     g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
-    
-    # delete duplicate edges (if any)
-    de <- which_multiple(graph = g)
-    if(any(de)==TRUE) {
-        g <- igraph::delete_edges(graph = g, edges = which(de))
-    }
     
     return(list(graph = g, clust_irrs = clust_irrs, multigraph = TRUE))
 }
@@ -499,7 +500,7 @@ get_intergraph_edges <- function(igs,
     }
     
     get_ix <- function(xs, ns, chains, control) {
-        ixs <- c()
+        ix_s <- c()
         for(c in chains) {
             if(control$knn==TRUE) {
                 ix <- expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE)
@@ -508,7 +509,7 @@ get_intergraph_edges <- function(igs,
                 ix$name_i <- ns[ix$index_i]
                 ix$name_j <- ns[ix$index_j]
                 ix$chain <- c
-                ixs <- rbind(ixs, ix)
+                ix_s <- rbind(ix_s, ix)
             } else {
                 ix <- subset(expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE), 
                              Var1 < Var2)
@@ -516,10 +517,10 @@ get_intergraph_edges <- function(igs,
                 ix$name_i <- ns[ix$index_i]
                 ix$name_j <- ns[ix$index_j]
                 ix$chain <- c
-                ixs <- rbind(ixs, ix)
+                ix_s <- rbind(ix_s, ix)
             }
         }
-        return(ix)
+        return(ix_s)
     }
     
     # indices 
