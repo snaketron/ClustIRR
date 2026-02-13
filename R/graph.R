@@ -222,11 +222,16 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     rm(igs, ige)
     
     # delete duplicated edges, excluding those between different chains
-    if("chain" %in% names(df_e)) {
-        df_e <- df_e[!duplicated(df_e[, c("from", "to", "chain")]), ]
+    if ("chain" %in% names(df_e)) {
+        key <- data.frame(pmin(df_e$from, df_e$to), 
+                          pmax(df_e$from, df_e$to), 
+                          df_e$chain)
     } else {
-        df_e <- df_e[!duplicated(df_e[, c("from", "to")]), ]
+        key <- data.frame(pmin(df_e$from, df_e$to), 
+                          pmax(df_e$from, df_e$to))
     }
+    
+    df_e <- df_e[!duplicated(key), ]
     
     # build joint graph
     g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
