@@ -70,4 +70,4 @@ LinkingTo:
     StanHeaders (>= 2.18.0)
 Remotes: 
     heike/gglogo,
-    url::https://cran.r-project.org/src/contrib/Archive/blaster/blaster_1.0.6.tar.gz
+    blaster=url::https://cran.r-project.org/src/contrib/Archive/blaster/blaster_1.0.6.tar.gz
