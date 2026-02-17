@@ -218,20 +218,13 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     }
     
     message("[3/3] optimizing joint graph... \n")
+    # delete duplicate edges (if any)
+    key <- data.frame(pmin(df_e$from, df_e$to), 
+                      pmax(df_e$from, df_e$to), df_e$chain)
+    df_e <- df_e[!duplicated(key), ]
+    
     # clean unused vars
     rm(igs, ige)
-    
-    # delete duplicated edges, excluding those between different chains
-    if ("chain" %in% names(df_e)) {
-        key <- data.frame(pmin(df_e$from, df_e$to), 
-                          pmax(df_e$from, df_e$to), 
-                          df_e$chain)
-    } else {
-        key <- data.frame(pmin(df_e$from, df_e$to), 
-                          pmax(df_e$from, df_e$to))
-    }
-    
-    df_e <- df_e[!duplicated(key), ]
     
     # build joint graph
     g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
@@ -525,7 +518,7 @@ get_intergraph_edges <- function(igs,
                 ix_s <- rbind(ix_s, ix)
             }
         }
-        return(ix_s)
+        return(ixs)
     }
     
     # indices 
