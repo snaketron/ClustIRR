@@ -72,3 +72,32 @@ config_vertices_plot <- function(g, is_jg, node_opacity) {
   
   return(g)
 }
+
+
+save_graph <- function(graph, file_name, output_folder){
+    
+    graph$width <- "100%"
+    graph$height <- "100vh"
+    
+    saveWidget(
+        widget = graph, 
+        file = paste0(file_name, ".html"), 
+        selfcontained = TRUE, 
+        background = "white",
+        title = file_name
+    )
+    
+    base_file <- paste0(file_name, ".html")
+    target_path <- file.path(output_folder, base_file)
+    
+    # this step is necessary to ensure self-contained files
+    # if we put the full path in saveWidget, it will not delete the files folder
+    if(dir.exists(output_folder)){
+        file.rename(from = base_file, to = target_path)
+        message(file_name, " exported to: ", target_path)
+    } else {
+        message("Directory '", output_folder, "' does not exist. \n",
+                "File saved to current working directory as: ", base_file)
+    }
+    
+}
