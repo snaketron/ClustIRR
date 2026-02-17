@@ -211,8 +211,7 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
         if(is.null(ige)==FALSE && nrow(ige)!=0) {
             df_e <- rbind(df_e[, cols], ige[, cols])
         }
-    } 
-    else {
+    } else {
         if(is.null(ige)==FALSE && nrow(ige)!=0) {
             df_e <- ige[, cols]
         }
@@ -499,7 +498,7 @@ get_intergraph_edges <- function(igs,
     }
     
     get_ix <- function(xs, ns, chains, control) {
-        ixs <- c()
+        ix_s <- c()
         for(c in chains) {
             if(control$knn==TRUE) {
                 ix <- expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE)
@@ -508,7 +507,7 @@ get_intergraph_edges <- function(igs,
                 ix$name_i <- ns[ix$index_i]
                 ix$name_j <- ns[ix$index_j]
                 ix$chain <- c
-                ixs <- rbind(ixs, ix)
+                ix_s <- rbind(ix_s, ix)
             } else {
                 ix <- subset(expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE), 
                              Var1 < Var2)
@@ -516,7 +515,7 @@ get_intergraph_edges <- function(igs,
                 ix$name_i <- ns[ix$index_i]
                 ix$name_j <- ns[ix$index_j]
                 ix$chain <- c
-                ixs <- rbind(ixs, ix)
+                ix_s <- rbind(ix_s, ix)
             }
         }
         return(ixs)
