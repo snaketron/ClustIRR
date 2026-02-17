@@ -219,16 +219,16 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     }
     
     message("[3/3] optimizing joint graph... \n")
+    # delete duplicate edges (if any)
+    key <- data.frame(pmin(df_e$from, df_e$to), 
+                      pmax(df_e$from, df_e$to), df_e$chain)
+    df_e <- df_e[!duplicated(key), ]
+    
     # clean unused vars
     rm(igs, ige)
+    
     # build joint graph
     g <- graph_from_data_frame(df_e, directed = FALSE, vertices = df_v)
-    
-    # delete duplicate edges (if any)
-    de <- which_multiple(graph = g)
-    if(any(de)==TRUE) {
-        g <- igraph::delete_edges(graph = g, edges = which(de))
-    }
     
     return(list(graph = g, clust_irrs = clust_irrs, multigraph = TRUE))
 }
@@ -519,7 +519,7 @@ get_intergraph_edges <- function(igs,
                 ixs <- rbind(ixs, ix)
             }
         }
-        return(ix)
+        return(ixs)
     }
     
     # indices 
