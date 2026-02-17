@@ -42,10 +42,10 @@ in the CDR3 sequence, with optional gap removal based on the `gap_remove_prob`.
 \examples{
 # Create a mock node summary data frame
 node_summary <- data.frame(
-  community = rep(1, 5),
+  community = rep(1, 4),
   CDR3a = c("CASSLAGTDTQYF", "CASSLAGTDTQYF", "CASSLAGTDTQYF", "CASSLAGTDTQYF"),
   CDR3b = c("CASSLAGTDTQYF", "CASSLAGTDTQYF", "CASSLAGTDTQYF", "CASSLAGTDTQYF"),
-  clone_size = c(100, 150, 200, 50, 300)
+  clone_size = c(100, 150, 200, 50)
 )
 
 # Call the function to generate motif logos for community 1

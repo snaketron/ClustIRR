@@ -39,7 +39,7 @@ A list containing two elements:
 }
 \examples{
 # Create a sample matrix
-mat <- matrix(rpois(n=30, lambda = 4), nrow = 5, 
+mat <- matrix(rpois(n=15, lambda = 4), nrow = 5, 
               dimnames = list(NULL, c("A", "B", "C")))
 
 # Compute similarities and plot

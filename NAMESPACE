@@ -68,8 +68,6 @@ importFrom(tidyr, complete)
 importFrom(ggforce, geom_sina)
 importFrom(scales, pretty_breaks)
 
-importFrom(gglogo)
-
 importFrom(msa, msaClustalOmega)
 importFrom(Biostrings, AAStringSet)
 

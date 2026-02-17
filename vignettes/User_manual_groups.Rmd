@@ -4,8 +4,7 @@ receptor repertoires with ClustIRR"
 output:
     BiocStyle::html_document
 vignette: >
-    %\VignetteIndexEntry{Finding **biological condition**-specific changes 
-    in T- and B-cell receptor repertoires with ClustIRR}
+    %\VignetteIndexEntry{Finding biological condition-specific changes in T- and B-cell receptor repertoires with ClustIRR}
     %\VignetteEncoding{UTF-8}
     %\VignetteEngine{knitr::rmarkdown}
 editor_options: 
