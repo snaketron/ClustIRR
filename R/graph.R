@@ -498,7 +498,7 @@ get_intergraph_edges <- function(igs,
     }
     
     get_ix <- function(xs, ns, chains, control) {
-        ix_s <- c()
+        ixs <- c()
         for(c in chains) {
             if(control$knn==TRUE) {
                 ix <- expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE)
@@ -507,7 +507,7 @@ get_intergraph_edges <- function(igs,
                 ix$name_i <- ns[ix$index_i]
                 ix$name_j <- ns[ix$index_j]
                 ix$chain <- c
-                ix_s <- rbind(ix_s, ix)
+                ixs <- rbind(ixs, ix)
             } else {
                 ix <- subset(expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE), 
                              Var1 < Var2)
@@ -515,7 +515,7 @@ get_intergraph_edges <- function(igs,
                 ix$name_i <- ns[ix$index_i]
                 ix$name_j <- ns[ix$index_j]
                 ix$chain <- c
-                ix_s <- rbind(ix_s, ix)
+                ixs <- rbind(ixs, ix)
             }
         }
         return(ixs)
