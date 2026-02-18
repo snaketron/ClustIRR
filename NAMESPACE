@@ -71,8 +71,6 @@ importFrom(scales, pretty_breaks)
 importFrom(msa, msaClustalOmega)
 importFrom(Biostrings, AAStringSet)
 
-importFrom(htmlwidgets, saveWidget)
-
 export(clustirr)
 export(plot_graph)
 export(detect_communities)

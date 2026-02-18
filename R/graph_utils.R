@@ -74,12 +74,51 @@ config_vertices_plot <- function(g, is_jg, node_opacity) {
 }
 
 
-save_graph <- function(graph, file_name, output_folder){
+save_interactive_graph <- function(graph, 
+                                   file_name, 
+                                   output_folder, 
+                                   overwrite = TRUE){
+    
+    if (!requireNamespace("htmlwidgets", quietly = T)) {
+        stop(
+            "\"htmlwidgets\" is required to export interactive graphs.\n",
+            "Please install it using install.packages('htmlwidgets')."
+        )
+    }
+    
+    check_missing(graph)
+    if (!inherits(graph, "visNetwork")) {
+        stop("Input 'graph' must be a 'visNetwork' object.")
+    }
+    check_missing(file_name)
+    check_missing(output_folder)
+    check_logical(overwrite)
+    
+    if(!dir.exists(output_folder) & output_folder != ""){
+        message("Directory '", output_folder, "' not found. Creating it.")
+        dir.create(output_folder, recursive = T)
+    }
+    
+    base_file <- paste0(file_name, ".html")
+    target_path <- file.path(output_folder, base_file)
+    
+    # to avoid overwriting files in the top layer
+    # we need this because of the way htmlwidgets saves files
+    if(file.exists(base_file) & !overwrite){
+        stop(paste0(base_file ," already exists in work space home folder.\n",
+                    "Please move/rename the file or set overwrite to TRUE ",
+                    "to overwrite it"))
+    }
+    
+    if(file.exists(target_path) & !overwrite){
+        stop(paste0(target_path ," already exists.\n",
+                    "Set overwrite to TRUE to overwrite it."))
+    }
     
     graph$width <- "100%"
     graph$height <- "100vh"
     
-    saveWidget(
+    htmlwidgets::saveWidget(
         widget = graph, 
         file = paste0(file_name, ".html"), 
         selfcontained = TRUE, 
@@ -87,17 +126,22 @@ save_graph <- function(graph, file_name, output_folder){
         title = file_name
     )
     
-    base_file <- paste0(file_name, ".html")
-    target_path <- file.path(output_folder, base_file)
-    
     # this step is necessary to ensure self-contained files
     # if we put the full path in saveWidget, it will not delete the files folder
+    # also double check if directory actually exists to catch unexpected errors
     if(dir.exists(output_folder)){
-        file.rename(from = base_file, to = target_path)
+        if(!file.rename(from = base_file, 
+                        to = target_path)) {
+            file.copy(from = base_file, 
+                      to = target_path, 
+                      overwrite = overwrite)
+            file.remove(base_file)
+        }
         message(file_name, " exported to: ", target_path)
     } else {
-        message("Directory '", output_folder, "' does not exist. \n",
+        message("Directory '", output_folder, "' does not exist.\n",
                 "File saved to current working directory as: ", base_file)
     }
     
+
 }

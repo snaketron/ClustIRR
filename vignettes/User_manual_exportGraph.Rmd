@@ -42,7 +42,7 @@ cl <- clustirr(s = D2, control = list(gmi = 0.8))
 and save the graph as visNetwork object.
 
 ```{r}
-g <- plot_graph(cl, as_visnet = TRUE, node_opacity = 0.8)
+g <- plot_graph(cl, as_visnet = T, node_opacity = 0.8)
 ```
 
 Inspecting the graphs reveals a complex structure:
@@ -56,14 +56,18 @@ html-file to a folder of our choice. If the folder does not exist, the file
 will be saved into the working directory.
 
 ```{r eval=FALSE}
-save_graph(graph = g,
-           file_name = "my_graph",
-           output_folder = "my_folder")
+save_interactive_graph(graph = g,
+                       file_name = "my_graph",
+                       output_folder = "my_folder",
+                       overwrite = TRUE)
+
 ```
 
+
 Hints: 
-- Existing files will be overwritten without warning
-- The file name will also be the title of the html file, so you don't have
+
+* This function only works with visNetwork graphs
+* The file name will also be the title of the html file, so you don't have
 to add ".html"
-- The folder name does not need a "/" at the end
+* The folder name does not need a "/" at the end
 
