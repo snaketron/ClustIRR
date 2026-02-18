@@ -84,7 +84,7 @@ export(decode_all_communities)
 export(get_community_purity)
 export(get_cosine_similarity)
 export(get_cdr3_motifs)
-export(save_graph)
+export(save_interactive_graph)
 
 exportClasses(clust_irr)
 exportMethods(get_clustirr_clust)
