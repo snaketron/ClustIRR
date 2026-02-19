@@ -32,8 +32,8 @@ s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
 # run ClustIRR analysis
 c <- clustirr(s = s)
 
-# plot graph with vertices as clones
-g <- plot_graph(c, as_visnet=FALSE, show_singletons=TRUE, node_opacity = 0.8)
+# plot graph with vertices as clones (has to be a visNetwork)
+g <- plot_graph(c, as_visnet=TRUE, show_singletons=TRUE, node_opacity = 0.8)
 
 \dontrun{
 # Save the graph to a temporary directory
