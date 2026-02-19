@@ -85,6 +85,7 @@ export(get_community_feature_purity)
 export(get_community_feature_stats)
 export(get_cosine_similarity)
 export(get_cdr3_motifs)
+export(save_interactive_graph)
 
 exportClasses(clust_irr)
 exportMethods(get_clustirr_clust)
