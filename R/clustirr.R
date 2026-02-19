@@ -75,12 +75,17 @@ get_clust <- function(x, s, control) {
         x <- x[, chain]
         x <- x[is.na(x)==FALSE]
         if(length(x)==0) {
-            stop("no CDR3s found")
+            return(NULL)
         }
         return(x)
     }
     
     cdr3 <- get_cdr3s(x = s, chain = x)
+    
+    if(is.null(cdr3)) {
+        message(paste("Skipping", x, "for this sample (no sequences)."))
+        return(NULL)
+    }
     
     return(get_blosum(cdr3 = cdr3, control = control))
 }

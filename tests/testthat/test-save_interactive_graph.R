@@ -13,7 +13,7 @@ test_that("save_interactive_graph works and cleans up locally", {
     
     
     # Run function
-    expect_message(save_interactive_graph(g = g, 
+    expect_message(save_interactive_graph(graph = g, 
                                           file_name = file_name, 
                                           output_folder = output_folder,
                                           overwrite = T), 
@@ -25,7 +25,7 @@ test_that("save_interactive_graph works and cleans up locally", {
 
     expect_false(file.exists(paste0(file_name, ".html")))
     
-    expect_error(save_interactive_graph(g = g, 
+    expect_error(save_interactive_graph(graph = g, 
                                         file_name = file_name, 
                                         output_folder = output_folder,
                                         overwrite = F))
