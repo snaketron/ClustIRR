@@ -102,3 +102,38 @@ c$clone_size <- clone_size+expansion_factor*2
 D1 <- list(a = a, b = b, c = c, ma = ma, mb = mb, mc = mc)
 save(D1, file = "data/D1.RData", compress = "xz")
 rm(a, b, c, ma, mb, mc)
+
+
+
+
+set.seed(12341)
+A1 <- D1$a[sample(x = 1:nrow(D1$a), size = 2000, replace = TRUE, prob = D1$a$clone_size/sum(D1$a$clone_size)),]
+A1$sample <- "A1"
+set.seed(12342)
+A2 <- D1$a[sample(x = 1:nrow(D1$a), size = 2000, replace = TRUE, prob = D1$a$clone_size/sum(D1$a$clone_size)),]
+A2$sample <- "A2"
+set.seed(12343)
+A3 <- D1$a[sample(x = 1:nrow(D1$a), size = 2000, replace = TRUE, prob = D1$a$clone_size/sum(D1$a$clone_size)),]
+A3$sample <- "A3"
+A <- rbind(A1, A2, A3)
+rm(A1, A2, A3)
+
+set.seed(12344)
+C1 <- D1$c[sample(x = 1:nrow(D1$c), size = 2000, replace = TRUE, prob = D1$c$clone_size/sum(D1$c$clone_size)),]
+C1$sample <- "C1"
+set.seed(12345)
+C2 <- D1$c[sample(x = 1:nrow(D1$c), size = 2000, replace = TRUE, prob = D1$c$clone_size/sum(D1$c$clone_size)),]
+C2$sample <- "C2"
+set.seed(12346)
+C3 <- D1$c[sample(x = 1:nrow(D1$c), size = 2000, replace = TRUE, prob = D1$c$clone_size/sum(D1$c$clone_size)),]
+C3$sample <- "C3"
+C <- rbind(C1, C2, C3)
+
+D2 <- rbind(A, C)
+D2$clone_size <- 1
+rm(C1, C2, C3, A, C)
+
+D2 <- aggregate(clone_size~CDR3a+CDR3b+sample, data = D2, FUN = sum)
+save(D2, file = "data/D2.RData", compress = "xz")
+
+

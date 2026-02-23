@@ -23,6 +23,16 @@ get_motif <- function(chain, node_summary, gap_remove_prob) {
     cdrs <- node_summary[,chain]
     cells <- node_summary[,"clone_size"]
     
+    i <- which(is.na(cdrs))
+    if(length(i)!=0) {
+        cdrs <- cdrs[-i]
+        cells <- cells[-i]
+        if(length(cdrs)==0) {
+            warning("no CDRs after removing NAs")
+            return(ggplot() + theme_bw())
+        }
+    }
+    
     aln <- msa::msaClustalOmega(inputSeqs = AAStringSet(cdrs), type = "protein")
     q <- data.frame(s = as.character(aln))
     q <- gglogo::ggfortify(q, s, method = "frequency")
