@@ -58,6 +58,10 @@ Changes in version 1.9.9 (Feb, 2026)
 + added test-get_blosum.R 
 
 Changes in version 1.9.10 (Feb, 2026)
-+ get_joint_graph() bugfixes 
++ bigfixes in joint graph building
  * when clustering both CDR3a/CDR3b, CDR3b edges between-repertoires got deleted
  * one between-repertoire edge between two clones with double edges was deleted
+
+Changes in version 1.9.17 (Feb 20, 2026)
++ quantiative comparison community abundance with normalized rank abundance 
+  distributions (NRADs) implemented in get_nrad()
