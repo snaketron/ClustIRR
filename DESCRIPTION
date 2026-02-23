@@ -50,7 +50,8 @@ Suggests:
     testthat,
     ggplot2,
     ggrepel,
-    patchwork
+    patchwork,
+    htmlwidgets
 SystemRequirements: GNU make
 Encoding: UTF-8
 LazyData: false

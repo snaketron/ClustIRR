@@ -1,0 +1,73 @@
+---
+title: "Exporting an interactive ClustIRR graph"
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{Exporting an interactive ClustIRR graph}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(comment = "", warning = FALSE, message = FALSE)
+```
+
+```{r}
+library(knitr)
+library(ClustIRR)
+library(ggplot2)
+library(patchwork)
+library(ggforce)
+theme_set(new = theme_bw(base_size = 10))
+```
+
+This short vignette shows how to export an interactive `r Biocpkg("ClustIRR")`
+graph.
+
+We start with some test data...
+
+```{r}
+data("D2", package = "ClustIRR")
+```
+
+run `r Biocpkg("ClustIRR")` on it...
+
+```{r}
+cl <- clustirr(s = D2, control = list(gmi = 0.8))
+```
+
+and save the graph as visNetwork object.
+
+```{r}
+g <- plot_graph(cl, as_visnet = T, node_opacity = 0.8)
+```
+
+Inspecting the graphs reveals a complex structure:
+
+```{r}
+g
+```
+
+To save the graph for later inspection, we can save it as a self-contained 
+html-file to a folder of our choice. If the folder does not exist, the file
+will be saved into the working directory.
+
+```{r eval=FALSE}
+save_interactive_graph(graph = g,
+                       file_name = "my_graph",
+                       output_folder = "my_folder",
+                       overwrite = TRUE)
+
+```
+
+
+Hints: 
+
+* This function only works with visNetwork graphs
+* The file name will also be the title of the html file, so you don't have
+to add ".html"
+* The folder name does not need a "/" at the end
+
