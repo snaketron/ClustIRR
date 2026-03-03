@@ -1,5 +1,5 @@
 
-get_cosine_similarity <- function(com) {
+get_community_cosine_similarity <- function(com) {
     n <- sqrt(colSums(com^2))
     cos_sim <- crossprod(com)/(n %o% n)
     colnames(cos_sim) <- colnames(com)
