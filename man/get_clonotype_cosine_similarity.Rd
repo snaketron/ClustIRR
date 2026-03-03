@@ -23,8 +23,8 @@ get_clonotype_cosine_similarity(clust_irr,
 }
 \arguments{
 \item{clust_irr}{An S4 object of class clust_irr.}
-\item{chains}{Which chains to compare. Can be "CDR3a", "CDR3b", 
-or c("CDR3a", "CDR3b"). Default is c("CDR3a", "CDR3b") or the chain supplied.}
+\item{chains}{Which chains to compare. Can be "CDR3a", "CDR3b", or
+c("CDR3b", "CDR3a"). Default is c("CDR3b", "CDR3a") or the chain supplied.}
 \item{title}{Plot title. Default is "Repertoire overlap - Clonotype level".
 Set to "" for no title.}
 }

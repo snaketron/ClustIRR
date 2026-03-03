@@ -5,7 +5,7 @@ get_clonotype_cosine_similarity <-
         
         l_r <- length(clust_irr$clust_irrs)
         
-        if(l_r == 1) {
+        if(l_r < 2) {
             stop("clust_irr has to contain at least two repertoires'")
         }
         
@@ -27,15 +27,15 @@ get_clonotype_cosine_similarity <-
         } 
         
         l <- list()
-        
+        i <- 0
         # extract repertoires
         for(r in 1:l_r){
+            i <- i+1
             s <- clust_irr$clust_irrs[[r]]@inputs[["s"]]
             
             # set dummy for NA chains
             if (nrow(s) == 0 || all(is.na(s[, chains, drop = F]))) {
-                print("i am an idiot")
-                df <- data.frame(id = "no_id",
+                df <- data.frame(id = paste0("no_id_", i),
                                  val = 1)
             } else {
                 s <- s[,c(chains, "clone_size")]

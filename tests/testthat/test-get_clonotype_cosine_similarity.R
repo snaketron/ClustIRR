@@ -1,4 +1,4 @@
-test_that("get_clonotype_cosine_similarity works as expecte", {
+test_that("get_clonotype_cosine_similarity works as expected", {
     
     data("CDR3ab", package = "ClustIRR")
     s <- data.frame(CDR3b = CDR3ab[1:5, "CDR3b"],
@@ -42,7 +42,7 @@ test_that("get_clonotype_cosine_similarity works as expecte", {
     expect_no_error(get_clonotype_cosine_similarity(c, "CDR3b"))
     
     # only CDR3a chain as input and no chains argument
-    s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3a"], 
+    s <- data.frame(CDR3a = CDR3ab[1:100, "CDR3a"], 
                     sample = rep(c("A", "B"), 50), 
                     clone_size = 1)
     
