@@ -19,11 +19,7 @@ get_clonotype_cosine_similarity <-
         
         # catch case were only one chain is provided but chains left at default
         if(!all(chains %in% v_attr)){
-            if("CDR3a" %in% v_attr) {
-                chains <- "CDR3a"
-            } else {
-                chains <- "CDR3b"
-            }
+            stop("clust_irr does not contain all CDR3 chains for comparison")
         } 
         
         l <- list()

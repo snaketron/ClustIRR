@@ -46,21 +46,25 @@ test_that("get_clonotype_cosine_similarity works as expected", {
                     sample = rep(c("A", "B"), 50), 
                     clone_size = 1)
     
-    # run analysis
     c <- clustirr(s = s)
     
-    # Compute similarities and plot
-    expect_no_error(get_clonotype_cosine_similarity(c))
+    # chains provided not matching chains to plot
+    expect_error(get_clonotype_cosine_similarity(c)) # default = both
+    expect_error(get_clonotype_cosine_similarity(c, c("CDR3a", "CDR3b")))
+    expect_error(get_clonotype_cosine_similarity(c, "CDR3b"))
+    expect_no_error(get_clonotype_cosine_similarity(c, "CDR3a"))
+    
     
     # only CDR3b chain as input and no chains argument
     s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], 
                     sample = rep(c("A", "B"), 50), 
                     clone_size = 1)
     
-    # run analysis
     c <- clustirr(s = s)
     
-    # Compute similarities and plot
-    expect_no_error(get_clonotype_cosine_similarity(c))
+    expect_error(get_clonotype_cosine_similarity(c)) # default = both
+    expect_error(get_clonotype_cosine_similarity(c, c("CDR3a", "CDR3b")))
+    expect_error(get_clonotype_cosine_similarity(c, "CDR3a"))
+    expect_no_error(get_clonotype_cosine_similarity(c, "CDR3b"))
     
 })

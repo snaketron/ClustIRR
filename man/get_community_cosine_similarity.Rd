@@ -1,5 +1,6 @@
 \name{get_community_cosine_similarity}
 \alias{get_community_cosine_similarity}
+\alias{get_cosine_similarity}
 \title{Compute and Visualize Cosine Similarity (CS)}
 \description{
 This function calculates pairwise CSs between columns (repertoires) 
@@ -7,6 +8,7 @@ of the community occupancy matrix and generates a labeled heatmap
 visualization. Here CS  measures the cosine of the angle between 
 vectors of cell counts (positive integers or zero), providing a 
 value between 0 (perfect dissimilarity) and 1 (perfect similarity).
+Lega
 }
 \details{
 The function performs three main operations:
@@ -19,6 +21,7 @@ Red and blue tiles in the heatmap indicates high and low CS, respectively.
 }
 \usage{
 get_community_cosine_similarity(com)
+get_cosine_similarity(com)
 }
 \arguments{
 \item{com}{Community occupancy matrix where columns represent repertoires for 

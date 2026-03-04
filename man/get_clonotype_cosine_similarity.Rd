@@ -10,7 +10,7 @@ value between 0 (perfect dissimilarity) and 1 (perfect similarity).
 \details{
 The function performs three main operations:
 \enumerate{
-  \item Computes CS between all clonotype pairs using: 
+  \item Computes CS between all clonotypes between repertoires using: 
   \deqn{\text{CS}(x, y) = \frac{x \cdot y}{||x|| \cdot ||y||}}
   \item Creates a heatmap with CS values annotated in each cell
 }
@@ -44,6 +44,7 @@ A list containing two elements:
 # load package input data
 data("CDR3ab", package = "ClustIRR")
 s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], 
+                CDR3a = CDR3ab[1:100, "CDR3a"],
                 sample = rep(c("A", "B"), 50), 
                 clone_size = rpois(100, 1)+1)
 

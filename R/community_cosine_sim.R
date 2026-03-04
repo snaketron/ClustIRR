@@ -1,3 +1,7 @@
+get_cosine_similarity <- function(com) {
+    .Deprecated("get_community_cosine_similarity")
+    get_community_cosine_similarity(com)
+    }
 
 get_community_cosine_similarity <- function(com) {
     n <- sqrt(colSums(com^2))
