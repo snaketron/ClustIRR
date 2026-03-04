@@ -8,7 +8,6 @@ of the community occupancy matrix and generates a labeled heatmap
 visualization. Here CS  measures the cosine of the angle between 
 vectors of cell counts (positive integers or zero), providing a 
 value between 0 (perfect dissimilarity) and 1 (perfect similarity).
-Lega
 }
 \details{
 The function performs three main operations:
