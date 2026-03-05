@@ -1,32 +1,34 @@
-\name{get_clonotype_cosine_similarity}
-\alias{get_clonotype_cosine_similarity}
+\name{get_cdr3_cosine_similarity}
+\alias{get_cdr3_cosine_similarity}
 \title{Compute and Visualize Cosine Similarity (CS)}
 \description{
-This function calculates pairwise CSs between repertoires on clonotype level
-and generates a labeled heatmap visualization. Here CS measures the cosine of 
-the angle between vectors of cell counts (positive integers or zero), providing a 
-value between 0 (perfect dissimilarity) and 1 (perfect similarity).
+This function calculates pairwise CSs between repertoires on CDR3 sequence level
+and generates a labeled heatmap visualization. If two chains are compared,
+only perfect matches between both sequences will be considered as overlap.
+Cell counts of identical sequences within a repertoire will be aggregated before
+comparison. If only one chain is supplied, but two chains exist in the clust_irr
+input, cell counts of identical sequences of this chain within the repertoire 
+will be aggregated. Here CS measures the cosine of the angle between vectors of
+cell counts (positive integers or zero), providing a value between 0 (perfect 
+dissimilarity) and 1 (perfect similarity).
 }
 \details{
 The function performs three main operations:
 \enumerate{
-  \item Computes CS between all clonotypes between repertoires using: 
+  \item Computes CS between CDR3 sequences between repertoires using: 
   \deqn{\text{CS}(x, y) = \frac{x \cdot y}{||x|| \cdot ||y||}}
   \item Creates a heatmap with CS values annotated in each cell
 }
 Red and blue tiles in the heatmap indicates high and low CS, respectively.
 }
 \usage{
-get_clonotype_cosine_similarity(clust_irr,
-                                chains = c("CDR3b", "CDR3a"),
-                                title = "Repertoire overlap - Clonotype level")
+get_cdr3_cosine_similarity(clust_irr,
+                           chains)
 }
 \arguments{
 \item{clust_irr}{An S4 object of class clust_irr.}
-\item{chains}{Which chains to compare. Can be "CDR3a", "CDR3b", or
-c("CDR3b", "CDR3a"). Default is c("CDR3b", "CDR3a") or the chain supplied.}
-\item{title}{Plot title. Default is "Repertoire overlap - Clonotype level".
-Set to "" for no title.}
+\item{chains}{Which chains to compare. Can be one or both of the existing pairs
+in the clust_irr object. If not set, all detected chains will be compared.}
 }
 \value{
 A list containing two elements:
@@ -52,7 +54,7 @@ s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"],
 c <- clustirr(s = s)
 
 # Compute similarities and plot
-result <- get_clonotype_cosine_similarity(c)
+result <- get_cdr3_cosine_similarity(c)
 
 # Display heatmap
 print(result$g)

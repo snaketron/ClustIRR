@@ -1,21 +1,21 @@
-get_clonotype_cosine_similarity <- 
+get_cdr3_cosine_similarity <- 
     function(clust_irr, 
-             chains = c("CDR3b", "CDR3a"),
-             title = "Repertoire overlap - Clonotype level"){
+             chains){
         
         l_r <- length(clust_irr$clust_irrs)
         
         if(l_r < 2) {
-            stop("clust_irr has to contain at least two repertoires'")
+            stop("clust_irr object has to contain at least two repertoires")
         }
         
         check_clustirr(clust_irr = clust_irr$clust_irrs[[1]])
-        
-        if (!all(chains %in% c("CDR3a", "CDR3b"))) {
-            stop("chains can only contain 'CDR3a' and/or 'CDR3b'")
-        }
-        
+
         v_attr <- names(igraph::vertex_attr(clust_irr$graph))
+        
+        # if no chains argument supplied, set to existing chains
+        if(missing(chains) || is.null(chains)) {
+            chains <- grep("\\bCDR3[abhlgd]\\b", v_attr, value = T)
+        }
         
         # catch case were only one chain is provided but chains left at default
         if(!all(chains %in% v_attr)){
@@ -37,7 +37,9 @@ get_clonotype_cosine_similarity <-
                 s <- s[,c(chains, "clone_size")]
                 
                 if (length(chains)>1){
-                    df <- data.frame(id = paste0(s$CDR3a, "_", s$CDR3b),
+                    df <- data.frame(id = paste0(s[[chains[1]]], 
+                                                 "_", 
+                                                 s[[chains[2]]]),
                                      val = s$clone_size)
                 } else {
                     df <- data.frame(id = s[[chains]],
@@ -49,7 +51,10 @@ get_clonotype_cosine_similarity <-
             l[[r]] <- df
         }
         
-        # deduplicate
+        # sort alphabetically to match with get_community_cosine_similarity()
+        l <- l[order(names(clust_irr$clust_irrs))]
+        
+        # aggregate duplicated sequences into single count
         l <- lapply(l, function(df) {
             aggregate(. ~ id, data = df, FUN = sum)
         })
@@ -63,7 +68,7 @@ get_clonotype_cosine_similarity <-
         l <- as.matrix(l)
         
         ret <- get_community_cosine_similarity(l)
-        ret$g <- ret$g + ggtitle(title)
+        ret$g <- ret$g
         
         return(ret)
     }
