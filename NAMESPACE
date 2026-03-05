@@ -91,6 +91,7 @@ export(get_cdr3_cosine_similarity)
 export(get_cdr3_motifs)
 export(save_interactive_graph)
 export(get_nrads)
+export(get_functional_communities)
 
 
 exportClasses(clust_irr)
