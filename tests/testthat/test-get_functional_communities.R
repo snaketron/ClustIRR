@@ -17,10 +17,13 @@ com <- detect_communities(graph = c$graph,
                           metric = "average",
                           chains = c("CDR3b", "CDR3a"))
 
-ag_gene <- c("MLANA")
-ag_species <- c("HomoSapiens")
+ag_gene <- c("PB1", "pp65")
+ag_species <- c("Influenza", "YFV")
 
-expect_no_error(get_functional_communities(com, ag_gene, ag_species))
+expect_no_error(fc <- get_functional_communities(com, ag_gene, ag_species))
+
+# test that 6 functional communities are detected
+expect_true(length(fc$functional_communities) == 6)
 
 # test if works with no matches
 expect_no_error(get_functional_communities(com, "ag_gene", "ag_species"))

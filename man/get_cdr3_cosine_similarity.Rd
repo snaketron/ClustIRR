@@ -13,7 +13,7 @@ cell counts (positive integers or zero), providing a value between 0 (perfect
 dissimilarity) and 1 (perfect similarity).
 }
 \details{
-The function performs three main operations:
+The function performs two main operations:
 \enumerate{
   \item Computes CS between CDR3 sequences between repertoires using: 
   \deqn{\text{CS}(x, y) = \frac{x \cdot y}{||x|| \cdot ||y||}}
@@ -26,9 +26,9 @@ get_cdr3_cosine_similarity(clust_irr,
                            chains)
 }
 \arguments{
-\item{clust_irr}{An S4 object of class clust_irr.}
+\item{clust_irr}{An S4 object of class \code{clust_irr.}}
 \item{chains}{Which chains to compare. Can be one or both of the existing pairs
-in the clust_irr object. If not set, all detected chains will be compared.}
+in the \code{clust_irr} object. If not set, all detected chains will be compared.}
 }
 \value{
 A list containing two elements:

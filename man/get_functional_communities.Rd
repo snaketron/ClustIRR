@@ -3,27 +3,26 @@
 \title{Detect functionally similar communities}
 \description{
 Detect functionally similar nodes and communities in a supplied 
-detect_communities output. Adds new binary columns to node_summary and 
-communities and adds index vector of functional communities to the communities
-object.
+\code{detect_communities} output. Adds new binary columns to \code{node_summary}
+and \code{community_summary} and adds index vector of functional communities to the
+\code{detect_communities} output.
 }
 \details{
 Searches for antigen gene and/or species matches based on the supplied vectors
-of antigens and species. Adds binary functional_node column to node_summary and 
-functional_community column if any of the antigens or species are found.
+of antigens and species. Adds binary \code{functional_node} column to 
+\code{node_summary} and \code{functional_community} column if any of the 
+antigens or species are found.
 }
 \usage{
 get_functional_communities(com, ag_gene, ag_species)
 }
 \arguments{
-\item{com}{Community occupancy matrix where columns represent repertoires for 
-CS computation. Rows are communities. Entries are the number of cells in each 
-repertoire and community.}
+\item{com}{\code{detect_communities} output}
 \item{ag_gene}{Vector of genes}
 \item{ag_species}{Vector of species}
 }
 \value{
-The output is a list with the folling elements:
+The output is a list with the following elements:
 \item{community_occupancy_matrix}{matrix, rows are communities, columns 
 are repertoires, matrix entries are numbers of cells in each community and 
 repertoire.}

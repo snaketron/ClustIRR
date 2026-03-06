@@ -10,7 +10,8 @@ get_functional_communities <- function(com,
         }
 
         new_cols <- paste0(col, "_", keys)
-        df$functional_node <- rowSums(df[, new_cols, drop = F]) > 0
+        df$functional_node <- rowSums(df[, new_cols, drop = F]) > 0 |
+            df$functional_node
         
         return(df)
     }

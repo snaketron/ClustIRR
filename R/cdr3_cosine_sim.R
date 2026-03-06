@@ -15,6 +15,9 @@ get_cdr3_cosine_similarity <-
         # if no chains argument supplied, set to existing chains
         if(missing(chains) || is.null(chains)) {
             chains <- grep("\\bCDR3[abhlgd]\\b", v_attr, value = T)
+            if(missing(chains) || is.null(chains)){
+                stop("no CDR3 chains found")
+                }
         }
         
         # catch case were only one chain is provided but chains left at default
@@ -36,7 +39,7 @@ get_cdr3_cosine_similarity <-
             } else {
                 s <- s[,c(chains, "clone_size")]
                 
-                if (length(chains)>1){
+                if (length(chains)==2){
                     df <- data.frame(id = paste0(s[[chains[1]]], 
                                                  "_", 
                                                  s[[chains[2]]]),
