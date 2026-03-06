@@ -1,3 +1,4 @@
+![clustirr logo](/inst/extdata/logo.png)
 # ClustIRR: Clustering of Immune Receptor Repertoires
 
 ![Build Status](https://github.com/snaketron/ClustIRR/actions/workflows/r.yml/badge.svg)
@@ -37,5 +38,5 @@ Case studies are provided in the directory /vignettes
 
 ## Workflow & output 
 
-![clustirr workflow](/inst/extdata/logo.png)
+![clustirr workflow](/inst/extdata/workflow.png)
 
