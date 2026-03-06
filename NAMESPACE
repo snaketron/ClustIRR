@@ -71,6 +71,8 @@ importFrom(scales, pretty_breaks)
 importFrom(msa, msaClustalOmega)
 importFrom(Biostrings, AAStringSet)
 
+importFrom(data.table, as.data.table)
+
 export(clustirr)
 export(plot_graph)
 export(detect_communities)
@@ -84,9 +86,12 @@ export(decode_all_communities)
 export(get_community_feature_purity)
 export(get_community_feature_stats)
 export(get_cosine_similarity)
+export(get_community_cosine_similarity)
+export(get_cdr3_cosine_similarity)
 export(get_cdr3_motifs)
 export(save_interactive_graph)
 export(get_nrads)
+export(get_functional_communities)
 
 
 exportClasses(clust_irr)

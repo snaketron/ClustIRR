@@ -1,4 +1,5 @@
-\name{get_cosine_similarity}
+\name{get_community_cosine_similarity}
+\alias{get_community_cosine_similarity}
 \alias{get_cosine_similarity}
 \title{Compute and Visualize Cosine Similarity (CS)}
 \description{
@@ -18,6 +19,7 @@ The function performs three main operations:
 Red and blue tiles in the heatmap indicates high and low CS, respectively.
 }
 \usage{
+get_community_cosine_similarity(com)
 get_cosine_similarity(com)
 }
 \arguments{
@@ -43,7 +45,7 @@ mat <- matrix(rpois(n=15, lambda = 4), nrow = 5,
               dimnames = list(NULL, c("A", "B", "C")))
 
 # Compute similarities and plot
-result <- get_cosine_similarity(mat)
+result <- get_community_cosine_similarity(mat)
 
 # Display heatmap
 print(result$g)
