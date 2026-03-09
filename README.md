@@ -1,4 +1,4 @@
-![clustirr logo](/inst/extdata/logo.png)
+![clustirr logo](inst/extdata/logo.png)
 # ClustIRR: Clustering of Immune Receptor Repertoires
 
 ![Build Status](https://github.com/snaketron/ClustIRR/actions/workflows/r.yml/badge.svg)
