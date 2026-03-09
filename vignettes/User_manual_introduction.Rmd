@@ -26,6 +26,10 @@ library(patchwork)
 options(digits=2)
 ```
 
+```{r graphic_logo, echo = FALSE, fig.align="left", out.width='100%'}
+knitr::include_graphics("../inst/extdata/logo.png")
+```
+
 # Introduction
 
 Adaptive immunity employs diverse immune receptor repertoires (IRRs; B-
@@ -79,7 +83,7 @@ BiocManager::install("ClustIRR")
 # ClustIRR algorithm
 
 ```{r graphic, echo = FALSE, fig.align="left", out.width='100%'}
-knitr::include_graphics("../inst/extdata/logo.png")
+knitr::include_graphics("../inst/extdata/workflow.png")
 ```
 
 ## Input
