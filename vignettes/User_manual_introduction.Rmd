@@ -432,6 +432,7 @@ Node-specific (TCR clonotype-specific) summaries are provided in `node_summary`
 kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
 ```
 
+
 ### Special functions: decoding communities with `decode_community`
 
 Community with ID=22 contains 12 TCR clonotypes. These 
@@ -572,7 +573,7 @@ beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
                                 db = "vdjdb")
 ```
 
-```{r, fig.width=9, fig.height=7}
+```{r, fig.width=4, fig.height=3}
 beta_violins
 ```
 

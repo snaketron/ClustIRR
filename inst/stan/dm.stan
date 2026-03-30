@@ -35,10 +35,10 @@ parameters {
 
 model {
     target += exponential_lpdf(2+kappa|0.01);
-    target += normal_lpdf(alpha|0,3);
+    target += normal_lpdf(alpha|0,1);
     
     for(i in 1:N) {
-        target += normal_lpdf(beta[i]|0, 1);
+        target += normal_lpdf(beta[i]|0,1);
         target += dm_lpmf(y[i]|kappa*softmax(alpha + beta[i]));
     }
 }
