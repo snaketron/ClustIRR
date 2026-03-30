@@ -1,6 +1,6 @@
 Package: ClustIRR
 Type: Package
-Title: Clustering of immune receptor repertoires
+Title: Clustering of Immune Receptor Repertoires
 Version: 1.9.22
 Authors@R: c(
     person("Simo", "Kitanovski", email = "simokitanovski@gmail.com", 
