@@ -60,6 +60,9 @@ get_community_feature_stats <- function(node_summary,
                           n = length(f)))
     }
     if(is.character(f) | is.factor(f) | is.logical(f)) {
+        
+        # distinguish between binary vs. non-binary
+        
         feature_type <- "cat"
         f <- data.frame(table(f))
         colnames(f) <- c("feature", "feature_count")
@@ -141,14 +144,28 @@ get_gini_cat <- function(ls, cs) {
         return(-sum(p*log(p)))
     }
     
+    get_d <- function(l, ls, b) {
+        if(b==FALSE) {
+            return(NA)
+        }
+        n <- length(l)
+        f <- tabulate(match(l, ls), nbins = 2)
+        return((f[1]-f[2])/n)
+    }
     
     # split ls by cs
     groups <- split(ls, cs)
+    
+    # if binary compute D
+    b <- length(unique(ls))==2
     
     # Compute GI and size per community
     return(data.frame(community = as.numeric(names(groups)),
                       GI = 1 - vapply(groups, get_gi, numeric(1)),
                       H = vapply(groups, get_h, numeric(1)),
+                      D = vapply(groups, get_d, numeric(1), 
+                                 ls = sort(unique(ls), decreasing = TRUE), 
+                                 b = b),
                       n = lengths(groups),
                       row.names = NULL))
 }

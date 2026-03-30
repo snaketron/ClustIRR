@@ -27,36 +27,29 @@ transformed data {
     }
 }
 
-
 parameters {
-    vector <lower=0> [max(G)] beta_mu_sigma;
     vector <lower=0> [max(G)] kappa;
     vector [K] alpha;
     
     vector <lower=0> [max(G)] beta_sigma;
     vector [K] beta_z [N];
-    vector [K] beta_mu_z [max(G)];
+    vector [K] beta_mu [max(G)];
 }
-
 
 transformed parameters {
     vector [K] beta [N];
-    vector [K] beta_mu [max(G)];
-    for(j in 1:max(G)) {
-        beta_mu[j] = beta_mu_sigma[j] * beta_mu_z[j];
-    }
+
     for(i in 1:N) {
         beta[i] = beta_mu[G[i]] + beta_sigma[G[i]] * beta_z[i];
     }
 }
 
 model {
-    target += cauchy_lpdf(beta_sigma|0, 1);
-    target += normal_lpdf(alpha|0,3);
+    target += cauchy_lpdf(beta_sigma|0,1);
+    target += normal_lpdf(alpha|0,1);
     for(j in 1:max(G)) {
         target += exponential_lpdf(2+kappa[j]|0.01);
-        target += cauchy_lpdf(beta_mu_sigma[j]|0, 1);
-        target += std_normal_lpdf(beta_mu_z[j]);
+        target += normal_lpdf(beta_mu[j]|0, 1);
     }
     for(i in 1:N) {
         target += std_normal_lpdf(beta_z[i]);
