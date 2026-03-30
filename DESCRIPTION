@@ -1,7 +1,7 @@
 Package: ClustIRR
 Type: Package
 Title: Clustering of immune receptor repertoires
-Version: 1.9.20
+Version: 1.9.22
 Authors@R: c(
     person("Simo", "Kitanovski", email = "simokitanovski@gmail.com", 
     role = c("aut", "cre"), comment=c(ORCID="0000-0003-2909-5376")),
@@ -16,10 +16,8 @@ Description: ClustIRR analyzes repertoires of B- and T-cell receptors. It
     in response to e.g. infection or cancer treatment.
 License: GPL-3 + file LICENSE
 Depends:
-    R (>= 4.3.0),
-    gglogo
+    R (>= 4.3.0)
 Imports:
-    blaster,
     future,
     future.apply,
     grDevices,
@@ -41,14 +39,14 @@ Imports:
     ggforce,
     scales,
     msa,
-    gglogo,
     Biostrings,
-    RADanalysis
+    RADanalysis,
+    blaster (>= 1.0.6),
+    gglogo (>= 0.1.5)
 Suggests:
     BiocStyle,
     knitr,
     testthat,
-    ggplot2,
     ggrepel,
     patchwork
 SystemRequirements: GNU make
@@ -69,6 +67,3 @@ LinkingTo:
     RcppParallel (>= 5.0.1),
     rstan (>= 2.18.1),
     StanHeaders (>= 2.18.0)
-Remotes: 
-    heike/gglogo,
-    blaster=url::https://cran.r-project.org/src/contrib/Archive/blaster/blaster_1.0.6.tar.gz
