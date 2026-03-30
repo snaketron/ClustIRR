@@ -36,7 +36,7 @@ get_nrads <- function(community_occupancy_matrix, B = 1000) {
     check_inputs(community_occupancy_matrix = community_occupancy_matrix, B = B)
     
     rads <- apply(X = community_occupancy_matrix, MARGIN = 2, 
-                  FUN = function(x) {return(sort(x, decreasing = T))})
+                  FUN = function(x) {return(sort(x, decreasing = TRUE))})
     max_rank <- min(apply(X = rads, MARGIN = 2, 
                           FUN = function(x) {sum(x!=0)}))
     

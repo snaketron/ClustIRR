@@ -53,4 +53,5 @@ motifs <- get_cdr3_motifs(node_summary, community_id = 1, gap_remove_prob = 0.8)
 
 # Display the resulting motif logos
 plot(motifs)
+
 }

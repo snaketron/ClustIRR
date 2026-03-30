@@ -24,13 +24,14 @@ The community identifier is inferred from the \code{community} column and is
 assumed to be constant within \code{node_summary}.
 }
 \usage{
-get_community_feature_stats(node_summary, node_feature)
+get_community_feature_stats(node_summary, node_feature, community_id)
 }
 \arguments{
 \item{node_summary}{A data.frame containing node-level attributes and a
 \code{community} column.}
 \item{node_feature}{Character scalar specifying the node attribute for which
 statistics should be computed.}
+\item{community_id}{Numeric community ID}
 }
 \value{
 A \code{data.frame} summarizing feature statistics for the given community:
