@@ -206,7 +206,7 @@ get_blosum <- function(cdr3, control) {
     cdr3 <- cdr3[duplicated(cdr3)==FALSE]
     
     # create db which is also query
-    db <- data.frame(Id = 1:length(cdr3), Seq = cdr3, len = nchar(cdr3))
+    db <- data.frame(Id = seq_len(length(cdr3)), Seq = cdr3, len = nchar(cdr3))
     
     # blast
     o <- blast(query = db, 
@@ -252,7 +252,7 @@ get_blosum <- function(cdr3, control) {
     
     # if hits found, compute BLSOUM62 scores
     if(nrow(o)>0) {
-    bs <- t(vapply(X = 1:nrow(o), 
+    bs <- t(vapply(X = seq_len(nrow(o)), 
                    FUN.VALUE = numeric(4),
                    FUN = get_bscore, 
                    o = o, 

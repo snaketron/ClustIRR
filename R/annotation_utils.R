@@ -54,7 +54,7 @@ match_db <- function(cs, control) {
         }
         
         if(db_type == "vdjdb") {
-            return(vapply(X = 1:nrow(cs), 
+            return(vapply(X = seq_len(nrow(cs)), 
                           FUN = get_vdjdb_info, 
                           cs = cs,
                           db = db[,c(chain, "CDR3_species", "Antigen_species", 
@@ -73,7 +73,7 @@ match_db <- function(cs, control) {
                                  FUN=get_vdjdb_info)))
         }
         if(db_type == "tcr3d") {
-            return(unlist(lapply(X = 1:nrow(cs),
+            return(unlist(lapply(X = seq_len(nrow(cs)),
                                  cs = cs,
                                  db = db[,c(chain, "Antigen_species", 
                                             "Antigen_gene", 
@@ -83,7 +83,7 @@ match_db <- function(cs, control) {
                                  FUN = get_tcr3d_info)))
         }
         if(db_type == "mcpas") {
-            return(unlist(lapply(X = 1:nrow(cs),
+            return(unlist(lapply(X = seq_len(nrow(cs)),
                                  cs = cs,
                                  db = db[,c(chain, "CDR3_species",
                                             "Antigen_species", "Antigen_gene", 
@@ -150,7 +150,7 @@ match_db <- function(cs, control) {
             cs[, key_info] <- ''
             
             # insert indices
-            cs[, key_index] <- vapply(X = 1:nrow(cs), 
+            cs[, key_index] <- vapply(X = seq_len(nrow(cs)), 
                                       a = db[[db_name]][, chain],
                                       b = cs[, chain],
                                       d = control$db_dist,
@@ -178,7 +178,7 @@ match_db <- function(cs, control) {
         ag_species <- c()
         ag_gene <- c()
         x <- x[is.na(x)==FALSE]
-        for(i in 1:length(x)) {
+        for(i in seq_len(length(x))) {
             y <- unlist(strsplit(x = x[i], split = "\\|"))
             ag_species <- c(ag_species, unlist(strsplit(x = y[3], 
                                                         split = '\\;')))
@@ -230,7 +230,7 @@ get_node_ann <- function(ns, ag_key, db) {
                               replacement = paste0(id, "_"), 
                               x = is$info_key), agk)
         
-        for(i in 1:nrow(is)) {
+        for(i in seq_len(nrow(is))) {
             k <- do.call(rbind, strsplit(x = ns[,is$info_key[i]], 
                                          split = "\\|"))
             if(type == "species") {
@@ -340,7 +340,7 @@ get_db_match <- function(ns, db, db_dist) {
         }
         
         if(db_type == "vdjdb") {
-            return(vapply(X = 1:nrow(ns), 
+            return(vapply(X = seq_len(nrow(ns)), 
                           FUN = get_vdjdb_info, 
                           ns = ns,
                           db = db[,c(chain, "CDR3_species", "Antigen_species", 
@@ -359,7 +359,7 @@ get_db_match <- function(ns, db, db_dist) {
                                  FUN=get_vdjdb_info)))
         }
         if(db_type == "tcr3d") {
-            return(unlist(lapply(X = 1:nrow(ns),
+            return(unlist(lapply(X = seq_len(nrow(ns)),
                                  ns = ns,
                                  db = db[,c(chain, "Antigen_species", 
                                             "Antigen_gene", "Reference")],
@@ -368,7 +368,7 @@ get_db_match <- function(ns, db, db_dist) {
                                  FUN = get_tcr3d_info)))
         }
         if(db_type == "mcpas") {
-            return(unlist(lapply(X = 1:nrow(ns),
+            return(unlist(lapply(X = seq_len(nrow(ns)),
                                  ns = ns,
                                  db = db[,c(chain, "CDR3_species",
                                             "Antigen_species", "Antigen_gene", 
@@ -425,7 +425,7 @@ get_db_match <- function(ns, db, db_dist) {
         ns[, key_info] <- ''
         
         # insert indices
-        ns[, key_index] <- vapply(X = 1:nrow(ns), 
+        ns[, key_index] <- vapply(X = seq_len(nrow(ns)), 
                                   a = db[[db_name]][, chain],
                                   b = ns[, chain],
                                   d = db_dist,
@@ -452,7 +452,7 @@ get_db_match <- function(ns, db, db_dist) {
         ag_species <- c()
         ag_gene <- c()
         x <- x[x!=""]
-        for(i in 1:length(x)) {
+        for(i in seq_len(length(x))) {
             y <- unlist(strsplit(x = x[i], split = "\\|"))
             ag_species <- c(ag_species, unlist(strsplit(x = y[3],split ='\\;')))
             ag_gene <- c(ag_gene, unlist(strsplit(x = y[4], split = '\\;')))
