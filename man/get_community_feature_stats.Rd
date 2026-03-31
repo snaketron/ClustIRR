@@ -61,10 +61,14 @@ gcd <- detect_communities(graph = c$graph,
                           chains = c("CDR3a", "CDR3b"))
 
 # numeric feature
-get_community_feature_stats(node_summary = gcd$node_summary[gcd$node_summary$community == 1, ],
-                            node_feature = "age")
+get_community_feature_stats(
+    community_id = 1,
+    node_summary = gcd$node_summary,
+    node_feature = "age")
 
 # categorical feature
-get_community_feature_stats(node_summary = gcd$node_summary[gcd$node_summary$community == 1, ],
-                            node_feature = "HLA_A")
+get_community_feature_stats(
+    community_id = 1,
+    node_summary = gcd$node_summary,
+    node_feature = "HLA_A")
 }

@@ -34,29 +34,10 @@ get_motif <- function(chain, node_summary, gap_remove_prob) {
     }
     
     aln <- msa::msaClustalOmega(inputSeqs = AAStringSet(cdrs), type = "protein")
-    q <- data.frame(s = as.character(aln))
-    q <- gglogo::ggfortify(q, s, method = "frequency")
-    q <- q[!q$position %in% q$position[which(q$info >= gap_remove_prob 
-                                             & q$element == "-")], ]
-    q$pos <- as.numeric(as.factor(as.numeric(as.character(q$position))))
-    
-    i <- which.max(cells)
-    top <- data.frame(chain = chain, cdr = cdrs[i], cells = cells[i])
-    
-    g <- ggplot(data = q)+
-        gglogo::geom_logo(aes(x = position, y = info, group = element, 
-                              label = element), fill = "black", col = "black",
-                          alpha = 0.1, position = "classic")+
-        theme_bw(base_size = 10)+
-        theme(legend.position = "none",
-              panel.grid.major = element_blank(),
-              panel.grid.minor = element_blank(),
-              axis.ticks.x=element_blank())+
-        ylab(label = "prob.")+
-        scale_fill_manual(values = c("white", "red"))+
-        scale_y_continuous(breaks = c(0, 0.5, 1), labels = c(0, 0.5, 1))+
-        ggtitle(label = paste0(chain, ": ", top$cdr, 
-                               " (cells=", top$cells, ")"))
+    g <- ggseqlogo(as.character(aln), seq_type='aa', method = "probability")+
+        theme_logo(base_size = 10)+
+        theme(legend.position = "none")+
+        scale_y_continuous(breaks = c(0, 0.5, 1), labels = c(0, 0.5, 1))
     
     return(g)
 }

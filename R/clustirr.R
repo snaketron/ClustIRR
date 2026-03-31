@@ -1,6 +1,5 @@
 clustirr <- function(s,
                      meta = NULL,
-                     cores = 1,
                      control = list(gmi = 0.8,
                                     trim_flank_aa = 3,
                                     db_dist = 0,
@@ -11,7 +10,7 @@ clustirr <- function(s,
     control <- get_control(control_in = control)
     
     # input check
-    input_check(s = s, meta = meta, cores = cores, control = control)
+    input_check(s = s, meta = meta, control = control)
     
     # get chains to be analyzed
     chains <- get_chains(colnames(s))
@@ -41,7 +40,7 @@ clustirr <- function(s,
         g$clones <- NULL
         return(g)
     }
-    return(get_joint_graph(clust_irrs = co, cores = cores))
+    return(get_joint_graph(clust_irrs = co))
 }
 
 # Description:
