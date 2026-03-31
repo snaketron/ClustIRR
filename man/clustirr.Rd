@@ -8,7 +8,6 @@ T-cell and B-cell receptors) based on their CDR3 sequences.
 \usage{
 clustirr(s,
          meta = NULL,
-         cores = 1,
          control = list(gmi = 0.8,
                         trim_flank_aa = 3,
                         db_dist = 0,
@@ -39,7 +38,6 @@ clone-specific data, such as, V/J genes, cell-type (e.g. CD8+, CD4+), nut
 also repertoire-specific data, such as, biological condition, HLA type, 
 age, etc. This data will be used to annotate the graph nodes and help 
 downstream analyses.}
-\item{cores}{number of computer cores to use (default = 1)}
 \item{control}{auxiliary parameters to control the algorithm's behavior. See 
 the details below:
 \itemize{

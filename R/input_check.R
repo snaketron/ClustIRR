@@ -1,6 +1,6 @@
 # Description:
 # Check user provided input and generate errors and warnings, if necessary
-input_check <- function(s, meta, cores = cores, control) {
+input_check <- function(s, meta, control) {
   check_s(s = s)
   check_trim_flank_aa(control$trim_flank_aa)
   check_gmi(control$gmi)
@@ -8,7 +8,6 @@ input_check <- function(s, meta, cores = cores, control) {
   check_db_dist(db_dist = control$db_dist)
   check_knn(knn = control$knn, k = control$k)
   check_meta(s = s, meta = meta)
-  check_cores(cores = cores)
 }
 
 check_s <- function(s) {
@@ -19,14 +18,6 @@ check_s <- function(s) {
   check_dataframe_na(s)
   check_dataframe_empty(s)
   check_aa(s)
-}
-
-check_cores <- function(cores) {
-  check_infinity(cores)
-  check_numeric(cores)
-  check_wholenumber(cores)
-  check_singlevalue(cores)
-  check_lessthan(cores, 1)
 }
 
 check_trim_flank_aa <- function(trim_flank_aa) { # boundary_size

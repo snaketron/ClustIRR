@@ -134,7 +134,7 @@ get_graph <- function(clust_irr) {
 }
 
 
-get_joint_graph <- function(clust_irrs, cores = 1) {
+get_joint_graph <- function(clust_irrs) {
     
     check_input <- function(clust_irrs) {
         if(missing(clust_irrs)==TRUE) {
@@ -176,9 +176,6 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     # check input
     check_input(clust_irrs = clust_irrs)
     
-    # check cores
-    check_cores(cores = cores)
-    
     # get clust_irrs names
     clust_irrs <- get_clust_irrs_names(clust_irrs = clust_irrs)
     
@@ -187,17 +184,14 @@ get_joint_graph <- function(clust_irrs, cores = 1) {
     
     # build graphs
     message("[1/3] generating individual graphs... \n")
-    igs <- future_lapply(X = clust_irrs, FUN = get_graph, future.seed = TRUE)
+    igs <- lapply(X = clust_irrs, FUN = get_graph)
     names(igs) <- names(clust_irrs)
     
     # get chains
     chains <- get_chains(x = colnames(get_clustirr_inputs(clust_irrs[[1]])$s))
     
     message("[2/3] joining graphs... \n")
-    ige <- get_intergraph_edges(igs = igs,
-                                chains = chains,
-                                cores = cores,
-                                control = control)
+    ige <- get_intergraph_edges(igs = igs, chains = chains, control = control)
     
     # get the vertices/edges of the graph
     df_v <- do.call(rbind, lapply(X = igs, FUN = get_v_e, what = "vertices"))
@@ -319,8 +313,7 @@ plot_graph <- function(g,
 }
 
 get_intergraph_edges <- function(igs,
-                                 chains, 
-                                 cores, 
+                                 chains,
                                  control) {
     
     get_bscore <- function(x, o, b, gap_o, gap_e, trim) {
@@ -439,7 +432,7 @@ get_intergraph_edges <- function(igs,
         data_env <- get_blosum62()
         
         # compute BLSOUM62 scores
-        bs <- t(vapply(X = 1:nrow(o), 
+        bs <- t(vapply(X = seq_len(nrow(o)), 
                        FUN.VALUE = numeric(4),
                        FUN = get_bscore, 
                        o = o, 
@@ -526,16 +519,13 @@ get_intergraph_edges <- function(igs,
                  chains = chains, control = control)
     # find global similarities between pairs of clone tables
     message("merging clust_irrs: ", nrow(ix), "\n")
-    future::plan(future::multisession, workers = I(cores))
-    ige <- future_lapply(X = 1:nrow(ix),
-                         ix = ix,
-                         FUN = get_igg,
-                         igs = igs,
-                         control = control,
-                         future.seed = TRUE)
+    ige <- lapply(X = seq_len(nrow(ix)),
+                  ix = ix,
+                  FUN = get_igg,
+                  igs = igs,
+                  control = control)
     ige <- do.call(rbind, ige)
-    future::plan(future::sequential)
-    
+
     return(ige)
 }
 
