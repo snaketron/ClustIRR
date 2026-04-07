@@ -47,7 +47,7 @@ accuracy and computational efficiency.
 \examples{
   # Example usage:
   # Create a sample community occupancy matrix
-  community_occupancy_matrix <- matrix(rpois(100, lambda = 10),nrow=10,ncol=5)
+  community_occupancy_matrix <- matrix(rpois(100, lambda = 10),nrow=20,ncol=5)
   
   # Compute normalized RADs
   nrads <- get_nrads(community_occupancy_matrix, B = 100)
