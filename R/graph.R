@@ -1,43 +1,13 @@
 
 get_graph <- function(clust_irr) {
     
-    get_edges <- function(clust_irr, cs) {
-        eg <- vector(mode="list", length = length(get_clustirr_clust(clust_irr)))
+    get_edges <- function(clust_irr) {
+        eg <- vector(mode="list", length =length(get_clustirr_clust(clust_irr)))
         names(eg) <- names(get_clustirr_clust(clust_irr))
         for(chain in names(get_clustirr_clust(clust_irr))) {
             g <- get_clustirr_clust(clust_irr)[[chain]]
             if(is.null(g) == FALSE && nrow(g) != 0) {
-                g <- merge(x = g, y = cs[, c(chain, "clone_id")], 
-                           by.x = "from_cdr3", by.y = chain, all.x = TRUE)
-                g$from_clone_id <- g$clone_id
-                g$clone_id <- NULL
-                
-                g <- merge(x = g, y = cs[, c(chain, "clone_id")], 
-                           by.x = "to_cdr3", by.y = chain, all.x = TRUE)
-                g$to_clone_id <- g$clone_id
-                g$clone_id <- NULL
-                
-                # remove duplicated ids
-                g <- g[g$from_clone_id != g$to_clone_id, ]
-                g$key <- apply(X = g[, c("from_clone_id", "to_clone_id")], 
-                               MARGIN = 1, FUN = function(x) {
-                                   return(paste0(sort(x),collapse='|'))})
-                g <- g[duplicated(g$key)==FALSE,]
-                g$key <- NULL
-                
-                out <- data.frame(from_cdr3 = g[,"from_clone_id"], 
-                                  to_cdr3 = g[,"to_clone_id"], 
-                                  weight = g[,"weight"],
-                                  nweight = g[,"nweight"],
-                                  cweight = g[,"cweight"],
-                                  ncweight = g[,"ncweight"],
-                                  max_len = g[,"max_len"],
-                                  max_clen = g[,"max_clen"],
-                                  motif = NA,
-                                  chain = chain,
-                                  type = "global")
-                
-                eg[[chain]] <- out
+                eg[[chain]] <- g
             }
         }
         eg <- do.call(rbind, eg)
@@ -50,30 +20,22 @@ get_graph <- function(clust_irr) {
     
     build_graph <- function(e, cs, sample_id, chains) {
         
-        add_edges <- function(e, ig, sample_id, chain) {
+        add_edges <- function(e, ig) {
+            es <- as.vector(apply(X = e[, c("from", "to")], MARGIN = 1,
+                                     FUN = function(x) {return(x)}))
             
-            get_e <- function(x, sample_id) {
-                return(paste0(sample_id, '|', x))
-            }
-            
-            ve <- as.vector(apply(X = e[, c("from_cdr3", "to_cdr3")], 
-                                  MARGIN = 1, FUN = get_e, 
-                                  sample_id = sample_id))
             ig <- igraph::add_edges(graph = ig, 
-                                    edges = ve, 
+                                    edges = es,
                                     weight = e$weight,
                                     cweight = e$cweight,
                                     nweight = e$nweight,
                                     ncweight = e$ncweight,
-                                    max_len = e$max_len,
-                                    max_clen = e$max_clen,
                                     type = "within-repertoire",
-                                    chain = chain,
-                                    clustering = "global")
+                                    chain = e$chain)
             
             return(ig)
         }
-        
+
         ig <- graph_from_data_frame(d = data.frame(from = cs$name[1], 
                                                    to = cs$name[1]),
                                     directed = FALSE,
@@ -85,9 +47,7 @@ get_graph <- function(clust_irr) {
             for(chain in chains) {
                 chain_ge <- e[e$chain == chain, ]
                 if(nrow(chain_ge)!=0) {
-                    ig <- add_edges(e = chain_ge, ig = ig, 
-                                    sample_id = sample_id,
-                                    chain = chain)
+                    ig <- add_edges(e = chain_ge, ig = ig)
                 }
             }
         }
@@ -112,7 +72,7 @@ get_graph <- function(clust_irr) {
     cs <- get_clones(sample_id = sample_id, s = s, meta = meta)
     
     # get edges between clones
-    e <- get_edges(clust_irr = clust_irr, cs = cs)
+    e <- get_edges(clust_irr = clust_irr)
     
     # build graph with only vertices
     if(is.null(e)) {
@@ -199,7 +159,7 @@ get_joint_graph <- function(clust_irrs) {
     
     # these are the cols we want to keep in this order
     cols <- c("from", "to", "weight", "cweight", "nweight", "ncweight",
-              "max_len", "max_clen", "type", "chain", "clustering")
+              "type", "chain")
     
     if(nrow(df_e)!=0) {
         if(is.null(ige)==FALSE && nrow(ige)!=0) {
@@ -315,156 +275,7 @@ plot_graph <- function(g,
 get_intergraph_edges <- function(igs,
                                  chains,
                                  control) {
-    
-    get_bscore <- function(x, o, b, gap_o, gap_e, trim) {
-        
-        parse_cigar <- function(cigar) {
-            c <- as.numeric(gregexpr(text = cigar, pattern = "X|D|I|\\=")[[1]])
-            s <- vapply(X = c, cigar = cigar, FUN.VALUE = character(1), 
-                        FUN = function(x, cigar) {
-                            return(substr(x = cigar, start = x, stop = x))
-                        })
-            n <- vapply(X = 2:(length(c)+1), c = c(0,c), cigar = cigar, 
-                        FUN.VALUE = character(1), 
-                        FUN = function(x, c, cigar) {
-                            return(substr(x = cigar, start = c[x-1]+1, stop = c[x]-1))
-                        })
-            n <- as.numeric(n)
-            
-            return(rep(x = s, times = n))
-        }
-        
-        q <- o$QueryMatchSeq[x] 
-        t <- o$TargetMatchSeq[x] 
-        cigar <- o$Alignment[x] 
-        
-        s <- parse_cigar(cigar = cigar)
-        len_s <- length(s)
-        q <- unlist(strsplit(x = q, split = NULL, fixed = TRUE))
-        t <- unlist(strsplit(x = t, split = NULL, fixed = TRUE))
-        
-        # trim region = 1, else = 0
-        tr <- numeric(length = len_s)
-        if(trim != 0) {
-            if(len_s-2*trim <= 0) {
-                tr[1:length(tr)] <- 1
-            } else {
-                tr[c(1:trim, (len_s-trim+1):len_s)] <- 1
-            }
-        }
-        
-        cscore <- 0
-        score <- 0
-        gap_o_on <- 0
-        iq <- 1
-        it <- 1
-        for(i in seq_len(len_s)) {
-            if(s[i]=="="|s[i]=="X") {
-                bi <- b[q[iq],t[it]]
-                score <- score + bi
-                cscore <- cscore + bi * (tr[i]==0)
-                gap_o_on <- 0
-                iq <- iq + 1
-                it <- it + 1
-            }
-            else {
-                if(gap_o_on==1) {
-                    score <- score + gap_e
-                    cscore <- cscore + gap_e * (tr[i]==0)
-                } 
-                else {
-                    score <- score + gap_o + gap_e
-                    cscore <- cscore + (gap_o + gap_e) * (tr[i]==0)
-                    gap_o_on <- 1
-                }
-                
-                iq <- iq + (s[i]=="I")
-                it <- it + (s[i]=="D")
-            }
-        }
-        
-        res <- numeric(length = 4)
-        res[1] <- score
-        res[2] <- length(s)
-        res[3] <- cscore
-        res[4] <- sum(tr==0)
-        return(res)
-    }
-    
-    get_blastr <- function(s1, s2, chain, control) {
-        s1 <- data.frame(Id = 1:nrow(s1), Seq = s1[,chain], name = s1$name,
-                         len = nchar(s1[, chain]))
-        s2 <- data.frame(Id = 1:nrow(s2), Seq = s2[,chain], name = s2$name,
-                         len = nchar(s2[, chain]))
-        
-        o <- blast(query = s1, 
-                   db = s2,
-                   maxAccepts = 10^4,
-                   maxRejects = 10^3,
-                   minIdentity = control$gmi,
-                   alphabet = "protein",
-                   output_to_file = FALSE)
-        
-        # check if NA -> why should this occur?
-        o <- o[is.na(o$QueryMatchSeq)==FALSE&
-                   is.na(o$TargetMatchSeq)==FALSE,]
-        # if empty stop
-        if(nrow(o)==0) {
-            return(NULL)
-        } 
-        
-        # remove partial hits
-        o$QueryLen <- s1$len[o$QueryId]
-        o$TargetLen <- s2$len[o$TargetId]
-        j <- which(o$QueryMatchStart!=1 | 
-                       o$TargetMatchStart!=1 | 
-                       o$QueryMatchEnd != o$QueryLen | 
-                       o$TargetMatchEnd != o$TargetLen)
-        if(length(j)!=0) {
-            o <- o[-j,]
-        }
-        # if empty stop
-        if(nrow(o)==0) {
-            return(NULL)
-        }
-        
-        # get blosum matrix
-        data_env <- get_blosum62()
-        
-        # compute BLSOUM62 scores
-        bs <- t(vapply(X = seq_len(nrow(o)), 
-                       FUN.VALUE = numeric(4),
-                       FUN = get_bscore, 
-                       o = o, 
-                       gap_o = -10, 
-                       gap_e = -4, 
-                       trim = control$trim_flank_aa,
-                       b = data_env[["BLOSUM62"]]))
-        
-        out <- data.frame(from = s1$name[o$QueryId],
-                          to = s2$name[o$TargetId],
-                          weight = bs[,1],
-                          cweight = bs[,3],
-                          nweight = bs[,1]/bs[,2],
-                          ncweight = bs[,3]/bs[,4],
-                          max_len = bs[,2],
-                          max_clen = bs[,4])
-        
-        # KNN 
-        if(control$knn == TRUE) {
-            out <- out[order(out$nweight, decreasing = TRUE), ]
-            out <- out %>%
-                group_by(from) %>%
-                arrange(desc(nweight), .by_group = TRUE) %>%
-                mutate(rank = row_number()) %>%
-                ungroup()
-            out <- out[out$rank <= control$k,]
-            out$rank <- NULL
-        }
-        
-        return(out)
-    }
-    
+
     get_igg <- function(x, ix, igs, control) {
         # prepare pair-rep data
         s1_name <- ix$name_i[x]
@@ -476,14 +287,17 @@ get_intergraph_edges <- function(igs,
         
         message("joining (", x, ") ", s1_name, ' and ', s2_name, "\n")
         
-        # run 
-        b <- get_blastr(s1 = s1, s2 = s2, chain = chain, control = control)
+        s1$chain <- chain
+        s1$cdr3 <- s1[, chain]
+        s2$chain <- chain
+        s2$cdr3 <- s2[, chain]
+        
+        b <- get_score_pair(s_from = s1, s_to = s2, control = control)
         
         if(is.null(b)==FALSE && nrow(b)!=0) {
             b$chain <- chain
             b$sample <- paste0(s1_name, "|", s2_name)
             b$type <- "between-repertoire"
-            b$clustering <- "global"
             return(b)
         }
         
@@ -517,6 +331,7 @@ get_intergraph_edges <- function(igs,
     # indices 
     ix <- get_ix(xs = length(igs), ns = names(igs), 
                  chains = chains, control = control)
+    
     # find global similarities between pairs of clone tables
     message("merging clust_irrs: ", nrow(ix), "\n")
     ige <- lapply(X = seq_len(nrow(ix)),
@@ -530,10 +345,7 @@ get_intergraph_edges <- function(igs,
 }
 
 get_clones <- function(sample_id, s, meta) {
-    s$id <- NULL
-    s$clone_id <- seq_len(nrow(s))
-    s$sample <- sample_id
-    s$name <- paste0(sample_id, '|', s$clone_id)
+    s$name <- s$id
     s <- s[, rev(colnames(s))]
     
     # append s and meta

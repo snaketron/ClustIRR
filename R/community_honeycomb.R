@@ -3,12 +3,12 @@ get_honeycombs <- function(com) {
     n <- ncol(com)
     gs <- vector(mode = "list", length = n*(n-1)/2)
     iter <- 1
-    for(i in 1:(ncol(com)-1)) {
+    for(i in seq_len(ncol(com)-1)) {
         for(j in (i+1):ncol(com)) {
             
             m <- data.frame(x = com[,i], 
                             y = com[,j], 
-                            community = 1:nrow(com),
+                            community = seq_len(nrow(com)),
                             sample_1 = colnames(com)[i], 
                             sample_2 = colnames(com)[j],
                             contrast = paste0(colnames(com)[i], "-", colnames(com)[j]),

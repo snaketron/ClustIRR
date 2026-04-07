@@ -1,8 +1,9 @@
 import(methods)
 import(stats)
-import(blaster)
 import(rstan)
 import(ggplot2)
+importFrom(rBLAST, makeblastdb)
+importFrom(rBLAST, blast)
 importFrom(stringdist, stringdistmatrix)
 importFrom(stringdist, stringdist)
 importFrom(stringdist, qgrams)
@@ -45,9 +46,7 @@ importFrom(igraph, vertex_attr)
 importFrom(igraph, disjoint_union)
 importFrom(igraph, diameter)
 importFrom(igraph, which_multiple)
-
 importFrom(RADanalysis, RADnormalization_matrix)
-
 importFrom(posterior, as_draws)
 importFrom(posterior, subset_draws)
 importFrom(posterior, summarise_draws)
@@ -62,14 +61,12 @@ importFrom(dplyr, ungroup)
 importFrom(dplyr, desc)
 importFrom(dplyr, row_number)
 importFrom(dplyr, across)
-
 importFrom(tidyr, complete)
 importFrom(ggforce, geom_sina)
 importFrom(scales, pretty_breaks)
-
 importFrom(msa, msaClustalOmega)
 importFrom(Biostrings, AAStringSet)
-
+importFrom(Biostrings, writeXStringSet)
 importFrom(ggseqlogo, ggseqlogo)
 importFrom(ggseqlogo, theme_logo)
 
@@ -89,7 +86,6 @@ export(get_cosine_similarity)
 export(get_cdr3_motifs)
 export(save_interactive_graph)
 export(get_nrads)
-
 
 exportClasses(clust_irr)
 exportMethods(get_clustirr_clust)

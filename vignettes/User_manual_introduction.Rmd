@@ -198,7 +198,7 @@ Step 1. involves calling the function `clust_irr` which returns an S4
 object of class `clust_irr`.
 
 ```{r}
-cl <- clustirr(s = tcr_reps, meta = meta, control = list(gmi = 0.8))
+cl <- clustirr(s = tcr_reps, meta = meta, control = list(blast_gmi = 0.8))
 ```
 
 The output **complex** list with three elements:
@@ -328,7 +328,6 @@ The user has the following options:
 -   `resolution`: GCD resolution = 1 (default)
 -   `iterations`: number of clustering iterations (default = 100) to
     ensure robust results
--   `weight`: "nweight" (default) or "ncweight"
 -   `chains`: "CDR3a" or "CDR3b" or c("CDR3a", "CDR3b")
 
 ```{r}
@@ -337,7 +336,6 @@ gcd <- detect_communities(graph = cl$graph,
                           metric = "average",
                           resolution = 1,
                           iterations = 100,
-                          weight = "nweight",
                           chains = c("CDR3a", "CDR3b"))
 ```
 

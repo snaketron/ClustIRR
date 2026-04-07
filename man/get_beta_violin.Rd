@@ -58,7 +58,6 @@ c <- clustirr(s = rbind(a, b))
 gcd <- detect_communities(graph = c$graph, 
                           algorithm = "leiden",
                           resolution = 1,
-                          weight = "ncweight",
                           chains = c("CDR3a", "CDR3b"))
 
 # differential community occupancy analysis

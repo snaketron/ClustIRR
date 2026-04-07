@@ -78,7 +78,7 @@ get_blosum62 <- function() {
     data_env <- new.env(parent = emptyenv())
     data("BLOSUM62", envir = data_env, package = "ClustIRR")
     # ensure: min(BLOSUM62)=0
-    data_env[["BLOSUM62"]] <- data_env[["BLOSUM62"]] + 4
+    # data_env[["BLOSUM62"]] <- data_env[["BLOSUM62"]] + 4
     return(data_env)
 }
 

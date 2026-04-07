@@ -35,12 +35,10 @@ c <- clustirr(s = s)
 # plot graph with vertices as clones (has to be a visNetwork)
 g <- plot_graph(c, as_visnet=TRUE, show_singletons=TRUE, node_opacity = 0.8)
 
-\dontrun{
-# Save the graph to a temporary directory
-my_temp_dir <- tempdir()
-save_interactive_graph(graph = g, 
-                    file_name = "test_graph", 
-                    output_folder = my_temp_dir,
-                    overwrite = TRUE)
-}
+# # Save the graph to a temporary directory
+# my_temp_dir <- tempdir()
+# save_interactive_graph(graph = g, 
+#                    file_name = "test_graph", 
+#                    output_folder = my_temp_dir,
+#                    overwrite = TRUE)
 }

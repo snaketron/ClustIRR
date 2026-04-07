@@ -65,3 +65,6 @@ Changes in version 1.9.10 (Feb, 2026)
 Changes in version 1.9.17 (Feb 20, 2026)
 + quantiative comparison community abundance with normalized rank abundance 
   distributions (NRADs) implemented in get_nrad()
+
+Changes in version 1.9.25 (Apr 7, 2026)
++ move from CRAN's blaster to Bioconductors rBLAST

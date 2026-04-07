@@ -1,5 +1,4 @@
 detect_communities <- function(graph, 
-                               weight = "nweight",
                                algorithm = "leiden", 
                                metric = "average",
                                resolution = 1,
@@ -11,13 +10,11 @@ detect_communities <- function(graph,
                  metric = metric,
                  resolution = resolution,
                  iterations = iterations,
-                 weight = weight,
                  chains = chains)
     
     message("[1/5] formatting graph...")
     cg <- get_formatted_graph(graph = graph, 
-                              metric = metric,
-                              weight = weight, 
+                              metric = metric, 
                               chains = chains) 
     
     message("[2/5] community detection...")
@@ -39,7 +36,6 @@ detect_communities <- function(graph,
     config <- list(input_g = graph, 
                    algorithm = algorithm, 
                    resolution = resolution,
-                   weight = weight,
                    metric = metric,
                    chains = chains)
     
@@ -54,7 +50,6 @@ detect_communities <- function(graph,
 
 get_formatted_graph <- function(graph,
                                 metric,
-                                weight,
                                 chains) {
     
     set_chain <- function(graph, chains) {
@@ -89,12 +84,7 @@ get_formatted_graph <- function(graph,
                                     FUN = function(x) {return(max(x))})
      }
     
-    if(weight == "nweight") {
-        E(graph)$w <- E(graph)$nweight
-    } else {
-        E(graph)$w <- E(graph)$ncweight
-    }
-    
+    E(graph)$w <- E(graph)$nweight
     
     # if trim*2 > CDR3 lengths -> NA
     i <- which(E(graph)$w <= 0 | is.na(E(graph)$w))
@@ -256,8 +246,7 @@ check_inputs <- function(graph,
                          algorithm, 
                          metric,
                          resolution,
-                         iterations,
-                         weight, 
+                         iterations, 
                          chains) {
     
     
@@ -331,23 +320,7 @@ check_inputs <- function(graph,
     if(iterations<=0) {
         stop("iterations must be a number > 0")
     }
-    
-    
-    # check weight
-    if(missing(weight)) {
-        stop("weight must be ncweight or nweight")
-    }
-    if(length(weight)!=1) {
-        stop("weight must be ncweight or nweight")
-    }
-    if(is.character(weight)==FALSE) {
-        stop("weight must be character")
-    }
-    if(!weight %in% c("ncweight", "nweight")) {
-        stop("weight must be ncweight or nweight")
-    }
-    
-    
+
     # check chains
     if(missing(chains)) {
         stop("chains must be a character vector")

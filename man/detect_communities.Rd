@@ -13,7 +13,6 @@ outside the community.
 }
 \usage{
 detect_communities(graph,
-                   weight = "nweight",
                    algorithm = "leiden", 
                    metric = "average",
                    resolution = 1,
@@ -27,8 +26,6 @@ detect_communities(graph,
 \item{metric}{possible metrics: "average" (default) or "max".}
 \item{resolution}{clustering resolution (default = 1) for GCD.}
 \item{iterations}{clustering iterations (default = 100) for GCD.}
-\item{weight}{which edge weight attribute (default = nweight) should be 
-used for GCD}
 \item{chains}{which chains should be used for clustering? For instance:
 chains = "CDR3a"; or chains = "CDR3b"; or chains = c("CDR3a", "CDR3b").}
 }
@@ -68,7 +65,6 @@ gcd <- detect_communities(graph = c$graph,
                           algorithm = "leiden",
                           metric = "average",
                           resolution = 1,
-                          weight = "ncweight",
                           iterations = 100,
                           chains = c("CDR3a", "CDR3b"))
 

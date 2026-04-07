@@ -30,7 +30,7 @@ data("D2", package = "ClustIRR")
 ```
 
 ```{r}
-cl <- clustirr(s = D2, control = list(gmi = 0.8))
+cl <- clustirr(s = D2, control = list(blast_gmi = 0.8))
 ```
 
 

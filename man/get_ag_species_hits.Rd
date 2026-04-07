@@ -64,7 +64,6 @@ c <- clustirr(s = rbind(a, b))
 gcd <- detect_communities(graph = c$graph, 
                           algorithm = "leiden",
                           resolution = 1,
-                          weight = "ncweight",
                           chains = c("CDR3a", "CDR3b"))
 
 ag <- get_ag_species_hits(node_summary = gcd$node_summary,

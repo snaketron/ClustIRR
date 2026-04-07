@@ -3,7 +3,8 @@
 input_check <- function(s, meta, control) {
   check_s(s = s)
   check_trim_flank_aa(control$trim_flank_aa)
-  check_gmi(control$gmi)
+  check_blast_gmi(blast_gmi = control$blast_gmi)
+  check_blast_cores(blast_cores = control$blast_cores)
   check_db_custom(db_custom = control$db_custom)
   check_db_dist(db_dist = control$db_dist)
   check_knn(knn = control$knn, k = control$k)
@@ -67,11 +68,19 @@ check_node_opacity <- function(node_opacity) {
     check_probability(node_opacity)
 }
 
-check_gmi <- function(gmi) {
-  check_infinity(gmi)
-  check_numeric(gmi)
-  check_singlevalue(gmi)
-  check_probability(gmi)
+check_blast_gmi <- function(blast_gmi) {
+  check_infinity(blast_gmi)
+  check_numeric(blast_gmi)
+  check_singlevalue(blast_gmi)
+  check_probability(blast_gmi)
+}
+
+check_blast_cores <- function(blast_cores) {
+    check_infinity(blast_cores)
+    check_numeric(blast_cores)
+    check_wholenumber(blast_cores)
+    check_singlevalue(blast_cores)
+    check_lessthan(blast_cores, 1)
 }
 
 check_knn <- function(knn, k) {
@@ -91,7 +100,8 @@ check_knn <- function(knn, k) {
 # Setup control list.
 # control_in: user generated list (if missing -> use default)
 get_control <- function(control_in) {
-  control = list(gmi = 0.8,
+  control = list(blast_gmi = 0.8,
+                 blast_cores = 1,
                  trim_flank_aa = 3,
                  db_dist = 0,
                  db_custom = NULL,
@@ -199,12 +209,12 @@ check_s_cols <- function(x) {
   if(!any(colnames(x) %in% c("clone_size", "sample", chains))) {
     stop(paste0("allowed columns in s: ", chains, " clone_size and sample"))
   }
-  if((any(colnames(x) %in% chains[1:2])==TRUE &
-      all(colnames(x) %in% c(chains[1:2], "clone_size", "sample"))==FALSE)|
-     (any(colnames(x) %in% chains[3:4])==TRUE &
-      all(colnames(x) %in% c(chains[3:4], "clone_size", "sample"))==FALSE)|
-     (any(colnames(x) %in% chains[5:6])==TRUE &
-      all(colnames(x) %in% c(chains[5:6], "clone_size", "sample"))==FALSE)) {
+  if((any(colnames(x) %in% chains[c(1,2)])==TRUE &
+      all(colnames(x) %in% c(chains[c(1,2)], "clone_size", "sample"))==FALSE)|
+     (any(colnames(x) %in% chains[c(3,4)])==TRUE &
+      all(colnames(x) %in% c(chains[c(3,4)], "clone_size", "sample"))==FALSE)|
+     (any(colnames(x) %in% chains[c(5,6)])==TRUE &
+      all(colnames(x) %in% c(chains[c(5,6)], "clone_size", "sample"))==FALSE)) {
     stop(paste0("allowed chain pairs: CDR3a-CDR3b CDR3d-CDR3g CDR3l-CDR3h"))
   }
   

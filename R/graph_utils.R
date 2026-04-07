@@ -79,7 +79,7 @@ save_interactive_graph <- function(graph,
                                    output_folder, 
                                    overwrite = TRUE){
     
-    if (!requireNamespace("htmlwidgets", quietly = T)) {
+    if (!requireNamespace("htmlwidgets", quietly = TRUE)) {
         stop(
             "\"htmlwidgets\" is required to export interactive graphs.\n",
             "Please install it using install.packages('htmlwidgets')."
@@ -96,7 +96,7 @@ save_interactive_graph <- function(graph,
     
     if(!dir.exists(output_folder) & output_folder != ""){
         message("Directory '", output_folder, "' not found. Creating it.")
-        dir.create(output_folder, recursive = T)
+        dir.create(output_folder, recursive = TRUE)
     }
     
     base_file <- paste0(file_name, ".html")
