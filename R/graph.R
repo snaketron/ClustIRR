@@ -286,11 +286,26 @@ get_intergraph_edges <- function(igs,
         rm(igs)
         
         message("joining (", x, ") ", s1_name, ' and ', s2_name, "\n")
-        
+
         s1$chain <- chain
         s1$cdr3 <- s1[, chain]
+        s1 <- s1[is.na(s1$cdr3)==FALSE,]
+        if(nrow(s1)==0) {
+            return(NULL)
+        }
+        if(is.null(s1)) {
+            return(NULL)
+        }
+        
         s2$chain <- chain
         s2$cdr3 <- s2[, chain]
+        s2 <- s2[is.na(s2$cdr3)==FALSE,]
+        if(nrow(s2)==0) {
+            return(NULL)
+        }
+        if(is.null(s2)) {
+            return(NULL)
+        }
         
         b <- get_score_pair(s_from = s1, s_to = s2, control = control)
         
