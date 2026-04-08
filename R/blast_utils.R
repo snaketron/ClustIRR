@@ -61,7 +61,7 @@ get_score <- function(s, control) {
                        "sstart send evalue score qseq sseq qlen slen")
     blast_args <- paste0("-num_threads ", control$blast_cores, 
                          " -evalue 10 -gapopen 11 -gapextend 2", 
-                         " -word_size 2 -matrix BLOSUM62 -comp_based_stats 0")
+                         " -word_size 3 -matrix BLOSUM62 -comp_based_stats 0")
     o <- predict(bdb, db, BLAST_args = blast_args, custom_format = blast_fmt)
     
     # clean up
@@ -150,7 +150,7 @@ get_score_pair <- function(s_from, s_to, control) {
                        "sstart send evalue score qseq sseq qlen slen")
     blast_args <- paste0("-num_threads ", control$blast_cores, 
                          " -evalue 10 -gapopen 11 -gapextend 2", 
-                         " -word_size 2 -matrix BLOSUM62 -comp_based_stats 0")
+                         " -word_size 3 -matrix BLOSUM62 -comp_based_stats 0")
     o <- predict(bdb, db_from, BLAST_args = blast_args, 
                  custom_format = blast_fmt)
     
