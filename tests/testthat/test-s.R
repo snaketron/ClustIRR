@@ -1,3 +1,4 @@
+skip_if_not(rBLAST::has_blast(), message = "BLAST+ is not installed.")
 ###### testing s with weird inputs #######
 
 test_that("s parameter takes only valid input", {

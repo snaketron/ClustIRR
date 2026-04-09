@@ -22,19 +22,49 @@ library(ClustIRR)
 library(ggplot2)
 library(patchwork)
 library(ggforce)
+library(rBLAST)
 theme_set(new = theme_bw(base_size = 10))
 ```
 
-```{r}
+
+```{r, include = FALSE}
+# only run code if blast+ is installed
+run <- has_blast()
+```
+
+```{r, echo = FALSE, eval = !run, results='asis'}
+cat("**Note: BLAST was not installed when this vignette was built!**")
+```
+
+
+```{r, eval=run}
+# System requirements
+#  The BLAST+ software needs to be installed on your system. Installation
+# instructions are available in this package's
+# [INSTALL](https://github.com/mhahsler/rBLAST/blob/devel/INSTALL) file and
+# at \url{https://www.ncbi.nlm.nih.gov/books/NBK569861/}.
+
+# R needs to be able to find the executable. After installing the software,
+# try in R
+Sys.which("blastp")
+
+# If the command returns "" instead of the path to the executable,
+# then you need to set the environment variable called PATH. In R
+Sys.setenv(PATH = paste(Sys.getenv("PATH"),
+   "path_to_your_BLAST_installation", sep=.Platform$path.sep))
+```
+
+
+```{r, eval=run}
 data("D2", package = "ClustIRR")
 ```
 
-```{r}
+```{r, eval=run}
 cl <- clustirr(s = D2, control = list(blast_gmi = 0.8))
 ```
 
 
-```{r}
+```{r, eval=run}
 gcd <- detect_communities(graph = cl$graph, 
                           algorithm = "leiden",
                           metric = "average",
@@ -44,13 +74,12 @@ gcd <- detect_communities(graph = cl$graph,
 ```
 
 
-
-```{r}
+```{r, eval=run}
 dim(gcd$community_occupancy_matrix)
 ```
 
 
-```{r, fig.width=8, fig.height=9}
+```{r, fig.width=8, fig.height=9, eval=run}
 honeycomb <- get_honeycombs(com = gcd$community_occupancy_matrix)
 wrap_plots(honeycomb, nrow = 5, ncol = 3)+
     plot_annotation(tag_levels = 'A')
@@ -58,7 +87,7 @@ wrap_plots(honeycomb, nrow = 5, ncol = 3)+
 
 
 
-```{r}
+```{r, eval=run}
 d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
          groups = c(1, 1, 1, 2, 2, 2),
          mcmc_control = list(mcmc_warmup = 300,
@@ -72,7 +101,7 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
 
 
 
-```{r, fig.width=6, fig.height=3}
+```{r, fig.width=6, fig.height=3, eval=run}
 ggplot(data = d$posterior_summary$beta)+
     geom_sina(aes(x = sample, y = mean))|
     ggplot(data = d$posterior_summary$beta_mu)+
@@ -80,7 +109,7 @@ ggplot(data = d$posterior_summary$beta)+
 ```
 
 
-```{r, fig.width=7, fig.height=3}
+```{r, fig.width=7, fig.height=3, eval=run}
 ggplot(data = d$posterior_summary$epsilon)+
     facet_wrap(facets = ~contrast, ncol = 2)+
     geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 

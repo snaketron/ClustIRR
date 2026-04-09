@@ -25,20 +25,23 @@ of a \code{clustirr} graph.
 
 
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
-
-# run ClustIRR analysis
-c <- clustirr(s = s)
-
-# plot graph with vertices as clones (has to be a visNetwork)
-g <- plot_graph(c, as_visnet=TRUE, show_singletons=TRUE, node_opacity = 0.8)
-
-# # Save the graph to a temporary directory
-# my_temp_dir <- tempdir()
-# save_interactive_graph(graph = g, 
-#                    file_name = "test_graph", 
-#                    output_folder = my_temp_dir,
-#                    overwrite = TRUE)
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = s)
+    
+    # plot graph with vertices as clones (has to be a visNetwork)
+    g <- plot_graph(c, as_visnet=TRUE, show_singletons=TRUE, node_opacity = 0.8)
+    
+    # # Save the graph to a temporary directory
+    # my_temp_dir <- tempdir()
+    # save_interactive_graph(graph = g, 
+    #                    file_name = "test_graph", 
+    #                    output_folder = my_temp_dir,
+    #                    overwrite = TRUE)
+}
 }

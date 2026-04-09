@@ -50,5 +50,4 @@ print(result$g)
 
 # Inspect similarity values
 head(result$cs)
-
 }

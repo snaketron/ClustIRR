@@ -37,13 +37,16 @@ created by the function \code{clustirr}.
 }
 
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
-
-# run ClustIRR analysis
-c <- clustirr(s = s)
-
-# plot graph with vertices as clones
-plot_graph(c, as_visnet=FALSE, show_singletons=TRUE, node_opacity = 0.8)
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = s)
+    
+    # plot graph with vertices as clones
+    plot_graph(c, as_visnet=FALSE, show_singletons=TRUE, node_opacity = 0.8)
+}
 }

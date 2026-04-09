@@ -117,16 +117,19 @@ ClustIRR performs the following steps.
 \strong{the function \code{clustirr} performs the steps 1. to 3.}
 }
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
-
-# run analysis
-c <- clustirr(s = s)
-
-# output class
-class(c)
-
-# output structure
-str(c)
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size=1)
+    
+    # run analysis
+    c <- clustirr(s = s)
+    
+    # output class
+    class(c)
+    
+    # output structure
+    str(c)
+}
 }

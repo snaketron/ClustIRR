@@ -1,3 +1,5 @@
+skip_if_not(rBLAST::has_blast(), message = "BLAST+ is not installed.")
+
 test_that("get_blosum does not delete duplicate edges", {
     
     data("CDR3ab", package = "ClustIRR")

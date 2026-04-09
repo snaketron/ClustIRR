@@ -50,67 +50,72 @@ The output is a list with the following elements
 }
 }
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
-                  CDR3b = CDR3ab[1:500, "CDR3b"],
-                  clone_size = 1,
-                  sample = "a")
-
-b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
-                  CDR3b = CDR3ab[401:900, "CDR3b"],
-                  clone_size = 1,
-                  sample = "b")
-b$clone_size[1] <- 20
-
-# run ClustIRR analysis
-c <- clustirr(s = rbind(a, b))
-
-# detect communities
-gcd <- detect_communities(graph = c$graph, 
-                          algorithm = "leiden",
-                          resolution = 1,
-                          iterations = 100,
-                          chains = c("CDR3a", "CDR3b"))
-
-# We "decompose" the communities in the gcd object using decode_community 
-# based on the attributes of the edges (edge_filter) and nodes (node_filter).
-# We can pick from these edge attributes and create filters:
-library(igraph)
-edge_attr_names(graph = gcd$graph)
-
-# For instance, the following edge-filter will instruct ClustIRR to keep 
-# edges with: edge attributes: nweight>=8 \bold{AND} ncweight>=8
-edge_filter <- rbind(data.frame(name = "nweight", value = 8, operation = ">="),
-                     data.frame(name = "ncweight", value = 8, operation = ">="))
-
-# In addition, we can construct filters based on the following node attributes:
-vertex_attr_names(graph = gcd$graph)
-
-# The following node-filter will instruct ClustIRR to retain edges 
-# between nodes that have shared node attributed with respect to ALL 
-# of the following node attributes: 
-node_filter <- data.frame(name = "Ag_gene")
-
-# Lets inspect community with ID = 1.
-c1 <- decode_community(community_id = 1, 
-                         graph = gcd$graph,
-                         edge_filter = edge_filter,
-                         node_filter = node_filter)
-
-# Plot resulting igraph
-par(mar = c(0, 0, 0, 0))
-plot(c1$community_graph, vertex.size = 10)
-
-# Now look at node attributes
-as_data_frame(x = c1$community_graph, what = "vertices")[,c("name", 
-                                                            "component_id", 
-                                                            "CDR3b", 
-                                                            "CDR3a", 
-                                                            "Ag_gene")]
-
-str(c1$component_stats)
-
-str(c1$node_summary)
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
+                    CDR3b = CDR3ab[1:500, "CDR3b"],
+                    clone_size = 1,
+                    sample = "a")
+    
+    b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
+                    CDR3b = CDR3ab[401:900, "CDR3b"],
+                    clone_size = 1,
+                    sample = "b")
+    b$clone_size[1] <- 20
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = rbind(a, b))
+    
+    # detect communities
+    gcd <- detect_communities(graph = c$graph, 
+                              algorithm = "leiden",
+                              resolution = 1,
+                              iterations = 100,
+                              chains = c("CDR3a", "CDR3b"))
+    
+    # We "decompose" the communities in the gcd object using decode_community 
+    # using attributes of the edges (edge_filter) and nodes (node_filter).
+    # We can pick from these edge attributes and create filters:
+    library(igraph)
+    edge_attr_names(graph = gcd$graph)
+    
+    # For instance, the following edge-filter will instruct ClustIRR to keep 
+    # edges with: edge attributes: nweight>=8 \bold{AND} ncweight>=8
+    edge_filter <- rbind(data.frame(name = "nweight", value = 8, o
+                                    peration = ">="),
+                         data.frame(name = "ncweight", value = 8, 
+                                    operation = ">="))
+    
+    # In addition, we can construct filters using the following node attributes:
+    vertex_attr_names(graph = gcd$graph)
+    
+    # The following node-filter will instruct ClustIRR to retain edges 
+    # between nodes that have shared node attributed with respect to ALL 
+    # of the following node attributes: 
+    node_filter <- data.frame(name = "Ag_gene")
+    
+    # Lets inspect community with ID = 1.
+    c1 <- decode_community(community_id = 1, 
+                           graph = gcd$graph,
+                           edge_filter = edge_filter,
+                           node_filter = node_filter)
+    
+    # Plot resulting igraph
+    par(mar = c(0, 0, 0, 0))
+    plot(c1$community_graph, vertex.size = 10)
+    
+    # Now look at node attributes
+    as_data_frame(x = c1$community_graph, what = "vertices")[,c("name", 
+                                                                "component_id", 
+                                                                "CDR3b", 
+                                                                "CDR3a", 
+                                                                "Ag_gene")]
+    
+    str(c1$component_stats)
+    
+    str(c1$node_summary)
+}
 }
 

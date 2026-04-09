@@ -44,39 +44,42 @@ measure of the strength of division of the graph into communities.}
 \item{input_config}{list, inputs provided as list.}
 }
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
-                  CDR3b = CDR3ab[1:500, "CDR3b"],
-                  clone_size = 1,
-                  sample = "a")
-
-b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
-                  CDR3b = CDR3ab[401:900, "CDR3b"],
-                  clone_size = 1,
-                  sample = "b")
-b$clone_size[1] <- 20
-
-# run ClustIRR analysis
-c <- clustirr(s = rbind(a, b))
-
-# detect communities
-gcd <- detect_communities(graph = c$graph, 
-                          algorithm = "leiden",
-                          metric = "average",
-                          resolution = 1,
-                          iterations = 100,
-                          chains = c("CDR3a", "CDR3b"))
-
-# look at outputs
-names(gcd)
-
-# look at the community occupancymatrix
-head(gcd$community_occupancy_matrix)
-
-# look at the community summary
-head(gcd$community_summary)
-
-# look at the node summary
-head(gcd$node_summary)
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
+                    CDR3b = CDR3ab[1:500, "CDR3b"],
+                    clone_size = 1,
+                    sample = "a")
+    
+    b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
+                    CDR3b = CDR3ab[401:900, "CDR3b"],
+                    clone_size = 1,
+                    sample = "b")
+    b$clone_size[1] <- 20
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = rbind(a, b))
+    
+    # detect communities
+    gcd <- detect_communities(graph = c$graph, 
+                              algorithm = "leiden",
+                              metric = "average",
+                              resolution = 1,
+                              iterations = 100,
+                              chains = c("CDR3a", "CDR3b"))
+    
+    # look at outputs
+    names(gcd)
+    
+    # look at the community occupancymatrix
+    head(gcd$community_occupancy_matrix)
+    
+    # look at the community summary
+    head(gcd$community_summary)
+    
+    # look at the node summary
+    head(gcd$node_summary)
+}
 }

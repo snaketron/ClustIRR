@@ -1,3 +1,5 @@
+skip_if_not(rBLAST::has_blast(), message = "BLAST+ is not installed.")
+
 test_that("samples with one chain only containing NA do not stop clustirr", {
     
     data("CDR3ab", package = "ClustIRR")

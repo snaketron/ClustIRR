@@ -32,30 +32,32 @@ You can arrange the ggplots (or a portion of them) in any shape e.g. with
 the R-package patchwork.
 }
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-a <- data.frame(CDR3a = CDR3ab[1:300, "CDR3a"],
-                CDR3b = CDR3ab[1:300, "CDR3b"],
-                clone_size = 1,
-                sample = "a")
-
-b <- data.frame(CDR3a = CDR3ab[201:400, "CDR3a"],
-                  CDR3b = CDR3ab[201:400, "CDR3b"],
-                  clone_size = 1,
-                  sample = "b")
-b$clone_size[1] <- 20
-
-# run ClustIRR analysis
-c <- clustirr(s = rbind(a, b))
-
-# detect communities
-gcd <- detect_communities(graph = c$graph, 
-                          algorithm = "leiden",
-                          resolution = 1,
-                          chains = c("CDR3a", "CDR3b"))
-
-# get honeycombs
-g <- get_honeycombs(com = gcd$community_occupancy_matrix)
-
-g
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    a <- data.frame(CDR3a = CDR3ab[1:300, "CDR3a"],
+                    CDR3b = CDR3ab[1:300, "CDR3b"],
+                    clone_size = 1,
+                    sample = "a")
+    
+    b <- data.frame(CDR3a = CDR3ab[201:400, "CDR3a"],
+                    CDR3b = CDR3ab[201:400, "CDR3b"],
+                    clone_size = 1,
+                    sample = "b")
+    b$clone_size[1] <- 20
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = rbind(a, b))
+    
+    # detect communities
+    gcd <- detect_communities(graph = c$graph, 
+                              algorithm = "leiden",
+                              resolution = 1,
+                              chains = c("CDR3a", "CDR3b"))
+    
+    # get honeycombs
+    g <- get_honeycombs(com = gcd$community_occupancy_matrix)
+    g
+}
 }

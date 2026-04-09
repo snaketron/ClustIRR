@@ -23,7 +23,18 @@ library(ggplot2)
 theme_set(new = theme_bw(base_size = 10))
 library(ggrepel)
 library(patchwork)
+library(rBLAST)
 options(digits=2)
+```
+
+
+```{r, include = FALSE}
+# only run code if blast+ is installed
+run <- has_blast()
+```
+
+```{r, echo = FALSE, eval = !run, results='asis'}
+cat("**Note: BLAST was not installed when this vignette was built!**")
 ```
 
 # Introduction
@@ -43,7 +54,7 @@ effector populations that mount targeted immune responses.
 High-throughput sequencing (HT-seq) enables tracking of TCR/BCR community 
 dynamics across biological conditions (e.g., pre-/post-treatment), offering 
 insights into responses to immunotherapy and vaccination. However, two key 
-challenges complicate this approach if the unit of analysis are **clonotype**:
+challenges complicate this **clonotype-centric** approach:
 
 1.  **Extreme diversity and privacy**: TCRs/BCRs are highly
     personalized, with incomplete sampling particularly problematic in
@@ -51,15 +62,15 @@ challenges complicate this approach if the unit of analysis are **clonotype**:
     comprehensive sampling reveals minimal repertoire overlap in terms of
     clonotypes between individuals.
 
-2.  **Similar TCRs/BCRs recognize similar antigens**
-
+2.  **Similar TCRs/BCRs recognize the same antigen**: consequently, analyses 
+    focused on exact clonotypes may miss biologically meaningful shared immune 
+    responses.
 
 
 This vignette introduces `r Biocpkg("ClustIRR")`, a computational method
-that addresses these challenges by: (1) Identifying
-specificity-associated receptor communities through sequence clustering,
-and (2) Applying Bayesian models to quantify differential community
-abundance across conditions.
+that addresses these challenges by: (1) Identifying specificity-associated 
+receptor communities through sequence clustering, and (2) Applying Bayesian 
+models to quantify differential community abundance across conditions.
 
 # Installation
 
@@ -75,6 +86,29 @@ if(!require("BiocManager", quietly = TRUE)) {
 }
 BiocManager::install("ClustIRR")
 ```
+
+
+# System requirements
+The BLAST+ software needs to be installed on your system. Installation
+instructions are available in this package's
+[INSTALL](https://github.com/mhahsler/rBLAST/blob/devel/INSTALL) file and
+at \url{https://www.ncbi.nlm.nih.gov/books/NBK569861/}.
+
+R needs to be able to find the executable. After installing the software,
+try in R
+
+```{r, eval=run}
+Sys.which("blastp")
+```
+
+If the command returns "" instead of the path to the executable,
+then you need to set the environment variable called PATH. In R
+
+```{r, eval=run}
+Sys.setenv(PATH = paste(Sys.getenv("PATH"),
+   "path_to_your_BLAST_installation", sep=.Platform$path.sep))
+```
+
 
 # ClustIRR algorithm
 
@@ -197,7 +231,7 @@ in step 1. The joint graph $J$ is stored as an `igraph` object.
 Step 1. involves calling the function `clust_irr` which returns an S4
 object of class `clust_irr`.
 
-```{r}
+```{r, eval=run}
 cl <- clustirr(s = tcr_reps, meta = meta, control = list(blast_gmi = 0.8))
 ```
 
@@ -227,13 +261,13 @@ annotated with the following metrics:
 
 The results for CDR3$\alpha$ sequence pairs from repertoire `a`:
 
-```{r}
+```{r, eval=run}
 kable(head(cl$clust_irrs[["a"]]@clust$CDR3a), digits = 2)
 ```
 
 ... the same table for CDR3$\beta$ sequence pairs from repertoire `a`:
 
-```{r}
+```{r, eval=run}
 kable(head(cl$clust_irrs[["a"]]@clust$CDR3b), digits = 2)
 ```
 
@@ -263,7 +297,7 @@ function to look at the CDR3 sequences of nodes.
 
 Do this now!
 
-```{r}
+```{r, eval=run}
 plot_graph(cl, select_by = "Ag_species", as_visnet = TRUE)
 ```
 
@@ -280,12 +314,12 @@ in `cl$graph`. For instance, below, we extract the edge attributes and
 visualize the distributions of the edge attributes `ncweight` and
 `nweight` for all CDR3$\alpha$ and CDR3$\beta$ sequence pairs.
 
-```{r, fig.width=6, fig.height=4.5}
+```{r, fig.width=6, fig.height=4.5, eval=run}
 # data.frame of edges and their attributes
 e <- igraph::as_data_frame(x = cl$graph, what = "edges")
 ```
 
-```{r, fig.width=5, fig.height=3.5}
+```{r, fig.width=5, fig.height=3.5, eval=run}
 ggplot(data = e)+
   geom_density(aes(ncweight, col = chain))+
   geom_density(aes(nweight, col = chain), linetype = "dashed")+
@@ -330,7 +364,7 @@ The user has the following options:
     ensure robust results
 -   `chains`: "CDR3a" or "CDR3b" or c("CDR3a", "CDR3b")
 
-```{r}
+```{r, eval=run}
 gcd <- detect_communities(graph = cl$graph, 
                           algorithm = "leiden",
                           metric = "average",
@@ -344,7 +378,7 @@ gcd <- detect_communities(graph = cl$graph,
 The function `detect_communities` generates a complex output. Lets
 investigate its elements:
 
-```{r}
+```{r, eval=run}
 names(gcd)
 ```
 
@@ -354,17 +388,17 @@ we have three repertoires (three columns) and over 400 communities.
 This matrix is the main input of the function `dco` (step 5.), to detect
 differences in the community occupancy between repertoires.
 
-```{r}
+```{r, eval=run}
 dim(gcd$community_occupancy_matrix)
 ```
 
-```{r}
+```{r, eval=run}
 head(gcd$community_occupancy_matrix)
 ```
 
 ### **Qualitative** similarity between community abundance vectors with `get_honeycombs`
 
-```{r, fig.width=5, fig.height=5}
+```{r, fig.width=5, fig.height=5, eval=run}
 honeycomb <- get_honeycombs(com = gcd$community_occupancy_matrix)
 ```
 
@@ -384,7 +418,7 @@ communities in the 2D scatterplots: **dark hexagons** indicate high a
 frequency of communities, while **light hexagons** represent sparsely
 populated regions.
 
-```{r, fig.width=10, fig.height=2.5}
+```{r, fig.width=10, fig.height=2.5, eval=run}
 wrap_plots(honeycomb, nrow = 1)+
     plot_annotation(tag_levels = 'A')
 ```
@@ -396,7 +430,7 @@ to 1 between repertoires b vs. c, and lower CS values (0.55 -- 0.75)
 between a vs. b/c. This is consistent with the qualitative honeycomb plot 
 based analysis.
 
-```{r, fig.width=3, fig.height=2.5}
+```{r, fig.width=3, fig.height=2.5, eval=run}
 cos_sim <- get_cosine_similarity(com = gcd$community_occupancy_matrix)
 cos_sim$g
 ```
@@ -418,7 +452,7 @@ including:
 -   `n_CDR3a`, `n_CDR3b`: number of edges between CDR3$\alpha$ and
     CDR3$\beta$ sequences
 
-```{r}
+```{r, eval=run}
 kable(head(gcd$community_summary), digits = 1, 
       row.names = FALSE)
 ```
@@ -426,7 +460,7 @@ kable(head(gcd$community_summary), digits = 1,
 
 Node-specific (TCR clonotype-specific) summaries are provided in `node_summary`
 
-```{r}
+```{r, eval=run}
 kable(head(gcd$node_summary), digits = 1, row.names = FALSE)
 ```
 
@@ -437,7 +471,7 @@ Community with ID=22 contains 12 TCR clonotypes. These
 are connected based on their CDR3$\alpha$ and CDR3$\beta$ 
 sequences.
 
-```{r}
+```{r, eval=run}
 ns_com <- gcd$node_summary[gcd$node_summary$community == 22, ]
 
 table(ns_com$sample)
@@ -445,7 +479,7 @@ table(ns_com$sample)
 
 We can extract it and visualize it using igraph:
 
-```{r, fig.width=6, fig.height=4}
+```{r, fig.width=6, fig.height=4, eval=run}
 par(mai = c(0,0,0,0))
 plot(subgraph(graph = gcd$graph, vids = which(V(gcd$graph)$community == 22)))
 ```
@@ -454,7 +488,7 @@ Furthermore, we can "decompose" this graph using `decode_community`
 based on the attributes of the edges (`edge_filter`) and nodes
 (`node_filter`).
 
-```{r}
+```{r, eval=run}
 # we can pick from these edge attributes
 edge_attr_names(graph = gcd$graph)
 ```
@@ -462,12 +496,12 @@ edge_attr_names(graph = gcd$graph)
 The following edge-filter will instruct ClustIRR to keep edges with with
 edge attributes: nweight $>=$ 4 **AND** ncweight $>=$ 4
 
-```{r}
+```{r, eval=run}
 edge_filter <- rbind(data.frame(name = "nweight", value = 4, operation = ">="),
                      data.frame(name = "ncweight", value = 4, operation = ">="))
 ```
 
-```{r}
+```{r, eval=run}
 # we can pick from these node attributes
 vertex_attr_names(graph = gcd$graph)
 ```
@@ -476,23 +510,23 @@ The following node-filter will instruct ClustIRR to retain edges between
 nodes that have shared node attributed with respect to **ALL** of the
 following node attributes:
 
-```{r}
+```{r, eval=run}
 node_filter <- data.frame(name = c("TRBV", "TRAV"))
 ```
 
-```{r}
+```{r, eval=run}
 c22 <- decode_community(community_id = 22, 
                         graph = gcd$graph,
                         edge_filter = edge_filter,
                         node_filter = node_filter)
 ```
 
-```{r, fig.width=6, fig.height=4}
+```{r, fig.width=6, fig.height=4, eval=run}
 par(mar = c(0, 0, 0, 0))
 plot(c22$community, vertex.size = 10)
 ```
 
-```{r}
+```{r, eval=run}
 kable(as_data_frame(x = c22$community, what = "vertices")
       [, c("name", "component_id", "CDR3b", "TRBV", 
            "TRBJ", "CDR3a", "TRAV", "TRAJ")],
@@ -509,7 +543,7 @@ table as rows with:
     component were a clique
 -   diameter of the component
 
-```{r}
+```{r, eval=run}
 kable(c22$component_stats, row.names = FALSE)
 ```
 
@@ -534,7 +568,7 @@ community occupancy (DCO):
 \end{align}
 ```
 
-```{r}
+```{r, eval=run}
 d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
          mcmc_control = list(mcmc_warmup = 300,
                              mcmc_iter = 600,
@@ -549,7 +583,7 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
 
 ### Visualizing the distribution of $\beta$ with `get_beta_violins`
 
-```{r}
+```{r, eval=run}
 beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
                                 beta = d$posterior_summary$beta,
                                 ag = "",
@@ -557,13 +591,13 @@ beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
                                 db = "vdjdb")
 ```
 
-```{r, fig.width=5, fig.height=3}
+```{r, fig.width=5, fig.height=3, eval=run}
 beta_violins
 ```
 
 ### Compare $\beta$s of clonotypes specific for *CMV*, *EBV*, *flu* or *MLANA*?
 
-```{r}
+```{r, eval=run}
 beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
                                 beta = d$posterior_summary$beta,
                                 ag = "CMV",
@@ -571,7 +605,7 @@ beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
                                 db = "vdjdb")
 ```
 
-```{r, fig.width=4, fig.height=3}
+```{r, fig.width=4, fig.height=3, eval=run}
 beta_violins
 ```
 
@@ -592,7 +626,7 @@ General idea of posterior predictive checks:
 `r Biocpkg("ClustIRR")` provides $y$ and $\hat{y}$ of each repertoire,
 which we can visualize with ggplot:
 
-```{r, fig.width=6, fig.height=2.5}
+```{r, fig.width=6, fig.height=2.5, eval=run}
 ggplot(data = d$posterior_summary$y_hat)+
   facet_wrap(facets = ~sample, nrow = 1, scales = "free")+
   geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = "gray")+
@@ -617,7 +651,7 @@ community occupancy (DCO):
 Importantly, `r Biocpkg("ClustIRR")` always computes both contrasts ($a$
 vs. $b$ and $b$ vs. $a$): $\delta^{a-b}_i$ and $\delta^{b-a}_i$.
 
-```{r, fig.width=7, fig.height=6}
+```{r, fig.width=7, fig.height=6, eval=run}
 ggplot(data = d$posterior_summary$delta)+
     facet_wrap(facets = ~contrast, ncol = 2)+
     geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
@@ -642,7 +676,7 @@ quantifies absolute differences in community probabilities:
 Again, both contrasts are computed: $\epsilon^{a-b}_i$ and
 $\epsilon^{b-a}_i$.
 
-```{r, fig.width=7, fig.height=6}
+```{r, fig.width=7, fig.height=6, eval=run}
 ggplot(data = d$posterior_summary$epsilon)+
     facet_wrap(facets = ~contrast, ncol = 2)+
     geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
@@ -654,7 +688,7 @@ ggplot(data = d$posterior_summary$epsilon)+
     scale_x_continuous(expand = c(0,0))
 ```
 
-```{r, echo=FALSE, include=FALSE}
+```{r, echo=FALSE, include=FALSE, eval=run}
 rm(a, b, cl_a, cl_b, cl_c, meta_a, meta_b, meta_c, d, e, g, gcd)
 ```
 

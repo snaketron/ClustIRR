@@ -1,3 +1,5 @@
+skip_if_not(rBLAST::has_blast(), message = "BLAST+ is not installed.")
+
 test_that("clustering two chains - within-repertoire", {
     
     # test data

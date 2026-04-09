@@ -44,31 +44,34 @@ for the names of the added columns}
 }
 }
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
-                  CDR3b = CDR3ab[1:500, "CDR3b"],
-                  clone_size = 1,
-                  sample = "a")
-
-b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
-                  CDR3b = CDR3ab[401:900, "CDR3b"],
-                  clone_size = 1,
-                  sample = "b")
-b$clone_size[1] <- 20
-
-# run ClustIRR analysis
-c <- clustirr(s = rbind(a, b))
-
-# detect communities
-gcd <- detect_communities(graph = c$graph, 
-                          algorithm = "leiden",
-                          resolution = 1,
-                          chains = c("CDR3a", "CDR3b"))
-
-ag <- get_ag_species_hits(node_summary = gcd$node_summary,
-                          db = "vdjdb",
-                          ag_species = "EBV")
-
-head(ag)
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
+                    CDR3b = CDR3ab[1:500, "CDR3b"],
+                    clone_size = 1,
+                    sample = "a")
+    
+    b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
+                    CDR3b = CDR3ab[401:900, "CDR3b"],
+                    clone_size = 1,
+                    sample = "b")
+    b$clone_size[1] <- 20
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = rbind(a, b))
+    
+    # detect communities
+    gcd <- detect_communities(graph = c$graph, 
+                              algorithm = "leiden",
+                              resolution = 1,
+                              chains = c("CDR3a", "CDR3b"))
+    
+    ag <- get_ag_species_hits(node_summary = gcd$node_summary,
+                              db = "vdjdb",
+                              ag_species = "EBV")
+    
+    head(ag)
+}
 }

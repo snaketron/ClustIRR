@@ -66,28 +66,32 @@ The output is an S4 object of class \code{clust_irr}
 }
 
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)
-
-# run analysis
-c <- clustirr(s = s)
-
-# output class
-class(c)
-
-# output structure
-str(c)
-
-# inspect which CDR3bs are globally similar
-knitr::kable(head(slot(c$clust_irrs, "clust")$CDR3b))
-
-
-# clust_irr S4 object generated 'manually' from the individual results
-new_clust_irr <- new("clust_irr", 
-                     clust = slot(object = c$clust_irrs, name = "clust"),
-                     inputs = slot(object = c$clust_irrs, name = "inputs"))
-
-# we should get identical outputs
-identical(x = new_clust_irr, y = c$clust_irrs)
+# only run if blast is installed
+if(has_blast()) {
+    
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A",clone_size = 1)
+    
+    # run analysis
+    c <- clustirr(s = s)
+    
+    # output class
+    class(c)
+    
+    # output structure
+    str(c)
+    
+    # inspect which CDR3bs are globally similar
+    knitr::kable(head(slot(c$clust_irrs, "clust")$CDR3b))
+    
+    
+    # clust_irr S4 object generated 'manually' from the individual results
+    new_clust_irr <- new("clust_irr", 
+                         clust = slot(object = c$clust_irrs, name = "clust"),
+                         inputs = slot(object = c$clust_irrs, name = "inputs"))
+    
+    # we should get identical outputs
+    identical(x = new_clust_irr, y = c$clust_irrs)
+}
 }

@@ -38,35 +38,38 @@ The output is a violin ggplot.
 
 }
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
-                  CDR3b = CDR3ab[1:500, "CDR3b"],
-                  clone_size = 1,
-                  sample = "a")
-
-b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
-                  CDR3b = CDR3ab[401:900, "CDR3b"],
-                  clone_size = 1,
-                  sample = "b")
-b$clone_size[1] <- 20
-
-# run ClustIRR analysis
-c <- clustirr(s = rbind(a, b))
-
-# detect communities
-gcd <- detect_communities(graph = c$graph, 
-                          algorithm = "leiden",
-                          resolution = 1,
-                          chains = c("CDR3a", "CDR3b"))
-
-# differential community occupancy analysis
-dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
-
-# generate beta violin plots
-v <- get_beta_violin(beta = dco$posterior_summary$beta,
-                     node_summary = gcd$node_summary,
-                     ag = "EBV",
-                     ag_species = TRUE,
-                     db = "vdjdb")
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
+                    CDR3b = CDR3ab[1:500, "CDR3b"],
+                    clone_size = 1,
+                    sample = "a")
+    
+    b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
+                    CDR3b = CDR3ab[401:900, "CDR3b"],
+                    clone_size = 1,
+                    sample = "b")
+    b$clone_size[1] <- 20
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = rbind(a, b))
+    
+    # detect communities
+    gcd <- detect_communities(graph = c$graph, 
+                              algorithm = "leiden",
+                              resolution = 1,
+                              chains = c("CDR3a", "CDR3b"))
+    
+    # differential community occupancy analysis
+    dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
+    
+    # generate beta violin plots
+    v <- get_beta_violin(beta = dco$posterior_summary$beta,
+                         node_summary = gcd$node_summary,
+                         ag = "EBV",
+                         ag_species = TRUE,
+                         db = "vdjdb")
+}
 }

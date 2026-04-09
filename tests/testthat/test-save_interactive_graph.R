@@ -1,3 +1,5 @@
+skip_if_not(rBLAST::has_blast(), message = "BLAST+ is not installed.")
+
 test_that("save_interactive_graph works and cleans up locally", {
     
     # be sure not to break anything because of missing package

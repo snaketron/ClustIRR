@@ -84,29 +84,32 @@ For numeric features the returned columns are:
 }
 }
 \examples{
-# load package input data
-data("D1", package = "ClustIRR")
-
-# run ClustIRR analysis
-c <- clustirr(s = rbind(D1$a, D1$b), meta = rbind(D1$ma, D1$mb))
-
-# detect communities
-gcd <- detect_communities(graph = c$graph, 
-                          algorithm = "leiden",
-                          metric = "average",
-                          resolution = 1,
-                          iterations = 100,
-                          chains = c("CDR3a", "CDR3b"))
-
-# categorical feature
-get_community_feature_purity(node_summary = gcd$node_summary, 
-                             node_feature = "HLA_A")
-
-# another categorical feature
-get_community_feature_purity(node_summary = gcd$node_summary, 
-                             node_feature = "TRAV")
-
-# numeric feature
-get_community_feature_purity(node_summary = gcd$node_summary, 
-                             node_feature = "age")
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("D1", package = "ClustIRR")
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = rbind(D1$a, D1$b), meta = rbind(D1$ma, D1$mb))
+    
+    # detect communities
+    gcd <- detect_communities(graph = c$graph, 
+                              algorithm = "leiden",
+                              metric = "average",
+                              resolution = 1,
+                              iterations = 100,
+                              chains = c("CDR3a", "CDR3b"))
+    
+    # categorical feature
+    get_community_feature_purity(node_summary = gcd$node_summary, 
+                                 node_feature = "HLA_A")
+    
+    # another categorical feature
+    get_community_feature_purity(node_summary = gcd$node_summary, 
+                                 node_feature = "TRAV")
+    
+    # numeric feature
+    get_community_feature_purity(node_summary = gcd$node_summary, 
+                                 node_feature = "age")
+}
 }

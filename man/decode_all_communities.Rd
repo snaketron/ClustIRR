@@ -52,40 +52,45 @@ output of \code{decode_communities}, containing:
 }
 }
 \examples{
-# load package input data
-data("CDR3ab", package = "ClustIRR")
-a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
-                  CDR3b = CDR3ab[1:500, "CDR3b"],
-                  clone_size = 1,
-                  sample = "a")
-
-b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
-                  CDR3b = CDR3ab[401:900, "CDR3b"],
-                  clone_size = 1,
-                  sample = "b")
-b$clone_size[1] <- 20
-
-# run ClustIRR analysis
-c <- clustirr(s = rbind(a, b))
-
-# detect communities
-gcd <- detect_communities(graph = c$graph, 
-                          algorithm = "leiden",
-                          resolution = 1,
-                          iterations = 100,
-                          chains = c("CDR3a", "CDR3b"))
-
-# Construct edge and node filters
-edge_filter <- rbind(data.frame(name = "nweight", value = 8, operation = ">="),
-                     data.frame(name = "ncweight", value = 8, operation = ">="))
-node_filter <- data.frame(name = "Ag_gene")
-
-# Decode all communities at once
-all_decoded <- decode_all_communities(graph = gcd$graph, 
-                                      edge_filter = edge_filter,
-                                      node_filter = node_filter)
-
-# Inspect one decoded community
-names(all_decoded)
-str(all_decoded[[1]]$component_stats)
+# only run if blast is installed
+if(has_blast()) {
+    # load package input data
+    data("CDR3ab", package = "ClustIRR")
+    a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
+                    CDR3b = CDR3ab[1:500, "CDR3b"],
+                    clone_size = 1,
+                    sample = "a")
+    
+    b <- data.frame(CDR3a = CDR3ab[401:900, "CDR3a"],
+                    CDR3b = CDR3ab[401:900, "CDR3b"],
+                    clone_size = 1,
+                    sample = "b")
+    b$clone_size[1] <- 20
+    
+    # run ClustIRR analysis
+    c <- clustirr(s = rbind(a, b))
+    
+    # detect communities
+    gcd <- detect_communities(graph = c$graph, 
+                              algorithm = "leiden",
+                              resolution = 1,
+                              iterations = 100,
+                              chains = c("CDR3a", "CDR3b"))
+    
+    # Construct edge and node filters
+    edge_filter <- rbind(data.frame(name = "nweight", value = 8, 
+                                    operation = ">="),
+                         data.frame(name = "ncweight", value = 8, 
+                                    operation = ">="))
+    node_filter <- data.frame(name = "Ag_gene")
+    
+    # Decode all communities at once
+    all_decoded <- decode_all_communities(graph = gcd$graph, 
+                                          edge_filter = edge_filter,
+                                          node_filter = node_filter)
+    
+    # Inspect one decoded community
+    names(all_decoded)
+    str(all_decoded[[1]]$component_stats)
+}
 }
