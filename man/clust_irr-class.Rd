@@ -67,7 +67,7 @@ The output is an S4 object of class \code{clust_irr}
 
 \examples{
 # only run if blast is installed
-if(has_blast()) {
+if(rBLAST::has_blast()) {
     
     # load package input data
     data("CDR3ab", package = "ClustIRR")

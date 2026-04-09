@@ -26,7 +26,7 @@ of a \code{clustirr} graph.
 
 \examples{
 # only run if blast is installed
-if(has_blast()) {
+if(rBLAST::has_blast()) {
     # load package input data
     data("CDR3ab", package = "ClustIRR")
     s <- data.frame(CDR3b = CDR3ab[1:100, "CDR3b"], sample = "A", clone_size = 1)

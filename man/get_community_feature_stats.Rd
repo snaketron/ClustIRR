@@ -46,7 +46,7 @@ A \code{data.frame} summarizing feature statistics for the given community:
 }
 \examples{
 # only run if blast is installed
-if(has_blast()) {
+if(rBLAST::has_blast()) {
     # load package input data
     data("D1", package = "ClustIRR")
     

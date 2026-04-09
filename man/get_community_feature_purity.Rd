@@ -85,7 +85,7 @@ For numeric features the returned columns are:
 }
 \examples{
 # only run if blast is installed
-if(has_blast()) {
+if(rBLAST::has_blast()) {
     # load package input data
     data("D1", package = "ClustIRR")
     

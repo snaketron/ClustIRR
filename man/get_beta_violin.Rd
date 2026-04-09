@@ -39,7 +39,7 @@ The output is a violin ggplot.
 }
 \examples{
 # only run if blast is installed
-if(has_blast()) {
+if(rBLAST::has_blast()) {
     # load package input data
     data("CDR3ab", package = "ClustIRR")
     a <- data.frame(CDR3a = CDR3ab[1:500, "CDR3a"],
