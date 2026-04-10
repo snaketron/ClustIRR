@@ -94,10 +94,12 @@ get_beta_cprob_ag <- function(beta,
     hab <- merge(x = ha, y = hb, by = c("b", "sample"))
     hab <- hab[order(hab$b, decreasing = TRUE),]
     
-    g <- ggplot(data = hab)+
-        geom_line(aes(x = b, y = p_ag, col = sample), 
+    g <- ggplot()+
+        geom_line(data = hab[order(hab$p_ag, decreasing = TRUE),],
+                  aes(x = b, y = p_ag, col = sample), 
                   size = 1, alpha = 0.7)+
-        geom_line(aes(x = b, y = p_b, col = sample), 
+        geom_line(data = hab[order(hab$p_b, decreasing = TRUE),],
+                  aes(x = b, y = p_b, col = sample), 
                   linetype = "dashed", size = 1, alpha = 0.7)+
         xlab(label = expression(beta))+
         ylab(label = "Cumulative probability")
