@@ -78,7 +78,6 @@ get_beta_cprob_ag <- function(beta,
         yes = FALSE, no = TRUE)
     h <- h$node_summary
     h <- merge(x = h, y = beta, by = c("sample", "community"), all.x = TRUE)
-    h$spec[h$community %in% h$community[h$spec == TRUE]] <- TRUE
     
     ha <- aggregate(clone_size~community+sample+mean+spec, data = h, FUN = sum)
     ha$clone_size[ha$spec == FALSE] <- 0
@@ -94,16 +93,18 @@ get_beta_cprob_ag <- function(beta,
     hab <- merge(x = ha, y = hb, by = c("b", "sample"))
     hab <- hab[order(hab$b, decreasing = TRUE),]
     
-    g <- ggplot()+
-        geom_line(data = hab[order(hab$p_ag, decreasing = TRUE),],
-                  aes(x = b, y = p_ag, col = sample), 
-                  size = 1, alpha = 0.7)+
+    g <- ggplot(data = v)+
+        facet_wrap(~sample)+
         geom_line(data = hab[order(hab$p_b, decreasing = TRUE),],
-                  aes(x = b, y = p_b, col = sample), 
-                  linetype = "dashed", size = 1, alpha = 0.7)+
+                  aes(x = b, y = p_b, col = Ag),
+                  linetype = "dashed", size = .5, alpha = 0.7, col = "black")+
+        geom_line(data = hab[order(hab$p_ag, decreasing = TRUE),],
+                  aes(x = b, y = p_ag, col = Ag), size = .5, alpha = 0.7)+
         xlab(label = expression(beta))+
-        ylab(label = "Cumulative probability")
-    g
+        ylab(label = "Cumulative probability")+
+        scale_color_discrete(name = "Antigen")+
+        theme(legend.position = "top", 
+              strip.text.x = element_text(margin = margin(0.02,0,0.02,0, "cm")))
     
     return(list(data = hab, g = g))
 }
