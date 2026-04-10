@@ -83,17 +83,17 @@ get_beta_cprob_ag <- function(beta,
     ha <- aggregate(clone_size~community+sample+mean+spec, data = h, FUN = sum)
     ha$clone_size[ha$spec == FALSE] <- 0
     ha <- ha[order(ha$mean, decreasing = TRUE),]
-    ha <- getc(x = unique(ha$sample), h = ha)
+    ha <- do.call(rbind, lapply(X = unique(ha$sample), h = ha))
     colnames(ha) <- c("p_ag", "b", "sample")
     
     hb <- aggregate(clone_size~community+sample+mean, data = h, FUN = sum)
     hb <- hb[order(hb$mean, decreasing = TRUE),]
-    hb <- getc(x = unique(hb$sample), h = hb)
+    hb <- do.call(rbind, lapply(X = unique(hb$sample), h = hb))
     colnames(hb) <- c("p_b", "b", "sample")
-    
     
     hab <- merge(x = ha, y = hb, by = c("b", "sample"))
     hab <- hab[order(hab$b, decreasing = TRUE),]
+    
     g <- ggplot(data = hab)+
         geom_line(aes(x = b, y = p_ag, col = sample), 
                   size = 1, alpha = 0.7)+
