@@ -581,14 +581,14 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
 
 ## **Step 6.** Inspect results
 
-### Visualizing the distribution of $\beta$ with `get_beta_violins`
+### Visualizing the distribution of $\beta$ with `get_beta_violin_ag`
 
 ```{r, eval=run}
-beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
-                                beta = d$posterior_summary$beta,
-                                ag = "",
-                                ag_species = TRUE,
-                                db = "vdjdb")
+beta_violins <- get_beta_violin_ag(node_summary = gcd$node_summary,
+                                   beta = d$posterior_summary$beta,
+                                   ag = "",
+                                   ag_species = TRUE,
+                                   db = "vdjdb")
 ```
 
 ```{r, fig.width=5, fig.height=3, eval=run}
@@ -598,11 +598,11 @@ beta_violins
 ### Compare $\beta$s of clonotypes specific for *CMV*, *EBV*, *flu* or *MLANA*?
 
 ```{r, eval=run}
-beta_violins <- get_beta_violin(node_summary = gcd$node_summary,
-                                beta = d$posterior_summary$beta,
-                                ag = "CMV",
-                                ag_species = TRUE,
-                                db = "vdjdb")
+beta_violins <- get_beta_violin_ag(node_summary = gcd$node_summary,
+                                   beta = d$posterior_summary$beta,
+                                   ag = "CMV",
+                                   ag_species = TRUE,
+                                   db = "vdjdb")
 ```
 
 ```{r, fig.width=4, fig.height=3, eval=run}

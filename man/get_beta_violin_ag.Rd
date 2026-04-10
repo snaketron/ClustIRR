@@ -1,5 +1,5 @@
-\name{get_beta_violin}
-\alias{get_beta_violin}
+\name{get_beta_violin_ag}
+\alias{get_beta_violin_ag}
 \title{Visualize distribution of \eqn{\beta} means in each repertoire 
 as violin plots}
 \description{
@@ -20,11 +20,11 @@ such as "vdjdb", "mcpas" or "tcr3d". We will look for perfect matches between
 CDR3 sequences in the input and in the annotation database for annotation.
 }
 \usage{
-get_beta_violin(beta,
-                 node_summary,
-                 ag,
-                 ag_species,
-                 db = "vdjdb")
+get_beta_violin_ag(beta,
+                   node_summary,
+                   ag,
+                   ag_species,
+                   db = "vdjdb")
 }
 \arguments{
 \item{beta}{\code{beta} data.frame}
@@ -66,10 +66,10 @@ if(rBLAST::has_blast()) {
     dco <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix)
     
     # generate beta violin plots
-    v <- get_beta_violin(beta = dco$posterior_summary$beta,
-                         node_summary = gcd$node_summary,
-                         ag = "EBV",
-                         ag_species = TRUE,
-                         db = "vdjdb")
+    v <- get_beta_violin_ag(beta = dco$posterior_summary$beta,
+                           node_summary = gcd$node_summary,
+                           ag = "EBV",
+                           ag_species = TRUE,
+                           db = "vdjdb")
 }
 }

@@ -1,9 +1,9 @@
 
-get_beta_violin <- function(beta,
-                            node_summary,
-                            ag,
-                            ag_species = TRUE,
-                            db = "vdjdb") {
+get_beta_violin_ag <- function(beta,
+                               node_summary,
+                               ag,
+                               ag_species = TRUE,
+                               db = "vdjdb") {
     if(ag_species) {
         h <- get_ag_species_hits(node_summary = node_summary, 
                                  db = db, 
@@ -44,28 +44,22 @@ get_beta_violin <- function(beta,
         guides(size = guide_legend(order = 2), 
                colour = guide_legend(order = 1))
     
-    
-    # get cumsum
-    u <- o
-    u$agspec <- FALSE
-    u$agspec[u$community %in% u$community[u$spec=="+"]] <- TRUE
-    aggregate(clon)
-    
     return(g)
 }
 
 
 
-get_csum <- function(beta,
-                     node_summary,
-                     ag,
-                     ag_species = TRUE,
-                     db = "vdjdb") {
+get_beta_cprob_ag <- function(beta,
+                              node_summary,
+                              ag,
+                              ag_species = TRUE,
+                              db = "vdjdb") {
     
     getc <- function(x, h) {
         q <- h[h$sample == x, ]
         z <- cumsum(q$clone_size)
         p <- z/max(z)
+        p[is.infinite(p)|is.nan(p)] <- 0
         return(data.frame(p = p, b = q$mean, sample = x))
     }
     
@@ -97,13 +91,17 @@ get_csum <- function(beta,
     hb <- getc(x = unique(hb$sample), h = hb)
     colnames(hb) <- c("p_b", "b", "sample")
     
- 
+    
     hab <- merge(x = ha, y = hb, by = c("b", "sample"))
-    
+    hab <- hab[order(hab$b, decreasing = TRUE),]
     g <- ggplot(data = hab)+
-        geom_line(aes(x = b, y = p_ag, col = sample))+
-        geom_line(aes(x = b, y = p_b, col = sample), linetype = "dashed")
-   
+        geom_line(aes(x = b, y = p_ag, col = sample), 
+                  size = 1, alpha = 0.7)+
+        geom_line(aes(x = b, y = p_b, col = sample), 
+                  linetype = "dashed", size = 1, alpha = 0.7)+
+        xlab(label = expression(beta))+
+        ylab(label = "Cumulative probability")
+    g
     
-    return(g)
+    return(list(data = hab, g = g))
 }
