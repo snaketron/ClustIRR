@@ -33,8 +33,20 @@ get_motif <- function(chain, node_summary, gap_remove_prob) {
         }
     }
     
+    # remove gaps if they exceed specific threshold on position
     aln <- msa::msaClustalOmega(inputSeqs = AAStringSet(cdrs), type = "protein")
-    g <- ggseqlogo(as.character(aln), seq_type='aa', method = "probability")+
+    aln <- as.character(aln)
+    alnm <- do.call(rbind, strsplit(aln, split = ""))
+    gap_rm <- apply(X = alnm, MARGIN = 2, gap = gap_remove_prob, 
+                    FUN = function(x, gap) {
+        return(sum(x=="-")/length(x) >= gap)
+    })
+    if(any(gap_rm)) {
+        alnm <- alnm[, which(gap_rm), drop = FALSE]
+    }
+    aln <- apply(alnm, 1, paste0, collapse = "")
+    
+    g <- ggseqlogo(aln, seq_type = 'aa', method = "probability")+
         theme_logo(base_size = 10)+
         theme(legend.position = "none")+
         scale_y_continuous(breaks = c(0, 0.5, 1), labels = c(0, 0.5, 1))
