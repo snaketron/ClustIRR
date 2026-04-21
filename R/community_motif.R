@@ -42,7 +42,7 @@ get_motif <- function(chain, node_summary, gap_remove_prob) {
         return(sum(x=="-")/length(x) >= gap)
     })
     if(any(gap_rm)) {
-        alnm <- alnm[, which(gap_rm), drop = FALSE]
+        alnm <- alnm[, -which(gap_rm), drop = FALSE]
     }
     aln <- apply(alnm, 1, paste0, collapse = "")
     
