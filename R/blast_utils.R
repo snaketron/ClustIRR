@@ -53,10 +53,14 @@ get_score <- function(s, control) {
     # rblast db
     db <- AAStringSet(s$cdr3)
     names(db) <- s$id
-    writeXStringSet(db, filepath = "tmp.fasta")
-    makeblastdb(db_name = "db/tmp", dbtype = "prot", 
-                file = "tmp.fasta", verbose = FALSE)
-    bdb <- blast("db/tmp", type = "blastp")
+    
+    fasta_path <- basename(tempfile(pattern = "fs_tmp_", fileext = ".fasta"))
+    db_path <- basename(tempdir(check = FALSE))
+    
+    writeXStringSet(db, filepath = fasta_path)
+    makeblastdb(db_name = db_path, dbtype = "prot", 
+                file = fasta_path, verbose = FALSE)
+    bdb <- blast(db_path, type = "blastp")
     blast_fmt <- paste("qseqid sseqid pident length qstart qend",
                        "sstart send evalue score qseq sseq qlen slen")
     blast_args <- paste0("-num_threads ", control$blast_cores, 
@@ -65,8 +69,8 @@ get_score <- function(s, control) {
     o <- predict(bdb, db, BLAST_args = blast_args, custom_format = blast_fmt)
     
     # clean up
-    unlink("tmp.fasta")
-    unlink("db/tmp", recursive = TRUE)
+    unlink(fasta_path, recursive = TRUE)
+    unlink(db_path, recursive = TRUE)
     
     # remove self-hits
     o <- o[o$qseqid!=o$sseqid,]
