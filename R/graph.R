@@ -331,13 +331,20 @@ get_intergraph_edges <- function(igs,
                 ix$chain <- c
                 ixs <- rbind(ixs, ix)
             } else {
-                ix <- subset(expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE), 
-                             Var1 < Var2)
+                ix <- expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE)
                 colnames(ix) <- c("index_i", "index_j")
+                ix <- ix[ix$index_i!=ix$index_j,]
                 ix$name_i <- ns[ix$index_i]
                 ix$name_j <- ns[ix$index_j]
                 ix$chain <- c
                 ixs <- rbind(ixs, ix)
+                # ix <- subset(expand.grid(1:xs, 1:xs, KEEP.OUT.ATTRS = FALSE), 
+                #              Var1 < Var2)
+                # colnames(ix) <- c("index_i", "index_j")
+                # ix$name_i <- ns[ix$index_i]
+                # ix$name_j <- ns[ix$index_j]
+                # ix$chain <- c
+                # ixs <- rbind(ixs, ix)
             }
         }
         return(ixs)
