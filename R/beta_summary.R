@@ -19,17 +19,15 @@ get_beta_violin_ag <- function(beta,
         test = apply(X=h$node_summary[,h$new_columns], MARGIN=1, FUN=sum)==0,
         yes = "-", no = "+")
     h <- h$node_summary
-    h <- aggregate(clone_size~sample+spec+community, data = h, FUN = sum)
-    dup <- which(h$community %in% h$community[h$spec=="+"] & h$spec=="-")
-    if(length(dup)!=0) {
-        h <- h[-dup,]
-    }
+    h <- h[h$spec == "+", ]
+    h <- aggregate(clone_size~community+sample, data = h, FUN = sum)
+    h$hit <- TRUE
     
-    h$size <- ifelse(test = h$spec == "+", yes = h$clone_size, no = 1)
-    o <- merge(x = h, y = beta, by = c("sample", "community"), all.x = TRUE)
+    beta <- merge(x = beta, y = h, by = c("sample", "community"), all.x = TRUE)
+    beta$size <- beta$clone_size
     
-    g <- ggplot(data = o)+
-        geom_sina(aes(x = sample, y = mean, col = spec, size = size), 
+    g <- ggplot(data = beta)+
+        geom_sina(aes(x = sample, y = mean, col = hit, size = size), 
                   stroke = 0.02, alpha = 0.4)+
         theme_bw(base_size = 10)+
         ggtitle(label = '', 
