@@ -14,7 +14,6 @@ get_beta_violin_ag <- function(beta,
                               ag_gene = ag)
     }
     
-    
     h$node_summary$spec <- ifelse(
         test = apply(X=h$node_summary[,h$new_columns], MARGIN=1, FUN=sum)==0,
         yes = "-", no = "+")
@@ -24,6 +23,8 @@ get_beta_violin_ag <- function(beta,
     h$hit <- TRUE
     
     beta <- merge(x = beta, y = h, by = c("sample", "community"), all.x = TRUE)
+    beta$hit[is.na(beta$hit)] <- FALSE
+    beta$clone_size[is.na(beta$clone_size)] <- 1
     beta$size <- beta$clone_size
     
     g <- ggplot(data = beta)+
