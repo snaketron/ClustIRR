@@ -25,7 +25,6 @@ colnames(CDR3a) <- c("CDR3a", "TRAV", "TRAJ")
 CDR3ab <- cbind(CDR3a, CDR3b)
 CDR3ab$TRAV <- gsub(pattern = "TRB", replacement = "TRA", x = CDR3ab$TRAV)
 CDR3ab$TRAJ <- gsub(pattern = "TRB", replacement = "TRA", x = CDR3ab$TRAJ)
-save(CDR3ab, file = "data/CDR3ab.RData", compress = "xz")
 
 
 ##### Dataset D1: TCRab repertoires 'a', 'b', and 'c' with n=500 #####
@@ -137,3 +136,29 @@ D2 <- aggregate(clone_size~CDR3a+CDR3b+sample, data = D2, FUN = sum)
 save(D2, file = "data/D2.RData", compress = "xz")
 
 
+
+# dataset viral: three repertoires
+
+# From Parse Biosciences, expanded TCRs responding to CMV and Influenza M1 antigens
+meta <- read.csv("data/cell_level_metadata/metaTCR.tsv", sep = "\t")
+# CMV HLA-A0201
+t1 <- read.csv("data/CMV HLA-A0201 v4/clonotype_frequency.tsv", sep = "\t")
+t1$group <- "CMV"
+
+# Influenza M1
+t2 <- read.csv("data/Influenza M1 v4/clonotype_frequency.tsv", sep = "\t")
+t2$group <- "Flu"
+
+t5 <- get(load("/mnt/nfs/simo/AIRR/TCR_olga/data/raw_ds.RData"))
+t5 <- t5[t5$N == 1 & t5$depth == 500 & t5$subject == 1 & t5$species == "human", ]
+t5 <- t5[,c("CDR3a", "CDR3b", "N", "clone_size")]
+colnames(t5)[3] <- "sample"
+t5$sample <- "HD"
+
+t <- rbind(t1, t4)
+s <- t[,c("TRA", "TRB", "group", "count")]
+colnames(s) <- c("CDR3a", "CDR3b", "sample", "clone_size")
+s <- rbind(s, t5)
+rm(t1, t, t4, t5)
+
+# 1. download
