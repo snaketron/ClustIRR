@@ -235,7 +235,7 @@ process_mcmc_control <- function(control_in) {
                     mcmc_cores = 1,
                     mcmc_algorithm = "NUTS",
                     adapt_delta = 0.95,
-                    max_treedepth = 12)
+                    max_treedepth = 10)
     
     # if missing control_in -> use default values
     if(missing(control_in) || is.null(control_in)) {

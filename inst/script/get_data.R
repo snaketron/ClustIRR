@@ -1,31 +1,27 @@
 # This script describes how to download and prepare the small example
 # dataset of human CD8+ T cells. The original data is publicly available
-# at http://50.255.35.37:8080/
+# at https://zenodo.org/records/18925758
 
-# download data (last tested on 09 January 2025)
-utils::download.file(url = "http://50.255.35.37:8080/downloads/human_v2.0.zip",
-                     destfile = "human_v2.0.zip")
-
-# unzip
-utils::unzip(zipfile = "human_v2.0.zip", exdir = ".")
+# download data (last tested on 30 June 2026)
+utils::download.file(url = "https://zenodo.org/records/18925758/files/reference_list.RData?download=1",
+                     destfile = "r.RData")
+# load
+reference_list <- get(load("r.RData"))
 
 # human (hs) CD8
-CD8 <- read.csv(file = "human_v2.0/ref_CD8_v2.0.txt", sep = "\t",
-                header = FALSE)
+CD8 <- reference_list$human_v2.0_CD8$refseqs
 
 set.seed(seed = 1234321)
 CDR3b <- CD8[sample(x = 1:nrow(CD8), size = 10^4, replace = FALSE), ]
-colnames(CDR3b) <- c("CDR3b", "TRBV", "TRBJ")
+colnames(CDR3b) <- c("CDR3b", "TRBV")
 
 set.seed(seed = 1245421)
 CDR3a <- CD8[sample(x = 1:nrow(CD8), size = 10^4, replace = FALSE), ]
-colnames(CDR3a) <- c("CDR3a", "TRAV", "TRAJ")
+colnames(CDR3a) <- c("CDR3a", "TRAV")
 
 # create dummy CDR3ab
 CDR3ab <- cbind(CDR3a, CDR3b)
 CDR3ab$TRAV <- gsub(pattern = "TRB", replacement = "TRA", x = CDR3ab$TRAV)
-CDR3ab$TRAJ <- gsub(pattern = "TRB", replacement = "TRA", x = CDR3ab$TRAJ)
-save(CDR3ab, file = "data/CDR3ab.RData", compress = "xz")
 
 
 ##### Dataset D1: TCRab repertoires 'a', 'b', and 'c' with n=500 #####
@@ -43,9 +39,7 @@ ma <- data.frame(clone_id = 1:n,
                  HLA_A = "HLA-A∗24",
                  age = 24,
                  TRAV = CDR3ab$TRAV[1:n],
-                 TRAJ = CDR3ab$TRAJ[1:n],
-                 TRBV = CDR3ab$TRBV[1:n],
-                 TRBJ = CDR3ab$TRBJ[1:n])
+                 TRBV = CDR3ab$TRBV[1:n])
                  
 # b
 b <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
@@ -58,9 +52,7 @@ mb <- data.frame(clone_id = 1:n,
                  HLA_A = "HLA-A∗02",
                  age = 30,
                  TRAV = CDR3ab$TRAV[1:n],
-                 TRAJ = CDR3ab$TRAJ[1:n],
-                 TRBV = CDR3ab$TRBV[1:n],
-                 TRBJ = CDR3ab$TRBJ[1:n])
+                 TRBV = CDR3ab$TRBV[1:n])
 
 # c
 c <- data.frame(CDR3a = CDR3ab$CDR3a[1:n], 
@@ -73,9 +65,7 @@ mc <- data.frame(clone_id = 1:n,
                  HLA_A = "HLA-A∗11",
                  age = 40,
                  TRAV = CDR3ab$TRAV[1:n],
-                 TRAJ = CDR3ab$TRAJ[1:n],
-                 TRBV = CDR3ab$TRBV[1:n],
-                 TRBJ = CDR3ab$TRBJ[1:n])
+                 TRBV = CDR3ab$TRBV[1:n])
 
 
 get_clonal_expansion <- function(n, p_expanded) {
@@ -99,33 +89,32 @@ a$clone_size <- clone_size
 b$clone_size <- clone_size+expansion_factor*1
 c$clone_size <- clone_size+expansion_factor*2
 
-D1 <- list(a = a, b = b, c = c, ma = ma, mb = mb, mc = mc)
-save(D1, file = "data/D1.RData", compress = "xz")
-rm(a, b, c, ma, mb, mc)
+D1 <- list(s = rbind(a,b,c), meta = rbind(ma,mb,mc))
 
+save(D1, file = "data/D1.RData", compress = "xz")
 
 
 
 set.seed(12341)
-A1 <- D1$a[sample(x = 1:nrow(D1$a), size = 2000, replace = TRUE, prob = D1$a$clone_size/sum(D1$a$clone_size)),]
+A1 <- a[sample(x = 1:nrow(a), size = 2000, replace = TRUE, prob = a$clone_size/sum(a$clone_size)),]
 A1$sample <- "A1"
 set.seed(12342)
-A2 <- D1$a[sample(x = 1:nrow(D1$a), size = 2000, replace = TRUE, prob = D1$a$clone_size/sum(D1$a$clone_size)),]
+A2 <- a[sample(x = 1:nrow(a), size = 2000, replace = TRUE, prob = a$clone_size/sum(a$clone_size)),]
 A2$sample <- "A2"
 set.seed(12343)
-A3 <- D1$a[sample(x = 1:nrow(D1$a), size = 2000, replace = TRUE, prob = D1$a$clone_size/sum(D1$a$clone_size)),]
+A3 <- a[sample(x = 1:nrow(a), size = 2000, replace = TRUE, prob = a$clone_size/sum(a$clone_size)),]
 A3$sample <- "A3"
 A <- rbind(A1, A2, A3)
 rm(A1, A2, A3)
 
 set.seed(12344)
-C1 <- D1$c[sample(x = 1:nrow(D1$c), size = 2000, replace = TRUE, prob = D1$c$clone_size/sum(D1$c$clone_size)),]
+C1 <- c[sample(x = 1:nrow(c), size = 2000, replace = TRUE, prob = c$clone_size/sum(c$clone_size)),]
 C1$sample <- "C1"
 set.seed(12345)
-C2 <- D1$c[sample(x = 1:nrow(D1$c), size = 2000, replace = TRUE, prob = D1$c$clone_size/sum(D1$c$clone_size)),]
+C2 <- c[sample(x = 1:nrow(c), size = 2000, replace = TRUE, prob = c$clone_size/sum(c$clone_size)),]
 C2$sample <- "C2"
 set.seed(12346)
-C3 <- D1$c[sample(x = 1:nrow(D1$c), size = 2000, replace = TRUE, prob = D1$c$clone_size/sum(D1$c$clone_size)),]
+C3 <- c[sample(x = 1:nrow(c), size = 2000, replace = TRUE, prob = c$clone_size/sum(c$clone_size)),]
 C3$sample <- "C3"
 C <- rbind(C1, C2, C3)
 

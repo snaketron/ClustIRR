@@ -22,7 +22,7 @@ repertoire.}
 \item mcmc_cores = 1; number of computer cores 
 \item mcmc_algorithm = "NUTS"; which MCMC algorithm to use
 \item adapt_delta = 0.95; MCMC step size
-\item max_treedepth = 12; the max value, in exponents of 2, of what the binary 
+\item max_treedepth = 10; the max value, in exponents of 2, of what the binary 
 tree size in NUTS should have.
 }
 \item{compute_delta}{should delta be computed by the Stan model? This may be 

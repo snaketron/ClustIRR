@@ -1,0 +1,760 @@
+---
+title: "Decoding antigen-stimulated T cell receptor repertoires with ClustIRR"
+author:
+- name: Simo Kitanovski
+  affiliation: Bioinformatics and Computational Biophysics, University Duisburg-Essen
+  email: simo.kitanovski@uni-due.de
+output:
+    BiocStyle::html_document
+vignette: >
+    %\VignetteIndexEntry{Decoding antigen-stimulated T cell receptor repertoires with ClustIRR}
+    %\VignetteEncoding{UTF-8}
+    %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  markdown: 
+    wrap: 72
+---
+
+```{r, include=FALSE}
+knitr::opts_chunk$set(comment = "", warning = FALSE, message = FALSE)
+```
+
+# Analysis of T cell receptor (TCR) repertoires
+
+The huge diversity of T and B cell receptors is critical for the
+function of the adaptive immune system: recognizing and eliminating all
+kinds of antigens, from viruses, to cancer cells. However, this
+diversity makes it also difficult to understand B and T cell receptor
+repertoires (or collectively: immune receptor repertoires, IRRs).
+
+You have already learned about some techniques that are useful for IRR
+analysis when we discussed microbiomes and B cell receptor repertoires
+(e.g. normalized RADs, Ig gene usage). These techniques can be applied
+to T cell repertoires, too. Today we will explore further techniques
+that can deliver a detailed picture of an IRR, namely clustering and
+graph analysis. These techniques exploit the similarity of TCR
+sequences:
+
+- Two TCRs with *similar* CDR sequences will recognize *similar*
+  antigens or the same antigen and thus have *similar* functions.
+
+In our analysis we will ask several questions related to similarities
+within and between TCR repertoires:
+
+- Are there clusters (or "communities") of TCR clonotypes with similar
+  CDR3 sequences within a TCR repertoire?
+- Are these communities enriched with TCRs from one TCR repertoire (e.g.
+  TCR from patient infected by a virus) relative to another TCR
+  repertoire (e.g. TCR repertoire from the same patient after recovery)?
+- What antigens are likely recognized by TCRs in differentially abundant
+  communities?
+- Are expanding TCR communities associated with elevated expression of T
+  cell activation markers?
+
+In our analyses we will use a mix of visualization and quantification.
+
+# Install and load the current version of ClustIRR
+
+To install ClustIRR please open RStudio and enter [this might take a
+couple of minutes].
+
+```{r, eval=FALSE}
+library(devtools)
+install_github("snaketron/ClustIRR", upgrade = "never")
+```
+
+... after you have installed ClustIRR please load it by entering:
+
+```{r}
+library(ClustIRR)
+```
+
+Make sure that ClustIRR version \>1.9.39 is loaded. Click on the tab
+`Packages` (bottom right corner in RStudio) search for ClustIRR.
+
+We also need to load other R-packages. Do this next:
+
+```{r}
+library(ggplot2)
+library(ggforce)
+library(igraph)
+library(patchwork)
+library(ggrepel)
+library(rBLAST)
+```
+
+# Familiarize with TCR data
+
+We have two single cell datasets of TCR$\alpha\beta$ antigen-stimulated
+repertoires downloaded from the website of Parse Biosciences[^1]:
+
+[^1]: Performance of Evercode™ TCR v4 in Antigen-Stimulated Human T
+    Cells,
+    <https://www.parsebiosciences.com/datasets/performance-of-evercode-tcr-v4-in->
+    antigen-stimulated-human-t-cells/; Parse Biosciences; Accessed 2026
+    June 30
+
+- *CMV_A0201*: TCR repertoire from HLA-A02:01+ human T cells stimulated
+  with cytomegalovirus (CMV) antigens
+- *Flu*: TCR repertoire from human PBMCs stimulated with Influenza (Flu)
+  antigens
+
+Load the data:
+
+```{r}
+# load the data
+data(D_CMV_FLU)
+```
+
+The TCR repertoires are stored in `s` and the corresponding metadata in
+`meta`. Access them now:
+
+```{r}
+# TCR repertoires
+s <- D_CMV_FLU$s
+
+# Meta data
+meta <- D_CMV_FLU$meta
+```
+
+Let's peek into the data frame containing both TCR repertoires
+
+```{r}
+str(s)
+```
+
+... and also into the metadata
+
+```{r}
+str(meta)
+```
+
+<hr>
+
+**Problem:** How many clonotypes are in each repertoire? How many
+CDR3$\beta$ sequences are in the data frame? How many CDR3$\alpha$
+sequences are in the data frame? How many **cells** are in each
+repertoire?
+
+<details>
+
+<summary>**Solution**</summary>
+
+```{r}
+# number of clonotypes
+table(s$sample)
+
+# number of unique CDR3b sequences
+length(unique(s$CDR3b))
+
+# number of unique CDR3b sequences
+length(unique(s$CDR3a))
+
+# count number of cells per samples 
+print(aggregate(clone_size~sample, data = s, FUN = sum))
+```
+
+</details>
+
+<hr>
+
+**Problem:** Do clone sizes vary significantly within the repertoires?
+Create a `sina plot` to explore the distributions.
+
+<details>
+
+<summary>**Solution**</summary>
+
+```{r, fig.width=4, fig.height=2.5}
+ggplot(data = s)+
+  geom_sina(aes(x = sample, y = clone_size), shape = 21)+
+  theme_bw()+
+    scale_y_log10()+
+    annotation_logticks(base = 10, sides = "l")
+```
+
+There are many more clonotypes in the TCR repertoire `Flu`. Hence we see
+many more dots at x=Flu in the sina plot. Overall, we see similar
+distributions: most clone sizes fall between 1 and 10 cells. However,
+each repertoire also includes a few large clonotypes with more than
+1,000 cells (visible at the top). Both sina plots use a log10-scaled
+vertical axis.
+
+</details>
+
+# Familiarize with gene expression data
+
+In addition to single cell TCRs, we also have the gene expression
+profiles of individual cells stored in `gex`.
+
+```{r}
+# Single cell gene expression data
+gex <- D_CMV_FLU$gex
+```
+
+```{r}
+str(gex)
+```
+
+**Problem:** Are all \~20,000 human genes included in `gex`? If not, do
+you see common functions among these genes?
+
+**Hint:** If you do not recognize these gene symbols run gene ontology
+(GO) enrichment analysis (e.g., by providing these gene symbols as
+inputs to gProfiler <https://biit.cs.ut.ee/gprofiler/gost>)
+
+**Important remark:** Rows in `s` are TCR clonotypes (groups of clonally
+expanded T cells with common ancestors), while rows in `gex` are T
+cells. How can we integrate these two datasets?
+
+**Hint:** Remember cell barcodes from the lesson on single cell RNA-seq?
+Use the `cell_id` column to access the cell IDs obtained based on these
+barcodes.
+
+# Using ClustIRR to compare the two repertoires, *CMV* vs. *Flu*
+
+We have two repertoires, *CMV* and *Flu*. We have seen that several TCR
+clonotypes are expanded in each repertoire. Such clonotype expansions
+have to be expected as a consequence of the experimental stimulation by
+CMV and Influenza M1 antigens. With ClustIRR we can detect the effect of
+expansions (or contraction) on the structure of TCR repertoires, or in
+general IRR repertoires.
+
+Let's use ClustIRR to identify how the structure of the TCR repertoire
+changes from *CMV* to *Flu*. ClustIRR operates on CDR3 sequences and
+clone sizes:
+
+```{r}
+o <- clustirr(s = s, meta = meta,
+              control = list(blast_gmi = 0.9)) # min. BLAST sequence identity
+```
+
+```{r}
+str(o)
+```
+
+The output in `o` is quite rich. See the help page for explanations.
+Check whether you can interpret it!
+
+# **Step 1** Building a joint graph
+
+One of the main outputs generated by `clustirr` is a joint graph ($J$),
+stored as an `igraph` object named `graph`.
+
+```{r}
+is_igraph(o$graph)
+```
+
+Each node in the graph represents a TCR clonotype from either *CMV* or
+*Flu*. Node widths indicate clone sizes, and edge weights represent
+CDR3$\alpha$ and CDR3$\beta$ sequence similarities.
+
+<hr>
+
+**Problem:** Visualize $J$ as an *interactive* graph using the function
+`plot_graph`! Explore the structure and try coloring the nodes based on
+antigen specificity. Do you see any nodes corresponding to CMV-specific
+TCR clonotypes? Are these clonotypes typically small or large?
+
+<details>
+
+<summary>**Solution**</summary>
+
+```{r, fig.width=6, fig.height=6}
+plot_graph(g = o, as_visnet = T, node_opacity = 0.75, show_singletons = F)
+```
+
+**Important remark:** Even in this small case study--where the TCR
+repertoire contains only about 1,700 TCR clonotypes--the joint graph is
+already quite complex. This level of complexity makes qualitative
+analyses impractical. To address this, ClustIRR emphasizes *quantitative
+analyses* (see Step 2).
+
+</details>
+
+## Using `igraph` functions to inspect $J$
+
+We can use the R-package `igraph` to explore various properties of $J$.
+For example, we can examine the edge weights stored in the edge
+attribute `nweight`. These weights represent alignment scores between
+pairs of CDR3$\beta$ sequences, calculated using BLOSUM62 substitution
+scores with a gap opening penalty of -12 and a gap extension penalty of
+-2. To ensure comparability between pairs of CDR3 sequences of different
+lengths, ClustIRR normalizes the alignment scores by dividing them by
+the alignment lengths. Consequently, identical or similar CDR3 sequence
+pairs receive large positive `nweight` scores, while dissimilar pairs
+have `nweight` values close to zero or even negative.
+
+<hr>
+
+**Problem:** How many nodes are there in the graph? The `igraph`
+function `as_data_frame(x = o$graph, what = "vertices")` allows you to
+access the node attributes. The output is a data.frame with nodes shown
+as rows. How many rows are there?
+
+<details>
+
+<summary>**Solution**</summary>
+
+```{r}
+n <- as_data_frame(x = o$graph, what = "vertices")
+nrow(n)
+```
+
+</details>
+
+<hr>
+
+**Problem:** Now access the edges by replacing `what = "vertices"` with
+`what = "edges"`. How many edges are there? Find which pairs of nodes
+are connected by the *largest*/*lowest* `nweight` scores.
+
+<details>
+
+<summary>**Solution**</summary>
+
+```{r}
+# get a data.frame 'e' with of edges and their attributes
+e <- as_data_frame(x = o$graph, what = "edges")
+
+# max edge weight
+e_max <- e[which.max(e$nweight),]
+# get CDR3 sequences
+n$CDR3b[which(n$name %in% c(e_max$from, e_max$to))]
+```
+
+```{r}
+# min edge weight
+e_min <- e[which.min(e$nweight),]
+# get CDR3 sequences
+n$CDR3b[which(n$name %in% c(e_min$from, e_min$to))]
+```
+
+</details>
+
+# **Step 2** Detecting *communities* in $J$
+
+*ClustIRR* employs graph-based community detection (GCD)
+algorithms--such as Leiden, Louvain, and InfoMap--to identify
+communities of nodes characterized by a high density of strong edges
+within the community and a low density of strong edges connecting to
+nodes outside the community.
+
+Do community detection with the function `detect_communities` now! Use
+similarities based only on the more diverse CDR3$\beta$ chain for
+clustering.
+
+```{r}
+gcd <- detect_communities(graph = o$graph, 
+                          algorithm = "leiden", 
+                          chains = "CDR3b")
+```
+
+The output in `gcd` is quite rich. See the help page for explanations.
+Check whether you can interpret it!
+
+```{r}
+names(gcd)
+```
+
+The main element is the `community_occupancy_matrix`, which contains the
+number of T cells in each community (rows) and repertoire (columns).
+Here, we have two repertoires (two columns) and approximately 800
+communities. This matrix serves as the main input to the function `dco`
+(Step 3), which detects differences in community occupancy between
+repertoires.
+
+```{r}
+dim(gcd$community_occupancy_matrix)
+```
+
+```{r}
+head(gcd$community_occupancy_matrix)
+```
+
+<hr>
+
+**Problem:** Visualize the community abundance matrix with the function
+`get_honeycombs` now!
+
+<details>
+
+<summary>**Solution**</summary>
+
+```{r, fig.width=4.5, fig.height=3}
+honeycomb <- get_honeycombs(com = gcd$community_occupancy_matrix)
+honeycomb[[1]]
+```
+
+In the **honeycomb plot**, we see that most of the dots (communities) do
+not lie close to the diagonal, indicating that they drastically
+different number of T cells in *CMV* (y-axis) and *Flu* (x-axis). These
+communities contain more cells from either repertoire relative to the
+other. The color of the hexagons encodes the density of dots in the 2D
+scatterplot: dark hexagons represent regions with many communities,
+while light hexagons indicate sparsely populated areas. The plot uses
+log10-scaled axes.
+
+</details>
+
+<hr>
+
+**Next step:** Are there any, and if so which, differentially abundant
+communities (DACs) between *CMV* and *Flu*?
+
+# **Step 3** Finding differentially abundant communities (DACs)
+
+To detect DACs, ClustIRR employs a Bayesian model (remember other models
+discussed in this lecture series: Sleuth, DADA2, IgGeneUsage).
+
+Using the community occupancy counts stored in the
+`community_occupancy_matrix` as its main input, the
+Dirichlet-Multinomial model applied by ClustIRR describes the relative
+abundance (occupancy) of community $i$ in repertoire $j$ with the
+parameter $\beta_i^j$.
+
+<hr>
+
+**Problem:** Run this analysis now!
+
+```{r}
+dco_obj <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
+               mcmc_control = list(mcmc_warmup = 500, 
+                                   mcmc_iter = 1500,
+                                   mcmc_chains = 4,
+                                   mcmc_cores = 4))
+```
+
+## Posterior predictive checks
+
+Before interpreting the model results, we need to ensure that the model
+is valid. A standard approach for this is to check whether the model can
+*retrodict* the observed data (i.e., the community occupancy matrix used
+to fit the model parameters).
+
+General idea of posterior predictive checks:
+
+1.  Fit the model based on observed data $y$
+2.  Simulate new data $\hat{y}$ from the model
+3.  Compare $y$ and $\hat{y}$. If $y$ and $\hat{y}$ are clearly
+    different, the model is likely not valid
+
+ClustIRR provides both $y$ and $\hat{y}$ for each repertoire in
+`posterior_summary` object within `dco_obj`. Visualize it with ggplot
+now!
+
+```{r, fig.width=4, fig.height=3}
+ggplot(data = dco_obj$posterior_summary$y_hat)+
+  geom_abline(intercept = 0, slope = 1, linetype = "dashed", col = "gray")+
+  geom_errorbar(aes(x = y_obs, y = mean, ymin = L95, ymax = H95),
+                col = "darkgray", width=0)+
+  geom_point(aes(x = y_obs, y = mean), size = 0.8)+
+  xlab(label = "observed y")+
+  ylab(label = "predicted y (and 95% HDI)")+
+  theme_bw()
+```
+
+<hr>
+
+**Problem:** Based on the plot, does the model do a good job of
+"re-creating" the data it was trained on?
+
+## Taking a peek at the relative community abundances ($\beta$)
+
+Larger communities are associated with larger, positive $\beta$
+coefficients. Let's visualize the mean $\beta$ values for each community
+across the different TCR repertoires using the `get_beta_violin_ag`
+function.
+
+This brings us to a key biological question: Are the communities with
+high $\beta$ values specific to antigens from CMV or Flu?
+
+```{r, fig.width=5, fig.height=3, warning=FALSE}
+bv_cmv <- get_beta_violin_ag(node_summary = gcd$node_summary,
+                             beta = dco_obj$posterior_summary$beta,
+                             ag_species = TRUE,
+                             ag = "CMV",
+                             db = "vdjdb")
+bv_cmv$plot
+```
+
+In the plot, each point represents a community, shown with respect to
+repertoire (x-axis) and its mean $\beta$ coefficient (y-axis).
+
+- **Orange** dots mark communities that contain at least one TCR
+  clonotype specific for CMV.
+- **Blue dots** represent communities without any known CMV-specific
+  clonotype.
+- **Dot size** reflects the number of CMV-specific T cells in the
+  community -- larger dots indicate more CMV-specific cells.
+
+Notice the orange dot with particularly high $\beta$s in repertoire
+*CMV?* This community contains over 10,000 cells specific for CMV
+antigens.
+
+Let's do the same analysis with respect to Flu antigens
+
+```{r, fig.width=5, fig.height=3, warning=FALSE}
+bv_flu <- get_beta_violin_ag(node_summary = gcd$node_summary,
+                             beta = dco_obj$posterior_summary$beta,
+                             ag_species = TRUE,
+                             ag = "InfluenzaA",
+                             db = "vdjdb")
+bv_flu$plot
+```
+
+Notice that now we see the reverse: large orange dots with particularly
+high $\beta$s in repertoire *Flu*
+
+<hr>
+
+**Problem:** what are the community IDs of these large orange dots?
+
+```{r}
+bv_cmv$d[which(bv_cmv$d$sample == "CMV_A0201" & 
+                   bv_cmv$d$mean>6.5 & 
+                   bv_cmv$d$hit==T),]
+
+# community 9
+```
+
+```{r}
+# Large orange dots with high beta in repertoire Flu
+bv_flu$d[which(bv_flu$d$sample == "Flu" & 
+                   bv_flu$d$mean>3 & 
+                   bv_flu$d$hit==T),]
+
+# communities 34, 91, 94
+```
+
+# Inspecting DACs of interest
+
+Community 9 has 33 clonotypes with paired CDR3$\alpha$ and CDR3$\beta$
+sequences.
+
+```{r}
+ns <- gcd$node_summary
+nrow(ns[ns$community == 9,])
+```
+
+We performed clustering based on the CDR3$\beta$ sequences, hence, we
+can assume to find similar CDR3$\beta$s among the clonotypes. To verify
+this, we can construct a sequence logo from the CDR3 sequences
+
+## Show the CDR3$\alpha$\beta\$ sequence logos of community 9
+
+```{r, fig.width=6, fig.height=1.3}
+get_cdr3_motifs(node_summary = gcd$node_summary, community_id = 9)
+```
+
+Based on the logo, community 9 is made of clonotypes with conserved
+CDR3$\beta$s (left logo) and diverse CDR3$\alpha$s (right logo).
+
+## Visualize the graph of community 9
+
+```{r, fig.width=5, fig.height=5, warning=FALSE}
+sg <- subgraph(graph = gcd$graph, vids = V(gcd$graph)$community %in% 9)
+
+V(sg)$Ag <- ifelse(test = regexec(pattern = "CMV", text = V(sg)$Ag_species)!=-1, yes = "+", no = "-")
+V(sg)$col <- ifelse(test = V(sg)$Ag=="+", yes = "orange", no = "#A1BFD9")
+V(sg)$label <- paste0("Community:", V(sg)$community, " (", V(sg)$clone_size, ")" , 
+                      "\n CDR3a:",V(sg)$CDR3a, "\n CDR3b:",V(sg)$CDR3b)
+
+V(sg)$label[which(ave(V(sg)$clone_size, V(sg)$community, FUN = function(x) x == max(x))==0)] <- 
+    paste0("(", V(sg)$clone_size, ")")[which(ave(V(sg)$clone_size, V(sg)$community, FUN = function(x) x == max(x))==0)]
+V(sg)$shape <- ifelse(test = V(sg)$sample=="Flu", yes = "circle", no = "square")
+
+par(mai=c(0,0,0,0))
+plot(sg,
+     vertex.label = V(sg)$label,
+     layout = igraph::layout_components,
+     vertex.label.cex = 0.8,
+     vertex.size = log(V(sg)$clone_size)+3,
+     vertex.frame.color = NA,
+     vertex.color = V(sg)$col,
+     vertex.shape = V(sg)$shape,
+     edge.width = 0.2)
+```
+
+**How to interpret this plot?** Orange and blue nodes represent TCR
+clonotypes that are known to be CMV-specific or not, respectively. Most
+of the clonotypes in this community are known to recognize CMV antigens.
+Node widths represent the number of T cells within each clonotype (i.e.,
+clonal expansion). Node labels show the community ID, CDR3$\alpha$ and
+CDR3$\beta$ sequences of the largest clonotype and clone sizes (in
+parentheses for all clonotypes). The nodes are densely connected owing
+to their similar CDR3$\beta$ sequences.
+
+```{r}
+d <- igraph::as_data_frame(x = sg, what = "vertices")
+d[order(d$clone_size, decreasing = T), ][1:2, c("CDR3a", "CDR3b", "clone_size", 
+                                                "sample", "Ag_species")]
+```
+
+The two largest nodes in this graph have the same CDR3$\beta$ sequence
+(CAWSISDLAKNIQYF), but different CDR3$\alpha$s. These clonotypes contain
+9,754 and 6,052 T cells, respectively.
+
+<hr>
+
+**Problem:** do the same analysis for Flu communities (e.g., 34, 91, 94)
+
+<details>
+
+<summary>**Solution**</summary>
+
+```{r, fig.width=5.5, fig.height=3}
+# show the CDR3 logos
+wrap_plots(lapply(X = c(34, 91, 94), 
+                  FUN = get_cdr3_motifs, node_summary = gcd$node_summary), ncol = 1)
+```
+
+```{r, fig.width=10, fig.height=10, warning=FALSE}
+# Show the networks
+sg <- subgraph(graph = gcd$graph, vids = V(gcd$graph)$community %in% c(34, 91, 94))
+
+V(sg)$Ag <- ifelse(test = regexec(pattern = "CMV", text = V(sg)$Ag_species)!=-1, yes = "+", no = "-")
+V(sg)$col <- ifelse(test = V(sg)$Ag=="+", yes = "orange", no = "#A1BFD9")
+V(sg)$label <- paste0("Community:", V(sg)$community, " (", V(sg)$clone_size, ")" , 
+                      "\n CDR3a:",V(sg)$CDR3a, "\n CDR3b:",V(sg)$CDR3b)
+
+V(sg)$label[which(ave(V(sg)$clone_size, V(sg)$community, FUN = function(x) x == max(x))==0)] <- 
+    paste0("(", V(sg)$clone_size, ")")[which(ave(V(sg)$clone_size, V(sg)$community, FUN = function(x) x == max(x))==0)]
+V(sg)$shape <- ifelse(test = V(sg)$sample=="Flu", yes = "circle", no = "square")
+
+par(mai=c(0,0,0,0))
+plot(sg,
+     vertex.label = V(sg)$label,
+     layout = igraph::layout_components,
+     vertex.label.cex = 0.8,
+     vertex.size = log(V(sg)$clone_size)+3,
+     vertex.frame.color = NA,
+     vertex.color = V(sg)$col,
+     vertex.shape = V(sg)$shape,
+     edge.width = 0.2)
+```
+
+**Important remark:** Notice that community 34 contains many clonotypes,
+where the largest clonotype contains nearly 8,000 cells. Yet, the
+largest clonotypes are not known to recognize Influenza antigens, i.e.
+we see low prevalence of antigen-specific CDR3s in the community. In
+contrast, community 91 and 94 are large (are associated with large
+$\beta$ coefficients) and are also enriched with large clonotypes that
+are known to recognize Influenza antigens.
+
+</details>
+
+# Integration of TCR and GEX data
+
+We now come to another important biological question: community 9 is
+expanded in TCR repertoire CMV and contains many clonotypes that are
+known to recognize CMV antigens. Do we also see higher levels of T cell
+activation among the corresponding T cells compared to the T cells
+outside this community?
+
+Answer this question now!
+
+For this we will follow the following procedure:
+
+1.  Extract T-cell activation profiles from gex for cells inside
+    community 9
+
+2.  Compute for each cell the sum of expressions across 12 genes and use
+    this as a signature of T-cell activation (higher expression means
+    more T cell activation)
+
+3.  Do the same analysis for cells outside community 9
+
+4.  Compare the distributions of T-cell activation scores between cells
+    of community 9 and the remaining cells
+
+```{r}
+# this is the data.frame with all clonotypes
+ns <- gcd$node_summary
+
+# extract the clonotypes in community 9 from repertoire CMV_A0201
+ns_com_9 <- ns[ns$sample == "CMV_A0201" & ns$community == 9,]
+
+# extract the cell_ids (barcodes)
+cell_ids <- unlist(strsplit(x = ns_com_9$cell_id, split = "\\,"))
+```
+
+```{r}
+# extract the gex profiles of cells in community 9
+gex_com_9 <- gex[gex$sample == "CMV_A0201" & gex$cell_id %in% cell_ids,]
+# ... and in cells not in community 9
+gex_com_not_9 <- gex[gex$sample == "CMV_A0201" & !gex$cell_id %in% cell_ids,]
+```
+
+```{r, fig.width=5.5, fig.height=3.5}
+# compute the sum of gene expressions within each cell
+t_act_9 <- apply(X = gex_com_9[,1:12], MARGIN = 1, FUN = sum)
+t_act_not_9 <- apply(X = gex_com_not_9[,1:12], MARGIN = 1, FUN = sum)
+
+# compare the distributions
+# red = 9
+# black = not 9
+# do we see a clear difference? yes: red distribution shifted towards larger 
+# values -> up-regulation of genes involved in T-cell activation
+plot(density(t_act_9), col = "red", 
+     main = "T cell activation in community 9 (red) vs. rest (black)",
+     xlab = "T cell activation score")
+points(density(t_act_not_9), type = "l", col = "black")
+```
+
+<hr>
+
+**Problem:** do the same analysis for Flu communities 34, 91, and 94.
+
+Can we draw any conclusion about the T cell activation scores from the
+specificity structure of these communities?
+
+<details>
+
+<summary>**Solution**</summary>
+
+```{r}
+# this is the data.frame with all clonotypes
+ns <- gcd$node_summary
+
+# extract the clonotypes in community 34 from repertoire Flu
+ns_com_34 <- ns[ns$sample == "Flu" & ns$community == 34,]
+ns_com_91 <- ns[ns$sample == "Flu" & ns$community == 91,]
+ns_com_94 <- ns[ns$sample == "Flu" & ns$community == 94,]
+
+# extract the cell_ids (barcodes)
+cell_ids_34 <- unlist(strsplit(x = ns_com_34$cell_id, split = "\\,"))
+cell_ids_91 <- unlist(strsplit(x = ns_com_91$cell_id, split = "\\,"))
+cell_ids_94 <- unlist(strsplit(x = ns_com_94$cell_id, split = "\\,"))
+```
+
+```{r}
+# extract the gex profiles of cells in each community
+gex_com_34 <- gex[gex$sample == "Flu" & gex$cell_id %in% cell_ids_34,]
+gex_com_91 <- gex[gex$sample == "Flu" & gex$cell_id %in% cell_ids_91,]
+gex_com_94 <- gex[gex$sample == "Flu" & gex$cell_id %in% cell_ids_94,]
+
+# ... and in cells not in communities 34, 91, and 94
+gex_com_not <- gex[gex$sample == "Flu" & !gex$cell_id %in% c(cell_ids_34, 
+                                                              cell_ids_91, 
+                                                              cell_ids_94),]
+```
+
+```{r, fig.width=5.4, fig.height=4}
+# compute the sum of gene expressions within each cell
+t_act_34 <- apply(X = gex_com_34[,1:12], MARGIN = 1, FUN = sum)
+t_act_91 <- apply(X = gex_com_91[,1:12], MARGIN = 1, FUN = sum)
+t_act_94 <- apply(X = gex_com_94[,1:12], MARGIN = 1, FUN = sum)
+
+t_act_not <- apply(X = gex_com_not[,1:12], MARGIN = 1, FUN = sum)
+
+# compare the distributions
+plot(density(t_act_34), col = "pink", 
+     main = "T cell activation in community 34, 91, 94, vs. rest",
+     xlab = "T cell activation score")
+points(density(t_act_91), type = "l", col = "forestgreen")
+points(density(t_act_94), type = "l", col = "green")
+points(density(t_act_not), type = "l", col = "black")
+```
+
+</details>

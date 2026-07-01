@@ -43,7 +43,7 @@ get_beta_violin_ag <- function(beta,
         guides(size = guide_legend(order = 2), 
                colour = guide_legend(order = 1))
     
-    return(g)
+    return(list(plot=g, d = beta))
 }
 
 

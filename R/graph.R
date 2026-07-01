@@ -223,7 +223,7 @@ plot_graph <- function(g,
     is_jg <- g$multigraph
     
     if(!show_singletons){
-        k <- which(degree(ig) == 0 & V(ig)$clone_size <= 1)
+        k <- which(degree(ig) == 0)
         if(length(k)!=0) {
             ig <- delete_vertices(ig, k)
         }

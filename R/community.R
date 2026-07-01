@@ -150,7 +150,8 @@ get_community_summary <- function(g, chains) {
         for(c in chains) {
             x <- e[e$chain == c, ] %>%
                 group_by(community) %>%
-                summarise(across(c(nweight, ncweight, w), mean, na.rm = TRUE),
+                summarise(across(c(nweight, ncweight, w), 
+                                 \(x) mean(x, na.rm = TRUE)),
                           n_edges = sum(n_edges, na.rm = TRUE), 
                           .groups = "drop") %>%
                 ungroup()

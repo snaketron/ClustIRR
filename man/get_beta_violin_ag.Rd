@@ -34,7 +34,11 @@ get_beta_violin_ag(beta,
 \item{db}{annotation database, character, e.g. "vdjdb"}
 }
 \value{
-The output is a violin ggplot.
+The output is a list with two elements:
+\itemize{
+\item \code{plot}: violin ggplot
+\item \code{d}: data.frame used to generate the polot
+}
 
 }
 \examples{
