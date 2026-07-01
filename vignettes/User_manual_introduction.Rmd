@@ -147,13 +147,13 @@ Extract the data.frames for each TCR repertoire and their metadata:
 We will merge three TCR repertoires into the data.frame tcr_reps.
 
 ```{r}
-tcr_reps <- rbind(D1$a, D1$b, D1$c)
+tcr_reps <- D1$s
 ```
 
 We will do the same for the metadata
 
 ```{r}
-meta <- rbind(D1$ma, D1$mb, D1$mc)
+meta <- D1$meta
 ```
 
 ## Algorithm
@@ -528,8 +528,7 @@ plot(c22$community, vertex.size = 10)
 
 ```{r, eval=run}
 kable(as_data_frame(x = c22$community, what = "vertices")
-      [, c("name", "component_id", "CDR3b", "TRBV", 
-           "TRBJ", "CDR3a", "TRAV", "TRAJ")],
+      [, c("name", "component_id", "CDR3b", "TRBV", "CDR3a", "TRAV")],
       row.names = FALSE)
 ```
 
@@ -582,20 +581,7 @@ d <- dco(community_occupancy_matrix = gcd$community_occupancy_matrix,
 ## **Step 6.** Inspect results
 
 ### Visualizing the distribution of $\beta$ with `get_beta_violin_ag`
-
-```{r, eval=run}
-beta_violins <- get_beta_violin_ag(node_summary = gcd$node_summary,
-                                   beta = d$posterior_summary$beta,
-                                   ag = "",
-                                   ag_species = TRUE,
-                                   db = "vdjdb")
-```
-
-```{r, fig.width=5, fig.height=3, eval=run}
-beta_violins
-```
-
-### Compare $\beta$s of clonotypes specific for *CMV*, *EBV*, *flu* or *MLANA*?
+Compare $\beta$s of clonotypes specific for *CMV*, *EBV*, *flu* or *MLANA*?
 
 ```{r, eval=run}
 beta_violins <- get_beta_violin_ag(node_summary = gcd$node_summary,
@@ -606,7 +592,7 @@ beta_violins <- get_beta_violin_ag(node_summary = gcd$node_summary,
 ```
 
 ```{r, fig.width=4, fig.height=3, eval=run}
-beta_violins
+beta_violins$plot
 ```
 
 
