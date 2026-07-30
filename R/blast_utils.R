@@ -73,10 +73,6 @@ get_score <- function(s, control) {
                          " -word_size 3 -matrix BLOSUM62 -comp_based_stats 0")
     o <- predict(bdb, db, BLAST_args = blast_args, custom_format = blast_fmt)
     
-    # clean up
-    unlink(fasta_path, recursive = TRUE)
-    unlink(db_path, recursive = TRUE)
-    
     # remove self-hits
     o <- o[o$qseqid!=o$sseqid,]
     # if empty and no duplicates found stop
@@ -144,6 +140,15 @@ get_score <- function(s, control) {
 }
 
 get_score_pair <- function(s_from, s_to, control) {
+    
+    # create sandbox directories to keep track of tmp files
+    sandbox <- tempfile(pattern = "blast_sandbox_")
+    dir.create(sandbox)
+    on.exit(unlink(sandbox, recursive = T), add = T)
+    
+    fasta_path <- file.path(sandbox, "sequences.fasta")
+    db_path <- file.path(sandbox, "blastdb")
+    
     # rblast query
     db_from <- AAStringSet(s_from$cdr3)
     names(db_from) <- s_from$id
@@ -151,10 +156,10 @@ get_score_pair <- function(s_from, s_to, control) {
     # rblast db
     db_to <- AAStringSet(s_to$cdr3)
     names(db_to) <- s_to$id
-    writeXStringSet(db_to, filepath = "tmp.fasta")
-    makeblastdb(db_name = "db/tmp", dbtype = "prot", 
-                file = "tmp.fasta", verbose = FALSE)
-    bdb <- blast("db/tmp", type = "blastp")
+    writeXStringSet(db_to, filepath = fasta_path)
+    makeblastdb(db_name = db_path, dbtype = "prot", 
+                file = fasta_path, verbose = FALSE)
+    bdb <- blast(db_path, type = "blastp")
     blast_fmt <- paste("qseqid sseqid pident length qstart qend",
                        "sstart send evalue score qseq sseq qlen slen")
     blast_args <- paste0("-num_threads ", control$blast_cores, 
@@ -163,10 +168,7 @@ get_score_pair <- function(s_from, s_to, control) {
     o <- predict(bdb, db_from, BLAST_args = blast_args, 
                  custom_format = blast_fmt)
     
-    # clean up
-    unlink("tmp.fasta")
-    unlink("db/tmp", recursive = TRUE)
-    
+   
     # remove low gmi matches
     o <- o[o$pident >= control$blast_gmi*100,]
     if(nrow(o)==0) {
