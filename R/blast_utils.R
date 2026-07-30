@@ -54,8 +54,13 @@ get_score <- function(s, control) {
     db <- AAStringSet(s$cdr3)
     names(db) <- s$id
     
-    fasta_path <- basename(tempfile(pattern = "fs_tmp_", fileext = ".fasta"))
-    db_path <- basename(tempdir(check = FALSE))
+    # create sandbox directories to keep track of tmp files
+    sandbox <- tempfile(pattern = "blast_sandbox_")
+    dir.create(sandbox)
+    on.exit(unlink(sandbox, recursive = T), add = T)
+    
+    fasta_path <- file.path(sandbox, "sequences.fasta")
+    db_path <- file.path(sandbox, "blastdb")
     
     writeXStringSet(db, filepath = fasta_path)
     makeblastdb(db_name = db_path, dbtype = "prot", 
