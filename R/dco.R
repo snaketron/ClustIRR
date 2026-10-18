@@ -47,7 +47,7 @@ dco <- function(community_occupancy_matrix,
         pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
                   "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
-            pars <- c("alpha", "beta", "beta_mu", "beta_sigma", "delta", 
+            pars <- c("alpha", "beta", "beta_mu", "beta_sigma", 
                       "epsilon", "kappa", "y_hat", "log_lik")
         }
     } 
@@ -55,7 +55,7 @@ dco <- function(community_occupancy_matrix,
         model <- stanmodels$dm
         pars <- c("alpha", "beta", "kappa", "y_hat", "log_lik")
         if(compute_delta == 1) {
-            pars <- c("alpha", "beta", "delta", "epsilon", 
+            pars <- c("alpha", "beta", "epsilon",
                       "kappa", "y_hat", "log_lik")
         }
     }
@@ -549,16 +549,10 @@ get_posterior_summaries <- function(cm,
     
     # compute delta
     if(has_groups==FALSE) {
-        o[["delta"]] <- post_delta(f = f, samples = samples, 
-                                   compute_delta = compute_delta, 
-                                   par = "delta", pmaxv = 0)
         o[["epsilon"]] <- post_delta(f = f, samples = samples,
                                      compute_delta = compute_delta, 
                                      par = "epsilon", pmaxv = 0)
     } else {
-        o[["delta"]] <- post_deltamu(f = f, groups = groups, 
-                                     compute_delta = compute_delta, 
-                                     par = "delta", pmaxv = 0)
         o[["epsilon"]] <- post_deltamu(f = f, groups = groups,
                                        compute_delta = compute_delta, 
                                        par = "epsilon", pmaxv = 0)
