@@ -1,0 +1,16 @@
+citEntry(entry = "article",
+         title = "Uncertainty-aware quantitative analysis of the structure and 
+         dynamics of T cell receptor repertoires",
+         author = "Kitanovsk S, Wollek K, and Hoffmann D",
+         year = 2026,
+         journal = "eLife",
+         doi = "10.7554/eLife.112537",
+         issue = "15:RP112537",
+         textVersion = paste("Kitanovski, Simo, et al. Uncertainty-Aware ",
+         "Uncertainty-aware quantitative analysis of the structure and 
+         dynamics of T cell receptor repertoires.",
+         "eLife, 15:RP112537, ",
+         "https://doi.org/10.7554/eLife.112537"))
+         
+     
+

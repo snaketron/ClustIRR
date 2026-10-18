@@ -68,3 +68,6 @@ Changes in version 1.9.17 (Feb 20, 2026)
 
 Changes in version 1.9.25 (Apr 7, 2026)
 + move from CRAN's blaster to Bioconductors rBLAST
+
+Changes in version 1.11.6 (Oct 18, 2026)
++ Paper describing ClustIRR accepted in eLife. 
