@@ -1,6 +1,6 @@
 clustirr <- function(s,
                      meta = NULL,
-                     control = list(blast_gmi = 0.8,
+                     control = list(blast_gmi = 0.9,
                                     blast_cores = 1,
                                     trim_flank_aa = 3,
                                     db_dist = 0,
