@@ -14,12 +14,13 @@ get_cdr3_motifs <- function(node_summary, community_id, gap_remove_prob = 0.8) {
     } else {
         gs <- lapply(X = chains, FUN = get_motif, 
                      node_summary = node_summary[i, ],
-                     gap_remove_prob = gap_remove_prob)
+                     gap_remove_prob = gap_remove_prob,
+                     community_id = community_id)
         return(patchwork::wrap_plots(gs, nrow = 1))
     }
 }
 
-get_motif <- function(chain, node_summary, gap_remove_prob) {
+get_motif <- function(chain, node_summary, gap_remove_prob, community_id) {
     cdrs <- node_summary[,chain]
     cells <- node_summary[,"clone_size"]
     
@@ -49,7 +50,10 @@ get_motif <- function(chain, node_summary, gap_remove_prob) {
     g <- ggseqlogo(aln, seq_type = 'aa', method = "probability")+
         theme_logo(base_size = 10)+
         theme(legend.position = "none")+
-        scale_y_continuous(breaks = c(0, 0.5, 1), labels = c(0, 0.5, 1))
+        scale_y_continuous(name = "prob.", 
+                           breaks = c(0, 0.5, 1), 
+                           labels = c(0, 0.5, 1))+
+        ggtitle(label = '', subtitle = community_id)
     
     return(g)
 }

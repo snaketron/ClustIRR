@@ -8,7 +8,7 @@ T-cell and B-cell receptors) based on their CDR3 sequences.
 \usage{
 clustirr(s,
          meta = NULL,
-         control = list(blast_gmi = 0.8,
+         control = list(blast_gmi = 0.9,
                         blast_cores = 1,
                         trim_flank_aa = 3,
                         db_dist = 0,
@@ -44,7 +44,7 @@ the details below:
 \itemize{
 \item \code{blast_gmi}: the minimum sequence identity between a pair of CDR3 
 sequences for them to even be considered for alignment and scoring 
-(default = 0.8; 80 percent identity).
+(default = 0.9; 90 percent identity).
 \item \code{blast_cores}: the number of cores to use with BLAST (default = 1).
 \item \code{trim_flank_aa}: how many amino acids should be trimmed from 
 the flanks of all CDR3 sequences to isolate the \bold{CDR3 cores}. 
