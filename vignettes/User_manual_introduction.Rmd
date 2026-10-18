@@ -235,6 +235,12 @@ object of class `clust_irr`.
 cl <- clustirr(s = tcr_reps, meta = meta, control = list(blast_gmi = 0.8))
 ```
 
+```{r, eval=run}
+u <- tcr_reps
+u$sample[u$sample == "a"] <- "a|1"
+cl <- clustirr(s = u, meta = meta, control = list(blast_gmi = 0.8))
+```
+
 The output **complex** list with three elements:
 
 1.  `graph` = the joint graph $J$
@@ -558,12 +564,13 @@ The model output for repertoire $a$ is the parameter vector
 $\beta^a=\beta^a_1,\beta^a_2,\ldots,\beta^a_k$, which describes the
 effect of repertoire $a$ on the relative occupancy in each community.
 
-Given two repertoires, $a$ and $b$, we can quantify the differential
-community occupancy (DCO):
+Given two repertoires, $a$ and $b$, we can quantify absolute differences 
+in community probabilities:
 
 ```{=tex}
 \begin{align}
-\delta^{a-b}_i = \beta^a_i - \beta^b_i
+\epsilon^{a-b} = \mathrm{softmax}(\alpha + \beta^a) - 
+\mathrm{softmax}(\alpha + \beta^b)
 \end{align}
 ```
 
@@ -624,30 +631,6 @@ ggplot(data = d$posterior_summary$y_hat)+
 ```
 
 ### Differential community abundance results $\rightarrow$ par. $\delta$
-
-Given two repertoires, $a$ and $b$, we can quantify the differential
-community occupancy (DCO):
-
-```{=tex}
-\begin{align}
-\delta^{a-b}_i = \beta^a_i - \beta^b_i
-\end{align}
-```
-
-Importantly, `r Biocpkg("ClustIRR")` always computes both contrasts ($a$
-vs. $b$ and $b$ vs. $a$): $\delta^{a-b}_i$ and $\delta^{b-a}_i$.
-
-```{r, fig.width=7, fig.height=6, eval=run}
-ggplot(data = d$posterior_summary$delta)+
-    facet_wrap(facets = ~contrast, ncol = 2)+
-    geom_errorbar(aes(x = community, y = mean, ymin = L95, ymax = H95), 
-                  col = "lightgray", width = 0)+
-    geom_point(aes(x = community, y = mean), shape = 21, fill = "black", 
-               stroke = 0.4, col = "white", size = 1.25)+
-    theme(legend.position = "top")+
-    ylab(label = expression(delta))+
-    scale_x_continuous(expand = c(0,0))
-```
 
 Given two repertoires, $a$ and $b$, `r Biocpkg("ClustIRR")` also
 quantifies absolute differences in community probabilities:
