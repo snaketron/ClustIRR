@@ -1,11 +1,12 @@
 functions {
-    real dm_lpmf(int[] y, vector alpha) {
+    real dm_lpmf(array[] int y, vector alpha) {
         real sum_alpha = sum(alpha);
         return lgamma(sum_alpha) - lgamma(sum(y) + sum_alpha)
         + lgamma(sum(y)+1) - sum(lgamma(to_vector(y)+1))
         + sum(lgamma(to_vector(y) + alpha)) - sum(lgamma(alpha));
     }
 }
+
 
 data {
     int K; // categories
@@ -34,7 +35,7 @@ parameters {
 }
 
 model {
-    target += exponential_lpdf(2+kappa|0.01);
+    target += exponential_lpdf(kappa|0.01);
     target += normal_lpdf(alpha|0,1);
     
     for(i in 1:N) {
@@ -44,11 +45,10 @@ model {
 }
 
 generated quantities {
-    int y_hat [N, K];
-    real log_lik [N];
-    simplex [K] p;
-    vector [K_delta] delta [N_delta];
-    vector [K_delta] epsilon [N_delta];
+    array[N, K] int y_hat;
+    array[N] real log_lik;
+    simplex[K] p;
+    array[N_delta] vector[K_delta] epsilon;
     int k = 1;
     
     for(i in 1:N) {
@@ -60,7 +60,6 @@ generated quantities {
     if(compute_delta==1) {
         for(i in 1:(N-1)) {
             for(j in (i+1):N) {
-                delta[k] = beta[i] - beta[j];
                 epsilon[k] = softmax(alpha+beta[i]) - softmax(alpha+beta[j]);
                 k += 1;
             }
