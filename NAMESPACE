@@ -72,6 +72,7 @@ importFrom(ggseqlogo, ggseqlogo)
 importFrom(ggseqlogo, theme_logo)
 
 export(clustirr)
+export(merge_clustirrs)
 export(plot_graph)
 export(detect_communities)
 export(dco)
