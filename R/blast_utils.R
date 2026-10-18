@@ -3,6 +3,9 @@ get_bscore <- function(x, o, b, gap_o, gap_e, trim) {
     q <- o$qseq[x] 
     t <- o$sseq[x]
     len_s <- o$length[x]
+    if(is.na(len_s)) {
+        return(numeric(length = 3))
+    }
     q <- unlist(strsplit(x = q, split = NULL, fixed = TRUE))
     t <- unlist(strsplit(x = t, split = NULL, fixed = TRUE))
     
@@ -54,8 +57,8 @@ get_score <- function(s, control) {
     db <- AAStringSet(s$cdr3)
     names(db) <- s$id
     
-    fasta_path <- basename(tempfile(pattern = "fs_tmp_", fileext = ".fasta"))
-    db_path <- basename(tempdir(check = FALSE))
+    fasta_path <- tempfile(pattern = "fs_", fileext = ".fasta", tmpdir = ".")
+    db_path <- tempfile(tmpdir = ".")
     
     writeXStringSet(db, filepath = fasta_path)
     makeblastdb(db_name = db_path, dbtype = "prot", 
@@ -64,13 +67,19 @@ get_score <- function(s, control) {
     blast_fmt <- paste("qseqid sseqid pident length qstart qend",
                        "sstart send evalue score qseq sseq qlen slen")
     blast_args <- paste0("-num_threads ", control$blast_cores, 
+                         " -mt_mode 1",
                          " -evalue 10 -gapopen 11 -gapextend 2", 
                          " -word_size 3 -matrix BLOSUM62 -comp_based_stats 0")
-    o <- predict(bdb, db, BLAST_args = blast_args, custom_format = blast_fmt)
+    o <- predict(bdb, db, BLAST_args = blast_args, 
+                 custom_format = blast_fmt,
+                 keep_tmp = FALSE, 
+                 verbose = FALSE)
     
     # clean up
-    unlink(fasta_path, recursive = TRUE)
-    unlink(db_path, recursive = TRUE)
+    unlink(fasta_path, force = TRUE)
+    
+    # Remove BLAST database files sharing db_path as prefix
+    unlink(paste0(db_path, ".*"), force = TRUE)
     
     # remove self-hits
     o <- o[o$qseqid!=o$sseqid,]
@@ -96,8 +105,7 @@ get_score <- function(s, control) {
     }
     
     # remove self-hits
-    key <- paste(pmin(o$qseqid, o$sseqid), pmax(o$qseqid, o$sseqid), 
-                 sep = "-")
+    key <- paste(pmin(o$qseqid, o$sseqid), pmax(o$qseqid, o$sseqid), sep = "-")
     o <- o[!duplicated(key), , drop = FALSE]
     if(nrow(o)>0) {
         out <- data.frame(from = o$qseqid,
@@ -146,21 +154,29 @@ get_score_pair <- function(s_from, s_to, control) {
     # rblast db
     db_to <- AAStringSet(s_to$cdr3)
     names(db_to) <- s_to$id
-    writeXStringSet(db_to, filepath = "tmp.fasta")
-    makeblastdb(db_name = "db/tmp", dbtype = "prot", 
-                file = "tmp.fasta", verbose = FALSE)
-    bdb <- blast("db/tmp", type = "blastp")
+    
+    fasta_path <- tempfile(pattern = "fs_", fileext = ".fasta", tmpdir = ".")
+    db_path <- tempfile(tmpdir = ".")
+    
+    writeXStringSet(db_to, filepath = fasta_path)
+    makeblastdb(db_name = db_path, dbtype = "prot", 
+                file = fasta_path, verbose = FALSE)
+    bdb <- blast(db_path, type = "blastp")
     blast_fmt <- paste("qseqid sseqid pident length qstart qend",
                        "sstart send evalue score qseq sseq qlen slen")
     blast_args <- paste0("-num_threads ", control$blast_cores, 
+                         " -mt_mode 1",
                          " -evalue 10 -gapopen 11 -gapextend 2", 
                          " -word_size 3 -matrix BLOSUM62 -comp_based_stats 0")
     o <- predict(bdb, db_from, BLAST_args = blast_args, 
-                 custom_format = blast_fmt)
+                 custom_format = blast_fmt,
+                 keep_tmp = FALSE, verbose = FALSE)
     
     # clean up
-    unlink("tmp.fasta")
-    unlink("db/tmp", recursive = TRUE)
+    unlink(fasta_path, force = TRUE)
+    
+    # Remove BLAST database files sharing db_path as prefix
+    unlink(paste0(db_path, ".*"), force = TRUE)
     
     # remove low gmi matches
     o <- o[o$pident >= control$blast_gmi*100,]
