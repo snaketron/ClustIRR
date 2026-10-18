@@ -31,7 +31,7 @@ transformed data {
 parameters {
     real <lower=0> kappa;
     vector [K] alpha;
-    vector [K] beta [N];
+    array[N] vector[K] beta;
 }
 
 model {

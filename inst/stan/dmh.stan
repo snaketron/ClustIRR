@@ -32,13 +32,12 @@ parameters {
     vector [K] alpha;
     
     vector <lower=0> [max(G)] beta_sigma;
-    vector [K] beta_z [N];
-    vector [K] beta_mu [max(G)];
+    array[N] vector[K] beta_z;
+    array[max(G)] vector[K] beta_mu;
 }
 
 transformed parameters {
-    vector [K] beta [N];
-
+    array[N] vector[K] beta;
     for(i in 1:N) {
         beta[i] = beta_mu[G[i]] + beta_sigma[G[i]] * beta_z[i];
     }
