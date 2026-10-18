@@ -10,7 +10,7 @@ functions {
 data {
     int K; // categories
     int N; // number of samples
-    int <lower=1> G [N]; // groups
+    array[N] int<lower=1> G; // groups
     array[N, K] int y; // counts matrix
     int<lower=0, upper=1> compute_delta; // should we compute delta
 }
