@@ -67,11 +67,8 @@ https://www.parsebiosciences.com/datasets/performance-of-evercode-tcr-v4-in-
 antigen-stimulated-human-t-cells/; Parse Biosciences; Accessed 2026 June 30
 }
 
-
-
 \usage{
 data(D_CMV_FLU)
-str(D_CMV_FLU)
 }
 
 \examples{

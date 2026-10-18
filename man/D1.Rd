@@ -46,7 +46,6 @@ https://zenodo.org/records/18925758
 
 \usage{
 data(D1)
-str(D1)
 }
 
 \examples{

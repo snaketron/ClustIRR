@@ -37,7 +37,6 @@ Simulated dataset (no source).
 
 \usage{
 data(D2)
-str(D2)
 }
 
 \examples{
