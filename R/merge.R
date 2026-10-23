@@ -123,6 +123,7 @@ merge_clustirrs <- function(x) {
     key <- data.frame(pmin(df_e$from, df_e$to), 
                       pmax(df_e$from, df_e$to), df_e$chain)
     df_e <- df_e[!duplicated(key), ]
+    df_e <- df_e[is.na(df_e$from)==FALSE, ]
     
     # clean unused vars
     rm(ige)

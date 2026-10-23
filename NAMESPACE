@@ -89,6 +89,7 @@ export(get_cosine_similarity)
 export(get_cdr3_motifs)
 export(save_interactive_graph)
 export(get_nrads)
+export(attach_clonotypes)
 
 exportClasses(clust_irr)
 exportMethods(get_clustirr_clust)

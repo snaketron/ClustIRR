@@ -40,6 +40,7 @@ specified community. The logos show the amino acid frequency at each position
 in the CDR3 sequence, with optional gap removal based on the `gap_remove_prob`.
 }
 \examples{
+library(AAStringSet)
 # Create a mock node summary data frame
 node_summary <- data.frame(
   community = rep(1, 4),
