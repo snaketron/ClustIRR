@@ -104,5 +104,5 @@ attach_clonotypes(s, node_summary, control, keep_best = TRUE)
   }
 }
 \seealso{
-  \code{clustirr}}, \code{detect_communities}}
+  \code{clustirr}, \code{detect_communities}
 }
