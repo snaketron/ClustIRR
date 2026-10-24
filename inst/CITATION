@@ -2,7 +2,11 @@ bibentry(
   bibtype = "Article",
   title = "Uncertainty-aware quantitative analysis of the structure and 
          dynamics of T cell receptor repertoires",
-  author = "Kitanovski, Simo et al.",
+  author = c(
+    person(given = "Simo", family = "Kitanovski"),
+    person(given = "Kai", family = "Wollek"),
+    person(given = "Daniel", family = "Hoffmann")
+  ),
   year = "2026",
   journal = "eLife",
   volume = "15",
