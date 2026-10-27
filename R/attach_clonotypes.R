@@ -1,6 +1,6 @@
-attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE) {
+attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE, community_k = Inf) {
 
-    validate_inputs <- function(s, node_summary, control, keep_best) {
+    validate_inputs <- function(s, node_summary, control, keep_best, community_k) {
         check_missing(s)
         check_dataframe(s)
         check_rowcount(s)
@@ -41,18 +41,49 @@ attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE) {
 
         check_singlevalue(keep_best)
         check_logical(keep_best)
+
+        if(length(community_k) != 1 || is.na(community_k) || !is.numeric(community_k)) {
+            stop("community_k must be a single numeric value or Inf")
+        }
+        if(!is.infinite(community_k) && community_k < 1) {
+            stop("community_k must be >= 1 or Inf")
+        }
     }
 
-    validate_inputs(s = s, node_summary = node_summary, control = control, keep_best = keep_best)
+    validate_inputs(s = s,
+                    node_summary = node_summary,
+                    control = control,
+                    keep_best = keep_best,
+                    community_k = community_k)
 
-    attach <- function(s, node_summary, chain, control, keep_best) {
+    get_community_ix <- function(node_summary, community_k) {
+        if(is.null(community_k) || is.infinite(community_k)) {
+            return(seq_len(nrow(node_summary)))
+        }
+
+        k <- as.integer(community_k)
+        ix <- unlist(lapply(split(seq_len(nrow(node_summary)),
+                                 node_summary$community),
+                            function(ids) {
+                                if(length(ids) <= k) {
+                                    return(ids)
+                                }
+                                sample(ids, size = k, replace = FALSE)
+                            }))
+        return(ix)
+    }
+
+    attach <- function(s, node_summary, chain, control, keep_best, community_k) {
+        rep_ix <- get_community_ix(node_summary = node_summary,
+                                   community_k = community_k)
+
         # rblast query
         db_from <- AAStringSet(s[,chain])
         names(db_from) <- 1:nrow(s)
 
         # rblast db
-        db_to <- AAStringSet(node_summary[,chain])
-        names(db_to) <- 1:nrow(node_summary)
+        db_to <- AAStringSet(node_summary[rep_ix, chain])
+        names(db_to) <- rep_ix
 
         fasta_path <- tempfile(pattern = "fs_", fileext = ".fasta", tmpdir = ".")
         db_path <- tempfile(tmpdir = ".")
@@ -133,5 +164,6 @@ attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE) {
                   s = s,
                   node_summary = node_summary,
                   control = control,
-                  keep_best = keep_best))
+                  keep_best = keep_best,
+                  community_k = community_k))
 }
