@@ -7,7 +7,7 @@ acid sequences against the sequences of nodes assigned to communities
 using BLASTP.
 }
 \usage{
-attach_clonotypes(s, node_summary, control, keep_best = TRUE)
+attach_clonotypes(s, node_summary, control, keep_best = TRUE, community_k = Inf)
 }
 \arguments{
   \item{s}{
@@ -44,6 +44,13 @@ attach_clonotypes(s, node_summary, control, keep_best = TRUE)
     normalized BLAST score in decreasing order. Defaults to
     \code{TRUE}.
   }
+  \item{community_k}{
+    Maximum number of nodes to retain per community when building the
+    BLAST database. If \code{Inf} (the default), all nodes in
+    \code{node_summary} are included. Otherwise, for each community,
+    up to \code{community_k} nodes are randomly sampled and used as
+    candidate matches for that community.
+  }
 }
 \details{
   This function can be used to attach additional clonotypes to
@@ -56,6 +63,10 @@ attach_clonotypes(s, node_summary, control, keep_best = TRUE)
   \code{node_summary} and queries it using the corresponding
   sequences in \code{s}.
 
+  If \code{community_k} is finite, only a sampled subset of nodes from
+  each community is included in the database, which can reduce the
+  search space when many nodes are assigned to a community.
+
   Matches with percent identity below
   \code{100 * control$blast_gmi} are discarded. Alignments that do
   not cover the full length of both query and subject sequences are
@@ -67,7 +78,8 @@ attach_clonotypes(s, node_summary, control, keep_best = TRUE)
   clonotype is retained within each chain.
 }
 \value{
-  Match data frame (one for each chain) contains the following columns:
+  A list with one element for each receptor chain. Each element is a
+  match data frame containing the following columns:
   \describe{
     \item{\code{from}}{
       Row index of the query clonotype in \code{s}.
@@ -102,6 +114,7 @@ attach_clonotypes(s, node_summary, control, keep_best = TRUE)
       \code{node_summary$community}.
     }
   }
+  If no matches are found for a chain, that chain's element is \code{NULL}.
 }
 \seealso{
   \code{clustirr}, \code{detect_communities}
