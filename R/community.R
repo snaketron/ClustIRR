@@ -91,6 +91,14 @@ get_formatted_graph <- function(graph,
     if(length(i)!=0) {
         graph <- delete_edges(graph = graph, i)
     }
+    
+    # degree: number of neighbors
+    V(graph)$degree <- igraph::degree(graph, mode = "all")
+    
+    # weighted degree: sum of edge weights
+    V(graph)$wdegree <- igraph::strength(graph, weights = E(graph)$w, 
+                                         mode = "all")
+    
     return(graph)
 }
 

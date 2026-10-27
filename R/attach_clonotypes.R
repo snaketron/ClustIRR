@@ -1,6 +1,8 @@
-attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE, community_k = Inf) {
+attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE, 
+                              community_k = Inf) {
 
-    validate_inputs <- function(s, node_summary, control, keep_best, community_k) {
+    validate_inputs <- function(s, node_summary, control, keep_best, 
+                                community_k) {
         check_missing(s)
         check_dataframe(s)
         check_rowcount(s)
@@ -73,7 +75,8 @@ attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE, commun
         return(ix)
     }
 
-    attach <- function(s, node_summary, chain, control, keep_best, community_k) {
+    attach <- function(s, node_summary, chain, control, keep_best, 
+                       community_k) {
         rep_ix <- get_community_ix(node_summary = node_summary,
                                    community_k = community_k)
 
@@ -85,7 +88,7 @@ attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE, commun
         db_to <- AAStringSet(node_summary[rep_ix, chain])
         names(db_to) <- rep_ix
 
-        fasta_path <- tempfile(pattern = "fs_", fileext = ".fasta", tmpdir = ".")
+        fasta_path <- tempfile(pattern = "fs_", fileext = ".fasta",tmpdir = ".")
         db_path <- tempfile(tmpdir = ".")
 
         writeXStringSet(db_to, filepath = fasta_path)
@@ -97,7 +100,7 @@ attach_clonotypes <- function(s, node_summary, control, keep_best = TRUE, commun
         blast_args <- paste0("-num_threads ", control$blast_cores,
                              " -mt_mode 1",
                              " -evalue 10 -gapopen 11 -gapextend 2",
-                             " -word_size 2 -matrix BLOSUM62 -comp_based_stats 0")
+                             " -word_size 3 -matrix BLOSUM62 -comp_based_stats 0")
         o <- predict(bdb, db_from, BLAST_args = blast_args,
                      custom_format = blast_fmt,
                      keep_tmp = FALSE, verbose = FALSE)
